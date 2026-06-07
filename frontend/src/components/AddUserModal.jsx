@@ -1,17 +1,32 @@
 /**
  * Add User Modal
  *
- * Placeholder version.
+ * Frontend prototype version.
  *
- * Later:
+ * Future:
  * - Image upload
  * - Validation
  * - Database integration
  */
 
-function AddUserModal({
-  onClose,
-}) {
+function AddUserModal({ onClose }) {
+  const inputStyle = {
+    width: "100%",
+    padding: "14px 18px",
+
+    background: "rgba(255,255,255,0.05)",
+
+    border: "1px solid rgba(255,255,255,0.08)",
+
+    borderRadius: "16px",
+
+    color: "var(--text-primary)",
+
+    fontSize: "0.95rem",
+
+    outline: "none",
+  };
+
   return (
     <div
       onClick={onClose}
@@ -19,10 +34,9 @@ function AddUserModal({
         position: "fixed",
         inset: 0,
 
-        background:
-          "rgba(0, 0, 0, 0.55)",
+        background: "rgba(0,0,0,0.55)",
 
-        backdropFilter: "blur(10px)",
+        backdropFilter: "blur(12px)",
 
         display: "flex",
         justifyContent: "center",
@@ -32,64 +46,158 @@ function AddUserModal({
       }}
     >
       <div
-        onClick={(event) =>
-          event.stopPropagation()
-        }
+        onClick={(event) => event.stopPropagation()}
         style={{
-          width: "420px",
+          width: "500px",
 
           background:
-            "rgba(255,255,255,0.06)",
+            "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
 
           border:
-            "1px solid rgba(255,255,255,0.12)",
+            "1px solid rgba(255,255,255,0.10)",
 
-          borderRadius: "28px",
+          borderRadius: "32px",
 
-          backdropFilter: "blur(20px)",
+          backdropFilter: "blur(30px)",
 
-          padding: "32px",
+          boxShadow:
+            "0 20px 60px rgba(0,0,0,0.35)",
+
+          padding: "36px",
 
           display: "flex",
           flexDirection: "column",
 
-          gap: "16px",
+          gap: "20px",
         }}
       >
         <h2
           style={{
             textAlign: "center",
-            marginBottom: "12px",
+            fontWeight: "600",
           }}
         >
           Add User
         </h2>
 
-        <input
-          placeholder="Name"
-        />
+        {/* Avatar Placeholder */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "110px",
+              height: "110px",
 
-        <input
-          placeholder="Surname"
-        />
+              borderRadius: "50%",
+
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+
+              border:
+                "1px solid rgba(255,255,255,0.12)",
+
+              fontSize: "2rem",
+              fontWeight: "600",
+            }}
+          >
+            +
+          </div>
+        </div>
+
+        <button
+          style={{
+            alignSelf: "center",
+
+            background: "none",
+            border: "none",
+
+            color: "var(--text-secondary)",
+
+            cursor: "pointer",
+
+            fontSize: "0.9rem",
+          }}
+        >
+          Upload Image
+        </button>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "12px",
+          }}
+        >
+          <input
+            placeholder="Name"
+            style={inputStyle}
+          />
+
+          <input
+            placeholder="Surname"
+            style={inputStyle}
+          />
+        </div>
 
         <input
           placeholder="Email"
+          style={inputStyle}
         />
 
         <input
           type="password"
           placeholder="Password"
+          style={inputStyle}
         />
-
-        <button>
-          Upload Image
-        </button>
 
         <button
           onClick={() =>
             console.log("Create User")
           }
+          style={{
+            marginTop: "10px",
+
+            padding: "16px",
+
+            background:
+              "var(--glass-bg)",
+
+            border:
+              "1px solid var(--glass-border)",
+
+            borderRadius:
+              "var(--radius-small)",
+
+            color:
+              "var(--text-primary)",
+
+            cursor: "pointer",
+
+            fontSize: "0.95rem",
+
+            fontWeight: "600",
+
+            transition:
+              "var(--transition)",
+          }}
+
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "var(--glass-hover)";
+          }}
+
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "var(--glass-bg)";
+          }}
         >
           Create User
         </button>
