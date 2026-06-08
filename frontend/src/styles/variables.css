@@ -1,52 +1,66 @@
 :root {
-  /* =========
+   /* =========
      COLORS
      ========= */
 
-  --shadow: #0E1116;
-  --matte-black: #171718;
-  --nocturne: #181D25;
-  --dusk: #262B36;
-  --charcoal: #30343F;
-  --slate: #393D4C;
-  --grey: #393D42;
-  --moonstone: #F5F5F5;
+   --shadow: #0E1116;
+   --matte-black: #171718;
+   --nocturne: #181D25;
+   --dusk: #262B36;
+   --charcoal: #30343F;
+   --slate: #393D4C;
+   --grey: #393D42;
+   --moonstone: #F5F5F5;
 
-  /* =========
+   /* =========
      TEXT
      ========= */
 
-  --text-primary: #F5F5F5;
-  --text-secondary: rgba(245, 245, 245, 0.65);
+   --text-primary: #F5F5F5;
+   --text-secondary: rgba(245, 245, 245, 0.65);
 
-  /* =========
+   /* =========
      GLASS
      ========= */
 
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-hover: rgba(255, 255, 255, 0.08);
+   --glass-bg: rgba(255, 255, 255, 0.04);
+   --glass-hover: rgba(255, 255, 255, 0.08);
 
-  --glass-border: rgba(255, 255, 255, 0.08);
+   --glass-border: rgba(255, 255, 255, 0.08);
 
-  /* =========
+   /* =========
      SHADOWS
      ========= */
 
-  --shadow-glass:
-    0px 8px 32px rgba(0, 0, 0, 0.35);
+   --shadow-glass:
+      0px 8px 32px rgba(0, 0, 0, 0.35);
 
-  /* =========
+   /* =========
      RADII
      ========= */
 
-  --radius-large: 32px;
-  --radius-medium: 24px;
-  --radius-small: 16px;
+   --radius-large: 32px;
+   --radius-medium: 24px;
+   --radius-small: 16px;
 
-  /* =========
+   /* =========
+     TYPOGRAPHY
+     ========= */
+
+   --font-xs: 0.75rem;
+   --font-sm: 0.85rem;
+   --font-md: 0.95rem;
+   --font-lg: 1.25rem;
+   --font-xl: 1.75rem;
+
+   --font-weight-light: 300;
+   --font-weight-regular: 400;
+   --font-weight-medium: 500;
+
+   /* =========
      TRANSITIONS
      ========= */
 
-  --transition:
-    all 0.2s ease;
+   --transition:
+      all 0.2s ease;
 }

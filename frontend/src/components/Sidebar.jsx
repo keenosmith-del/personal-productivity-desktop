@@ -183,6 +183,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           }}
         >
 
+          
           <button
             onClick={() =>
               setCollapsed(!collapsed)

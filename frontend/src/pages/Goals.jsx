@@ -2,7 +2,7 @@ import MainLayout from "../layouts/MainLayout";
 
 import GoalOverview from "../components/GoalOverview";
 import ActiveGoals from "../components/ActiveGoals";
-import GoalAnalytics from "../components/GoalAnalytics";
+import CompletedGoals from "../components/CompletedGoals";
 
 function Goals() {
   return (
@@ -27,7 +27,7 @@ function Goals() {
         >
           <ActiveGoals />
 
-          <GoalAnalytics />
+          <CompletedGoals />
         </div>
       </div>
     </MainLayout>
