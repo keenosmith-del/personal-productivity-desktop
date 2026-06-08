@@ -12,8 +12,28 @@
  */
 
 import Sidebar from "../components/Sidebar";
+import { useEffect, useState } from "react";
 
 function MainLayout({ children }) {
+  const [collapsed, setCollapsed] =
+    useState(() => {
+      const saved =
+        localStorage.getItem(
+          "sidebarCollapsed"
+        );
+
+      return saved === null
+        ? true
+        : JSON.parse(saved);
+    });
+
+  useEffect(() => {
+    localStorage.setItem(
+      "sidebarCollapsed",
+      JSON.stringify(collapsed)
+    );
+  }, [collapsed]);
+  
   return (
     <div
       style={{
@@ -21,12 +41,16 @@ function MainLayout({ children }) {
         minHeight: "100vh",
       }}
     >
-      <Sidebar />
+      <Sidebar
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+      />
 
       <main
         style={{
           flex: 1,
-          padding: "32px",
+          padding: "24px",
+          overflow: "hidden",
         }}
       >
         {children}
