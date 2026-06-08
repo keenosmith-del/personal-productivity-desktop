@@ -182,16 +182,6 @@ function Sidebar({ collapsed, setCollapsed }) {
             marginBottom: "24px",
           }}
         >
-          {!collapsed && (
-            <h2
-              style={{
-                fontWeight: "600",
-                fontSize: "1.1rem",
-              }}
-            >
-              Productivity
-            </h2>
-          )}
 
           <button
             onClick={() =>
