@@ -185,7 +185,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           {!collapsed && (
             <h2
               style={{
-                fontWeight: "400",
+                fontWeight: "600",
                 fontSize: "1.1rem",
               }}
             >
