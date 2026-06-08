@@ -1,10 +1,28 @@
 import MainLayout from "../layouts/MainLayout";
 
+import AppearanceSettings from "../components/AppearanceSettings";
+import NotificationSettings from "../components/NotificationSettings";
+import ProductivityPreferences from "../components/ProductivityPreferences";
+import AccountSettings from "../components/AccountSettings";
+
 function Settings() {
   return (
     <MainLayout>
-      <h1>Settings</h1>
-      <p>Coming Soon</p>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px",
+        }}
+      >
+        <AppearanceSettings />
+
+        <NotificationSettings />
+
+        <ProductivityPreferences />
+
+        <AccountSettings />
+      </div>
     </MainLayout>
   );
 }

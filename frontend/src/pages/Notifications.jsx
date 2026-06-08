@@ -1,10 +1,11 @@
 import MainLayout from "../layouts/MainLayout";
 
+import NotificationFeed from "../components/NotificationFeed";
+
 function Notifications() {
   return (
     <MainLayout>
-      <h1>Notifications</h1>
-      <p>Coming Soon</p>
+      <NotificationFeed />
     </MainLayout>
   );
 }
