@@ -70,13 +70,22 @@ function PasswordView({
             backdropFilter: "blur(20px)",
 
             fontSize: "2.2rem",
-            fontWeight: "600",
+            fontWeight: "400",
           }}
         >
           {user.initials}
         </div>
 
-        <h2>
+        <h2
+          style={{
+            fontSize: "1.1rem",
+
+            fontWeight: "400",
+
+            color:
+              "var(--text-secondary)",
+          }}
+        >
           {user.name}
         </h2>
 

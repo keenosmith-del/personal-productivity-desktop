@@ -60,7 +60,7 @@ function UserCard({
             "0 8px 32px rgba(0,0,0,0.35)",
 
           fontSize: "2rem",
-          fontWeight: "600",
+          fontWeight: "400",
 
           color: "var(--text-primary)",
         }}
@@ -72,8 +72,8 @@ function UserCard({
         style={{
           marginTop: "14px",
           color: "var(--text-primary)",
-          fontSize: "0.95rem",
-          fontWeight: "500",
+          fontSize: "0.9rem",
+          fontWeight: "400",
         }}
       >
         {isAddUser ? "Add User" : name}

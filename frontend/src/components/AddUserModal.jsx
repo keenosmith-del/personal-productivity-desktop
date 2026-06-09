@@ -9,7 +9,15 @@
  * - Database integration
  */
 
+import { useRef, useEffect } from "react";
+
 function AddUserModal({ onClose }) {
+  const nameInputRef = useRef(null);
+
+  useEffect(() => {
+    nameInputRef.current?.focus();
+  }, []);
+
   const inputStyle = {
     width: "100%",
     padding: "14px 18px",
@@ -74,7 +82,7 @@ function AddUserModal({ onClose }) {
         <h2
           style={{
             textAlign: "center",
-            fontWeight: "600",
+            fontWeight: "500",
           }}
         >
           Add User
@@ -105,29 +113,34 @@ function AddUserModal({ onClose }) {
                 "1px solid rgba(255,255,255,0.12)",
 
               fontSize: "2rem",
-              fontWeight: "600",
+
+              fontWeight: "300",
+
+              cursor: "pointer",
+
+              marginBottom: "20px",
+
+              transition:
+                "all 0.25s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.10)";
+
+              e.currentTarget.style.transform =
+                "scale(1.03)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background =
+                "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))";
+
+              e.currentTarget.style.transform =
+                "scale(1)";
             }}
           >
             +
           </div>
         </div>
-
-        <button
-          style={{
-            alignSelf: "center",
-
-            background: "none",
-            border: "none",
-
-            color: "var(--text-secondary)",
-
-            cursor: "pointer",
-
-            fontSize: "0.9rem",
-          }}
-        >
-          Upload Image
-        </button>
 
         <div
           style={{
@@ -137,6 +150,7 @@ function AddUserModal({ onClose }) {
           }}
         >
           <input
+            ref={nameInputRef}
             placeholder="Name"
             style={inputStyle}
           />
@@ -148,6 +162,11 @@ function AddUserModal({ onClose }) {
         </div>
 
         <input
+          placeholder="Title"
+          style={inputStyle}
+        />
+
+        <input
           placeholder="Email"
           style={inputStyle}
         />
@@ -155,6 +174,12 @@ function AddUserModal({ onClose }) {
         <input
           type="password"
           placeholder="Password"
+          style={inputStyle}
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
           style={inputStyle}
         />
 
@@ -183,7 +208,7 @@ function AddUserModal({ onClose }) {
 
             fontSize: "0.95rem",
 
-            fontWeight: "600",
+            fontWeight: "400",
 
             transition:
               "var(--transition)",
