@@ -10,8 +10,7 @@ import {
   Coffee,
   User,
   Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
+  NotebookPen,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -25,6 +24,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Tasks",
       path: "/tasks",
       icon: CheckSquare,
+    },
+    {
+      label: "Notes",
+      path: "/notes",
+      icon: NotebookPen,
     },
     {
       label: "Goals",
@@ -229,17 +233,27 @@ function Sidebar({ collapsed, setCollapsed }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+
+              fontSize: "1rem",
+
+              fontWeight: "300",
+
+              lineHeight: 1,
+
+              transition:
+                "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color =
+                "var(--text-primary)";
+            }}
+
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color =
+                "var(--text-secondary)";
             }}
           >
-            {collapsed ? (
-              <PanelLeftOpen
-                size={20}
-              />
-            ) : (
-              <PanelLeftClose
-                size={20}
-              />
-            )}
+            {collapsed ? "→" : "←"}
           </button>
         </div>
 

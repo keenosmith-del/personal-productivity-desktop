@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
+import Notes from "./pages/Notes";
 import Goals from "./pages/Goals";
 import Calendar from "./pages/Calendar";
 
@@ -26,6 +27,11 @@ function App() {
         <Route
           path="/tasks"
           element={<Tasks />}
+        />
+
+        <Route
+          path="/notes"
+          element={<Notes />}
         />
 
         <Route
