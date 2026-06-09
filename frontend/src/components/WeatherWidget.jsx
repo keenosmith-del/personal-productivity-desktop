@@ -1,4 +1,5 @@
 import GlassCard from "./GlassCard";
+import { CloudSun } from "lucide-react";
 
 function WeatherWidget() {
   return (
@@ -6,16 +7,19 @@ function WeatherWidget() {
       <div
         style={{
           height: "100%",
+
+          display: "flex",
+
+          flexDirection: "column",
+
+          justifyContent: "center",
+
+          alignItems: "center",
+
+          textAlign: "center",
+
           transition:
             "all 0.25s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.parentElement.style.background =
-            "rgba(14,17,22,0.75)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.parentElement.style.background =
-            "var(--glass-bg)";
         }}
       >
         <p
@@ -24,21 +28,39 @@ function WeatherWidget() {
               "var(--text-secondary)",
           }}
         >
-          Weather
+          Johannesburg
         </p>
 
-        <div>
-          <h2
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            gap: "2px",
+          }}>
+          <div
             style={{
-              fontSize: "2rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              justifyContent: "center",
             }}
           >
-            18°
-          </h2>
+            <CloudSun
+              size={28}
+              strokeWidth={1.5}
+            />
 
-          <p>
-            Johannesburg
-          </p>
+            <h2
+              style={{
+                fontSize: "2.2rem",
+                fontWeight: "400",
+              }}
+            >
+              18°
+            </h2>
+          </div>
 
           <p
             style={{

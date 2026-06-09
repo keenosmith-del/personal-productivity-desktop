@@ -1,10 +1,15 @@
 import MainLayout from "../layouts/MainLayout";
 
+import { useState } from "react";
+
 import AnalyticsCard from "../components/AnalyticsCard";
 import WeatherWidget from "../components/WeatherWidget";
 import ClockWidget from "../components/ClockWidget";
+import DashboardModal from "../components/DashboardModal";
 
 function Dashboard() {
+  const [modalData, setModalData] =
+    useState(null);
   return (
     <MainLayout>
       <div
@@ -86,6 +91,16 @@ function Dashboard() {
               title="Due Today"
               value="2"
               subtitle="Tasks due"
+              clickable
+              onClick={() =>
+                setModalData({
+                  title: "Due Today",
+                  items: [
+                    "Complete Portfolio Review",
+                    "Finish React Assignment",
+                  ],
+                })
+              }
             />
           </div>
 
@@ -101,12 +116,33 @@ function Dashboard() {
               title="Upcoming"
               value="1"
               subtitle="Events tomorrow"
+              clickable
+              onClick={() =>
+                setModalData({
+                  title: "Upcoming",
+                  items: [
+                    "Team Meeting",
+                    "Goal Review",
+                  ],
+                })
+              }
             />
 
             <AnalyticsCard
               title="Tasks"
               value="8"
               subtitle="Open tasks"
+              clickable
+              onClick={() =>
+                setModalData({
+                  title: "Open Tasks",
+                  items: [
+                    "Dashboard Redesign",
+                    "Notes Page",
+                    "Calendar Improvements",
+                  ],
+                })
+              }
             />
           </div>
 
@@ -132,6 +168,15 @@ function Dashboard() {
           </div>
         </div>
       </div>
+      {modalData && (
+        <DashboardModal
+          title={modalData.title}
+          items={modalData.items}
+          onClose={() =>
+            setModalData(null)
+          }
+        />
+      )}
     </MainLayout>
   );
 }

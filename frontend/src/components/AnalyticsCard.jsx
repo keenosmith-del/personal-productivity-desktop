@@ -10,6 +10,8 @@ function AnalyticsCard({
   value,
   subtitle,
   wide = false,
+  clickable = false,
+  onClick,
 }) {
   return (
     <GlassCard
@@ -18,16 +20,40 @@ function AnalyticsCard({
       }
     >
       <div
+        onClick={onClick}
         style={{
           height: "100%",
+
+          display: "flex",
+
+          flexDirection: "column",
+
+          justifyContent: "center",
+
+          alignItems: "center",
+
+          textAlign: "center",
+
+          gap: "10px",
+
           transition:
             "all 0.25s ease",
+
+          cursor:
+            clickable
+              ? "pointer"
+              : "default",
         }}
         onMouseEnter={(e) => {
+          if (!clickable) return;
+
           e.currentTarget.parentElement.style.background =
             "rgba(14,17,22,0.75)";
         }}
+
         onMouseLeave={(e) => {
+          if (!clickable) return;
+
           e.currentTarget.parentElement.style.background =
             "var(--glass-bg)";
         }}
@@ -37,7 +63,8 @@ function AnalyticsCard({
             color:
               "var(--text-secondary)",
 
-            fontSize: "0.9rem",
+            fontSize: "0.85rem",
+            fontWeight: "400",
           }}
         >
           {title}
@@ -47,7 +74,7 @@ function AnalyticsCard({
           <h2
             style={{
               fontSize: "2rem",
-              fontWeight: "600",
+              fontWeight: "400",
             }}
           >
             {value}
