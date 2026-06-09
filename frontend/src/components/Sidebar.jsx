@@ -97,8 +97,36 @@ function Sidebar({ collapsed, setCollapsed }) {
             : "1px solid transparent",
 
           transition:
-            "var(--transition)",
+            "all 0.2s ease",
         })}
+        onMouseEnter={(e) => {
+          const bg =
+            window.getComputedStyle(
+              e.currentTarget
+            ).backgroundColor;
+
+          if (
+            bg ===
+            "rgba(0, 0, 0, 0)"
+          ) {
+            e.currentTarget.style.background =
+              "rgba(255,255,255,0.05)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          const bg =
+            window.getComputedStyle(
+              e.currentTarget
+            ).backgroundColor;
+
+          if (
+            bg !==
+            "rgba(255, 255, 255, 0.08)"
+          ) {
+            e.currentTarget.style.background =
+              "transparent";
+          }
+        }}
       >
         <div
           style={{
@@ -183,7 +211,6 @@ function Sidebar({ collapsed, setCollapsed }) {
           }}
         >
 
-          
           <button
             onClick={() =>
               setCollapsed(!collapsed)

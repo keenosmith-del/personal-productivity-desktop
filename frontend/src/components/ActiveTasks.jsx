@@ -166,8 +166,8 @@ function ActiveTasks() {
                                             ? "#ff6b6b"
                                             : task.priority ===
                                                 "Medium"
-                                                ? "#f5b041"
-                                                : "#7f8c8d",
+                                                ? "#fae588"
+                                                : "#728a6e",
                                 }}
                             />
 
