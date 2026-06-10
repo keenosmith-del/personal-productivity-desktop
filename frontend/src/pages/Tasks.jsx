@@ -5,10 +5,17 @@ import TaskModal from "../components/TaskModal";
 import TaskOverview from "../components/TaskOverview";
 import CompletedTasks from "../components/CompletedTasks";
 import ActiveTasks from "../components/ActiveTasks";
+import TaskDetailsModal from "../components/TaskDetailsModal";
 
 function Tasks() {
   const [showTaskModal, setShowTaskModal] =
     useState(false);
+
+  const [selectedTask, setSelectedTask] =
+    useState(null);
+
+  const [editingTask, setEditingTask] =
+    useState(null);
   return (
     <MainLayout>
       <div
@@ -32,7 +39,10 @@ function Tasks() {
             gap: "24px",
           }}
         >
-          <ActiveTasks />
+          <ActiveTasks
+            onViewTask={setSelectedTask}
+            onEditTask={setEditingTask}
+          />
 
           <CompletedTasks />
         </div>
@@ -41,6 +51,23 @@ function Tasks() {
         <TaskModal
           onClose={() =>
             setShowTaskModal(false)
+          }
+        />
+      )}
+      {selectedTask && (
+        <TaskDetailsModal
+          task={selectedTask}
+          onClose={() =>
+            setSelectedTask(null)
+          }
+        />
+      )}
+      {editingTask && (
+        <TaskModal
+          mode="edit"
+          task={editingTask}
+          onClose={() =>
+            setEditingTask(null)
           }
         />
       )}

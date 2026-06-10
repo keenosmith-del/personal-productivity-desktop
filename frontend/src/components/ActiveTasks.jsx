@@ -1,15 +1,18 @@
 import GlassCard from "./GlassCard";
+import TaskDetailsModal from "./TaskDetailsModal";
 
 import {
-    Circle,
-    CheckCircle2,
+    Eye,
     Pencil,
     Trash2,
 } from "lucide-react";
 
 import { useState } from "react";
 
-function ActiveTasks() {
+function ActiveTasks({
+    onViewTask,
+    onEditTask,
+}) {
     const tasks = [
         {
             title: "Finish Productivity Desktop",
@@ -46,6 +49,10 @@ function ActiveTasks() {
             <h2
                 style={{
                     marginBottom: "24px",
+
+                    fontWeight: "400",
+
+                    letterSpacing: "-0.02em",
                 }}
             >
                 Active Tasks
@@ -97,6 +104,9 @@ function ActiveTasks() {
                             e.currentTarget.style.transform =
                                 "translateY(0)";
                         }}
+                        onClick={() =>
+                            onViewTask(task)
+                        }
                     >
                         <div
                             style={{
@@ -142,7 +152,15 @@ function ActiveTasks() {
                                 }}
                             />
 
-                            <span>
+                            <span
+                                style={{
+                                    fontWeight: "300",
+
+                                    fontSize: "0.9rem",
+
+                                    letterSpacing: "-0.015em",
+                                }}
+                            >
                                 {task.title}
                             </span>
                         </div>
@@ -171,6 +189,35 @@ function ActiveTasks() {
                                 }}
                             />
 
+                            <Eye
+                                size={16}
+                                strokeWidth={1.5}
+                                style={{
+                                    cursor: "pointer",
+                                    transition:
+                                        "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color =
+                                        "#F5F5F5";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color =
+                                        "";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onViewTask(task);
+                                }}
+                            />
+
                             <Pencil
                                 size={16}
                                 strokeWidth={1.5}
@@ -192,6 +239,11 @@ function ActiveTasks() {
 
                                     e.currentTarget.style.transform =
                                         "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onEditTask(task);
                                 }}
                             />
 
@@ -216,6 +268,9 @@ function ActiveTasks() {
 
                                     e.currentTarget.style.transform =
                                         "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                 }}
                             />
                         </div>

@@ -27,6 +27,10 @@ function CompletedTasks() {
             <h2
                 style={{
                     marginBottom: "24px",
+
+                    fontWeight: "400",
+
+                    letterSpacing: "-0.02em",
                 }}
             >
                 Completed Tasks
@@ -109,11 +113,13 @@ function CompletedTasks() {
 
                             <span
                                 style={{
-                                    textDecoration:
-                                        "line-through",
+                                    textDecoration: "line-through",
+                                    
+                                    fontWeight: "300",
 
-                                    color:
-                                        "var(--text-secondary)",
+                                    fontSize: "0.9rem",
+
+                                    letterSpacing: "-0.015em",
                                 }}
                             >
                                 {task}

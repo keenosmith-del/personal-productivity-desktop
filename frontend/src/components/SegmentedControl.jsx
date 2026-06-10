@@ -27,6 +27,19 @@ function SegmentedControl({
           onClick={() =>
             onSelect(option)
           }
+          onMouseEnter={(e) => {
+            if (selected !== option) {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.06)";
+            }
+          }}
+
+          onMouseLeave={(e) => {
+            if (selected !== option) {
+              e.currentTarget.style.background =
+                "transparent";
+            }
+          }}
           style={{
             border: "none",
 
