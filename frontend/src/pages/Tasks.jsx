@@ -2,10 +2,11 @@ import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
 import TaskModal from "../components/TaskModal";
-import TaskOverview from "../components/TaskOverview";
 import CompletedTasks from "../components/CompletedTasks";
 import ActiveTasks from "../components/ActiveTasks";
 import TaskDetailsModal from "../components/TaskDetailsModal";
+import TaskStats from "../components/TaskStats";
+import TaskActivity from "../components/TaskActivity";
 
 function Tasks() {
   const [showTaskModal, setShowTaskModal] =
@@ -25,11 +26,6 @@ function Tasks() {
           gap: "24px",
         }}
       >
-        <TaskOverview
-          onNewTask={() =>
-            setShowTaskModal(true)
-          }
-        />
 
         <div
           style={{
@@ -42,9 +38,16 @@ function Tasks() {
           <ActiveTasks
             onViewTask={setSelectedTask}
             onEditTask={setEditingTask}
+            onNewTask={() =>
+              setShowTaskModal(true)
+            }
           />
 
           <CompletedTasks />
+
+          <TaskStats />
+
+          <TaskActivity />
         </div>
       </div>
       {showTaskModal && (

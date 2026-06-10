@@ -190,19 +190,19 @@ function GoalModal({
             {[
               {
                 name: "Career",
-                color: "#262b36",
+                color: "#1a1d29",
               },
               {
                 name: "Study",
-                color: "#30343f",
-              },
-              {
-                name: "Health",
-                color: "#393d4c",
+                color: "#3d3f4a",
               },
               {
                 name: "Personal",
-                color: "#343a40",
+                color: "#52677d",
+              },
+              {
+                name: "Health",
+                color: "#7d8491",
               },
             ].map((item) => (
               <div

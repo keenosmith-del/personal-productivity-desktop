@@ -46,26 +46,12 @@ function CompletedGoals() {
 
               borderRadius: "12px",
 
-              opacity: 0.8,
+              opacity: 0.5,
 
               transition:
                 "all 0.25s ease",
 
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background =
-                "rgba(14,17,22,0.75)";
-
-              e.currentTarget.style.transform =
-                "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background =
-                "rgba(255,255,255,0.04)";
-
-              e.currentTarget.style.transform =
-                "translateY(0)";
+              cursor: "default",
             }}
           >
             <div
@@ -83,22 +69,22 @@ function CompletedGoals() {
                   borderRadius: "50%",
 
                   background:
-                    "rgba(245,245,245,0.75)",
+                    "rgba(245,245,245,0.45)",
 
                   border:
-                    "1.5px solid rgba(245,245,245,0.75)",
+                    "1.5px solid rgba(245,245,245,0.45)",
                 }}
               />
 
               <span
                 style={{
-                  textDecoration:
-                    "line-through",
-
                   color:
                     "var(--text-secondary)",
 
                   fontWeight: "300",
+
+                  color:
+                    "rgba(255,255,255,0.7)",
 
                   fontSize: "0.9rem",
 

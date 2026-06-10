@@ -12,6 +12,7 @@ import { useState } from "react";
 function ActiveTasks({
     onViewTask,
     onEditTask,
+    onNewTask,
 }) {
     const tasks = [
         {
@@ -46,17 +47,58 @@ function ActiveTasks({
                 minHeight: "320px",
             }}
         >
-            <h2
+            <div
                 style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     marginBottom: "24px",
-
-                    fontWeight: "400",
-
-                    letterSpacing: "-0.02em",
                 }}
             >
-                Active Tasks
-            </h2>
+                <h2
+                    style={{
+                        fontWeight: "400",
+                        letterSpacing: "-0.02em",
+                    }}
+                >
+                    Active Tasks
+                </h2>
+
+                <button
+                    onClick={onNewTask}
+                    style={{
+                        background: "transparent",
+                        border: "none",
+
+                        color:
+                            "var(--text-secondary)",
+
+                        display: "flex",
+                        alignItems: "center",
+
+                        gap: "6px",
+
+                        cursor: "pointer",
+
+                        fontSize: "0.9rem",
+
+                        fontWeight: "400",
+
+                        transition:
+                            "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
+                    }}
+                >
+                    + New Task
+                </button>
+            </div>
 
             <div
                 style={{
@@ -181,11 +223,11 @@ function ActiveTasks({
 
                                     background:
                                         task.priority === "High"
-                                            ? "#592f30"
+                                            ? "#3d3f4a"
                                             : task.priority ===
                                                 "Medium"
-                                                ? "#774e4a"
-                                                : "#5e4348",
+                                                ? "#52677d"
+                                                : "#7d8491",
                                 }}
                             />
 
