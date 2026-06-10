@@ -13,6 +13,8 @@ function CompletedGoals() {
       <h2
         style={{
           marginBottom: "24px",
+          fontWeight: "400",
+          letterSpacing: "-0.02em",
         }}
       >
         Completed Goals
@@ -95,6 +97,12 @@ function CompletedGoals() {
 
                   color:
                     "var(--text-secondary)",
+
+                  fontWeight: "300",
+
+                  fontSize: "0.9rem",
+
+                  letterSpacing: "-0.015em",
                 }}
               >
                 {goal}

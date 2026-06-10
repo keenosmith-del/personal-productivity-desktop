@@ -1,13 +1,18 @@
 import { useState } from "react";
 
 import GlassCard from "./GlassCard";
+import GoalModal from "./GoalModal";
 
 import {
+    Eye,
     Pencil,
     Trash2,
 } from "lucide-react";
 
-function ActiveGoals() {
+function ActiveGoals({
+    onViewGoal,
+    onEditGoal,
+}) {
     const [completedGoals, setCompletedGoals] =
         useState({});
 
@@ -16,12 +21,15 @@ function ActiveGoals() {
         "Complete Generative AI Course",
         "Launch Portfolio Website",
     ];
-
     return (
         <GlassCard>
             <h2
                 style={{
                     marginBottom: "24px",
+
+                    fontWeight: "400",
+
+                    letterSpacing: "-0.02em",
                 }}
             >
                 Active Goals
@@ -74,6 +82,9 @@ function ActiveGoals() {
                             e.currentTarget.style.transform =
                                 "translateY(0)";
                         }}
+                        onClick={() =>
+                            onViewGoal(goal)
+                        }
                     >
                         <div
                             style={{
@@ -119,7 +130,15 @@ function ActiveGoals() {
                                 }}
                             />
 
-                            <span>
+                            <span
+                                style={{
+                                    fontWeight: "300",
+
+                                    fontSize: "0.9rem",
+
+                                    letterSpacing: "-0.015em",
+                                }}
+                            >
                                 {goal}
                             </span>
                         </div>
@@ -133,6 +152,36 @@ function ActiveGoals() {
                                 gap: "12px",
                             }}
                         >
+                            <Eye
+                                size={16}
+                                strokeWidth={1.5}
+                                style={{
+                                    cursor: "pointer",
+
+                                    transition:
+                                        "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color =
+                                        "#F5F5F5";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color =
+                                        "";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onViewGoal(goal);
+                                }}
+                            />
+
                             <Pencil
                                 size={16}
                                 strokeWidth={1.5}
@@ -155,6 +204,11 @@ function ActiveGoals() {
 
                                     e.currentTarget.style.transform =
                                         "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onEditGoal(goal);
                                 }}
                             />
 
@@ -180,6 +234,9 @@ function ActiveGoals() {
 
                                     e.currentTarget.style.transform =
                                         "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                 }}
                             />
                         </div>

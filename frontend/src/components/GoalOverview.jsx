@@ -1,16 +1,69 @@
 import GlassCard from "./GlassCard";
 import ProgressRing from "./ProgressRing";
+import GoalModal from "./GoalModal";
+import { Plus } from "lucide-react";
 
-function GoalOverview() {
+function GoalOverview({
+    onNewGoal,
+}) {
     return (
         <GlassCard minHeight="220px">
-            <h2
+            <div
                 style={{
-                    marginBottom: "24px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "32px",
                 }}
+                onClick={onNewGoal}
             >
-                Goal Overview
-            </h2>
+                <h2
+                    style={{
+                        fontWeight: "400",
+                        letterSpacing: "-0.02em",
+                    }}
+                >
+                    Goals
+                </h2>
+
+                <button
+                    style={{
+                        background: "transparent",
+                        border: "none",
+
+                        color:
+                            "var(--text-secondary)",
+
+                        display: "flex",
+                        alignItems: "center",
+
+                        gap: "6px",
+
+                        cursor: "pointer",
+
+                        fontSize: "0.9rem",
+
+                        fontWeight: "400",
+
+                        transition:
+                            "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
+                    }}
+                >
+                    <Plus
+                        size={16}
+                        strokeWidth={1.5}
+                    />
+                    New Goal
+                </button>
+            </div>
 
             <div
                 style={{
@@ -38,7 +91,13 @@ function GoalOverview() {
                         Active Goals
                     </p>
 
-                    <h2>4</h2>
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                        }}
+                    >
+                        4
+                    </h2>
 
                     <ProgressRing value={40} />
                 </div>
@@ -59,7 +118,13 @@ function GoalOverview() {
                         Completion Rate
                     </p>
 
-                    <h2>72%</h2>
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                        }}
+                    >
+                        72%
+                    </h2>
 
                     <ProgressRing value={40} />
                 </div>
@@ -80,7 +145,13 @@ function GoalOverview() {
                         Current Streak
                     </p>
 
-                    <h2>14 Days</h2>
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                        }}
+                    >
+                        14 Days
+                    </h2>
 
                     <ProgressRing value={65} />
                 </div>
@@ -101,7 +172,13 @@ function GoalOverview() {
                         Goals Achieved
                     </p>
 
-                    <h2>8</h2>
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                        }}
+                    >
+                        8
+                    </h2>
 
                     <ProgressRing value={80} />
                 </div>
