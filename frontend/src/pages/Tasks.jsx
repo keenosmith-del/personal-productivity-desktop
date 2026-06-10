@@ -1,28 +1,49 @@
 import MainLayout from "../layouts/MainLayout";
 
-import TaskForm from "../components/TaskForm";
-import ActiveTasks from "../components/ActiveTasks";
+import { useState } from "react";
+import TaskModal from "../components/TaskModal";
+import TaskOverview from "../components/TaskOverview";
 import CompletedTasks from "../components/CompletedTasks";
-import TaskAnalytics from "../components/TaskAnalytics";
+import ActiveTasks from "../components/ActiveTasks";
 
 function Tasks() {
+  const [showTaskModal, setShowTaskModal] =
+    useState(false);
   return (
     <MainLayout>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          display: "flex",
+          flexDirection: "column",
           gap: "24px",
         }}
       >
-        <TaskForm />
+        <TaskOverview
+          onNewTask={() =>
+            setShowTaskModal(true)
+          }
+        />
 
-        <ActiveTasks />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "1fr 1fr",
+            gap: "24px",
+          }}
+        >
+          <ActiveTasks />
 
-        <CompletedTasks />
-
-        <TaskAnalytics />
+          <CompletedTasks />
+        </div>
       </div>
+      {showTaskModal && (
+        <TaskModal
+          onClose={() =>
+            setShowTaskModal(false)
+          }
+        />
+      )}
     </MainLayout>
   );
 }
