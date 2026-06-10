@@ -40,9 +40,12 @@ function ReminderTimeline() {
             <h2
                 style={{
                     marginBottom: "32px",
+
+                    fontWeight: "400",
+
+                    letterSpacing: "-0.02em",
                 }}
             >
-                Reminder Timeline
             </h2>
 
             <div

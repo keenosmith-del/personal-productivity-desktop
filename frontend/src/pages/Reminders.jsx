@@ -1,12 +1,26 @@
+import { useState } from "react";
+
 import MainLayout from "../layouts/MainLayout";
 
-import ReminderForm from "../components/ReminderForm";
-import UpcomingReminders from "../components/UpcomingReminders";
 import ReminderTimeline from "../components/ReminderTimeline";
-import CompletedReminders from "../components/CompletedReminders";
 import ReminderCategories from "../components/ReminderCategories";
+import RemindersCard from "../components/RemindersCard";
+
+import ReminderModal from "../components/ReminderModal";
+import ReminderDetailsModal from "../components/ReminderDetailsModal";
 
 function Reminders() {
+  const [showReminderModal,
+    setShowReminderModal] =
+    useState(false);
+
+  const [selectedReminder,
+    setSelectedReminder] =
+    useState(null);
+
+  const [editingReminder,
+    setEditingReminder] =
+    useState(null);
   return (
     <MainLayout>
       <div
@@ -16,38 +30,47 @@ function Reminders() {
           gap: "24px",
         }}
       >
-        <div
-          style={{
-            display: "grid",
-
-            gridTemplateColumns:
-              "1fr 1fr",
-
-            gap: "24px",
-          }}
-        >
-          <ReminderForm />
-
-          <UpcomingReminders />
-        </div>
+        <RemindersCard
+          onNewReminder={() =>
+            setShowReminderModal(true)
+          }
+          onViewReminder={
+            setSelectedReminder
+          }
+          onEditReminder={
+            setEditingReminder
+          }
+        />
 
         <ReminderTimeline />
 
-        <div
-          style={{
-            display: "grid",
-
-            gridTemplateColumns:
-              "1fr 1fr",
-
-            gap: "24px",
-          }}
-        >
-          <CompletedReminders />
-
-          <ReminderCategories />
-        </div>
+        <ReminderCategories />
       </div>
+      {showReminderModal && (
+        <ReminderModal
+          onClose={() =>
+            setShowReminderModal(false)
+          }
+        />
+      )}
+      {selectedReminder && (
+        <ReminderDetailsModal
+          reminder={selectedReminder}
+          onClose={() =>
+            setSelectedReminder(null)
+          }
+        />
+      )}
+
+      {editingReminder && (
+        <ReminderModal
+          mode="edit"
+          reminder={editingReminder}
+          onClose={() =>
+            setEditingReminder(null)
+          }
+        />
+      )}
     </MainLayout>
   );
 }

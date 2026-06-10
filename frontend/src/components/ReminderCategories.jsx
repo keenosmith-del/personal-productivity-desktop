@@ -5,18 +5,22 @@ function ReminderCategories() {
     {
       name: "Work",
       count: 5,
+      color: "#1a1d29",
     },
     {
       name: "Study",
       count: 4,
+      color: "#3d3f4a",
     },
     {
       name: "Personal",
       count: 3,
+      color: "#52677d",
     },
     {
       name: "Health",
       count: 2,
+      color: "#7d8491",
     },
   ];
 
@@ -25,6 +29,10 @@ function ReminderCategories() {
       <h2
         style={{
           marginBottom: "24px",
+
+          fontWeight: "400",
+
+          letterSpacing: "-0.02em",
         }}
       >
         Categories
@@ -56,9 +64,36 @@ function ReminderCategories() {
                   "1px solid rgba(255,255,255,0.05)",
               }}
             >
-              <span>
-                {category.name}
-              </span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    width: "10px",
+                    height: "10px",
+
+                    borderRadius: "50%",
+
+                    background:
+                      category.color,
+                  }}
+                />
+
+                <span
+                  style={{
+                    fontWeight: "300",
+
+                    letterSpacing:
+                      "-0.015em",
+                  }}
+                >
+                  {category.name}
+                </span>
+              </div>
 
               <span
                 style={{
