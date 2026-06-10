@@ -130,17 +130,44 @@ function ActiveGoals({
                                 }}
                             />
 
-                            <span
-                                style={{
-                                    fontWeight: "300",
+                            <div>
+                                <div
+                                    style={{
+                                        fontWeight: "300",
+                                        fontSize: "0.9rem",
+                                        letterSpacing: "-0.015em",
+                                    }}
+                                >
+                                    {goal}
+                                </div>
 
-                                    fontSize: "0.9rem",
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "4px",
+                                        marginTop: "6px",
+                                    }}
+                                >
+                                    {[1, 2, 3, 4, 5, 6, 7, 8].map(
+                                        (dot) => (
+                                            <div
+                                                key={dot}
+                                                style={{
+                                                    width: "6px",
+                                                    height: "6px",
 
-                                    letterSpacing: "-0.015em",
-                                }}
-                            >
-                                {goal}
-                            </span>
+                                                    borderRadius: "50%",
+
+                                                    background:
+                                                        dot <= 5
+                                                            ? "#52677d"
+                                                            : "rgba(255,255,255,0.12)",
+                                                }}
+                                            />
+                                        )
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         <div

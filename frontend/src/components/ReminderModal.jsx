@@ -239,15 +239,10 @@ function ReminderModal({
                                         background:
                                             item.color,
 
-                                        transform:
+                                        opacity:
                                             category === item.name
-                                                ? "scale(1.25)"
-                                                : "scale(1)",
-
-                                        boxShadow:
-                                            category === item.name
-                                                ? `0 0 10px ${item.color}`
-                                                : "none",
+                                                ? 1
+                                                : 0.65,
                                     }}
                                 />
 
@@ -260,7 +255,7 @@ function ReminderModal({
                                         color:
                                             category === item.name
                                                 ? "var(--text-primary)"
-                                                : "var(--text-secondary)",
+                                                : "rgba(255,255,255,0.65)",
 
                                         transition:
                                             "all 0.2s ease",

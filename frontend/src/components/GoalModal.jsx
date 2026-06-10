@@ -25,7 +25,7 @@ function GoalModal({
     useState(false);
 
   const [selectedDate, setSelectedDate] =
-    useState("Select target date");
+    useState("Choose a date");
 
   useEffect(() => {
     goalInputRef.current?.focus();
@@ -153,7 +153,7 @@ function GoalModal({
 
         <textarea
           rows={4}
-          placeholder="Description"
+          placeholder="Notes (optional)"
           style={{
             ...inputStyle,
 
@@ -180,16 +180,111 @@ function GoalModal({
             Category
           </p>
 
-          <SegmentedControl
-            options={[
-              "Career",
-              "Study",
-              "Health",
-              "Personal",
-            ]}
-            selected={category}
-            onSelect={setCategory}
-          />
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Career",
+                color: "#262b36",
+              },
+              {
+                name: "Study",
+                color: "#30343f",
+              },
+              {
+                name: "Health",
+                color: "#393d4c",
+              },
+              {
+                name: "Personal",
+                color: "#343a40",
+              },
+            ].map((item) => (
+              <div
+                key={item.name}
+                onClick={() =>
+                  setCategory(item.name)
+                }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+
+                  cursor: "pointer",
+
+                  opacity:
+                    category === item.name
+                      ? 1
+                      : 0.55,
+
+                  transition:
+                    "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (
+                    category !== item.name
+                  ) {
+                    e.currentTarget.style.opacity =
+                      "0.85";
+
+                    e.currentTarget.style.transform =
+                      "translateY(-1px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (
+                    category !== item.name
+                  ) {
+                    e.currentTarget.style.opacity =
+                      "0.55";
+
+                    e.currentTarget.style.transform =
+                      "translateY(0)";
+                  }
+                }}
+              >
+                <div
+                  style={{
+                    width: "8px",
+                    height: "8px",
+
+                    borderRadius: "50%",
+
+                    background:
+                      item.color,
+
+                    opacity:
+                      category === item.name
+                        ? 1
+                        : 0.65,
+                  }}
+                />
+
+                <span
+                  style={{
+                    fontWeight: "300",
+
+                    fontSize: "0.9rem",
+
+                    color:
+                      category === item.name
+                        ? "var(--text-primary)"
+                        : "rgba(255,255,255,0.65)",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                >
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div
@@ -234,7 +329,7 @@ function GoalModal({
             style={{
               color:
                 selectedDate ===
-                "Select target date"
+                  "Choose a date"
                   ? "var(--text-secondary)"
                   : "var(--text-primary)",
             }}

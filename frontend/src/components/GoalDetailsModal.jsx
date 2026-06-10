@@ -157,10 +157,36 @@ function GoalDetailsModal({
                             Progress
                         </p>
 
-                        <p>
-                            40%
-                            Complete
-                        </p>
+                        <div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "6px",
+                                    marginBottom: "10px",
+                                }}
+                            >
+                                {[1, 2, 3, 4, 5, 6, 7, 8].map(
+                                    (dot) => (
+                                        <div
+                                            key={dot}
+                                            style={{
+                                                width: "8px",
+                                                height: "8px",
+
+                                                borderRadius: "50%",
+
+                                                background:
+                                                    dot <= 5
+                                                        ? "#52677d"
+                                                        : "rgba(255,255,255,0.12)",
+                                            }}
+                                        />
+                                    )
+                                )}
+                            </div>
+
+                            <p>63% Complete</p>
+                        </div>
                     </div>
 
                     <div>

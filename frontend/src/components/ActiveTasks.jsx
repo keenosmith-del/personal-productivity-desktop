@@ -181,11 +181,11 @@ function ActiveTasks({
 
                                     background:
                                         task.priority === "High"
-                                            ? "#ff6b6b"
+                                            ? "#592f30"
                                             : task.priority ===
                                                 "Medium"
-                                                ? "#fae588"
-                                                : "#728a6e",
+                                                ? "#774e4a"
+                                                : "#5e4348",
                                 }}
                             />
 

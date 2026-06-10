@@ -326,6 +326,9 @@ function RemindersCard({
                                         e.currentTarget.style.transform =
                                             "scale(1)";
                                     }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                    }}
                                 />
                             </div>
                         </div>

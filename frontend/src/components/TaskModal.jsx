@@ -25,7 +25,7 @@ function TaskModal({
     useState(false);
 
   const [selectedDate, setSelectedDate] =
-    useState("Select due date");
+    useState("Choose a date");
 
   useEffect(() => {
     taskInputRef.current?.focus();
@@ -152,8 +152,8 @@ function TaskModal({
         />
 
         <textarea
-          rows={5}
-          placeholder="Description"
+          rows={4}
+          placeholder="Notes (optional)"
           style={{
             ...inputStyle,
 
@@ -180,15 +180,107 @@ function TaskModal({
             Priority
           </p>
 
-          <SegmentedControl
-            options={[
-              "Low",
-              "Medium",
-              "High",
-            ]}
-            selected={priority}
-            onSelect={setPriority}
-          />
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Low",
+                color: "#5e4348",
+              },
+              {
+                name: "Medium",
+                color: "#774e4a",
+              },
+              {
+                name: "High",
+                color: "#592f30",
+              },
+            ].map((item) => (
+              <div
+                key={item.name}
+                onClick={() =>
+                  setPriority(item.name)
+                }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+
+                  cursor: "pointer",
+
+                  opacity:
+                    priority === item.name
+                      ? 1
+                      : 0.55,
+
+                  transition:
+                    "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (
+                    priority !== item.name
+                  ) {
+                    e.currentTarget.style.opacity =
+                      "0.85";
+
+                    e.currentTarget.style.transform =
+                      "translateY(-1px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (
+                    priority !== item.name
+                  ) {
+                    e.currentTarget.style.opacity =
+                      "0.55";
+
+                    e.currentTarget.style.transform =
+                      "translateY(0)";
+                  }
+                }}
+              >
+                <div
+                  style={{
+                    width: "8px",
+                    height: "8px",
+
+                    borderRadius: "50%",
+
+                    background:
+                      item.color,
+
+                    opacity:
+                      priority === item.name
+                        ? 1
+                        : 0.65,
+                  }}
+                />
+
+                <span
+                  style={{
+                    fontWeight: "300",
+
+                    fontSize: "0.9rem",
+
+                    color:
+                      priority === item.name
+                        ? "var(--text-primary)"
+                        : "rgba(255,255,255,0.65)",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                >
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div
@@ -233,7 +325,7 @@ function TaskModal({
             style={{
               color:
                 selectedDate ===
-                  "Select due date"
+                  "Choose a date"
                   ? "var(--text-secondary)"
                   : "var(--text-primary)",
             }}
