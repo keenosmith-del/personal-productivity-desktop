@@ -1,5 +1,15 @@
 import GlassCard from "./GlassCard";
-import { Trash2 } from "lucide-react";
+import {
+    Trash2,
+    Star,
+} from "lucide-react";
+
+import {
+    useState,
+} from "react";
+
+import NotificationModal
+    from "./NotificationModal";
 
 function NotificationFeed() {
     const notifications = [
@@ -29,125 +39,292 @@ function NotificationFeed() {
         },
     ];
 
+    const [
+        selectedNotification,
+        setSelectedNotification,
+    ] = useState(null);
+
+    const [
+        favourites,
+        setFavourites,
+    ] = useState([]);
+
     return (
-        <GlassCard minHeight="700px">
-            <h2
-                style={{
-                    marginBottom: "24px",
-                }}
-            >
-                Notifications
-            </h2>
+        <>
+            <GlassCard minHeight="700px">
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "24px",
+                    }}
+                >
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                            letterSpacing: "-0.02em",
+                        }}
+                    >
+                        Notifications
+                    </h2>
 
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "16px",
-                }}
-            >
-                {notifications.map(
-                    (notification) => (
-                        <div
-                            key={notification.title}
-                            style={{
-                                padding: "16px",
+                    <button
+                        style={{
+                            background: "transparent",
 
-                                background:
-                                    "rgba(255,255,255,0.04)",
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
 
-                                border:
-                                    "1px solid var(--glass-border)",
+                            borderRadius: "999px",
 
-                                borderRadius: "12px",
+                            padding: "8px 14px",
 
-                                cursor: "pointer",
+                            color:
+                                "var(--text-secondary)",
 
-                                transition:
-                                    "all 0.25s ease",
+                            fontSize: "0.85rem",
 
-                                transform:
-                                    "translateY(0)",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(0,0,0,0.22)";
+                            fontWeight: "400",
 
-                                e.currentTarget.style.transform =
-                                    "translateY(-2px)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.04)";
+                            cursor: "pointer",
 
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-                            }}
-                        >
-                            <h4
+                            transition:
+                                "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
+                    >
+                        Clear All
+                    </button>
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                    }}
+                >
+                    {notifications.map(
+                        (notification) => (
+                            <div
+                                key={notification.title}
+                                onClick={() =>
+                                    setSelectedNotification(
+                                        notification
+                                    )
+                                }
                                 style={{
-                                    marginBottom: "6px",
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
+                                    padding: "16px",
+
+                                    background:
+                                        "rgba(255,255,255,0.04)",
+
+                                    border:
+                                        "1px solid var(--glass-border)",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    transition:
+                                        "all 0.25s ease",
+
+                                    transform:
+                                        "translateY(0)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(0,0,0,0.22)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-2px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                {notification.title}
-
-                                <Trash2
-                                    size={16}
-                                    strokeWidth={1.5}
+                                <h4
                                     style={{
-                                        cursor: "pointer",
-                                        transition:
-                                            "all 0.2s ease",
+                                        marginBottom: "6px",
+
+                                        fontWeight: "300",
+
+                                        letterSpacing: "-0.015em",
+
+                                        display: "flex",
+
+                                        justifyContent:
+                                            "space-between",
+
+                                        alignItems: "center",
                                     }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color =
-                                            "#ff6b6b";
+                                >
+                                    {notification.title}
 
-                                        e.currentTarget.style.transform =
-                                            "scale(1.1)";
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "10px",
+                                        }}
+                                    >
+                                        <Star
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            fill={
+                                                favourites.includes(
+                                                    notification.title
+                                                )
+                                                    ? "currentColor"
+                                                    : "none"
+                                            }
+                                            style={{
+                                                cursor: "pointer",
+
+                                                color:
+                                                    favourites.includes(
+                                                        notification.title
+                                                    )
+                                                        ? "#F5F5F5"
+                                                        : "",
+
+                                                transition:
+                                                    "all 0.2s ease",
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                setFavourites((prev) =>
+                                                    prev.includes(
+                                                        notification.title
+                                                    )
+                                                        ? prev.filter(
+                                                            (item) =>
+                                                                item !==
+                                                                notification.title
+                                                        )
+                                                        : [
+                                                            ...prev,
+                                                            notification.title,
+                                                        ]
+                                                );
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform =
+                                                    "scale(1.1)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform =
+                                                    "scale(1)";
+                                            }}
+                                        />
+
+                                        <Trash2
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            style={{
+                                                cursor: "pointer",
+
+                                                transition:
+                                                    "all 0.2s ease",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.color =
+                                                    "#ff6b6b";
+
+                                                e.currentTarget.style.transform =
+                                                    "scale(1.1)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.color =
+                                                    "";
+
+                                                e.currentTarget.style.transform =
+                                                    "scale(1)";
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                        />
+                                    </div>
+                                </h4>
+
+                                <p
+                                    style={{
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        display:
+                                            "-webkit-box",
+
+                                        WebkitLineClamp: 2,
+
+                                        WebkitBoxOrient:
+                                            "vertical",
+
+                                        overflow: "hidden",
+
+                                        marginBottom:
+                                            "8px",
+
+                                        fontSize: "0.9rem",
                                     }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color =
-                                            "";
+                                >
+                                    {
+                                        notification.description
+                                    }
+                                </p>
 
-                                        e.currentTarget.style.transform =
-                                            "scale(1)";
+                                <small
+                                    style={{
+                                        color:
+                                            "rgba(255,255,255,0.55)",
+
+                                        fontWeight: "300",
+
+                                        letterSpacing: "-0.01em",
                                     }}
-                                />
-                            </h4>
-
-                            <p
-                                style={{
-                                    color:
-                                        "var(--text-secondary)",
-
-                                    marginBottom:
-                                        "8px",
-                                }}
-                            >
-                                {
-                                    notification.description
-                                }
-                            </p>
-
-                            <small
-                                style={{
-                                    color:
-                                        "var(--text-secondary)",
-                                }}
-                            >
-                                {
-                                    notification.time
-                                }
-                            </small>
-                        </div>
-                    )
-                )}
-            </div>
-        </GlassCard>
+                                >
+                                    {
+                                        notification.time
+                                    }
+                                </small>
+                            </div>
+                        )
+                    )}
+                </div>
+            </GlassCard>
+            {selectedNotification && (
+                <NotificationModal
+                    notification={
+                        selectedNotification
+                    }
+                    onClose={() =>
+                        setSelectedNotification(
+                            null
+                        )
+                    }
+                />
+            )}
+        </>
     );
 }
 
