@@ -5,7 +5,11 @@ import {
     Trash2,
 } from "lucide-react";
 
-function RecentNotes() {
+function RecentNotes({
+    onNewNote,
+    onEditNote,
+    onPinNote,
+}) {
     const notes = [
         {
             title: "Meeting Notes",
@@ -20,14 +24,59 @@ function RecentNotes() {
     ];
 
     return (
-        <GlassCard>
-            <h2
+        <GlassCard minHeight="520px">
+            <div
                 style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     marginBottom: "24px",
                 }}
             >
-                Recent Notes
-            </h2>
+                <h2
+                    style={{
+                        fontWeight: "400",
+                        letterSpacing: "-0.02em",
+                    }}
+                >
+                    Notes
+                </h2>
+
+                <button
+                    onClick={onNewNote}
+                    style={{
+                        background: "transparent",
+                        border: "none",
+
+                        color:
+                            "var(--text-secondary)",
+
+                        display: "flex",
+                        alignItems: "center",
+
+                        gap: "6px",
+
+                        cursor: "pointer",
+
+                        fontSize: "0.9rem",
+
+                        fontWeight: "400",
+
+                        transition:
+                            "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
+                    }}
+                >
+                    + New Note
+                </button>
+            </div>
 
             <div
                 style={{
@@ -38,6 +87,9 @@ function RecentNotes() {
             >
                 {notes.map((note) => (
                     <div
+                        onClick={() =>
+                            onEditNote(note)
+                        }
                         key={note.title}
                         style={{
                             padding: "14px",
@@ -72,7 +124,7 @@ function RecentNotes() {
                     >
                         <h4
                             style={{
-                                fontWeight: "500",
+                                fontWeight: "300",
                                 marginBottom: "8px",
                             }}
                         >
@@ -86,7 +138,7 @@ function RecentNotes() {
 
                                 display: "-webkit-box",
 
-                                WebkitLineClamp: 2,
+                                WebkitLineClamp: 3,
 
                                 WebkitBoxOrient:
                                     "vertical",
@@ -130,6 +182,11 @@ function RecentNotes() {
                                     e.currentTarget.style.transform =
                                         "scale(1)";
                                 }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onPinNote();
+                                }}
                             />
 
                             <Pencil
@@ -153,6 +210,11 @@ function RecentNotes() {
 
                                     e.currentTarget.style.transform =
                                         "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    onEditNote(note);
                                 }}
                             />
 

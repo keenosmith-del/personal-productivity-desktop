@@ -26,24 +26,24 @@ function Sidebar({ collapsed, setCollapsed }) {
       icon: CheckSquare,
     },
     {
-      label: "Notes",
-      path: "/notes",
-      icon: NotebookPen,
-    },
-    {
       label: "Goals",
       path: "/goals",
       icon: Target,
     },
     {
-      label: "Calendar",
-      path: "/calendar",
-      icon: Calendar,
-    },
-    {
       label: "Reminders",
       path: "/reminders",
       icon: AlarmClock,
+    },
+    {
+      label: "Notes",
+      path: "/notes",
+      icon: NotebookPen,
+    },
+    {
+      label: "Calendar",
+      path: "/calendar",
+      icon: Calendar,
     },
     {
       label: "Notifications",

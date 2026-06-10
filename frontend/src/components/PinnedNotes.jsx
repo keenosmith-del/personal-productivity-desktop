@@ -1,19 +1,20 @@
 import GlassCard from "./GlassCard";
-import {
-    Pin,
-    Pencil,
-    Trash2,
-} from "lucide-react";
+import { Pin } from "lucide-react";
 
-function PinnedNotes() {
+function PinnedNotes({
+    onEditNote,
+    onUnpinNote,
+}) {
     return (
-        <GlassCard>
+        <GlassCard minHeight="520px">
             <h2
                 style={{
                     marginBottom: "24px",
+                    fontWeight: "400",
+                    letterSpacing: "-0.02em",
                 }}
             >
-                Pinned Notes
+                Pinned
             </h2>
 
             <div
@@ -33,6 +34,12 @@ function PinnedNotes() {
 
                     cursor: "pointer",
                 }}
+                onClick={() =>
+                    onEditNote({
+                        title:
+                            "Portfolio Ideas",
+                    })
+                }
                 onMouseEnter={(e) => {
                     e.currentTarget.style.background =
                         "rgba(14,17,22,0.75)";
@@ -48,7 +55,14 @@ function PinnedNotes() {
                         "translateY(0)";
                 }}
             >
-                <h4>Portfolio Ideas</h4>
+                <h4
+                    style={{
+                        fontWeight: "300",
+                        letterSpacing: "-0.015em",
+                    }}
+                >
+                    Portfolio Ideas
+                </h4>
 
                 <p
                     style={{
@@ -72,27 +86,28 @@ function PinnedNotes() {
                         marginTop: "12px",
                     }}
                 >
-                    <Trash2
+                    <Pin
+                        fill="currentColor"
                         size={16}
                         strokeWidth={1.5}
                         style={{
                             cursor: "pointer",
+
                             transition:
                                 "all 0.2s ease",
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "#ff6b6b";
+                        onClick={(e) => {
+                            e.stopPropagation();
 
-                            e.currentTarget.style.transform =
-                                "scale(1.1)";
+                            onUnpinNote();
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity =
+                                "0.7";
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "";
-
-                            e.currentTarget.style.transform =
-                                "scale(1)";
+                            e.currentTarget.style.opacity =
+                                "1";
                         }}
                     />
                 </div>
