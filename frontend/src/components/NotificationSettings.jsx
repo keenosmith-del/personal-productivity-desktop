@@ -28,79 +28,123 @@ function NotificationSettings() {
       <div
         style={{
           display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
+          flexDirection: "column",
+          gap: "14px",
         }}
       >
-        <p
+        <div
           style={{
-            fontWeight: "300",
+            display: "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            cursor: "default",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
           }}
         >
-          Daily Summary
-        </p>
+          <p
+            style={{
+              fontWeight: "300",
+            }}
+          >
+            Daily Summary
+          </p>
 
-        <Toggle
-          checked={dailySummary}
-          onChange={() =>
-            setDailySummary(
-              !dailySummary
-            )
-          }
-        />
-      </div>
+          <Toggle
+            checked={dailySummary}
+            onChange={() =>
+              setDailySummary(
+                !dailySummary
+              )
+            }
+          />
+        </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-        }}
-      >
-        <p
+        <div
           style={{
-            fontWeight: "300",
+            display: "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            cursor: "default",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
           }}
         >
-          Reminder Notifications
-        </p>
+          <p
+            style={{
+              fontWeight: "300",
+            }}
+          >
+            Reminder Notifications
+          </p>
 
-        <Toggle
-          checked={reminders}
-          onChange={() =>
-            setReminders(
-              !reminders
-            )
-          }
-        />
-      </div>
+          <Toggle
+            checked={reminders}
+            onChange={() =>
+              setReminders(
+                !reminders
+              )
+            }
+          />
+        </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-        }}
-      >
-        <p
+        <div
           style={{
-            fontWeight: "300",
+            display: "flex",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
+            cursor: "default",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
           }}
         >
-          Goal Progress Updates
-        </p>
+          <p
+            style={{
+              fontWeight: "300",
+            }}
+          >
+            Goal Progress Updates
+          </p>
 
-        <Toggle
-          checked={goalUpdates}
-          onChange={() =>
-            setGoalUpdates(
-              !goalUpdates
-            )
-          }
-        />
+          <Toggle
+            checked={goalUpdates}
+            onChange={() =>
+              setGoalUpdates(
+                !goalUpdates
+              )
+            }
+          />
+        </div>
       </div>
 
     </GlassCard>

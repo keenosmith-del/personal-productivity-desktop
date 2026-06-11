@@ -17,7 +17,7 @@ function AccountSettings() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "18px",
+          gap: "2px",
         }}
       >
         <div
@@ -27,7 +27,23 @@ function AccountSettings() {
               "space-between",
             alignItems:
               "center",
+
             cursor: "pointer",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "rgba(255,255,255,0.04)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "transparent";
           }}
         >
           <p
@@ -51,7 +67,23 @@ function AccountSettings() {
               "space-between",
             alignItems:
               "center",
+
             cursor: "pointer",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "rgba(255,107,107,0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "transparent";
           }}
         >
           <p

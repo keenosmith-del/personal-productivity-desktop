@@ -2,11 +2,15 @@ import GlassCard from "./GlassCard";
 import Toggle from "./Toggle";
 import { ChevronRight } from "lucide-react";
 
+import { useState } from "react";
+
 function ProductivityPreferences({
   onWorkingHoursClick,
   onReminderClick,
 }) {
   // COMPONENT STATES
+    const [focusSessions, setFocusSessions] =
+      useState(true);
 
   // FUNCTIONS
   return (
@@ -24,16 +28,27 @@ function ProductivityPreferences({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "18px",
+          gap: "12px",
         }}
       >
         <div
           style={{
             display: "flex",
+
             justifyContent:
               "space-between",
+
             alignItems:
               "center",
+
+            cursor: "default",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
           }}
         >
           <p
@@ -45,8 +60,8 @@ function ProductivityPreferences({
           </p>
 
           <Toggle
-            checked={true}
-            onChange={() => { }}
+            checked={focusSessions}
+            onChange={() => setFocusSessions(!focusSessions)}
           />
         </div>
 
@@ -62,6 +77,21 @@ function ProductivityPreferences({
               "center",
 
             cursor: "pointer",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "rgba(255,255,255,0.04)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "transparent";
           }}
         >
           <p
@@ -109,6 +139,21 @@ function ProductivityPreferences({
               "center",
 
             cursor: "pointer",
+
+            padding: "8px 12px",
+
+            borderRadius: "12px",
+
+            transition:
+              "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "rgba(255,255,255,0.04)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "transparent";
           }}
         >
           <p
