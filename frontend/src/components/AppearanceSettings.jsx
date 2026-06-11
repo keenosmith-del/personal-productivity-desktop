@@ -10,11 +10,27 @@ function AppearanceSettings() {
     <GlassCard minHeight="180px">
       <h2
         style={{
-          marginBottom: "24px",
+          marginBottom: "6px",
+          fontWeight: "400",
         }}
       >
         Appearance
       </h2>
+
+      <p
+        style={{
+          color:
+            "var(--text-secondary)",
+
+          fontWeight: "300",
+
+          fontSize: "0.9rem",
+
+          marginBottom: "24px",
+        }}
+      >
+        Choose how the application appears.
+      </p>
 
       <SegmentedControl
         options={[

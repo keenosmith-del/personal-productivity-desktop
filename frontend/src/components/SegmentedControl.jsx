@@ -9,12 +9,12 @@ function SegmentedControl({
         display: "flex",
 
         background:
-          "rgba(255,255,255,0.04)",
+          "rgba(255,255,255,0.02)",
 
         border:
           "1px solid var(--glass-border)",
 
-        borderRadius: "14px",
+        borderRadius: "16px",
 
         padding: "4px",
 
@@ -52,16 +52,16 @@ function SegmentedControl({
               "var(--text-primary)",
 
             padding:
-              "10px 18px",
+              "10px 16px",
 
             borderRadius:
-              "10px",
+              "12px",
 
             cursor: "pointer",
 
             fontSize: "0.9rem",
 
-            fontWeight: "500",
+            fontWeight: "300",
 
             transition:
               "all 0.2s ease",

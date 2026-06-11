@@ -87,8 +87,8 @@ function ReminderTimeline() {
 
                                 background:
                                     selectedDay === day
-                                        ? "#F5F5F5"
-                                        : "rgba(255,255,255,0.25)",
+                                        ? "#52677d"
+                                        : "rgba(255, 255, 255, 0.37)",
 
                                 transition:
                                     "all 0.2s ease",
