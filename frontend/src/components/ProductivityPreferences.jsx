@@ -2,7 +2,13 @@ import GlassCard from "./GlassCard";
 import Toggle from "./Toggle";
 import { ChevronRight } from "lucide-react";
 
-function ProductivityPreferences() {
+function ProductivityPreferences({
+  onWorkingHoursClick,
+  onReminderClick,
+}) {
+  // COMPONENT STATES
+
+  // FUNCTIONS
   return (
     <GlassCard minHeight="220px">
       <h2
@@ -45,12 +51,17 @@ function ProductivityPreferences() {
         </div>
 
         <div
+          onClick={onWorkingHoursClick}
           style={{
             display: "flex",
+
             justifyContent:
               "space-between",
+
             alignItems:
               "center",
+
+            cursor: "pointer",
           }}
         >
           <p
@@ -87,12 +98,17 @@ function ProductivityPreferences() {
         </div>
 
         <div
+          onClick={onReminderClick}
           style={{
             display: "flex",
+
             justifyContent:
               "space-between",
+
             alignItems:
               "center",
+
+            cursor: "pointer",
           }}
         >
           <p
