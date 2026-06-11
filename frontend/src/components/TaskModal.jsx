@@ -190,15 +190,15 @@ function TaskModal({
             {[
               {
                 name: "Low",
-                color: "#5e4348",
+                color: "#7d8491",
               },
               {
                 name: "Medium",
-                color: "#774e4a",
+                color: "#52677d",
               },
               {
                 name: "High",
-                color: "#592f30",
+                color: "#3d3f4a",
               },
             ].map((item) => (
               <div

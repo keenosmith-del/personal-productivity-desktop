@@ -9,6 +9,14 @@ body,
 #root {
   width: 100%;
   min-height: 100vh;
+
+  background:
+    linear-gradient(135deg,
+      var(--shadow),
+      var(--matte-black),
+      var(--nocturne));
+
+  overscroll-behavior: none;
 }
 
 body {

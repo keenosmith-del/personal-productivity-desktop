@@ -186,11 +186,10 @@ function Sidebar({ collapsed, setCollapsed }) {
           borderRadius:
             "var(--radius-large)",
 
-          backdropFilter:
-            "blur(20px)",
+          // AGAIN that fucking fuzzy frosty line
+          //backdropFilter: "blur(20px)",
 
-          WebkitBackdropFilter:
-            "blur(20px)",
+          //WebkitBackdropFilter: "blur(20px)",
 
           display: "flex",
           flexDirection: "column",
