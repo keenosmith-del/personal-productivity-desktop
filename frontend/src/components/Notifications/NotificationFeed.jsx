@@ -13,24 +13,25 @@ function NotificationFeed() {
     const notifications = [
         {
             title: "Task Completed",
-            description:
-                "Finish Productivity Desktop was completed.",
+            type: "task",
+            description: "Finish Productivity Desktop was completed.",
             time: "5 min ago",
         },
         {
             title: "Goal Progress",
-            description:
-                "Portfolio Website is now 75% complete.",
+            type: "goal",
+            description: "Portfolio Website is now 75% complete.",
             time: "1 hour ago",
         },
         {
             title: "Reminder Due",
-            description:
-                "Submit Course Assignment tomorrow.",
+            type: "reminder",
+            description: "Submit Course Assignment tomorrow.",
             time: "3 hours ago",
         },
         {
             title: "Daily Summary",
+            type: null,
             description:
                 "You completed 3 tasks today.",
             time: "Yesterday",
@@ -71,15 +72,13 @@ function NotificationFeed() {
                         style={{
                             background: "transparent",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
+                            border: "1px solid rgba(255,255,255,0.08)",
 
                             borderRadius: "999px",
 
                             padding: "8px 14px",
 
-                            color:
-                                "var(--text-secondary)",
+                            color: "var(--text-secondary)",
 
                             fontSize: "0.85rem",
 
@@ -87,8 +86,7 @@ function NotificationFeed() {
 
                             cursor: "pointer",
 
-                            transition:
-                                "all 0.2s ease",
+                            transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
@@ -128,35 +126,21 @@ function NotificationFeed() {
                                 style={{
                                     padding: "16px",
 
-                                    background:
-                                        "rgba(255,255,255,0.04)",
-
-                                    border:
-                                        "1px solid var(--glass-border)",
-
                                     borderRadius: "12px",
 
                                     cursor: "pointer",
 
-                                    transition:
-                                        "all 0.25s ease",
+                                    transition: "all 0.2s ease",
 
-                                    transform:
-                                        "translateY(0)",
+                                    transform: "translateY(0)",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.background =
-                                        "rgba(0,0,0,0.22)";
-
-                                    e.currentTarget.style.transform =
-                                        "translateY(-2px)";
+                                        "rgba(255,255,255,0.04)";
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
+                                        "transparent";
                                 }}
                             >
                                 <h4
@@ -264,6 +248,48 @@ function NotificationFeed() {
                                         />
                                     </div>
                                 </h4>
+
+                                {notification.type && (
+                                    <div
+                                        style={{
+                                            marginBottom: "10px",
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                padding: "4px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.7rem",
+
+                                                background:
+                                                    notification.type === "goal"
+                                                        ? "rgba(197,156,112,0.20)"
+                                                        : notification.type === "task"
+                                                            ? "rgba(114,113,92,0.20)"
+                                                            : notification.type === "reminder"
+                                                                ? "rgba(131,84,92,0.20)"
+                                                                : "rgba(133,76,73,0.20)",
+
+                                                border:
+                                                    notification.type === "goal"
+                                                        ? "1px solid rgba(197,156,112,0.40)"
+                                                        : notification.type === "task"
+                                                            ? "1px solid rgba(114,113,92,0.40)"
+                                                            : notification.type === "reminder"
+                                                                ? "1px solid rgba(131,84,92,0.40)"
+                                                                : "1px solid rgba(133,76,73,0.40)",
+
+                                                color:
+                                                    "var(--text-secondary)",
+                                            }}
+                                        >
+                                            {notification.type.charAt(0).toUpperCase() +
+                                                notification.type.slice(1)}
+                                        </span>
+                                    </div>
+                                )}
 
                                 <p
                                     style={{

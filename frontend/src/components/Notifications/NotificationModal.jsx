@@ -111,6 +111,48 @@ function NotificationModal({
                         }
                     </h3>
 
+                    {notification.type && (
+                        <div
+                            style={{
+                                marginBottom: "14px",
+                            }}
+                        >
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.7rem",
+
+                                    background:
+                                        notification.type === "goal"
+                                            ? "rgba(197,156,112,0.20)"
+                                            : notification.type === "task"
+                                                ? "rgba(114,113,92,0.20)"
+                                                : notification.type === "reminder"
+                                                    ? "rgba(131,84,92,0.20)"
+                                                    : "rgba(133,76,73,0.20)",
+
+                                    border:
+                                        notification.type === "goal"
+                                            ? "1px solid rgba(197,156,112,0.40)"
+                                            : notification.type === "task"
+                                                ? "1px solid rgba(114,113,92,0.40)"
+                                                : notification.type === "reminder"
+                                                    ? "1px solid rgba(131,84,92,0.40)"
+                                                    : "1px solid rgba(133,76,73,0.40)",
+
+                                    color:
+                                        "var(--text-secondary)",
+                                }}
+                            >
+                                {notification.type.charAt(0).toUpperCase() +
+                                    notification.type.slice(1)}
+                            </span>
+                        </div>
+                    )}
+
                     <p
                         style={{
                             color:
