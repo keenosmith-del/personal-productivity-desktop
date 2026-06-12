@@ -12,11 +12,9 @@ function DashboardModal({
                 position: "fixed",
                 inset: 0,
 
-                background:
-                    "rgba(0,0,0,0.55)",
+                background: "rgba(0,0,0,0.55)",
 
-                backdropFilter:
-                    "blur(12px)",
+                backdropFilter: "blur(12px)",
 
                 display: "flex",
                 justifyContent: "center",
@@ -32,19 +30,15 @@ function DashboardModal({
                 style={{
                     width: "500px",
 
-                    background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
 
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
+                    border: "1px solid rgba(255,255,255,0.10)",
 
                     borderRadius: "32px",
 
-                    backdropFilter:
-                        "blur(30px)",
+                    backdropFilter: "blur(30px)",
 
-                    boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.35)",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
 
                     padding: "36px",
                 }}
@@ -96,12 +90,6 @@ function DashboardModal({
                             key={item}
                             style={{
                                 padding: "14px",
-
-                                background:
-                                    "rgba(255,255,255,0.04)",
-
-                                border:
-                                    "1px solid var(--glass-border)",
 
                                 borderRadius: "12px",
 

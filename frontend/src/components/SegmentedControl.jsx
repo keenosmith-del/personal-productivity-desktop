@@ -8,15 +8,23 @@ function SegmentedControl({
       style={{
         display: "flex",
 
-        background:
-          "rgba(255,255,255,0.02)",
+        background: "transparent",
 
-        border:
-          "1px solid var(--glass-border)",
+        border: "1px solid rgba(255,255,255,0.08)",
 
-        borderRadius: "16px",
+        borderRadius: "999px",
 
-        padding: "4px",
+        padding: "8px 12px",
+
+        color: "var(--text-secondary)",
+
+        fontSize: "0.8rem",
+
+        fontWeight: "300",
+
+        cursor: "pointer",
+
+        transition: "all 0.2s ease",
 
         width: "fit-content",
       }}
@@ -51,20 +59,17 @@ function SegmentedControl({
             color:
               "var(--text-primary)",
 
-            padding:
-              "10px 16px",
+            borderRadius: "999px",
 
-            borderRadius:
-              "12px",
+            padding: "8px 14px",
 
             cursor: "pointer",
 
-            fontSize: "0.9rem",
+            fontSize: "0.85rem",
 
             fontWeight: "300",
 
-            transition:
-              "all 0.2s ease",
+            transition: "all 0.2s ease",
           }}
         >
           {option}

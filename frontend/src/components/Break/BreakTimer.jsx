@@ -482,7 +482,7 @@ function BreakTimer() {
                             e.currentTarget.style.color = "var(--text-primary)";
 
                             e.currentTarget.style.background =
-                                "#52677d";
+                                "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.color =
