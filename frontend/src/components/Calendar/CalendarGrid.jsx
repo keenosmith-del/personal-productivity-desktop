@@ -1,4 +1,9 @@
-function CalendarGrid() {
+function CalendarGrid({
+  selectedDay,
+  setSelectedDay,
+}) {
+  const currentDay = 8;
+
   const weekDays = [
     "Mon",
     "Tue",
@@ -172,15 +177,18 @@ function CalendarGrid() {
 
           return (
             <div
+              onClick={() =>
+                setSelectedDay(day)
+              }
               key={day}
               onMouseEnter={(e) => {
-                if (day !== 8) {
+                if (day !== selectedDay) {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (day !== 8) {
+                if (day !== selectedDay) {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.02)";
                 }
@@ -196,7 +204,7 @@ function CalendarGrid() {
                 padding: "12px",
 
                 background:
-                  day === 8
+                  day === selectedDay
                     ? "rgba(255,255,255,0.08)"
                     : "rgba(255,255,255,0.02)",
 
@@ -218,12 +226,12 @@ function CalendarGrid() {
                   justifyContent: "center",
 
                   background:
-                    day === 8
+                    day === currentDay
                       ? "#52677d"
                       : "transparent",
 
                   color:
-                    day === 8
+                    day === currentDay
                       ? "#ffffff"
                       : "var(--text-primary)",
 
