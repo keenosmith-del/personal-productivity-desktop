@@ -1,8 +1,6 @@
 import { useState } from "react";
 import GlassCard from "../GlassCard";
 import {
-    Plus,
-    Eye,
     Pencil,
     Trash2,
 } from "lucide-react";
@@ -75,8 +73,7 @@ function RemindersCard({
 
                         fontWeight: "400",
 
-                        transition:
-                            "all 0.2s ease",
+                        transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.color =
@@ -87,11 +84,7 @@ function RemindersCard({
                             "var(--text-secondary)";
                     }}
                 >
-                    <Plus
-                        size={16}
-                        strokeWidth={1.5}
-                    />
-                    New Reminder
+                    + New Reminder
                 </button>
             </div>
 
@@ -103,10 +96,7 @@ function RemindersCard({
                 }}
             >
                 {reminders.map((reminder) => {
-                    const isCompleted =
-                        completedReminders.includes(
-                            reminder.title
-                        );
+                    const isCompleted = completedReminders.includes(reminder.title);
 
                     return (
                         <div
@@ -119,34 +109,21 @@ function RemindersCard({
                                 alignItems: "center",
                                 justifyContent: "space-between",
 
-                                padding: "14px",
-
-                                background:
-                                    "rgba(255,255,255,0.04)",
-
-                                border:
-                                    "1px solid var(--glass-border)",
+                                padding: "8px 12px",
 
                                 borderRadius: "12px",
 
-                                transition:
-                                    "all 0.25s ease",
+                                transition: "all 0.25s ease",
 
                                 cursor: "pointer",
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.background =
-                                    "rgba(14,17,22,0.75)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(-2px)";
+                                    "rgba(255,255,255,0.04)";
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.04)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
+                                    "transparent";
                             }}
                         >
                             <div
@@ -177,6 +154,7 @@ function RemindersCard({
                                         );
                                     }}
                                     style={{
+                                        cursor: "pointer",
                                         width: "18px",
                                         height: "18px",
 
@@ -190,28 +168,34 @@ function RemindersCard({
                                                 ? "rgba(245,245,245,0.7)"
                                                 : "transparent",
 
-                                        cursor: "pointer",
-
                                         flexShrink: 0,
+
+                                        transition: "all 0.2s ease",
+
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+
+                                        color: "#1a1d29",
                                     }}
-                                />
+                                >
+                                    {isCompleted && "✓"}
+                                </div>
 
                                 <div>
                                     <div
                                         style={{
                                             fontWeight: "300",
 
-                                            textDecoration:
-                                                isCompleted
-                                                    ? "line-through"
-                                                    : "none",
+                                            fontSize: "0.9rem",
 
                                             opacity:
                                                 isCompleted
                                                     ? 0.55
                                                     : 1,
-
-                                            fontSize: "0.9rem",
 
                                             letterSpacing:
                                                 "-0.015em",
@@ -249,33 +233,6 @@ function RemindersCard({
 
                                         background:
                                             reminder.color,
-                                    }}
-                                />
-
-                                <Eye
-                                    size={16}
-                                    strokeWidth={1.5}
-                                    style={{
-                                        cursor: "pointer",
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-
-                                        onViewReminder(reminder);
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color =
-                                            "#F5F5F5";
-
-                                        e.currentTarget.style.transform =
-                                            "scale(1.1)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = "";
-
-                                        e.currentTarget.style.transform =
-                                            "scale(1)";
                                     }}
                                 />
 

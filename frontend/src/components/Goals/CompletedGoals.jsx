@@ -10,15 +10,57 @@ function CompletedGoals() {
 
   return (
     <GlassCard>
-      <h2
+      <div
         style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "24px",
-          fontWeight: "400",
-          letterSpacing: "-0.02em",
         }}
       >
-        Completed Goals
-      </h2>
+        <h2
+          style={{
+            fontWeight: "400",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Completed Goals
+        </h2>
+
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+
+            color:
+              "var(--text-secondary)",
+
+            display: "flex",
+            alignItems: "center",
+
+            gap: "6px",
+
+            cursor: "pointer",
+
+            fontSize: "0.9rem",
+
+            fontWeight: "400",
+
+            transition:
+              "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color =
+              "var(--text-primary)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color =
+              "var(--text-secondary)";
+          }}
+        >
+          Clear all
+        </button>
+      </div>
 
       <div
         style={{
@@ -33,16 +75,9 @@ function CompletedGoals() {
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent:
-                "space-between",
+              justifyContent: "space-between",
 
-              padding: "14px",
-
-              background:
-                "rgba(255,255,255,0.04)",
-
-              border:
-                "1px solid var(--glass-border)",
+              padding: "8px 12px",
 
               borderRadius: "12px",
 
@@ -73,18 +108,29 @@ function CompletedGoals() {
 
                   border:
                     "1.5px solid rgba(245,245,245,0.45)",
+
+                  flexShrink: 0,
+
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+
+                  fontSize: "12px",
+                  fontWeight: "600",
+
+                  color: "#1a1d29",
                 }}
-              />
+              >
+                ✓
+              </div>
 
               <span
                 style={{
-                  color:
-                    "var(--text-secondary)",
+                  color: "var(--text-secondary)",
 
                   fontWeight: "300",
 
-                  color:
-                    "rgba(255,255,255,0.7)",
+                  color: "rgba(255,255,255,0.7)",
 
                   fontSize: "0.9rem",
 

@@ -2,7 +2,6 @@ import GlassCard from "../GlassCard";
 import TaskDetailsModal from "./TaskDetailsModal";
 
 import {
-    Eye,
     Pencil,
     Trash2,
 } from "lucide-react";
@@ -36,13 +35,10 @@ function ActiveTasks({
         <GlassCard
             style={{
                 background: "var(--glass-bg)",
-                border:
-                    "1px solid var(--glass-border)",
-                borderRadius:
-                    "var(--radius-large)",
+                border: "1px solid var(--glass-border)",
+                borderRadius: "var(--radius-large)",
                 backdropFilter: "blur(20px)",
-                WebkitBackdropFilter:
-                    "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
                 padding: "24px",
                 minHeight: "320px",
             }}
@@ -70,8 +66,7 @@ function ActiveTasks({
                         background: "transparent",
                         border: "none",
 
-                        color:
-                            "var(--text-secondary)",
+                        color: "var(--text-secondary)",
 
                         display: "flex",
                         alignItems: "center",
@@ -84,8 +79,7 @@ function ActiveTasks({
 
                         fontWeight: "400",
 
-                        transition:
-                            "all 0.2s ease",
+                        transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.color =
@@ -113,38 +107,23 @@ function ActiveTasks({
                         style={{
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: "space-between",
 
-                            justifyContent:
-                                "space-between",
-
-                            padding: "14px",
-
-                            background:
-                                "rgba(255,255,255,0.04)",
-
-                            border:
-                                "1px solid var(--glass-border)",
+                            padding: "8px 12px",
 
                             borderRadius: "12px",
 
-                            transition:
-                                "all 0.25s ease",
+                            transition: "all 0.2s ease",
 
                             cursor: "pointer",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background =
-                                "rgba(14,17,22,0.75)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-2px)";
+                                "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
+                                "transparent";
                         }}
                         onClick={() =>
                             onViewTask(task)
@@ -181,18 +160,28 @@ function ActiveTasks({
                                         "1.5px solid rgba(245,245,245,0.7)",
 
                                     background:
-                                        checkedTasks[
-                                            task.title
-                                        ]
+                                        checkedTasks[task.title]
                                             ? "rgba(245,245,245,0.75)"
                                             : "transparent",
 
-                                    transition:
-                                        "all 0.2s ease",
+                                    transition: "all 0.2s ease",
 
                                     flexShrink: 0,
+
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                    fontSize: "12px",
+                                    fontWeight: "600",
+
+                                    color: "#1a1d29",
                                 }}
-                            />
+                            >
+                                {checkedTasks[
+                                    task.title
+                                ] && "✓"}
+                            </div>
 
                             <span
                                 style={{
@@ -228,35 +217,6 @@ function ActiveTasks({
                                                 "Medium"
                                                 ? "#52677d"
                                                 : "#7d8491",
-                                }}
-                            />
-
-                            <Eye
-                                size={16}
-                                strokeWidth={1.5}
-                                style={{
-                                    cursor: "pointer",
-                                    transition:
-                                        "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-
-                                    e.currentTarget.style.transform =
-                                        "scale(1.1)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "";
-
-                                    e.currentTarget.style.transform =
-                                        "scale(1)";
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    onViewTask(task);
                                 }}
                             />
 

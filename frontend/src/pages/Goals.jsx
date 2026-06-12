@@ -27,11 +27,7 @@ function Goals() {
         }}
       >
 
-        <GoalOverview
-          onNewGoal={() =>
-            setShowGoalModal(true)
-          }
-        />
+        <GoalOverview />
 
         <div
           style={{
@@ -45,6 +41,9 @@ function Goals() {
           <ActiveGoals
             onViewGoal={setSelectedGoal}
             onEditGoal={setEditingGoal}
+            onNewGoal={() =>
+              setShowGoalModal(true)
+            }
           />
 
           <CompletedGoals />

@@ -4,7 +4,6 @@ import GlassCard from "../GlassCard";
 import GoalModal from "./GoalModal";
 
 import {
-    Eye,
     Pencil,
     Trash2,
 } from "lucide-react";
@@ -12,6 +11,7 @@ import {
 function ActiveGoals({
     onViewGoal,
     onEditGoal,
+    onNewGoal,
 }) {
     const [completedGoals, setCompletedGoals] =
         useState({});
@@ -23,17 +23,56 @@ function ActiveGoals({
     ];
     return (
         <GlassCard>
-            <h2
+            <div
                 style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     marginBottom: "24px",
-
-                    fontWeight: "400",
-
-                    letterSpacing: "-0.02em",
                 }}
             >
-                Active Goals
-            </h2>
+                <h2
+                    style={{
+                        fontWeight: "400",
+                        letterSpacing: "-0.02em",
+                    }}
+                >
+                    Active Goals
+                </h2>
+
+                <button
+                    onClick={onNewGoal}
+                    style={{
+                        background: "transparent",
+                        border: "none",
+
+                        color: "var(--text-secondary)",
+
+                        display: "flex",
+                        alignItems: "center",
+
+                        gap: "6px",
+
+                        cursor: "pointer",
+
+                        fontSize: "0.9rem",
+
+                        fontWeight: "400",
+
+                        transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
+                    }}
+                >
+                    + New Goal
+                </button>
+            </div>
 
             <div
                 style={{
@@ -47,24 +86,15 @@ function ActiveGoals({
                         key={goal}
                         style={{
                             display: "flex",
-
                             alignItems: "center",
 
-                            justifyContent:
-                                "space-between",
+                            justifyContent: "space-between",
 
-                            padding: "14px",
-
-                            background:
-                                "rgba(255,255,255,0.04)",
-
-                            border:
-                                "1px solid var(--glass-border)",
+                            padding: "8px 12px",
 
                             borderRadius: "12px",
 
-                            transition:
-                                "all 0.25s ease",
+                            transition: "all 0.25s ease",
 
                             cursor: "pointer",
                         }}
@@ -75,12 +105,13 @@ function ActiveGoals({
                             e.currentTarget.style.transform =
                                 "translateY(-2px)";
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseEnter={(e) => {
                             e.currentTarget.style.background =
                                 "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                                "transparent";
                         }}
                         onClick={() =>
                             onViewGoal(goal)
@@ -89,9 +120,7 @@ function ActiveGoals({
                         <div
                             style={{
                                 display: "flex",
-
                                 alignItems: "center",
-
                                 gap: "12px",
                             }}
                         >
@@ -123,12 +152,22 @@ function ActiveGoals({
                                             ? "rgba(245,245,245,0.75)"
                                             : "transparent",
 
-                                    transition:
-                                        "all 0.2s ease",
+                                    transition: "all 0.2s ease",
 
                                     flexShrink: 0,
+
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                    fontSize: "12px",
+                                    fontWeight: "600",
+
+                                    color: "#1a1d29",
                                 }}
-                            />
+                            >
+                                {completedGoals[goal] && "✓"}
+                            </div>
 
                             <div>
                                 <div
@@ -179,35 +218,6 @@ function ActiveGoals({
                                 gap: "12px",
                             }}
                         >
-                            <Eye
-                                size={16}
-                                strokeWidth={1.5}
-                                style={{
-                                    cursor: "pointer",
-
-                                    transition:
-                                        "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-
-                                    e.currentTarget.style.transform =
-                                        "scale(1.1)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "";
-
-                                    e.currentTarget.style.transform =
-                                        "scale(1)";
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    onViewGoal(goal);
-                                }}
-                            />
 
                             <Pencil
                                 size={16}

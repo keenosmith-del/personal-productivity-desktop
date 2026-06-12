@@ -3,9 +3,7 @@ import ProgressRing from "../ProgressRing";
 import GoalModal from "./GoalModal";
 import { Plus } from "lucide-react";
 
-function GoalOverview({
-    onNewGoal,
-}) {
+function GoalOverview() {
     return (
         <GlassCard minHeight="220px">
             <div
@@ -15,7 +13,6 @@ function GoalOverview({
                     alignItems: "flex-start",
                     marginBottom: "32px",
                 }}
-                onClick={onNewGoal}
             >
                 <h2
                     style={{
@@ -25,44 +22,6 @@ function GoalOverview({
                 >
                     Goals
                 </h2>
-
-                <button
-                    style={{
-                        background: "transparent",
-                        border: "none",
-
-                        color:
-                            "var(--text-secondary)",
-
-                        display: "flex",
-                        alignItems: "center",
-
-                        gap: "6px",
-
-                        cursor: "pointer",
-
-                        fontSize: "0.9rem",
-
-                        fontWeight: "400",
-
-                        transition:
-                            "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                    }}
-                >
-                    <Plus
-                        size={16}
-                        strokeWidth={1.5}
-                    />
-                    New Goal
-                </button>
             </div>
 
             <div

@@ -11,6 +11,7 @@ import {
   User,
   Settings,
   NotebookPen,
+  Folder,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -29,6 +30,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Goals",
       path: "/goals",
       icon: Target,
+    },
+    {
+      label: "Projects",
+      path: "/projects",
+      icon: Folder,
     },
     {
       label: "Reminders",

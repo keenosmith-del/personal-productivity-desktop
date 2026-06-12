@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
+import Projects from "./pages/Projects";
 import Notes from "./pages/Notes";
 import Goals from "./pages/Goals";
 import Calendar from "./pages/Calendar";
-
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Reminders from "./pages/Reminders";
@@ -30,13 +30,18 @@ function App() {
         />
 
         <Route
-          path="/notes"
-          element={<Notes />}
+          path="/goals"
+          element={<Goals />}
         />
 
         <Route
-          path="/goals"
-          element={<Goals />}
+          path="/projects"
+          element={<Projects />}
+        />
+
+        <Route
+          path="/notes"
+          element={<Notes />}
         />
 
         <Route
