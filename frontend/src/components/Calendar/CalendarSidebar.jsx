@@ -6,9 +6,27 @@ function CalendarSidebar() {
       <h2
         style={{
           marginBottom: "24px",
+          fontSize: "1.4rem",
         }}
       >
-        Monday, 8 June
+        <span
+          style={{
+            fontWeight: "500",
+          }}
+        >
+          Monday
+        </span>
+
+        <span
+          style={{
+            fontWeight: "400",
+            color:
+              "var(--text-secondary)",
+            marginLeft: "8px",
+          }}
+        >
+          8 June
+        </span>
       </h2>
 
       <div
@@ -19,16 +37,26 @@ function CalendarSidebar() {
         <h3
           style={{
             marginBottom: "12px",
+            fontWeight: "400",
           }}
         >
           Tasks
         </h3>
 
-        <p>
+        <p
+          style={{
+            color:
+              "var(--text-secondary)",
+          }}>
           Finish Productivity Desktop
         </p>
 
-        <p>
+        <p
+          style={{
+            color:
+              "var(--text-secondary)",
+          }}
+        >
           Apply for Jobs
         </p>
       </div>
@@ -41,12 +69,18 @@ function CalendarSidebar() {
         <h3
           style={{
             marginBottom: "12px",
+            fontWeight: "400",
           }}
         >
           Reminders
         </h3>
 
-        <p>
+        <p
+          style={{
+            color:
+              "var(--text-secondary)",
+          }}
+        >
           Portfolio Review
         </p>
       </div>
@@ -55,6 +89,7 @@ function CalendarSidebar() {
         <h3
           style={{
             marginBottom: "12px",
+            fontWeight: "400",
           }}
         >
           Notes
@@ -66,11 +101,10 @@ function CalendarSidebar() {
               "var(--text-secondary)",
           }}
         >
-          Calendar events and notes
-          will appear here.
+          Calendar events and notes will appear here.
         </p>
       </div>
-    </GlassCard>
+    </GlassCard >
   );
 }
 

@@ -14,6 +14,58 @@ function CalendarGrid() {
     (_, index) => index + 1
   );
 
+  const calendarEvents = {
+    3: [
+      {
+        title: "Gym",
+        type: "goal",
+      },
+    ],
+
+    5: [
+      {
+        title: "Dashboard",
+        type: "task",
+      },
+    ],
+
+    8: [
+      {
+        title: "Portfolio",
+        type: "goal",
+      },
+
+      {
+        title: "Review",
+        type: "reminder",
+      },
+
+      {
+        title: "Desktop",
+        type: "project",
+      },
+
+      {
+        title: "Jobs",
+        type: "task",
+      },
+    ],
+
+    14: [
+      {
+        title: "Checkup",
+        type: "reminder",
+      },
+    ],
+
+    21: [
+      {
+        title: "Submission",
+        type: "project",
+      },
+    ],
+  };
+
   return (
     <div
       style={{
@@ -42,11 +94,28 @@ function CalendarGrid() {
       >
         <h1
           style={{
-            fontSize: "2rem",
-            fontWeight: "500",
+            fontSize: "1.8rem",
+            letterSpacing: "-0.02em",
           }}
         >
-          June 2026
+          <span
+            style={{
+              fontWeight: "600",
+            }}
+          >
+            June
+          </span>
+
+          <span
+            style={{
+              fontWeight: "400",
+              color:
+                "var(--text-secondary)",
+              marginLeft: "8px",
+            }}
+          >
+            2026
+          </span>
         </h1>
       </div>
 
@@ -57,7 +126,7 @@ function CalendarGrid() {
           gridTemplateColumns:
             "repeat(7, 1fr)",
 
-          gap: "12px",
+          gap: "8px",
 
           marginBottom: "16px",
         }}
@@ -91,33 +160,156 @@ function CalendarGrid() {
           flex: 1,
         }}
       >
-        {days.map((day) => (
-          <div
-            key={day}
-            style={{
-              minHeight: "90px",
+        {days.map((day) => {
+          const events =
+            calendarEvents[day] || [];
 
-              border:
-                "1px solid rgba(255,255,255,0.04)",
+          const visibleEvents =
+            events.slice(0, 2);
 
-              borderRadius: "12px",
+          const remainingCount =
+            events.length - 2;
 
-              padding: "12px",
+          return (
+            <div
+              key={day}
+              onMouseEnter={(e) => {
+                if (day !== 8) {
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (day !== 8) {
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.02)";
+                }
+              }}
+              style={{
+                minHeight: "100px",
 
-              background:
-                day === 8
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(255,255,255,0.02)",
+                border:
+                  "1px solid rgba(255,255,255,0.04)",
 
-              cursor: "pointer",
+                borderRadius: "12px",
 
-              transition:
-                "all 0.2s ease",
-            }}
-          >
-            {day}
-          </div>
-        ))}
+                padding: "12px",
+
+                background:
+                  day === 8
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(255,255,255,0.02)",
+
+                cursor: "pointer",
+
+                transition:
+                  "all 0.2s ease",
+              }}
+            >
+              <div
+                style={{
+                  width: "28px",
+                  height: "28px",
+
+                  borderRadius: "50%",
+
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+
+                  background:
+                    day === 8
+                      ? "#52677d"
+                      : "transparent",
+
+                  color:
+                    day === 8
+                      ? "#ffffff"
+                      : "var(--text-primary)",
+
+                  fontSize: "0.9rem",
+                  fontWeight: "400",
+                }}
+              >
+                {day}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  marginTop: "10px",
+                }}
+              >
+                {visibleEvents.map(
+                  (event) => (
+                    <div
+                      key={event.title}
+                      style={{
+                        height: "22px",
+
+                        display: "flex",
+                        alignItems:
+                          "center",
+
+                        padding:
+                          "0 8px",
+
+                        borderRadius:
+                          "8px",
+
+                        fontSize:
+                          "0.72rem",
+
+                        overflow:
+                          "hidden",
+
+                        whiteSpace:
+                          "nowrap",
+
+                        textOverflow:
+                          "ellipsis",
+
+                        background:
+                          event.type ===
+                            "goal"
+                            ? "#c59c70"
+                            : event.type ===
+                              "task"
+                              ? "#72715c"
+                              : event.type ===
+                                "reminder"
+                                ? "#83545c"
+                                : "#854c49",
+
+                        color: "#fff",
+                      }}
+                    >
+                      {event.title}
+                    </div>
+                  )
+                )}
+
+                {remainingCount > 0 && (
+                  <div
+                    style={{
+                      fontSize:
+                        "0.72rem",
+
+                      color:
+                        "var(--text-secondary)",
+
+                      paddingLeft:
+                        "4px",
+                    }}
+                  >
+                    +{remainingCount} more
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
