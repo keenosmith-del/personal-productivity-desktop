@@ -2,10 +2,10 @@ import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
 
-import AnalyticsCard from "../components/AnalyticsCard";
-import WeatherWidget from "../components/WeatherWidget";
-import ClockWidget from "../components/ClockWidget";
-import DashboardModal from "../components/DashboardModal";
+import AnalyticsCard from "../components/Dashboard/AnalyticsCard";
+import WeatherWidget from "../components/Dashboard/WeatherWidget";
+import ClockWidget from "../components/Dashboard/ClockWidget";
+import DashboardModal from "../components/Dashboard/DashboardModal";
 
 function Dashboard() {
   const [modalData, setModalData] =

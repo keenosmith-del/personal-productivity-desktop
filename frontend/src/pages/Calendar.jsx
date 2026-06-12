@@ -1,7 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 
-import CalendarGrid from "../components/CalendarGrid";
-import CalendarSidebar from "../components/CalendarSidebar";
+import CalendarGrid from "../components/Calendar/CalendarGrid";
+import CalendarSidebar from "../components/Calendar/CalendarSidebar";
 
 function Calendar() {
   return (

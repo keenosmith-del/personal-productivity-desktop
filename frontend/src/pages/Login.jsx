@@ -14,9 +14,9 @@
 
 import { useState } from "react";
 
-import UserSelection from "../components/UserSelection";
-import PasswordView from "../components/PasswordView";
-import AddUserModal from "../components/AddUserModal";
+import UserSelection from "../components/Login/UserSelection";
+import PasswordView from "../components/Login/PasswordView";
+import AddUserModal from "../components/Login/AddUserModal";
 
 function Login() {
     const [selectedUser, setSelectedUser] =

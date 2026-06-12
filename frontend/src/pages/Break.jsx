@@ -1,6 +1,6 @@
 import MainLayout from "../layouts/MainLayout";
 
-import BreakTimer from "../components/BreakTimer";
+import BreakTimer from "../components/Break/BreakTimer";
 
 function Break() {
   return (

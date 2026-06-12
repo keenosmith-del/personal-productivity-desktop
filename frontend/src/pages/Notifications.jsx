@@ -1,6 +1,6 @@
 import MainLayout from "../layouts/MainLayout";
 
-import NotificationFeed from "../components/NotificationFeed";
+import NotificationFeed from "../components/Notifications/NotificationFeed";
 
 function Notifications() {
   return (

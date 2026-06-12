@@ -1,12 +1,12 @@
 import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
-import GoalDetailsModal from "../components/GoalDetailsModal";
-import GoalModal from "../components/GoalModal";
 
-import GoalOverview from "../components/GoalOverview";
-import ActiveGoals from "../components/ActiveGoals";
-import CompletedGoals from "../components/CompletedGoals";
+import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
+import GoalModal from "../components/Goals/GoalModal";
+import GoalOverview from "../components/Goals/GoalOverview";
+import ActiveGoals from "../components/Goals/ActiveGoals";
+import CompletedGoals from "../components/Goals/CompletedGoals";
 
 function Goals() {
   const [selectedGoal, setSelectedGoal] =

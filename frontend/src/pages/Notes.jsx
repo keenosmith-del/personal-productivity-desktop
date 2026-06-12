@@ -2,11 +2,9 @@ import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
 
-import NoteModal from
-  "../components/NoteModal";
-
-import RecentNotes from "../components/RecentNotes";
-import PinnedNotes from "../components/PinnedNotes";
+import NoteModal from"../components/Notes/NoteModal";
+import RecentNotes from "../components/Notes/RecentNotes";
+import PinnedNotes from "../components/Notes/PinnedNotes";
 
 function Notes() {
   const [showNoteModal,

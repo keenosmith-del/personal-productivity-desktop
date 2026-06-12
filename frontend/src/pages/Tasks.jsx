@@ -1,12 +1,13 @@
 import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
-import TaskModal from "../components/TaskModal";
-import CompletedTasks from "../components/CompletedTasks";
-import ActiveTasks from "../components/ActiveTasks";
-import TaskDetailsModal from "../components/TaskDetailsModal";
-import TaskStats from "../components/TaskStats";
-import TaskActivity from "../components/TaskActivity";
+
+import TaskModal from "../components/Tasks/TaskModal";
+import CompletedTasks from "../components/Tasks/CompletedTasks";
+import ActiveTasks from "../components/Tasks/ActiveTasks";
+import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
+import TaskStats from "../components/Tasks/TaskStats";
+import TaskActivity from "../components/Tasks/TaskActivity";
 
 function Tasks() {
   const [showTaskModal, setShowTaskModal] =

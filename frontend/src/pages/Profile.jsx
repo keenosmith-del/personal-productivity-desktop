@@ -1,7 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 
-import ProfileDetails from "../components/ProfileDetails";
-import ProductivityStats from "../components/ProductivityStats";
+import ProfileDetails from "../components/Profile/ProfileDetails";
+import ProductivityStats from "../components/Profile/ProductivityStats";
 
 function Profile() {
   return (

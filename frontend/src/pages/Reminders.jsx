@@ -2,12 +2,11 @@ import { useState } from "react";
 
 import MainLayout from "../layouts/MainLayout";
 
-import ReminderTimeline from "../components/ReminderTimeline";
-import ReminderCategories from "../components/ReminderCategories";
-import RemindersCard from "../components/RemindersCard";
-
-import ReminderModal from "../components/ReminderModal";
-import ReminderDetailsModal from "../components/ReminderDetailsModal";
+import ReminderTimeline from "../components/Reminders/ReminderTimeline";
+import ReminderCategories from "../components/Reminders/ReminderCategories";
+import RemindersCard from "../components/Reminders/RemindersCard";
+import ReminderModal from "../components/Reminders/ReminderModal";
+import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
 
 function Reminders() {
   const [showReminderModal,
