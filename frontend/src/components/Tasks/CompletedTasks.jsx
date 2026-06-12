@@ -44,32 +44,36 @@ function CompletedTasks() {
                 <button
                     style={{
                         background: "transparent",
-                        border: "none",
 
-                        color:
-                            "var(--text-secondary)",
+                        border: "1px solid rgba(255,255,255,0.08)",
 
-                        display: "flex",
-                        alignItems: "center",
+                        borderRadius: "999px",
 
-                        gap: "6px",
+                        padding: "8px 14px",
+
+                        color: "var(--text-secondary)",
+
+                        fontSize: "0.8rem",
+
+                        fontWeight: "300",
 
                         cursor: "pointer",
 
-                        fontSize: "0.9rem",
-
-                        fontWeight: "400",
-
-                        transition:
-                            "all 0.2s ease",
+                        transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.color =
                             "var(--text-primary)";
+
+                        e.currentTarget.style.background =
+                            "rgba(255,255,255,0.04)";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.color =
                             "var(--text-secondary)";
+
+                        e.currentTarget.style.background =
+                            "transparent";
                     }}
                 >
                     Clear all

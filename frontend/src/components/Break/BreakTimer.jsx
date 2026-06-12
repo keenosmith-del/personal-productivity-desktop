@@ -232,7 +232,7 @@ function BreakTimer() {
                                 cy="160"
                                 r="140"
                                 fill="none"
-                                stroke="rgba(255,255,255,0.35)"
+                                stroke="#52677d"
                                 strokeWidth="4"
                                 strokeLinecap="round"
                                 strokeDasharray={
@@ -457,11 +457,44 @@ function BreakTimer() {
                             })}
                     </div>
 
-                    <PrimaryButton
+                    <button
                         onClick={startBreak}
+                        style={{
+                            background: "transparent",
+
+                            border: "1px solid rgba(255,255,255,0.08)",
+
+                            borderRadius: "999px",
+
+                            padding: "12px 18px",
+
+                            color: "var(--text-secondary)",
+
+                            fontSize: "0.9rem",
+
+                            fontWeight: "400",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color = "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "#52677d";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
                     >
-                        Start Break
-                    </PrimaryButton>
+                        Start break
+                    </button>
+
                 </div>
             </GlassCard>
             {isBreakActive && (
@@ -565,7 +598,7 @@ function BreakTimer() {
                                     cy="160"
                                     r="140"
                                     fill="none"
-                                    stroke="rgba(255,255,255,0.22)"
+                                    stroke="#52677d"
                                     strokeWidth="3"
                                     strokeLinecap="round"
                                     strokeDasharray={
@@ -608,8 +641,7 @@ function BreakTimer() {
 
                                 gap: "12px",
 
-                                justifyContent:
-                                    "center",
+                                justifyContent: "center",
                             }}
                         >
                             <button
@@ -619,39 +651,35 @@ function BreakTimer() {
                                     )
                                 }
                                 style={{
-                                    background:
-                                        "transparent",
+                                    background: "transparent",
 
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
+                                    border: "1px solid rgba(255,255,255,0.08)",
 
-                                    borderRadius:
-                                        "16px",
+                                    borderRadius: "999px",
 
-                                    padding:
-                                        "14px 18px",
+                                    padding: "12px 16px",
 
-                                    color:
-                                        "white",
+                                    color: "var(--text-secondary)",
 
-                                    cursor:
-                                        "pointer",
+                                    fontSize: "0.85rem",
 
-                                    minWidth:
-                                        "120px",
+                                    fontWeight: "400",
 
-                                    fontWeight:
-                                        "400",
+                                    cursor: "pointer",
 
-                                    transition:
-                                        "all 0.2s ease",
+                                    transition: "all 0.2s ease",
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.05)";
-                                }}
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
 
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+                                }}
                                 onMouseLeave={(e) => {
+                                    e.currentTarget.style.color =
+                                        "var(--text-secondary)";
+
                                     e.currentTarget.style.background =
                                         "transparent";
                                 }}
@@ -678,39 +706,35 @@ function BreakTimer() {
                                     );
                                 }}
                                 style={{
-                                    background:
-                                        "transparent",
+                                    background: "transparent",
 
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
+                                    border: "1px solid rgba(255,255,255,0.08)",
 
-                                    borderRadius:
-                                        "16px",
+                                    borderRadius: "999px",
 
-                                    padding:
-                                        "14px 18px",
+                                    padding: "12px 16px",
 
-                                    color:
-                                        "#ff6b6b",
+                                    color: "#ff6b6b",
 
-                                    cursor:
-                                        "pointer",
+                                    fontSize: "0.85rem",
 
-                                    minWidth:
-                                        "120px",
+                                    fontWeight: "400",
 
-                                    fontWeight:
-                                        "400",
+                                    cursor: "pointer",
 
-                                    transition:
-                                        "all 0.2s ease",
+                                    transition: "all 0.2s ease",
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.05)";
-                                }}
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
 
+                                    e.currentTarget.style.background =
+                                        "#ff6b6b";
+                                }}
                                 onMouseLeave={(e) => {
+                                    e.currentTarget.style.color =
+                                        "#ff6b6b";
+
                                     e.currentTarget.style.background =
                                         "transparent";
                                 }}

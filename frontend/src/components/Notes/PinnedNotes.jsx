@@ -27,15 +27,61 @@ function PinnedNotes({
     // FUNCTIONS
     return (
         <GlassCard minHeight="520px">
-            <h2
+            <div
                 style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     marginBottom: "24px",
-                    fontWeight: "400",
-                    letterSpacing: "-0.02em",
                 }}
             >
-                Pinned
-            </h2>
+                <h2
+                    style={{
+                        fontWeight: "400",
+                        letterSpacing: "-0.02em",
+                    }}
+                >
+                    Pinned
+                </h2>
+
+                <button
+                    style={{
+                        background: "transparent",
+
+                        border: "1px solid rgba(255,255,255,0.08)",
+
+                        borderRadius: "999px",
+
+                        padding: "8px 14px",
+
+                        color: "var(--text-secondary)",
+
+                        fontSize: "0.85rem",
+
+                        fontWeight: "400",
+
+                        cursor: "pointer",
+
+                        transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+
+                        e.currentTarget.style.background =
+                            "rgba(255,255,255,0.04)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
+
+                        e.currentTarget.style.background =
+                            "transparent";
+                    }}
+                >
+                    Clear all
+                </button>
+            </div>
 
             <div
                 style={{

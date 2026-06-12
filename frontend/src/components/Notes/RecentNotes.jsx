@@ -69,32 +69,36 @@ function RecentNotes({
                     onClick={onNewNote}
                     style={{
                         background: "transparent",
-                        border: "none",
 
-                        color:
-                            "var(--text-secondary)",
+                        border: "1px solid rgba(255,255,255,0.08)",
 
-                        display: "flex",
-                        alignItems: "center",
+                        borderRadius: "999px",
 
-                        gap: "6px",
+                        padding: "8px 14px",
 
-                        cursor: "pointer",
+                        color: "var(--text-secondary)",
 
-                        fontSize: "0.9rem",
+                        fontSize: "0.85rem",
 
                         fontWeight: "400",
 
-                        transition:
-                            "all 0.2s ease",
+                        cursor: "pointer",
+
+                        transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.color =
                             "var(--text-primary)";
+
+                        e.currentTarget.style.background =
+                            "rgba(255,255,255,0.04)";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.color =
                             "var(--text-secondary)";
+
+                        e.currentTarget.style.background =
+                            "transparent";
                     }}
                 >
                     + New Note
@@ -194,57 +198,57 @@ function RecentNotes({
                             >
                                 {note.title}
                             </h4>
-                            </div>
+                        </div>
 
-                            <div
+                        <div
+                            style={{
+                                display: "flex",
+
+                                gap: "8px",
+
+                                marginBottom: "10px",
+                            }}
+                        >
+                            <span
                                 style={{
-                                    display: "flex",
+                                    padding: "4px 8px",
 
-                                    gap: "8px",
+                                    borderRadius: "999px",
 
-                                    marginBottom: "10px",
+                                    fontSize: "0.7rem",
+
+                                    background: "rgba(61,63,74,0.20)",
+
+                                    border: "1px solid rgba(61,63,74,0.40)",
+
+                                    color:
+                                        "var(--text-secondary)",
                                 }}
                             >
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
+                                {note.category}
+                            </span>
 
-                                        borderRadius: "999px",
+                            <span
+                                style={{
+                                    padding: "4px 8px",
 
-                                        fontSize: "0.7rem",
+                                    borderRadius: "999px",
 
-                                        background: "rgba(61,63,74,0.20)",
+                                    fontSize: "0.7rem",
 
-                                        border: "1px solid rgba(61,63,74,0.40)",
+                                    background:
+                                        "rgba(82,103,125,0.20)",
 
-                                        color:
-                                            "var(--text-secondary)",
-                                    }}
-                                >
-                                    {note.category}
-                                </span>
+                                    border:
+                                        "1px solid rgba(82,103,125,0.40)",
 
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
-
-                                        borderRadius: "999px",
-
-                                        fontSize: "0.7rem",
-
-                                        background:
-                                            "rgba(82,103,125,0.20)",
-
-                                        border:
-                                            "1px solid rgba(82,103,125,0.40)",
-
-                                        color:
-                                            "var(--text-secondary)",
-                                    }}
-                                >
-                                    {note.project}
-                                </span>
-                            </div>
+                                    color:
+                                        "var(--text-secondary)",
+                                }}
+                            >
+                                {note.project}
+                            </span>
+                        </div>
 
                         <p
                             style={{

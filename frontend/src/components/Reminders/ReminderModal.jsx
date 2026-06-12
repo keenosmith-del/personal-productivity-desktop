@@ -421,29 +421,35 @@ function ReminderModal({
                     <button
                         onClick={onClose}
                         style={{
-                            padding: "14px 18px",
-
                             background: "transparent",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
+                            border: "1px solid rgba(255,255,255,0.08)",
 
-                            borderRadius: "16px",
+                            borderRadius: "999px",
+
+                            padding: "8px 14px",
 
                             color: "#ff6b6b",
 
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
+
                             cursor: "pointer",
 
-                            fontWeight: "400",
-
-                            transition:
-                                "all 0.2s ease",
+                            transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "#ff6b6b";
+
                             e.currentTarget.style.background =
-                                "rgba(255,107,107,0.08)";
+                                "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "#ff6b6b";
+
                             e.currentTarget.style.background =
                                 "transparent";
                         }}
@@ -453,33 +459,37 @@ function ReminderModal({
 
                     <button
                         style={{
-                            padding: "14px 18px",
+                            background: "transparent",
 
-                            background:
-                                "var(--glass-bg)",
+                            border: "1px solid rgba(255,255,255,0.08)",
 
-                            border:
-                                "1px solid var(--glass-border)",
+                            borderRadius: "999px",
 
-                            borderRadius: "16px",
+                            padding: "8px 14px",
 
-                            color:
-                                "var(--text-primary)",
+                            color: "var(--text-secondary)",
+
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
 
                             cursor: "pointer",
 
-                            fontWeight: "400",
-
-                            transition:
-                                "var(--transition)",
+                            transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
                             e.currentTarget.style.background =
-                                "var(--glass-hover)";
+                                "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
                             e.currentTarget.style.background =
-                                "var(--glass-bg)";
+                                "transparent";
                         }}
                     >
                         {mode === "edit"

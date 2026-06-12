@@ -80,9 +80,9 @@ function NotificationFeed() {
 
                             color: "var(--text-secondary)",
 
-                            fontSize: "0.85rem",
+                            fontSize: "0.8rem",
 
-                            fontWeight: "400",
+                            fontWeight: "300",
 
                             cursor: "pointer",
 
