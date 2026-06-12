@@ -36,7 +36,7 @@ function ReminderTimeline() {
     ];
 
     return (
-        <GlassCard minHeight="260px">
+        <GlassCard minHeight="200px">
             <h2
                 style={{
                     marginBottom: "32px",
@@ -51,11 +51,10 @@ function ReminderTimeline() {
             <div
                 style={{
                     display: "flex",
-
                     alignItems: "flex-start",
+                    justifyContent: "space-between",
 
-                    justifyContent:
-                        "space-between",
+                    height: "100%",
                 }}
             >
                 {days.map((day, index) => (

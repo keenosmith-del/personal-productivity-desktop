@@ -7,6 +7,7 @@ import ReminderCategories from "../components/Reminders/ReminderCategories";
 import RemindersCard from "../components/Reminders/RemindersCard";
 import ReminderModal from "../components/Reminders/ReminderModal";
 import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
+import SearchBar from "../components/SearchBar";
 
 function Reminders() {
   const [showReminderModal,
@@ -29,21 +30,33 @@ function Reminders() {
           gap: "24px",
         }}
       >
-        <RemindersCard
-          onNewReminder={() =>
-            setShowReminderModal(true)
-          }
-          onViewReminder={
-            setSelectedReminder
-          }
-          onEditReminder={
-            setEditingReminder
-          }
-        />
-
         <ReminderTimeline />
+        
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "1fr 1fr",
 
-        <ReminderCategories />
+            gap: "24px",
+
+            alignItems: "start",
+          }}
+        >
+          <RemindersCard
+            onNewReminder={() =>
+              setShowReminderModal(true)
+            }
+            onViewReminder={
+              setSelectedReminder
+            }
+            onEditReminder={
+              setEditingReminder
+            }
+          />
+
+          <ReminderCategories />
+        </div>
       </div>
       {showReminderModal && (
         <ReminderModal
