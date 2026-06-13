@@ -44,84 +44,29 @@ function Dashboard() {
             <ClockWidget />
           </div>
 
-          <GlassCard minHeight="180px">
-            <div
-              style={{
-                height: "100%",
+          <AnalyticsCard
+            title="Recent Activity"
+            value="4"
+            subtitle="Latest updates"
 
-                display: "flex",
+            chips={[
+              {
+                label: "Goal",
+                color: "#c59c70",
+              },
+              {
+                label: "Project",
+                color: "#854c49",
+              },
+            ]}
 
-                flexDirection: "column",
-              }}
-            >
-              <h2
-                style={{
-                  fontWeight: "400",
+            activityLines={[
+              "Frontend Role Progress • Yesterday",
+              "Portfolio Updated • 15 min ago",
+            ]}
 
-                  marginBottom: "16px",
-                }}
-              >
-                Recent Activity
-              </h2>
-
-              <div
-                style={{
-                  display: "flex",
-
-                  flexDirection: "column",
-
-                  gap: "10px",
-                }}
-              >
-
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        padding: "4px 8px",
-
-                        borderRadius: "999px",
-
-                        fontSize: "0.7rem",
-
-                        background: "#c59c7033",
-
-                        border:
-                          "1px solid #c59c7066",
-                      }}
-                    >
-                      Goal
-                    </span>
-
-                    <span
-                      style={{
-                        fontSize: "0.75rem",
-
-                        color:
-                          "var(--text-secondary)",
-                      }}
-                    >
-                      Yesterday
-                    </span>
-                  </div>
-
-                  <p
-                    style={{
-                      fontWeight: "300",
-                    }}
-                  >
-                    Frontend Role progress +10%
-                  </p>
-                </div>
-              </div>
-            </div>
-          </GlassCard>
+            wide
+          />
 
           <AnalyticsCard
             title="Progress"

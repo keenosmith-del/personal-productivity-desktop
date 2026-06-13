@@ -6,6 +6,7 @@ function AnalyticsCard({
   value,
   subtitle,
   chips = [],
+  activityLines = [],
   wide = false,
   clickable = false,
   onClick,
@@ -123,6 +124,28 @@ function AnalyticsCard({
                   {chip.label}
                 </span>
               ))}
+            </div>
+          )}
+          {activityLines.length > 0 && (
+            <div
+              style={{
+                marginTop: "12px",
+
+                fontSize: "0.72rem",
+
+                color:
+                  "var(--text-secondary)",
+
+                lineHeight: 1.5,
+              }}
+            >
+              {activityLines.map(
+                (line) => (
+                  <div key={line}>
+                    {line}
+                  </div>
+                )
+              )}
             </div>
           )}
         </div>
