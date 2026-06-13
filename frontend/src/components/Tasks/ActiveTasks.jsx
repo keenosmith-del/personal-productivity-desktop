@@ -17,14 +17,20 @@ function ActiveTasks({
         {
             title: "Finish Productivity Desktop",
             priority: "High",
+            category: "Work",
+            dueDate: "15 Jun",
         },
         {
             title: "Apply for Frontend Roles",
             priority: "Medium",
+            category: "Personal",
+            dueDate: "Tomorrow",
         },
         {
             title: "Complete AI Course Module",
             priority: "Low",
+            category: "Study",
+            dueDate: "18 Jun",
         },
     ];
 
@@ -189,17 +195,122 @@ function ActiveTasks({
                                 ] && "✓"}
                             </div>
 
-                            <span
-                                style={{
-                                    fontWeight: "300",
+                            <div>
+                                <div
+                                    style={{
+                                        fontWeight: "300",
 
-                                    fontSize: "0.9rem",
+                                        fontSize: "0.9rem",
 
-                                    letterSpacing: "-0.015em",
-                                }}
-                            >
-                                {task.title}
-                            </span>
+                                        letterSpacing: "-0.015em",
+
+                                        marginBottom: "6px",
+                                    }}
+                                >
+                                    {task.title}
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+
+                                        gap: "6px",
+
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background: "#72715c33",
+
+                                            border:
+                                                "1px solid #72715c66",
+                                        }}
+                                    >
+                                        Task
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background:
+                                                task.category === "Work"
+                                                    ? "#063f4733"
+                                                    : task.category === "Study"
+                                                        ? "#29737633"
+                                                        : task.category ===
+                                                            "Personal"
+                                                            ? "#5c939633"
+                                                            : "#10343933",
+
+                                            border:
+                                                task.category === "Work"
+                                                    ? "1px solid #063f4766"
+                                                    : task.category ===
+                                                        "Study"
+                                                        ? "1px solid #29737666"
+                                                        : task.category ===
+                                                            "Personal"
+                                                            ? "1px solid #5c939666"
+                                                            : "1px solid #10343966",
+                                        }}
+                                    >
+                                        {task.category}
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background:
+                                                task.priority === "High"
+                                                    ? "#ab313033"
+                                                    : task.priority ===
+                                                        "Medium"
+                                                        ? "#62929e33"
+                                                        : "#ffdb5833",
+
+                                            border:
+                                                task.priority === "High"
+                                                    ? "1px solid #ab313066"
+                                                    : task.priority ===
+                                                        "Medium"
+                                                        ? "1px solid #62929e66"
+                                                        : "1px solid #ffdb5866",
+                                        }}
+                                    >
+                                        {task.priority}
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            fontSize: "0.68rem",
+
+                                            color:
+                                                "var(--text-secondary)",
+
+                                            alignSelf: "center",
+                                        }}
+                                    >
+                                        {task.dueDate}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div
@@ -209,22 +320,6 @@ function ActiveTasks({
                                 gap: "12px",
                             }}
                         >
-                            <div
-                                style={{
-                                    width: "10px",
-                                    height: "10px",
-
-                                    borderRadius: "50%",
-
-                                    background:
-                                        task.priority === "High"
-                                            ? "#3d3f4a"
-                                            : task.priority ===
-                                                "Medium"
-                                                ? "#52677d"
-                                                : "#7d8491",
-                                }}
-                            />
 
                             <Pencil
                                 size={16}

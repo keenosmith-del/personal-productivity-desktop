@@ -1,143 +1,102 @@
 import GlassCard from "../GlassCard";
 
 function TaskActivity() {
-    const days = [
-        {
-            day: "Mon",
-            priorities: [
-                "High",
-                "Medium",
-            ],
-        },
-        {
-            day: "Tue",
-            priorities: [
-                "High",
-                "High",
-                "Medium",
-                "Low",
-            ],
-        },
-        {
-            day: "Wed",
-            priorities: ["Low"],
-        },
-        {
-            day: "Thu",
-            priorities: [
-                "High",
-                "High",
-                "Medium",
-                "Medium",
-                "Low",
-            ],
-        },
-        {
-            day: "Fri",
-            priorities: [
-                "Medium",
-                "Medium",
-                "Low",
-            ],
-        },
-        {
-            day: "Sat",
-            priorities: ["Low"],
-        },
-        {
-            day: "Sun",
-            priorities: [
-                "High",
-                "Medium",
-                "Medium",
-                "Low",
-            ],
-        },
-    ];
-
     return (
         <GlassCard minHeight="220px">
             <h2
                 style={{
                     fontWeight: "400",
-                    marginBottom:
-                        "20px",
+                    marginBottom: "20px",
                 }}
             >
-                Task Activity
+                Upcoming Deadlines
             </h2>
 
             <div
                 style={{
                     display: "flex",
-                    flexDirection:
-                        "column",
-
-                    gap: "12px",
+                    flexDirection: "column",
+                    gap: "16px",
                 }}
             >
-                {days.map((day) => (
+                {[
+                    {
+                        title: "Frontend Roles",
+                        priority: "High",
+                        due: "Tomorrow",
+                    },
+                    {
+                        title: "AI Course Module",
+                        priority: "Medium",
+                        due: "15 Jun",
+                    },
+                    {
+                        title: "Portfolio Cleanup",
+                        priority: "Low",
+                        due: "20 Jun",
+                    },
+                ].map((task) => (
                     <div
-                        key={day.day}
+                        key={task.title}
                         style={{
                             display: "flex",
-
-                            alignItems:
-                                "center",
-
-                            gap: "12px",
+                            justifyContent:
+                                "space-between",
+                            alignItems: "center",
                         }}
                     >
+                        <div>
+                            <div
+                                style={{
+                                    marginBottom: "6px",
+
+                                    fontWeight: "300",
+                                }}
+                            >
+                                {task.title}
+                            </div>
+
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.68rem",
+
+                                    background:
+                                        task.priority ===
+                                            "High"
+                                            ? "#ab313033"
+                                            : task.priority ===
+                                                "Medium"
+                                                ? "#62929e33"
+                                                : "#ffdb5833",
+
+                                    border:
+                                        task.priority ===
+                                            "High"
+                                            ? "1px solid #ab313066"
+                                            : task.priority ===
+                                                "Medium"
+                                                ? "1px solid #62929e66"
+                                                : "1px solid #ffdb5866",
+                                }}
+                            >
+                                {task.priority}
+                            </span>
+                        </div>
+
                         <span
                             style={{
-                                width:
-                                    "40px",
-
-                                fontWeight:
-                                    "300",
-
                                 color:
                                     "var(--text-secondary)",
+
+                                fontSize: "0.8rem",
                             }}
                         >
-                            {day.day}
+                            {task.due}
                         </span>
-
-                        <div
-                            style={{
-                                display:
-                                    "flex",
-
-                                gap: "6px",
-                            }}
-                        >
-                            {day.priorities.map(
-                                (
-                                    priority,
-                                    index
-                                ) => (
-                                    <div
-                                        key={index}
-                                        style={{
-                                            width: "8px",
-                                            height: "8px",
-
-                                            borderRadius:
-                                                "50%",
-
-                                            background:
-                                                priority ===
-                                                    "High"
-                                                    ? "#3d3f4a"
-                                                    : priority ===
-                                                        "Medium"
-                                                        ? "#52677d"
-                                                        : "#7d8491",
-                                        }}
-                                    />
-                                )
-                            )}
-                        </div>
                     </div>
                 ))}
             </div>

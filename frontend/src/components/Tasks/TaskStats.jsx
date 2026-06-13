@@ -18,17 +18,15 @@ function TaskStats() {
                     <h2
                         style={{
                             fontWeight: "400",
-                            marginBottom:
-                                "20px",
+                            marginBottom: "20px",
                         }}
                     >
-                        Task Stats
+                        Task Overview
                     </h2>
 
                     <p
                         style={{
-                            color:
-                                "var(--text-secondary)",
+                            color: "var(--text-secondary)",
                         }}
                     >
                         Active
@@ -65,63 +63,98 @@ function TaskStats() {
                 <div
                     style={{
                         display: "flex",
+
                         flexDirection: "column",
-                        alignItems: "center",
-                        gap: "12px",
+
+                        alignItems: "flex-end",
+
+                        gap: "10px",
                     }}
                 >
-                    <div
+                    <span
                         style={{
-                            display: "flex",
-                            gap: "6px",
+                            padding: "6px 10px",
+
+                            borderRadius: "999px",
+
+                            fontSize: "0.72rem",
+
+                            background: "#ab313033",
+
+                            border:
+                                "1px solid #ab313066",
                         }}
                     >
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-                            (dot) => (
-                                <div
-                                    key={dot}
-                                    style={{
-                                        width: "8px",
-                                        height: "8px",
+                        High • 1
+                    </span>
 
-                                        borderRadius: "50%",
-
-                                        background:
-                                            dot <= 8
-                                                ? "#52677d"
-                                                : "rgba(255,255,255,0.12)",
-                                    }}
-                                />
-                            )
-                        )}
-                    </div>
-
-                    <div
+                    <span
                         style={{
-                            textAlign: "center",
+                            padding: "6px 10px",
+
+                            borderRadius: "999px",
+
+                            fontSize: "0.72rem",
+
+                            background: "#62929e33",
+
+                            border:
+                                "1px solid #62929e66",
                         }}
                     >
-                        <div
-                            style={{
-                                fontSize: "1.4rem",
+                        Medium • 1
+                    </span>
 
-                                fontWeight: "300",
-                            }}
-                        >
-                            80%
-                        </div>
+                    <span
+                        style={{
+                            padding: "6px 10px",
 
-                        <div
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
+                            borderRadius: "999px",
 
-                                fontSize: "0.8rem",
-                            }}
-                        >
-                            Complete
-                        </div>
-                    </div>
+                            fontSize: "0.72rem",
+
+                            background: "#ffdb5833",
+
+                            border:
+                                "1px solid #ffdb5866",
+                        }}
+                    >
+                        Low • 1
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "6px 10px",
+
+                            borderRadius: "999px",
+
+                            fontSize: "0.72rem",
+
+                            background: "#4d689333",
+
+                            border:
+                                "1px solid #4d689366",
+                        }}
+                    >
+                        Active • 3
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "6px 10px",
+
+                            borderRadius: "999px",
+
+                            fontSize: "0.72rem",
+
+                            background: "#728a6e33",
+
+                            border:
+                                "1px solid #728a6e66",
+                        }}
+                    >
+                        Complete • 12
+                    </span>
                 </div>
             </div>
         </GlassCard>

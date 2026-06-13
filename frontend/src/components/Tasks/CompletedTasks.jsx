@@ -4,9 +4,21 @@ import { Trash2 } from "lucide-react";
 
 function CompletedTasks() {
     const completedTasks = [
-        "Build Login Page",
-        "Create Dashboard",
-        "Setup GitHub Repository",
+        {
+            title: "Build Login Page",
+            category: "Work",
+            completed: "08 Jun",
+        },
+        {
+            title: "Create Dashboard",
+            category: "Personal",
+            completed: "06 Jun",
+        },
+        {
+            title: "Setup GitHub Repository",
+            category: "Study",
+            completed: "02 Jun",
+        },
     ];
 
     return (
@@ -89,7 +101,7 @@ function CompletedTasks() {
             >
                 {completedTasks.map((task) => (
                     <div
-                        key={task}
+                        key={task.title}
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -142,19 +154,107 @@ function CompletedTasks() {
                                 ✓
                             </div>
 
-                            <span
-                                style={{
-                                    fontWeight: "300",
+                            <div>
+                                <div
+                                    style={{
+                                        fontWeight: "300",
 
-                                    color: "rgba(255,255,255,0.7)",
+                                        color:
+                                            "rgba(255,255,255,0.7)",
 
-                                    fontSize: "0.9rem",
+                                        fontSize: "0.9rem",
 
-                                    letterSpacing: "-0.015em",
-                                }}
-                            >
-                                {task}
-                            </span>
+                                        letterSpacing: "-0.015em",
+
+                                        marginBottom: "6px",
+                                    }}
+                                >
+                                    {task.title}
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+
+                                        gap: "6px",
+
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background: "#72715c33",
+
+                                            border:
+                                                "1px solid #72715c66",
+                                        }}
+                                    >
+                                        Task
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background:
+                                                task.category === "Work"
+                                                    ? "#063f4733"
+                                                    : task.category === "Study"
+                                                        ? "#29737633"
+                                                        : "#5c939633",
+
+                                            border:
+                                                task.category === "Work"
+                                                    ? "1px solid #063f4766"
+                                                    : task.category === "Study"
+                                                        ? "1px solid #29737666"
+                                                        : "1px solid #5c939666",
+                                        }}
+                                    >
+                                        {task.category}
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background: "#728a6e33",
+
+                                            border:
+                                                "1px solid #728a6e66",
+                                        }}
+                                    >
+                                        Complete
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            fontSize: "0.68rem",
+
+                                            color:
+                                                "var(--text-secondary)",
+
+                                            alignSelf: "center",
+                                        }}
+                                    >
+                                        {task.completed}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <Trash2

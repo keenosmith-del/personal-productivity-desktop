@@ -92,24 +92,78 @@ function TaskDetailsModal({
                     }}
                 >
                     <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-                                fontSize: "0.8rem",
-                                marginBottom: "6px",
-                            }}
-                        >
-                            Task
-                        </p>
-
                         <h3
                             style={{
-                                fontWeight: "400",
+                                fontWeight: "300",
+
+                                fontSize: "1.2rem",
+
+                                marginBottom: "12px",
                             }}
                         >
                             {task.title}
                         </h3>
+
+                        <div
+                            style={{
+                                display: "flex",
+
+                                gap: "8px",
+
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.7rem",
+
+                                    background: "#72715c33",
+
+                                    border:
+                                        "1px solid #72715c66",
+                                }}
+                            >
+                                Task
+                            </span>
+
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.7rem",
+
+                                    background: "#063f4733",
+
+                                    border:
+                                        "1px solid #063f4766",
+                                }}
+                            >
+                                Work
+                            </span>
+
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.7rem",
+
+                                    background: "#ab313033",
+
+                                    border:
+                                        "1px solid #ab313066",
+                                }}
+                            >
+                                {task.priority}
+                            </span>
+                        </div>
                     </div>
 
                     <div>
@@ -157,7 +211,63 @@ function TaskDetailsModal({
                             Due Date
                         </p>
 
-                        <p>June 15, 2026</p>
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-primary)",
+                            }}
+                        >
+                            15 Jun 2026
+                        </p>
+                    </div>
+                    <div>
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+
+                                fontSize: "0.8rem",
+
+                                marginBottom: "6px",
+                            }}
+                        >
+                            Project
+                        </p>
+
+                        <p>
+                            Productivity Desktop
+                        </p>
+                    </div>
+                    <div>
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+
+                                fontSize: "0.8rem",
+
+                                marginBottom: "6px",
+                            }}
+                        >
+                            Status
+                        </p>
+
+                        <span
+                            style={{
+                                padding: "4px 8px",
+
+                                borderRadius: "999px",
+
+                                fontSize: "0.7rem",
+
+                                background: "#4d689333",
+
+                                border:
+                                    "1px solid #4d689366",
+                            }}
+                        >
+                            Active
+                        </span>
                     </div>
                 </div>
             </div>
