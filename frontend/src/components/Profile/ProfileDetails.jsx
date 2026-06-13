@@ -121,6 +121,51 @@ function ProfileDetails() {
             Keeno Smith
           </h2>
 
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+              marginBottom: "12px",
+            }}
+          >
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#063f4733",
+                border: "1px solid #063f4766",
+              }}
+            >
+              Work
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#4d689333",
+                border: "1px solid #4d689366",
+              }}
+            >
+              Active
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#e9b95733",
+                border: "1px solid #e9b95766",
+              }}
+            >
+              14 Day Streak
+            </span>
+          </div>
+
           <p
             style={{
               color:
@@ -157,6 +202,63 @@ function ProfileDetails() {
           >
             Member since June 2026
           </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+              marginTop: "16px",
+            }}
+          >
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#72715c33",
+                border: "1px solid #72715c66",
+              }}
+            >
+              48 Tasks
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#c59c7033",
+                border: "1px solid #c59c7066",
+              }}
+            >
+              12 Goals
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#854c4933",
+                border: "1px solid #854c4966",
+              }}
+            >
+              6 Projects
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#52677d33",
+                border: "1px solid #52677d66",
+              }}
+            >
+              24 Notes
+            </span>
+          </div>
         </div>
       </div>
     </GlassCard>

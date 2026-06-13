@@ -1,5 +1,4 @@
 import GlassCard from "../GlassCard";
-import ProgressRing from "../ProgressRing";
 
 function ProductivityStats() {
   return (
@@ -34,7 +33,50 @@ function ProductivityStats() {
             gap: "12px",
           }}
         >
-          <ProgressRing value={75} />
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#ab313033",
+                border: "1px solid #ab313066",
+              }}
+            >
+              High 12
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#62929e33",
+                border: "1px solid #62929e66",
+              }}
+            >
+              Medium 21
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#ffdb5833",
+                border: "1px solid #ffdb5866",
+              }}
+            >
+              Low 15
+            </span>
+          </div>
 
           <p
             style={{
@@ -67,7 +109,50 @@ function ProductivityStats() {
             gap: "12px",
           }}
         >
-          <ProgressRing value={60} />
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#063f4733",
+                border: "1px solid #063f4766",
+              }}
+            >
+              Work 4
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#29737633",
+                border: "1px solid #29737666",
+              }}
+            >
+              Study 5
+            </span>
+
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: "999px",
+                fontSize: "0.68rem",
+                background: "#5c939633",
+                border: "1px solid #5c939666",
+              }}
+            >
+              Personal 3
+            </span>
+          </div>
 
           <p
             style={{
@@ -100,7 +185,17 @@ function ProductivityStats() {
             gap: "12px",
           }}
         >
-          <ProgressRing value={82} />
+          <span
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              fontSize: "0.68rem",
+              background: "#e9b95733",
+              border: "1px solid #e9b95766",
+            }}
+          >
+            Best 21 Days
+          </span>
 
           <p
             style={{
@@ -133,7 +228,36 @@ function ProductivityStats() {
             gap: "12px",
           }}
         >
-          <ProgressRing value={82} />
+          <div
+            style={{
+              width: "140px",
+            }}
+          >
+            <div
+              style={{
+                height: "8px",
+
+                borderRadius: "999px",
+
+                background:
+                  "rgba(255,255,255,0.08)",
+
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: "82%",
+
+                  height: "100%",
+
+                  background: "#c59c70",
+
+                  borderRadius: "999px",
+                }}
+              />
+            </div>
+          </div>
 
           <p
             style={{
