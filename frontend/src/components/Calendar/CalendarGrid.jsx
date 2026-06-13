@@ -74,7 +74,7 @@ function CalendarGrid({
   return (
     <div
       style={{
-        flex: 1,
+        flex: "1",
 
         background:
           "var(--glass-bg)",
@@ -90,6 +90,8 @@ function CalendarGrid({
         display: "flex",
 
         flexDirection: "column",
+
+        minHeight: "850px",
       }}
     >
       <div
@@ -162,7 +164,6 @@ function CalendarGrid({
 
           gap: "12px",
 
-          flex: 1,
         }}
       >
         {days.map((day) => {
@@ -194,7 +195,7 @@ function CalendarGrid({
                 }
               }}
               style={{
-                minHeight: "100px",
+                height: "130px",
 
                 border:
                   "1px solid rgba(255,255,255,0.04)",
@@ -212,6 +213,8 @@ function CalendarGrid({
 
                 transition:
                   "all 0.2s ease",
+
+                overflow: "hidden",
               }}
             >
               <div
