@@ -2,10 +2,22 @@ import GlassCard from "../GlassCard";
 import { Trash2 } from "lucide-react";
 
 function CompletedGoals() {
-  const goals = [
-    "Learn React",
-    "Build Productivity Dashboard",
-    "Complete SQL Fundamentals",
+  const completedGoals = [
+    {
+      title: "Learn React",
+      category: "Study",
+      completed: "03 Jun",
+    },
+    {
+      title: "Build Portfolio Website",
+      category: "Work",
+      completed: "28 May",
+    },
+    {
+      title: "Complete JavaScript Course",
+      category: "Study",
+      completed: "15 May",
+    },
   ];
 
   return (
@@ -73,9 +85,9 @@ function CompletedGoals() {
           gap: "12px",
         }}
       >
-        {goals.map((goal) => (
+        {completedGoals.map((completed) => (
           <div
-            key={goal}
+            key={completed.title}
             style={{
               display: "flex",
               alignItems: "center",
@@ -128,21 +140,103 @@ function CompletedGoals() {
                 ✓
               </div>
 
-              <span
-                style={{
-                  color: "var(--text-secondary)",
+              <div>
+                <div
+                  style={{
+                    fontWeight: "300",
 
-                  fontWeight: "300",
+                    color:
+                      "rgba(255,255,255,0.7)",
 
-                  color: "rgba(255,255,255,0.7)",
+                    fontSize: "0.9rem",
 
-                  fontSize: "0.9rem",
+                    letterSpacing: "-0.015em",
 
-                  letterSpacing: "-0.015em",
-                }}
-              >
-                {goal}
-              </span>
+                    marginBottom: "6px",
+                  }}
+                >
+                  {completed.title}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+
+                    gap: "6px",
+
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span
+                    style={{
+                      padding: "3px 8px",
+
+                      borderRadius: "999px",
+
+                      fontSize: "0.68rem",
+
+                      background: "#c59c7033",
+
+                      border:
+                        "1px solid #c59c7066",
+                    }}
+                  >
+                    Goal
+                  </span>
+
+                  <span
+                    style={{
+                      padding: "3px 8px",
+
+                      borderRadius: "999px",
+
+                      fontSize: "0.68rem",
+
+                      background:
+                        completedGoals.category === "Work"
+                          ? "#063f4733"
+                          : "#29737633",
+
+                      border:
+                        completedGoals.category === "Work"
+                          ? "1px solid #063f4766"
+                          : "1px solid #29737666",
+                    }}
+                  >
+                    {completed.category}
+                  </span>
+
+                  <span
+                    style={{
+                      padding: "3px 8px",
+
+                      borderRadius: "999px",
+
+                      fontSize: "0.68rem",
+
+                      background: "#728a6e33",
+
+                      border:
+                        "1px solid #728a6e66",
+                    }}
+                  >
+                    Complete
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize: "0.68rem",
+
+                      color:
+                        "var(--text-secondary)",
+
+                      alignSelf: "center",
+                    }}
+                  >
+                    {completed.completed}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <Trash2

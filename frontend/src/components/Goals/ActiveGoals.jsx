@@ -17,9 +17,24 @@ function ActiveGoals({
         useState({});
 
     const goals = [
-        "Become Full-Stack Developer",
-        "Complete Generative AI Course",
-        "Launch Portfolio Website",
+        {
+            title: "Become Full-Stack Developer",
+            category: "Study",
+            priority: "High",
+            progress: "72%",
+        },
+        {
+            title: "Complete Generative AI Course",
+            category: "Study",
+            priority: "Medium",
+            progress: "58%",
+        },
+        {
+            title: "Launch Portfolio Website",
+            category: "Work",
+            priority: "Low",
+            progress: "91%",
+        },
     ];
     return (
         <GlassCard>
@@ -89,7 +104,7 @@ function ActiveGoals({
             >
                 {goals.map((goal) => (
                     <div
-                        key={goal}
+                        key={goal.title}
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -137,8 +152,7 @@ function ActiveGoals({
                                     setCompletedGoals(
                                         (prev) => ({
                                             ...prev,
-                                            [goal]:
-                                                !prev[goal],
+                                            [goal.title]: !prev[goal.title],
                                         })
                                     );
                                 }}
@@ -154,7 +168,7 @@ function ActiveGoals({
                                         "1.5px solid rgba(245,245,245,0.7)",
 
                                     background:
-                                        completedGoals[goal]
+                                        completedGoals[goal.title]
                                             ? "rgba(245,245,245,0.75)"
                                             : "transparent",
 
@@ -172,45 +186,118 @@ function ActiveGoals({
                                     color: "#1a1d29",
                                 }}
                             >
-                                {completedGoals[goal] && "✓"}
+                                {completedGoals[goal.title] && "✓"}
                             </div>
 
                             <div>
                                 <div
                                     style={{
                                         fontWeight: "300",
+
                                         fontSize: "0.9rem",
+
                                         letterSpacing: "-0.015em",
+
+                                        marginBottom: "6px",
                                     }}
                                 >
-                                    {goal}
+                                    {goal.title}
                                 </div>
 
                                 <div
                                     style={{
                                         display: "flex",
-                                        gap: "4px",
-                                        marginTop: "6px",
+
+                                        gap: "6px",
+
+                                        flexWrap: "wrap",
                                     }}
                                 >
-                                    {[1, 2, 3, 4, 5, 6, 7, 8].map(
-                                        (dot) => (
-                                            <div
-                                                key={dot}
-                                                style={{
-                                                    width: "6px",
-                                                    height: "6px",
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
 
-                                                    borderRadius: "50%",
+                                            borderRadius: "999px",
 
-                                                    background:
-                                                        dot <= 5
-                                                            ? "#52677d"
-                                                            : "rgba(255,255,255,0.12)",
-                                                }}
-                                            />
-                                        )
-                                    )}
+                                            fontSize: "0.68rem",
+
+                                            background: "#c59c7033",
+
+                                            border:
+                                                "1px solid #c59c7066",
+                                        }}
+                                    >
+                                        Goal
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background:
+                                                goal.category === "Work"
+                                                    ? "#063f4733"
+                                                    : goal.category === "Study"
+                                                        ? "#29737633"
+                                                        : goal.category === "Personal"
+                                                            ? "#5c939633"
+                                                            : "#10343933",
+
+                                            border:
+                                                goal.category === "Work"
+                                                    ? "1px solid #063f4766"
+                                                    : goal.category === "Study"
+                                                        ? "1px solid #29737666"
+                                                        : goal.category === "Personal"
+                                                            ? "1px solid #5c939666"
+                                                            : "1px solid #10343966",
+                                        }}
+                                    >
+                                        {goal.category}
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+
+                                            borderRadius: "999px",
+
+                                            fontSize: "0.68rem",
+
+                                            background:
+                                                goal.priority === "High"
+                                                    ? "#ab313033"
+                                                    : goal.priority === "Medium"
+                                                        ? "#62929e33"
+                                                        : "#ffdb5833",
+
+                                            border:
+                                                goal.priority === "High"
+                                                    ? "1px solid #ab313066"
+                                                    : goal.priority === "Medium"
+                                                        ? "1px solid #62929e66"
+                                                        : "1px solid #ffdb5866",
+                                        }}
+                                    >
+                                        {goal.priority}
+                                    </span>
+
+                                    <span
+                                        style={{
+                                            fontSize: "0.68rem",
+
+                                            color:
+                                                "var(--text-secondary)",
+
+                                            alignSelf: "center",
+                                        }}
+                                    >
+                                        {goal.progress}
+                                    </span>
                                 </div>
                             </div>
                         </div>
