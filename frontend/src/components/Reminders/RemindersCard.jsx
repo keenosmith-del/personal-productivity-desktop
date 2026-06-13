@@ -8,21 +8,20 @@ import {
 const reminders = [
     {
         title: "Portfolio Review",
-        date: "Friday",
         category: "Work",
-        color: "#1a1d29",
+        date: "Friday",
     },
+
     {
         title: "Submit Assignment",
-        date: "Tomorrow",
         category: "Study",
-        color: "#3d3f4a",
+        date: "Tomorrow",
     },
+
     {
-        title: "Apply For Jobs",
-        date: "Sunday",
-        category: "Personal",
-        color: "#52677d",
+        title: "Doctor Appointment",
+        category: "Health",
+        date: "Next Week",
     },
 ];
 
@@ -35,7 +34,7 @@ function RemindersCard({
         setCompletedReminders] =
         useState([]);
     return (
-        <GlassCard minHeight="320px">
+        <GlassCard minHeight="520px">
             <div
                 style={{
                     display: "flex",
@@ -204,6 +203,8 @@ function RemindersCard({
 
                                             letterSpacing:
                                                 "-0.015em",
+
+                                            marginBottom: "6px",
                                         }}
                                     >
                                         {reminder.title}
@@ -211,15 +212,83 @@ function RemindersCard({
 
                                     <div
                                         style={{
-                                            fontSize: "0.8rem",
+                                            display: "flex",
 
-                                            color:
-                                                "var(--text-secondary)",
+                                            gap: "6px",
+
+                                            flexWrap: "wrap",
                                         }}
                                     >
-                                        {reminder.date}
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background: "#83545c33",
+
+                                                border:
+                                                    "1px solid #83545c66",
+                                            }}
+                                        >
+                                            Reminder
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background:
+                                                    reminder.category === "Work"
+                                                        ? "#063f4733"
+                                                        : reminder.category ===
+                                                            "Study"
+                                                            ? "#29737633"
+                                                            : reminder.category ===
+                                                                "Personal"
+                                                                ? "#5c939633"
+                                                                : "#10343933",
+
+                                                border:
+                                                    reminder.category === "Work"
+                                                        ? "1px solid #063f4766"
+                                                        : reminder.category ===
+                                                            "Study"
+                                                            ? "1px solid #29737666"
+                                                            : reminder.category ===
+                                                                "Personal"
+                                                                ? "1px solid #5c939666"
+                                                                : "1px solid #10343966",
+                                            }}
+                                        >
+                                            {reminder.category}
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background: "#4d689333",
+
+                                                border:
+                                                    "1px solid #4d689366",
+                                            }}
+                                        >
+                                            {reminder.date}
+                                        </span>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div
@@ -229,18 +298,6 @@ function RemindersCard({
                                     gap: "12px",
                                 }}
                             >
-                                <div
-                                    style={{
-                                        width: "10px",
-                                        height: "10px",
-
-                                        borderRadius: "50%",
-
-                                        background:
-                                            reminder.color,
-                                    }}
-                                />
-
                                 <Pencil
                                     size={16}
                                     strokeWidth={1.5}

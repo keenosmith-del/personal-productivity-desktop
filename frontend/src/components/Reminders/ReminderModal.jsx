@@ -245,19 +245,19 @@ function ReminderModal({
                         {[
                             {
                                 name: "Work",
-                                color: "#c59c70",
+                                color: "#063f47",
                             },
                             {
                                 name: "Study",
-                                color: "#3d3f4a",
+                                color: "#297376",
                             },
                             {
                                 name: "Personal",
-                                color: "#52677d",
+                                color: "#5c9396",
                             },
                             {
                                 name: "Health",
-                                color: "#7d8491",
+                                color: "#103439",
                             },
                         ].map((item) => (
                             <button

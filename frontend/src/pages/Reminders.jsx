@@ -2,12 +2,11 @@ import { useState } from "react";
 
 import MainLayout from "../layouts/MainLayout";
 
-import ReminderTimeline from "../components/Reminders/ReminderTimeline";
-import ReminderCategories from "../components/Reminders/ReminderCategories";
 import RemindersCard from "../components/Reminders/RemindersCard";
 import ReminderModal from "../components/Reminders/ReminderModal";
 import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
 import SearchBar from "../components/SearchBar";
+import ReminderOverview from "../components/Reminders/ReminderOverview";
 
 function Reminders() {
   const [showReminderModal,
@@ -30,19 +29,19 @@ function Reminders() {
           gap: "24px",
         }}
       >
-        <ReminderTimeline />
-        
+
         <div
           style={{
             display: "grid",
+
             gridTemplateColumns:
               "1fr 1fr",
 
             gap: "24px",
-
-            alignItems: "start",
           }}
         >
+          <ReminderOverview />
+
           <RemindersCard
             onNewReminder={() =>
               setShowReminderModal(true)
@@ -54,9 +53,8 @@ function Reminders() {
               setEditingReminder
             }
           />
-
-          <ReminderCategories />
         </div>
+
       </div>
       {showReminderModal && (
         <ReminderModal
