@@ -1,25 +1,20 @@
-import {
-    useState,
-    useRef,
-    useEffect
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
-import SegmentedControl from "../SegmentedControl";
+import { X } from "lucide-react";
 
-import {
-    X,
-    Calendar,
-} from "lucide-react";
+import { Calendar } from "lucide-react";
 
-function ReminderModal({
+function ProjectModal({
     onClose,
     mode = "create",
-    reminder = null,
 }) {
-    const reminderInputRef = useRef(null);
+    const projectInputRef = useRef(null);
 
     const [category, setCategory] =
         useState("Work");
+
+    const [theme, setTheme] =
+        useState("Portfolio");
 
     const [showCalendar, setShowCalendar] =
         useState(false);
@@ -28,29 +23,8 @@ function ReminderModal({
         useState("Choose a date");
 
     useEffect(() => {
-        reminderInputRef.current?.focus();
+        projectInputRef.current?.focus();
     }, []);
-
-    const inputStyle = {
-        width: "100%",
-
-        padding: "14px 18px",
-
-        background:
-            "rgba(255,255,255,0.05)",
-
-        border:
-            "1px solid rgba(255,255,255,0.08)",
-
-        borderRadius: "16px",
-
-        color:
-            "var(--text-primary)",
-
-        fontSize: "0.95rem",
-
-        outline: "none",
-    };
 
     return (
         <div
@@ -108,7 +82,8 @@ function ReminderModal({
                     style={{
                         display: "flex",
 
-                        justifyContent: "space-between",
+                        justifyContent:
+                            "space-between",
 
                         alignItems: "center",
                     }}
@@ -120,8 +95,8 @@ function ReminderModal({
                         }}
                     >
                         {mode === "edit"
-                            ? "Edit Reminder"
-                            : "New Reminder"}
+                            ? "Edit Project"
+                            : "New Project"}
                     </h2>
 
                     <X
@@ -129,29 +104,19 @@ function ReminderModal({
                         strokeWidth={1.5}
                         style={{
                             cursor: "pointer",
-
-                            transition:
-                                "all 0.2s ease",
                         }}
                         onClick={onClose}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.opacity =
-                                "0.7";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.opacity =
-                                "1";
-                        }}
                     />
                 </div>
 
                 <input
-                    ref={reminderInputRef}
-                    placeholder="Reminder name"
+                    ref={projectInputRef}
+                    placeholder="Project name"
                     style={{
                         width: "100%",
 
-                        background: "transparent",
+                        background:
+                            "transparent",
 
                         border: "none",
 
@@ -164,11 +129,14 @@ function ReminderModal({
 
                         fontWeight: "300",
 
-                        letterSpacing: "-0.03em",
+                        letterSpacing:
+                            "-0.03em",
 
-                        padding: "0 0 12px 0",
+                        padding:
+                            "0 0 12px 0",
 
-                        borderBottom: "1px solid rgba(255,255,255,0.06)",
+                        borderBottom:
+                            "1px solid rgba(255,255,255,0.06)",
                     }}
                 />
 
@@ -176,8 +144,7 @@ function ReminderModal({
                     style={{
                         padding: "18px 0",
 
-                        borderBottom:
-                            "1px solid rgba(255,255,255,0.06)",
+                        borderBottom: "1px solid rgba(255,255,255,0.06)",
                     }}
                 >
                     <p
@@ -186,16 +153,15 @@ function ReminderModal({
 
                             fontSize: "0.85rem",
 
-                            color:
-                                "var(--text-secondary)",
+                            color: "var(--text-secondary)",
                         }}
                     >
-                        Notes
+                        Description
                     </p>
 
                     <textarea
                         rows={3}
-                        placeholder="Write any additional details..."
+                        placeholder="Describe your project..."
                         style={{
                             width: "100%",
 
@@ -228,8 +194,6 @@ function ReminderModal({
                                 "var(--text-secondary)",
 
                             fontSize: "0.85rem",
-
-                            fontWeight: "400",
                         }}
                     >
                         Category
@@ -245,7 +209,7 @@ function ReminderModal({
                         {[
                             {
                                 name: "Work",
-                                color: "#c59c70",
+                                color: "#1a1d29",
                             },
                             {
                                 name: "Study",
@@ -253,7 +217,7 @@ function ReminderModal({
                             },
                             {
                                 name: "Personal",
-                                color: "#52677d",
+                                color: "#c59c70",
                             },
                             {
                                 name: "Health",
@@ -263,50 +227,124 @@ function ReminderModal({
                             <button
                                 key={item.name}
                                 onClick={() =>
-                                    setCategory(item.name)
+                                    setCategory(
+                                        item.name
+                                    )
                                 }
                                 style={{
-                                    padding: "6px 12px",
+                                    padding:
+                                        "6px 12px",
 
-                                    borderRadius: "999px",
+                                    borderRadius:
+                                        "999px",
 
-                                    fontSize: "0.75rem",
+                                    fontSize:
+                                        "0.75rem",
 
-                                    cursor: "pointer",
-
-                                    transition:
-                                        "all 0.2s ease",
+                                    cursor:
+                                        "pointer",
 
                                     background:
-                                        category === item.name
+                                        category ===
+                                            item.name
                                             ? `${item.color}33`
                                             : "transparent",
 
                                     border:
-                                        category === item.name
+                                        category ===
+                                            item.name
                                             ? `1px solid ${item.color}66`
                                             : "1px solid rgba(255,255,255,0.08)",
 
                                     color:
-                                        category === item.name
+                                        category ===
+                                            item.name
                                             ? "var(--text-primary)"
                                             : "var(--text-secondary)",
                                 }}
-                                onMouseEnter={(e) => {
-                                    if (
-                                        category !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (
-                                        category !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "transparent";
-                                    }
+                            >
+                                {item.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+
+                            color:
+                                "var(--text-secondary)",
+
+                            fontSize: "0.85rem",
+                        }}
+                    >
+                        Project Theme
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        {[
+                            {
+                                name: "Portfolio",
+                                color: "#c59c70",
+                            },
+                            {
+                                name: "Productivity",
+                                color: "#72715c",
+                            },
+                            {
+                                name: "Business",
+                                color: "#83545c",
+                            },
+                            {
+                                name: "Creative",
+                                color: "#854c49",
+                            },
+                        ].map((item) => (
+                            <button
+                                key={item.name}
+                                onClick={() =>
+                                    setTheme(
+                                        item.name
+                                    )
+                                }
+                                style={{
+                                    padding:
+                                        "6px 12px",
+
+                                    borderRadius:
+                                        "999px",
+
+                                    fontSize:
+                                        "0.75rem",
+
+                                    cursor:
+                                        "pointer",
+
+                                    background:
+                                        theme ===
+                                            item.name
+                                            ? `${item.color}33`
+                                            : "transparent",
+
+                                    border:
+                                        theme ===
+                                            item.name
+                                            ? `1px solid ${item.color}66`
+                                            : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        theme ===
+                                            item.name
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
                                 }}
                             >
                                 {item.name}
@@ -333,8 +371,7 @@ function ReminderModal({
 
                         padding: "18px 12px",
 
-                        borderBottom:
-                            "1px solid rgba(255,255,255,0.06)",
+                        borderBottom: "1px solid rgba(255,255,255,0.06)",
 
                         cursor: "pointer",
 
@@ -370,7 +407,6 @@ function ReminderModal({
                         strokeWidth={1.5}
                     />
                 </div>
-
                 {showCalendar && (
                     <div
                         style={{
@@ -528,31 +564,33 @@ function ReminderModal({
                 <div
                     style={{
                         display: "flex",
-                        justifyContent: "flex-end",
+
+                        justifyContent:
+                            "flex-end",
+
                         gap: "12px",
-                        marginTop: "8px",
                     }}
                 >
                     <button
                         onClick={onClose}
                         style={{
-                            background: "transparent",
+                            background:
+                                "transparent",
 
-                            border: "1px solid rgba(255,255,255,0.08)",
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
 
-                            borderRadius: "999px",
+                            borderRadius:
+                                "999px",
 
-                            padding: "8px 14px",
+                            padding:
+                                "8px 14px",
 
-                            color: "#ff6b6b",
+                            color:
+                                "#ff6b6b",
 
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
+                            cursor:
+                                "pointer",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
@@ -574,23 +612,23 @@ function ReminderModal({
 
                     <button
                         style={{
-                            background: "transparent",
+                            background:
+                                "transparent",
 
-                            border: "1px solid rgba(255,255,255,0.08)",
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
 
-                            borderRadius: "999px",
+                            borderRadius:
+                                "999px",
 
-                            padding: "8px 14px",
+                            padding:
+                                "8px 14px",
 
-                            color: "var(--text-secondary)",
+                            color:
+                                "var(--text-secondary)",
 
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
+                            cursor:
+                                "pointer",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
@@ -609,7 +647,7 @@ function ReminderModal({
                     >
                         {mode === "edit"
                             ? "Save Changes"
-                            : "Create Reminder"}
+                            : "Create Project"}
                     </button>
                 </div>
             </div>
@@ -617,4 +655,4 @@ function ReminderModal({
     );
 }
 
-export default ReminderModal;
+export default ProjectModal;

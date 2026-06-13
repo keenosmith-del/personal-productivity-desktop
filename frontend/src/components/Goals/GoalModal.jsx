@@ -19,7 +19,7 @@ function GoalModal({
   const goalInputRef = useRef(null);
 
   const [category, setCategory] =
-    useState("Career");
+    useState("Work");
 
   const [showCalendar, setShowCalendar] =
     useState(false);
@@ -106,8 +106,7 @@ function GoalModal({
           style={{
             display: "flex",
 
-            justifyContent:
-              "space-between",
+            justifyContent: "space-between",
 
             alignItems: "center",
           }}
@@ -115,6 +114,7 @@ function GoalModal({
           <h2
             style={{
               fontWeight: "400",
+              fontSize: "1.4rem",
             }}
           >
             {mode === "edit"
@@ -146,21 +146,77 @@ function GoalModal({
         <input
           ref={goalInputRef}
           placeholder="Goal name"
-          style={inputStyle}
-        />
-
-        <textarea
-          rows={4}
-          placeholder="Notes (optional)"
           style={{
-            ...inputStyle,
+            width: "100%",
 
-            resize: "none",
+            background: "transparent",
 
-            fontFamily:
-              "inherit",
+            border: "none",
+
+            outline: "none",
+
+            color:
+              "var(--text-primary)",
+
+            fontSize: "1.2rem",
+
+            fontWeight: "300",
+
+            letterSpacing: "-0.03em",
+
+            padding: "0 0 12px 0",
+
+            borderBottom:
+              "1px solid rgba(255,255,255,0.06)",
           }}
         />
+
+        <div
+          style={{
+            padding: "18px 0",
+
+            borderBottom:
+              "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <p
+            style={{
+              marginBottom: "12px",
+
+              fontSize: "0.85rem",
+
+              color:
+                "var(--text-secondary)",
+            }}
+          >
+            Notes
+          </p>
+
+          <textarea
+            rows={3}
+            placeholder="Write any additional details..."
+            style={{
+              width: "100%",
+
+              background:
+                "transparent",
+
+              border: "none",
+
+              outline: "none",
+
+              resize: "none",
+
+              color:
+                "var(--text-primary)",
+
+              fontFamily:
+                "inherit",
+
+              fontSize: "0.95rem",
+            }}
+          />
+        </div>
 
         <div>
           <p
@@ -181,14 +237,14 @@ function GoalModal({
           <div
             style={{
               display: "flex",
-              gap: "20px",
+              gap: "10px",
               flexWrap: "wrap",
             }}
           >
             {[
               {
-                name: "Career",
-                color: "#1a1d29",
+                name: "Work",
+                color: "#c59c70",
               },
               {
                 name: "Study",
@@ -203,88 +259,60 @@ function GoalModal({
                 color: "#7d8491",
               },
             ].map((item) => (
-              <div
+              <button
                 key={item.name}
                 onClick={() =>
                   setCategory(item.name)
                 }
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
+                  padding: "6px 12px",
+
+                  borderRadius: "999px",
+
+                  fontSize: "0.75rem",
 
                   cursor: "pointer",
 
-                  opacity:
-                    category === item.name
-                      ? 1
-                      : 0.55,
-
                   transition:
                     "all 0.2s ease",
+
+                  background:
+                    category === item.name
+                      ? `${item.color}33`
+                      : "transparent",
+
+                  border:
+                    category === item.name
+                      ? `1px solid ${item.color}66`
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                  color:
+                    category === item.name
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
                 }}
                 onMouseEnter={(e) => {
                   if (
                     category !== item.name
                   ) {
-                    e.currentTarget.style.opacity =
-                      "0.85";
-
-                    e.currentTarget.style.transform =
-                      "translateY(-1px)";
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.04)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (
                     category !== item.name
                   ) {
-                    e.currentTarget.style.opacity =
-                      "0.55";
-
-                    e.currentTarget.style.transform =
-                      "translateY(0)";
+                    e.currentTarget.style.background =
+                      "transparent";
                   }
                 }}
               >
-                <div
-                  style={{
-                    width: "8px",
-                    height: "8px",
-
-                    borderRadius: "50%",
-
-                    background:
-                      item.color,
-
-                    opacity:
-                      category === item.name
-                        ? 1
-                        : 0.65,
-                  }}
-                />
-
-                <span
-                  style={{
-                    fontWeight: "300",
-
-                    fontSize: "0.9rem",
-
-                    color:
-                      category === item.name
-                        ? "var(--text-primary)"
-                        : "rgba(255,255,255,0.65)",
-
-                    transition:
-                      "all 0.2s ease",
-                  }}
-                >
-                  {item.name}
-                </span>
-              </div>
+                {item.name}
+              </button>
             ))}
           </div>
         </div>
-
         <div
           onClick={() =>
             setShowCalendar(
@@ -299,15 +327,12 @@ function GoalModal({
 
             alignItems: "center",
 
-            padding: "14px 18px",
+            borderRadius: "12px",
 
-            background:
-              "rgba(255,255,255,0.05)",
+            padding: "18px 12px",
 
-            border:
-              "1px solid rgba(255,255,255,0.08)",
-
-            borderRadius: "16px",
+            borderBottom:
+              "1px solid rgba(255,255,255,0.06)",
 
             cursor: "pointer",
 
@@ -316,15 +341,18 @@ function GoalModal({
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background =
-              "rgba(255,255,255,0.08)";
+              "rgba(255,255,255,0.03)";
           }}
+
           onMouseLeave={(e) => {
             e.currentTarget.style.background =
-              "rgba(255,255,255,0.05)";
+              "transparent";
           }}
         >
           <span
             style={{
+              fontSize: "0.8rem",
+
               color:
                 selectedDate ===
                   "Choose a date"
@@ -344,11 +372,9 @@ function GoalModal({
         {showCalendar && (
           <div
             style={{
-              background:
-                "rgba(255,255,255,0.04)",
+              background: "rgba(255,255,255,0.04)",
 
-              border:
-                "1px solid rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.08)",
 
               borderRadius: "20px",
 
@@ -357,24 +383,74 @@ function GoalModal({
               marginTop: "-8px",
             }}
           >
-            <p
+            <div
               style={{
-                marginBottom: "16px",
-
-                fontWeight: "400",
+                marginBottom: "20px",
 
                 textAlign: "center",
               }}
             >
-              June 2026
-            </p>
+              <span
+                style={{
+                  fontWeight: "500",
+                }}
+              >
+                June
+              </span>
 
+              <span
+                style={{
+                  color:
+                    "var(--text-secondary)",
+
+                  marginLeft: "6px",
+                }}
+              >
+                2026
+              </span>
+            </div>
             <div
               style={{
                 display: "grid",
 
                 gridTemplateColumns:
                   "repeat(7, 1fr)",
+
+                marginBottom: "12px",
+
+                gap: "6px",
+              }}
+            >
+              {[
+                "M",
+                "T",
+                "W",
+                "T",
+                "F",
+                "S",
+                "S",
+              ].map((day) => (
+                <div
+                  key={day}
+                  style={{
+                    textAlign: "center",
+
+                    fontSize: "0.75rem",
+
+                    color:
+                      "var(--text-secondary)",
+                  }}
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+
+                gridTemplateColumns: "repeat(7, 1fr)",
 
                 gap: "8px",
               }}
@@ -393,31 +469,50 @@ function GoalModal({
                       );
                     }}
                     style={{
+                      width: "34px",
+
+                      height: "34px",
+
+                      borderRadius: "50%",
+
                       background:
-                        "transparent",
+                        selectedDate ===
+                          `June ${day}, 2026`
+                          ? "#52677d"
+                          : "transparent",
 
-                      border:
-                        "1px solid rgba(255,255,255,0.08)",
-
-                      borderRadius: "10px",
-
-                      padding: "10px",
+                      border: "none",
 
                       color:
-                        "var(--text-primary)",
+                        selectedDate ===
+                          `June ${day}, 2026`
+                          ? "#fff"
+                          : "var(--text-primary)",
 
                       cursor: "pointer",
+
+                      margin: "0 auto",
 
                       transition:
                         "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.08)";
+                      if (
+                        selectedDate !==
+                        `June ${day}, 2026`
+                      ) {
+                        e.currentTarget.style.background =
+                          "rgba(255,255,255,0.05)";
+                      }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        "transparent";
+                      if (
+                        selectedDate !==
+                        `June ${day}, 2026`
+                      ) {
+                        e.currentTarget.style.background =
+                          "transparent";
+                      }
                     }}
                   >
                     {day}
@@ -431,12 +526,8 @@ function GoalModal({
         <div
           style={{
             display: "flex",
-
-            justifyContent:
-              "flex-end",
-
+            justifyContent: "flex-end",
             gap: "12px",
-
             marginTop: "8px",
           }}
         >

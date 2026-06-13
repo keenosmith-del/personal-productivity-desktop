@@ -1,6 +1,8 @@
 import GlassCard from "../GlassCard";
 
-function AllProjectsCard() {
+function AllProjectsCard({
+    onNewProject,
+}) {
     return (
         <GlassCard minHeight="260px">
             <div
@@ -33,6 +35,7 @@ function AllProjectsCard() {
                     </h2>
 
                     <button
+                        onClick={onNewProject}
                         style={{
                             background: "transparent",
 
@@ -205,7 +208,7 @@ function AllProjectsCard() {
                     }}
                 />
             </div>
-        </GlassCard>
+        </GlassCard >
     );
 }
 

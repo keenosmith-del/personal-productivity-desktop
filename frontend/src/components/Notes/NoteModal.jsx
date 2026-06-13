@@ -65,7 +65,7 @@ function NoteModal({
                     e.stopPropagation()
                 }
                 style={{
-                    width: "600px",
+                    width: "650px",
 
                     background:
                         "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
@@ -94,8 +94,7 @@ function NoteModal({
                     style={{
                         display: "flex",
 
-                        justifyContent:
-                            "space-between",
+                        justifyContent: "space-between",
 
                         alignItems: "center",
                     }}
@@ -103,6 +102,7 @@ function NoteModal({
                     <h2
                         style={{
                             fontWeight: "400",
+                            fontSize: "1.4rem",
                         }}
                     >
                         {mode === "edit"
@@ -134,21 +134,52 @@ function NoteModal({
                 <input
                     ref={noteInputRef}
                     placeholder="Title"
-                    style={inputStyle}
+                    style={{
+                        width: "100%",
+
+                        background: "transparent",
+
+                        border: "none",
+
+                        outline: "none",
+
+                        color:
+                            "var(--text-primary)",
+
+                        fontSize: "1.2rem",
+
+                        fontWeight: "300",
+
+                        letterSpacing: "-0.03em",
+
+                        padding: "0 0 12px 0",
+
+                        borderBottom:
+                            "1px solid rgba(255,255,255,0.06)",
+                    }}
                 />
 
                 <textarea
-                    rows={12}
-                    placeholder="Start writing..."
+                    rows={3}
+                    placeholder="Start Writing..."
                     style={{
-                        ...inputStyle,
+                        width: "100%",
+                        height: "300px",
+
+                        background:
+                            "transparent",
+
+                        border: "none",
+
+                        outline: "none",
 
                         resize: "none",
 
-                        fontFamily:
-                            "inherit",
+                        color: "var(--text-primary)",
 
-                        lineHeight: 1.2,
+                        fontFamily: "inherit",
+
+                        fontSize: "0.95rem",
                     }}
                 />
 
