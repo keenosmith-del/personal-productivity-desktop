@@ -17,7 +17,7 @@ function WorkingHoursModal({
         border:
             "1px solid rgba(255,255,255,0.08)",
 
-        borderRadius: "16px",
+        borderRadius: "12px",
 
         color:
             "var(--text-primary)",
@@ -120,27 +120,40 @@ function WorkingHoursModal({
 
                 <div
                     style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "20px",
+                        display: "grid",
+
+                        gridTemplateColumns:
+                            "1fr 1fr",
+
+                        gap: "16px",
                     }}
                 >
                     <div>
                         <p
                             style={{
                                 marginBottom: "8px",
+
                                 color:
                                     "var(--text-secondary)",
+
                                 fontSize: "0.85rem",
-                                fontWeight: "400",
                             }}
                         >
-                            Start Time
+                            Start
                         </p>
 
                         <input
+                            type="time"
                             defaultValue="09:00"
-                            style={inputStyle}
+                            style={{
+                                ...inputStyle,
+
+                                padding: "10px 14px",
+
+                                fontSize: "0.9rem",
+
+                                fontWeight: "300",
+                            }}
                         />
                     </div>
 
@@ -148,18 +161,28 @@ function WorkingHoursModal({
                         <p
                             style={{
                                 marginBottom: "8px",
+
                                 color:
                                     "var(--text-secondary)",
+
                                 fontSize: "0.85rem",
-                                fontWeight: "400",
                             }}
                         >
-                            End Time
+                            End
                         </p>
 
                         <input
+                            type="time"
                             defaultValue="17:00"
-                            style={inputStyle}
+                            style={{
+                                ...inputStyle,
+
+                                padding: "10px 14px",
+
+                                fontSize: "0.9rem",
+
+                                fontWeight: "300",
+                            }}
                         />
                     </div>
                 </div>
@@ -251,7 +274,7 @@ function WorkingHoursModal({
                         Save
                     </button>
                 </div>
-                
+
             </div>
         </div>
     );
