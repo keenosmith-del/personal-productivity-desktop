@@ -1,14 +1,11 @@
-/**
- * Universal dashboard card.
- *
- * Used throughout the application.
- */
+
 import GlassCard from "../GlassCard";
 
 function AnalyticsCard({
   title,
   value,
   subtitle,
+  chips = [],
   wide = false,
   clickable = false,
   onClick,
@@ -90,6 +87,44 @@ function AnalyticsCard({
           >
             {subtitle}
           </p>
+
+          {chips.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+
+                gap: "8px",
+
+                justifyContent: "center",
+
+                flexWrap: "wrap",
+
+                marginTop: "12px",
+              }}
+            >
+              {chips.map((chip) => (
+                <span
+                  key={chip.label}
+                  style={{
+                    padding: "4px 8px",
+
+                    borderRadius: "999px",
+
+                    fontSize: "0.7rem",
+
+                    background: `${chip.color}33`,
+
+                    border: `1px solid ${chip.color}66`,
+
+                    color:
+                      "var(--text-secondary)",
+                  }}
+                >
+                  {chip.label}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </GlassCard>
