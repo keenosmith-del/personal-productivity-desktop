@@ -49,37 +49,193 @@ function ProjectCard({
                 <div
                     style={{
                         display: "flex",
-
-                        flexDirection: "column",
-
-                        gap: "12px",
-
-                        color:
-                            "var(--text-secondary)",
+                        gap: "6px",
+                        flexWrap: "wrap",
+                        marginBottom: "20px",
                     }}
                 >
-                    <p>
-                        {project.tasks} Tasks
-                    </p>
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
 
-                    <p>
-                        {project.goals} Goals
-                    </p>
+                            background: "#854c4933",
+                            border: "1px solid #854c4966",
+                        }}
+                    >
+                        Project
+                    </span>
 
-                    <p>
-                        {project.notes} Notes
-                    </p>
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
 
-                    <p>
-                        {project.reminders} Reminders
-                    </p>
+                            background:
+                                project.category === "Work"
+                                    ? "#063f4733"
+                                    : project.category ===
+                                        "Study"
+                                        ? "#29737633"
+                                        : project.category ===
+                                            "Personal"
+                                            ? "#5c939633"
+                                            : "#10343933",
+
+                            border:
+                                project.category === "Work"
+                                    ? "1px solid #063f4766"
+                                    : project.category ===
+                                        "Study"
+                                        ? "1px solid #29737666"
+                                        : project.category ===
+                                            "Personal"
+                                            ? "1px solid #5c939666"
+                                            : "1px solid #10343966",
+                        }}
+                    >
+                        {project.category}
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
+
+                            background:
+                                project.priority === "High"
+                                    ? "#ab313033"
+                                    : project.priority ===
+                                        "Medium"
+                                        ? "#62929e33"
+                                        : "#ffdb5833",
+
+                            border:
+                                project.priority === "High"
+                                    ? "1px solid #ab313066"
+                                    : project.priority ===
+                                        "Medium"
+                                        ? "1px solid #62929e66"
+                                        : "1px solid #ffdb5866",
+                        }}
+                    >
+                        {project.priority}
+                    </span>
                 </div>
 
                 <div
                     style={{
-                        flex: 1,
+                        display: "flex",
+                        gap: "8px",
+                        flexWrap: "wrap",
                     }}
-                />
+                >
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
+                            background: "#72715c33",
+                            border: "1px solid #72715c66",
+                        }}
+                    >
+                        {project.tasks} Tasks
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
+                            background: "#c59c7033",
+                            border: "1px solid #c59c7066",
+                        }}
+                    >
+                        {project.goals} Goals
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
+                            background: "#52677d33",
+                            border: "1px solid #52677d66",
+                        }}
+                    >
+                        {project.notes} Notes
+                    </span>
+
+                    <span
+                        style={{
+                            padding: "4px 8px",
+                            borderRadius: "999px",
+                            fontSize: "0.68rem",
+                            background: "#83545c33",
+                            border: "1px solid #83545c66",
+                        }}
+                    >
+                        {project.reminders} Reminders
+                    </span>
+                </div>
+
+                <>
+                    <div
+                        style={{
+                            flex: 1,
+                        }}
+                    />
+
+                    <div
+                        style={{
+                            marginBottom: "16px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                height: "8px",
+
+                                borderRadius: "999px",
+
+                                background:
+                                    "rgba(255,255,255,0.08)",
+
+                                overflow: "hidden",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width:
+                                        `${project.progress}%`,
+
+                                    height: "100%",
+
+                                    background:
+                                        "#c59c70",
+
+                                    borderRadius:
+                                        "999px",
+                                }}
+                            />
+                        </div>
+
+                        <div
+                            style={{
+                                marginTop: "6px",
+
+                                fontSize: "0.7rem",
+
+                                color:
+                                    "var(--text-secondary)",
+                            }}
+                        >
+                            {project.progress}% Complete
+                        </div>
+                    </div>
+                </>
 
                 <div
                     style={{

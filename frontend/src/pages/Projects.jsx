@@ -17,6 +17,11 @@ function Projects() {
             goals: 3,
             notes: 4,
             reminders: 2,
+
+            category: "Work",
+            priority: "High",
+            progress: 72,
+
             status: "Active",
         },
 
@@ -26,6 +31,11 @@ function Projects() {
             goals: 2,
             notes: 6,
             reminders: 3,
+
+            category: "Study",
+            priority: "Medium",
+            progress: 58,
+
             status: "Active",
         },
 
@@ -35,7 +45,12 @@ function Projects() {
             goals: 1,
             notes: 2,
             reminders: 1,
-            status: "Completed",
+
+            category: "Personal",
+            priority: "Low",
+            progress: 100,
+
+            status: "Complete",
         },
     ];
 
