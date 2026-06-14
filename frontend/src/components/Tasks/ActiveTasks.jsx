@@ -17,6 +17,7 @@ function ActiveTasks({
     toast,
     setToast,
     setLastCompletedTask,
+    setLastDeletedTask,
     completionTimeout,
     setCompletionTimeout,
 }) {
@@ -439,11 +440,21 @@ function ActiveTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
+                                        setLastDeletedTask(task);
+
                                         setTasks((prev) =>
                                             prev.filter(
                                                 (t) => t.id !== task.id
                                             )
                                         );
+
+                                        setToast(
+                                            "Task deleted"
+                                        );
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
                                     }}
                                 />
                             </div>

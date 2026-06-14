@@ -34,6 +34,10 @@ function Tasks() {
     setLastCompletedTask] =
     useState(null);
 
+  const [lastDeletedTask,
+    setLastDeletedTask] =
+    useState(null);
+
   const [completionTimeout,
     setCompletionTimeout] =
     useState(null);
@@ -63,6 +67,9 @@ function Tasks() {
             setToast={setToast}
             setLastCompletedTask={
               setLastCompletedTask
+            }
+            setLastDeletedTask={
+              setLastDeletedTask
             }
             onViewTask={setSelectedTask}
             onEditTask={setEditingTask}
@@ -144,15 +151,37 @@ function Tasks() {
       <Toast
         message={toast}
         actionLabel={
-          lastCompletedTask
+          lastCompletedTask ||
+            lastDeletedTask
             ? "Undo"
             : null
         }
         onAction={() => {
-          if (completionTimeout) {
-            clearTimeout(completionTimeout);
-            setCompletionTimeout(null);
+          if (lastDeletedTask) {
+            setTasks((prev) => [
+              lastDeletedTask,
+              ...prev,
+            ]);
+
+            setLastDeletedTask(
+              null
+            );
+
+            setToast("");
+
+            return;
           }
+
+          if (completionTimeout) {
+            clearTimeout(
+              completionTimeout
+            );
+
+            setCompletionTimeout(
+              null
+            );
+          }
+
           if (!lastCompletedTask)
             return;
 
@@ -172,6 +201,10 @@ function Tasks() {
           setToast("");
 
           setLastCompletedTask(
+            null
+          );
+
+          setLastDeletedTask(
             null
           );
         }}
