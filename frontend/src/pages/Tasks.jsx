@@ -42,6 +42,14 @@ function Tasks() {
     setCompletionTimeout] =
     useState(null);
 
+  const [showClearCompleted,
+    setShowClearCompleted] =
+    useState(false);
+
+  const [showClearActive,
+    setShowClearActive] =
+    useState(false);
+
   return (
     <MainLayout>
       <div
@@ -78,16 +86,29 @@ function Tasks() {
             }
             completionTimeout={completionTimeout}
             setCompletionTimeout={setCompletionTimeout}
+            onClearAll={() =>
+              setShowClearActive(true)
+            }
           />
 
           <CompletedTasks
             tasks={tasks}
             setTasks={setTasks}
+            onClearAll={() =>
+              setShowClearCompleted(true)
+            }
+            setToast={setToast}
+            setLastDeletedTask={
+              setLastDeletedTask
+            }
+            setLastCompletedTask={
+              setLastCompletedTask
+            }
           />
 
-          <TaskStats />
+          <TaskStats tasks={tasks} />
 
-          <TaskActivity />
+          <TaskActivity tasks={tasks} />
         </div>
       </div>
       {showTaskModal && (
@@ -148,6 +169,362 @@ function Tasks() {
           }}
         />
       )}
+      {showClearCompleted && (
+        <div
+          onClick={() =>
+            setShowClearCompleted(
+              false
+            )
+          }
+          style={{
+            position: "fixed",
+            inset: 0,
+            background:
+              "rgba(0,0,0,0.45)",
+            backdropFilter:
+              "blur(12px)",
+            display: "flex",
+            justifyContent:
+              "center",
+            alignItems:
+              "center",
+            zIndex: 2000,
+          }}
+        >
+          <div
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+            style={{
+              width: "400px",
+              padding: "28px",
+              borderRadius:
+                "24px",
+              background:
+                "rgba(20,20,20,0.85)",
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: "12px",
+                fontWeight: "400",
+              }}
+            >
+              Clear completed tasks?
+            </h3>
+
+            <p
+              style={{
+                color:
+                  "var(--text-secondary)",
+                marginBottom: "24px",
+              }}
+            >
+              This action cannot be
+              undone.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "flex-end",
+                gap: "12px",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setShowClearCompleted(
+                    false
+                  )
+                }
+                style={{
+                  background: "transparent",
+
+                  border: "1px solid rgba(255,255,255,0.08)",
+
+                  borderRadius: "999px",
+
+                  padding: "8px 14px",
+
+                  color: "#ff6b6b",
+
+                  fontSize: "0.85rem",
+
+                  fontWeight: "400",
+
+                  cursor: "pointer",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color =
+                    "#ff6b6b";
+
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.04)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    "#ff6b6b";
+
+                  e.currentTarget.style.background =
+                    "transparent";
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setTasks((prev) =>
+                    prev.filter(
+                      (task) =>
+                        !task.completed
+                    )
+                  );
+
+                  setLastCompletedTask(
+                    null
+                  );
+
+                  setLastDeletedTask(
+                    null
+                  );
+
+                  setToast(
+                    "Completed tasks cleared"
+                  );
+
+                  setTimeout(() => {
+                    setToast("");
+                  }, 3000);
+
+                  setShowClearCompleted(
+                    false
+                  );
+                }}
+
+                style={{
+                  background: "transparent",
+
+                  border: "1px solid rgba(255,255,255,0.08)",
+
+                  borderRadius: "999px",
+
+                  padding: "8px 14px",
+
+                  color: "var(--text-secondary)",
+
+                  fontSize: "0.85rem",
+
+                  fontWeight: "400",
+
+                  cursor: "pointer",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color =
+                    "var(--text-primary)";
+
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.04)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    "var(--text-secondary)";
+
+                  e.currentTarget.style.background =
+                    "transparent";
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* showClearActive */}
+      {showClearActive && (
+        <div
+          onClick={() =>
+            setShowClearActive(
+              false
+            )
+          }
+          style={{
+            position: "fixed",
+            inset: 0,
+            background:
+              "rgba(0,0,0,0.45)",
+            backdropFilter:
+              "blur(12px)",
+            display: "flex",
+            justifyContent:
+              "center",
+            alignItems:
+              "center",
+            zIndex: 2000,
+          }}
+        >
+          <div
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+            style={{
+              width: "400px",
+              padding: "28px",
+              borderRadius:
+                "24px",
+              background:
+                "rgba(20,20,20,0.85)",
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <h3
+              style={{
+                marginBottom: "12px",
+                fontWeight: "400",
+              }}
+            >
+              Clear active tasks?
+            </h3>
+
+            <p
+              style={{
+                color:
+                  "var(--text-secondary)",
+                marginBottom: "24px",
+              }}
+            >
+              This action cannot be undone.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "flex-end",
+                gap: "12px",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setShowClearActive(
+                    false
+                  )
+                }
+                style={{
+                  background: "transparent",
+
+                  border: "1px solid rgba(255,255,255,0.08)",
+
+                  borderRadius: "999px",
+
+                  padding: "8px 14px",
+
+                  color: "#ff6b6b",
+
+                  fontSize: "0.85rem",
+
+                  fontWeight: "400",
+
+                  cursor: "pointer",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color =
+                    "#ff6b6b";
+
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.04)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    "#ff6b6b";
+
+                  e.currentTarget.style.background =
+                    "transparent";
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setTasks((prev) =>
+                    prev.filter(
+                      (task) =>
+                        task.completed
+                    )
+                  );
+
+                  setLastCompletedTask(
+                    null
+                  );
+
+                  setLastDeletedTask(
+                    null
+                  );
+
+                  setToast(
+                    "Active tasks cleared"
+                  );
+
+                  setTimeout(() => {
+                    setToast("");
+                  }, 3000);
+
+                  setShowClearActive(
+                    false
+                  );
+                }}
+
+                style={{
+                  background: "transparent",
+
+                  border: "1px solid rgba(255,255,255,0.08)",
+
+                  borderRadius: "999px",
+
+                  padding: "8px 14px",
+
+                  color: "var(--text-secondary)",
+
+                  fontSize: "0.85rem",
+
+                  fontWeight: "400",
+
+                  cursor: "pointer",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color =
+                    "var(--text-primary)";
+
+                  e.currentTarget.style.background =
+                    "rgba(255,255,255,0.04)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    "var(--text-secondary)";
+
+                  e.currentTarget.style.background =
+                    "transparent";
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Toast
         message={toast}
         actionLabel={
@@ -158,8 +535,13 @@ function Tasks() {
         }
         onAction={() => {
           if (lastDeletedTask) {
+            const {
+              restoreToCompleted,
+              ...taskToRestore
+            } = lastDeletedTask;
+
             setTasks((prev) => [
-              lastDeletedTask,
+              taskToRestore,
               ...prev,
             ]);
 

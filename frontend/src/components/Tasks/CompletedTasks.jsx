@@ -7,10 +7,20 @@ import { useState } from "react";
 function CompletedTasks({
     tasks,
     setTasks,
+    onClearAll,
+    setToast,
+    setLastDeletedTask,
+    setLastCompletedTask,
 }) {
     const [hoveredTask,
         setHoveredTask] =
         useState(null);
+
+    const completedTasks =
+        tasks.filter(
+            (task) =>
+                task.completed
+        );
     return (
         <GlassCard
             style={{
@@ -44,6 +54,10 @@ function CompletedTasks({
                 </h2>
 
                 <button
+                    onClick={onClearAll}
+                    disabled={
+                        completedTasks.length === 0
+                    }
                     style={{
                         background: "transparent",
 
@@ -53,17 +67,33 @@ function CompletedTasks({
 
                         padding: "8px 14px",
 
-                        color: "var(--text-secondary)",
+                        color:
+                            completedTasks.length === 0
+                                ? "rgba(255,255,255,0.25)"
+                                : "var(--text-secondary)",
 
                         fontSize: "0.8rem",
 
                         fontWeight: "300",
 
-                        cursor: "pointer",
+                        cursor:
+                            completedTasks.length === 0
+                                ? "not-allowed"
+                                : "pointer",
 
                         transition: "all 0.2s ease",
+
+                        opacity:
+                            completedTasks.length === 0
+                                ? 0.5
+                                : 1,
                     }}
                     onMouseEnter={(e) => {
+                        if (
+                            completedTasks.length === 0
+                        )
+                            return;
+
                         e.currentTarget.style.color =
                             "var(--text-primary)";
 
@@ -71,6 +101,11 @@ function CompletedTasks({
                             "rgba(255,255,255,0.04)";
                     }}
                     onMouseLeave={(e) => {
+                        if (
+                            completedTasks.length === 0
+                        )
+                            return;
+
                         e.currentTarget.style.color =
                             "var(--text-secondary)";
 
@@ -87,14 +122,28 @@ function CompletedTasks({
                     display: "flex",
                     flexDirection: "column",
                     gap: "12px",
+
+                    maxHeight: "250px",
+
+                    overflowY: "auto",
+
+                    paddingRight: "4px",
                 }}
             >
-                {tasks
-                    .filter(
-                        (task) =>
-                            task.completed
-                    )
-                    .map((task) => (
+                {completedTasks.length === 0 ? (
+                    <p
+                        style={{
+                            color:
+                                "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            textAlign: "left",
+                            padding: "24px 0",
+                        }}
+                    >
+                        No completed tasks.
+                    </p>
+                ) : (
+                    completedTasks.map((task) => (
                         <div
                             key={task.title}
                             style={{
@@ -125,6 +174,10 @@ function CompletedTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
+                                        setLastCompletedTask(
+                                            null
+                                        );
+
                                         setTasks((prev) =>
                                             prev.map((t) =>
                                                 t.id === task.id
@@ -132,10 +185,19 @@ function CompletedTasks({
                                                         ...t,
                                                         completed: false,
                                                         completedDate: null,
+                                                        status: "Active",
                                                     }
                                                     : t
                                             )
                                         );
+
+                                        setToast(
+                                            "Task restored"
+                                        );
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 3000);
                                     }}
                                     onMouseEnter={() =>
                                         setHoveredTask(task.id)
@@ -218,53 +280,9 @@ function CompletedTasks({
 
                                                 fontSize: "0.68rem",
 
-                                                background: "#72715c33",
-
-                                                border:
-                                                    "1px solid #72715c66",
-                                            }}
-                                        >
-                                            Task
-                                        </span>
-
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
-
-                                                borderRadius: "999px",
-
-                                                fontSize: "0.68rem",
-
-                                                background:
-                                                    task.category === "Work"
-                                                        ? "#063f4733"
-                                                        : task.category === "Study"
-                                                            ? "#29737633"
-                                                            : "#5c939633",
-
-                                                border:
-                                                    task.category === "Work"
-                                                        ? "1px solid #063f4766"
-                                                        : task.category === "Study"
-                                                            ? "1px solid #29737666"
-                                                            : "1px solid #5c939666",
-                                            }}
-                                        >
-                                            {task.category}
-                                        </span>
-
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
-
-                                                borderRadius: "999px",
-
-                                                fontSize: "0.68rem",
-
                                                 background: "#728a6e33",
 
-                                                border:
-                                                    "1px solid #728a6e66",
+                                                border: "1px solid #728a6e66",
                                             }}
                                         >
                                             Complete
@@ -312,15 +330,29 @@ function CompletedTasks({
                                 onClick={(e) => {
                                     e.stopPropagation();
 
+                                    setLastDeletedTask({
+                                        ...task,
+                                        restoreToCompleted: true,
+                                    });
+
                                     setTasks((prev) =>
                                         prev.filter(
                                             (t) => t.id !== task.id
                                         )
                                     );
+
+                                    setToast(
+                                        "Task deleted"
+                                    );
+
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 4000);
                                 }}
                             />
                         </div>
-                    ))}
+                    ))
+                )}
             </div>
         </GlassCard>
     );
