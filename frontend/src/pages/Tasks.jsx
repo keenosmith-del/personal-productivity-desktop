@@ -20,6 +20,10 @@ function Tasks() {
   const [selectedTask, setSelectedTask] =
     useState(null);
 
+  const [editingTask,
+    setEditingTask] =
+    useState(null);
+
   const [tasks, setTasks] =
     useState(initialTasks);
 
@@ -61,7 +65,7 @@ function Tasks() {
               setLastCompletedTask
             }
             onViewTask={setSelectedTask}
-            //onEditTask={setEditingTask}
+            onEditTask={setEditingTask}
             onNewTask={() =>
               setShowTaskModal(true)
             }
@@ -84,6 +88,20 @@ function Tasks() {
           onClose={() =>
             setShowTaskModal(false)
           }
+          onSave={(newTask) => {
+            setTasks((prev) => [
+              newTask,
+              ...prev,
+            ]);
+
+            setToast(
+              "Task created"
+            );
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+          }}
         />
       )}
       {selectedTask && (
@@ -94,7 +112,6 @@ function Tasks() {
           }
         />
       )}
-      {/*
       {editingTask && (
         <TaskModal
           mode="edit"
@@ -102,9 +119,28 @@ function Tasks() {
           onClose={() =>
             setEditingTask(null)
           }
+          onSave={(updatedTask) => {
+            setTasks((prev) =>
+              prev.map((task) =>
+                task.id ===
+                  updatedTask.id
+                  ? updatedTask
+                  : task
+              )
+            );
+
+            setToast(
+              "Task updated"
+            );
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingTask(null);
+          }}
         />
       )}
-    */}
       <Toast
         message={toast}
         actionLabel={

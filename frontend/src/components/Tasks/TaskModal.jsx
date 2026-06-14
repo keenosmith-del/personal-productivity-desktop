@@ -15,21 +15,85 @@ function TaskModal({
   onClose,
   mode = "create",
   task = null,
+  onSave,
 }) {
   const taskInputRef = useRef(null);
 
+  const [taskName,
+    setTaskName] =
+    useState(
+      task?.title || ""
+    );
+
+  const [description,
+    setDescription] =
+    useState(
+      task?.description || ""
+    );
+
   const [priority, setPriority] =
-    useState("Medium");
+    useState(
+      task?.priority ||
+      "Medium"
+    );
+
+  const [category, setCategory] =
+    useState(
+      task?.category ||
+      "Personal"
+    );
 
   const [showCalendar, setShowCalendar] =
     useState(false);
 
-  const [selectedDate, setSelectedDate] =
-    useState("Choose a date");
+  const [selectedDate,
+    setSelectedDate] =
+    useState(
+      task?.dueDate ||
+      "Choose a date"
+    );
 
   useEffect(() => {
     taskInputRef.current?.focus();
   }, []);
+
+  const handleSave = () => {
+    if (!taskName.trim())
+      return;
+
+    onSave({
+      id:
+        task?.id ||
+        Date.now(),
+
+      title: taskName,
+
+      description,
+
+      priority,
+
+      category,
+
+      dueDate:
+        selectedDate ===
+          "Choose a date"
+          ? "Today"
+          : selectedDate,
+
+      completed:
+        task?.completed ||
+        false,
+
+      pendingCompletion:
+        false,
+
+      completedDate:
+        task?.completedDate ||
+        null,
+    });
+
+    onClose();
+  };
 
   const inputStyle = {
     width: "100%",
@@ -146,6 +210,18 @@ function TaskModal({
         </div>
 
         <input
+          value={taskName}
+
+          onChange={(e) =>
+            setTaskName(
+              e.target.value
+            )
+          }
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSave();
+            }
+          }}
           ref={taskInputRef}
           placeholder="Task name"
           style={{
@@ -195,6 +271,13 @@ function TaskModal({
           </p>
 
           <textarea
+            value={description}
+
+            onChange={(e) =>
+              setDescription(
+                e.target.value
+              )
+            }
             rows={3}
             placeholder="Write any additional details..."
             style={{
@@ -233,6 +316,90 @@ function TaskModal({
               fontWeight: "400",
             }}
           >
+            Category
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Work",
+                bg: "#063f4733",
+                border: "#063f4766",
+              },
+              {
+                name: "Study",
+                bg: "#29737633",
+                border: "#29737666",
+              },
+              {
+                name: "Personal",
+                bg: "#5c939633",
+                border: "#5c939666",
+              },
+              {
+                name: "Health",
+                bg: "#10343933",
+                border: "#10343966",
+              },
+            ].map((item) => (
+              <button
+                key={item.name}
+                onClick={() =>
+                  setCategory(item.name)
+                }
+                style={{
+                  padding: "6px 12px",
+
+                  borderRadius: "999px",
+
+                  fontSize: "0.75rem",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "all 0.2s ease",
+
+                  background:
+                    category === item.name
+                      ? item.bg
+                      : "transparent",
+
+                  border:
+                    category === item.name
+                      ? `1px solid ${item.border}`
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                  color:
+                    category === item.name
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
+                }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p
+            style={{
+              marginBottom: "10px",
+
+              color:
+                "var(--text-secondary)",
+
+              fontSize: "0.85rem",
+
+              fontWeight: "400",
+            }}
+          >
             Priority
           </p>
 
@@ -246,15 +413,15 @@ function TaskModal({
             {[
               {
                 name: "Low",
-                color: "#7d8491",
+                color: "#ffdb58",
               },
               {
                 name: "Medium",
-                color: "#52677d",
+                color: "#62929e",
               },
               {
                 name: "High",
-                color: "#3d3f4a",
+                color: "#ab3130",
               },
             ].map((item) => (
               <button
@@ -568,6 +735,8 @@ function TaskModal({
           </button>
 
           <button
+            // might revert
+            onClick={handleSave}
             style={{
               background: "transparent",
 

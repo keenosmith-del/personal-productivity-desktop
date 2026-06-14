@@ -179,8 +179,8 @@ function TaskDetailsModal({
                         </p>
 
                         <p>
-                            Placeholder description for
-                            task details.
+                            {task.description ||
+                                "No description provided."}
                         </p>
                     </div>
 
