@@ -138,13 +138,26 @@ function TaskDetailsModal({
 
                                     fontSize: "0.7rem",
 
-                                    background: "#063f4733",
+                                    background:
+                                        task.category === "Work"
+                                            ? "#063f4733"
+                                            : task.category === "Study"
+                                                ? "#29737633"
+                                                : task.category === "Personal"
+                                                    ? "#5c939633"
+                                                    : "#10343933",
 
                                     border:
-                                        "1px solid #063f4766",
+                                        task.category === "Work"
+                                            ? "1px solid #063f4766"
+                                            : task.category === "Study"
+                                                ? "1px solid #29737666"
+                                                : task.category === "Personal"
+                                                    ? "1px solid #5c939666"
+                                                    : "1px solid #10343966",
                                 }}
                             >
-                                Work
+                                {task.category}
                             </span>
 
                             <span
@@ -155,13 +168,60 @@ function TaskDetailsModal({
 
                                     fontSize: "0.7rem",
 
-                                    background: "#ab313033",
+                                    background:
+                                        task.priority === "High"
+                                            ? "#ab313033"
+                                            : task.priority === "Medium"
+                                                ? "#62929e33"
+                                                : "#ffdb5833",
 
                                     border:
-                                        "1px solid #ab313066",
+                                        task.priority === "High"
+                                            ? "1px solid #ab313066"
+                                            : task.priority === "Medium"
+                                                ? "1px solid #62929e66"
+                                                : "1px solid #ffdb5866",
                                 }}
                             >
                                 {task.priority}
+                            </span>
+
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.7rem",
+
+                                    background:
+                                        task.status ===
+                                            "In Progress"
+                                            ? "#e9b95733"
+                                            : task.status ===
+                                                "Overdue"
+                                                ? "#85222f33"
+                                                : task.status ===
+                                                    "Complete"
+                                                    ? "#728a6e33"
+                                                    : "#4d689333",
+
+                                    border:
+                                        task.status ===
+                                            "In Progress"
+                                            ? "1px solid #e9b95766"
+                                            : task.status ===
+                                                "Overdue"
+                                                ? "1px solid #85222f66"
+                                                : task.status ===
+                                                    "Complete"
+                                                    ? "1px solid #728a6e66"
+                                                    : "1px solid #4d689366",
+                                }}
+                            >
+                                {task.completed
+                                    ? "Complete"
+                                    : task.status}
                             </span>
                         </div>
                     </div>
@@ -179,24 +239,9 @@ function TaskDetailsModal({
                         </p>
 
                         <p>
-                            Placeholder description for
-                            task details.
+                            {task.description ||
+                                "No description provided."}
                         </p>
-                    </div>
-
-                    <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-                                fontSize: "0.8rem",
-                                marginBottom: "6px",
-                            }}
-                        >
-                            Priority
-                        </p>
-
-                        <p>{task.priority}</p>
                     </div>
 
                     <div>
@@ -217,57 +262,8 @@ function TaskDetailsModal({
                                     "var(--text-primary)",
                             }}
                         >
-                            15 Jun 2026
+                            {task.dueDate}
                         </p>
-                    </div>
-                    <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-
-                                fontSize: "0.8rem",
-
-                                marginBottom: "6px",
-                            }}
-                        >
-                            Project
-                        </p>
-
-                        <p>
-                            Productivity Desktop
-                        </p>
-                    </div>
-                    <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-
-                                fontSize: "0.8rem",
-
-                                marginBottom: "6px",
-                            }}
-                        >
-                            Status
-                        </p>
-
-                        <span
-                            style={{
-                                padding: "4px 8px",
-
-                                borderRadius: "999px",
-
-                                fontSize: "0.7rem",
-
-                                background: "#4d689333",
-
-                                border:
-                                    "1px solid #4d689366",
-                            }}
-                        >
-                            Active
-                        </span>
                     </div>
                 </div>
             </div>

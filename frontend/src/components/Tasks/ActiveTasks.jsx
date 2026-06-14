@@ -175,6 +175,7 @@ function ActiveTasks({
                                                         ? {
                                                             ...t,
                                                             completed: true,
+                                                            status: "Complete",
                                                             pendingCompletion: false,
                                                             completedDate: "Today",
                                                         }
@@ -322,6 +323,42 @@ function ActiveTasks({
                                             }}
                                         >
                                             {task.priority}
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background:
+                                                    task.status ===
+                                                        "In Progress"
+                                                        ? "#e9b95733"
+                                                        : task.status ===
+                                                            "Overdue"
+                                                            ? "#85222f33"
+                                                            : task.status ===
+                                                                "Complete"
+                                                                ? "#728a6e33"
+                                                                : "#4d689333",
+
+                                                border:
+                                                    task.status ===
+                                                        "In Progress"
+                                                        ? "1px solid #e9b95766"
+                                                        : task.status ===
+                                                            "Overdue"
+                                                            ? "1px solid #85222f66"
+                                                            : task.status ===
+                                                                "Complete"
+                                                                ? "1px solid #728a6e66"
+                                                                : "1px solid #4d689366",
+                                            }}
+                                        >
+                                            {task.status}
                                         </span>
 
                                         <span
