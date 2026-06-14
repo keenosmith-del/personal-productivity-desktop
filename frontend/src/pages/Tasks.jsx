@@ -9,6 +9,10 @@ import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
 import TaskStats from "../components/Tasks/TaskStats";
 import TaskActivity from "../components/Tasks/TaskActivity";
 
+import Toast from "../components/Toast";
+
+import { initialTasks } from "../data/tasks";
+
 function Tasks() {
   const [showTaskModal, setShowTaskModal] =
     useState(false);
@@ -16,8 +20,20 @@ function Tasks() {
   const [selectedTask, setSelectedTask] =
     useState(null);
 
-  const [editingTask, setEditingTask] =
+  const [tasks, setTasks] =
+    useState(initialTasks);
+
+  const [toast, setToast] =
+    useState("");
+
+  const [lastCompletedTask,
+    setLastCompletedTask] =
     useState(null);
+
+  const [completionTimeout,
+    setCompletionTimeout] =
+    useState(null);
+
   return (
     <MainLayout>
       <div
@@ -37,14 +53,26 @@ function Tasks() {
           }}
         >
           <ActiveTasks
+            tasks={tasks}
+            setTasks={setTasks}
+            toast={toast}
+            setToast={setToast}
+            setLastCompletedTask={
+              setLastCompletedTask
+            }
             onViewTask={setSelectedTask}
-            onEditTask={setEditingTask}
+            //onEditTask={setEditingTask}
             onNewTask={() =>
               setShowTaskModal(true)
             }
+            completionTimeout={completionTimeout}
+            setCompletionTimeout={setCompletionTimeout}
           />
 
-          <CompletedTasks />
+          <CompletedTasks
+            tasks={tasks}
+            setTasks={setTasks}
+          />
 
           <TaskStats />
 
@@ -66,6 +94,7 @@ function Tasks() {
           }
         />
       )}
+      {/*
       {editingTask && (
         <TaskModal
           mode="edit"
@@ -75,6 +104,42 @@ function Tasks() {
           }
         />
       )}
+    */}
+      <Toast
+        message={toast}
+        actionLabel={
+          lastCompletedTask
+            ? "Undo"
+            : null
+        }
+        onAction={() => {
+          if (completionTimeout) {
+            clearTimeout(completionTimeout);
+            setCompletionTimeout(null);
+          }
+          if (!lastCompletedTask)
+            return;
+
+          setTasks((prev) =>
+            prev.map((task) =>
+              task.id ===
+                lastCompletedTask.id
+                ? {
+                  ...task,
+                  completed: false,
+                  pendingCompletion: false,
+                }
+                : task
+            )
+          );
+
+          setToast("");
+
+          setLastCompletedTask(
+            null
+          );
+        }}
+      />
     </MainLayout>
   );
 }

@@ -9,33 +9,18 @@ import {
 import { useState } from "react";
 
 function ActiveTasks({
+    tasks,
+    setTasks,
     onViewTask,
     onEditTask,
     onNewTask,
+    toast,
+    setToast,
+    setLastCompletedTask,
+    completionTimeout,
+    setCompletionTimeout,
 }) {
-    const tasks = [
-        {
-            title: "Finish Productivity Desktop",
-            priority: "High",
-            category: "Work",
-            dueDate: "15 Jun",
-        },
-        {
-            title: "Apply for Frontend Roles",
-            priority: "Medium",
-            category: "Personal",
-            dueDate: "Tomorrow",
-        },
-        {
-            title: "Complete AI Course Module",
-            priority: "Low",
-            category: "Study",
-            dueDate: "18 Jun",
-        },
-    ];
-
-    const [checkedTasks, setCheckedTasks] =
-        useState({});
+    // COMPONENT STATES
 
     return (
         <GlassCard
@@ -113,272 +98,320 @@ function ActiveTasks({
                     gap: "12px",
                 }}
             >
-                {tasks.map((task) => (
-                    <div
-                        key={task.title}
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-
-                            padding: "8px 12px",
-
-                            borderRadius: "12px",
-
-                            transition: "all 0.2s ease",
-
-                            cursor: "pointer",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                        onClick={() =>
-                            onViewTask(task)
-                        }
-                    >
+                {tasks
+                    .filter(
+                        (task) =>
+                            !task.completed
+                    )
+                    .map((task) => (
                         <div
+                            key={task.title}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "12px",
+                                justifyContent: "space-between",
+
+                                padding: "8px 12px",
+
+                                borderRadius: "12px",
+
+                                transition: "all 0.2s ease",
+
+                                cursor: "pointer",
+
+                                opacity:
+                                    task.pendingCompletion
+                                        ? 0.55
+                                        : 1,
                             }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "transparent";
+                            }}
+                            onClick={() =>
+                                onViewTask(task)
+                            }
                         >
                             <div
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    setCheckedTasks(
-                                        (prev) => ({
-                                            ...prev,
-                                            [task.title]:
-                                                !prev[task.title],
-                                        })
-                                    );
-                                }}
                                 style={{
-                                    cursor: "pointer",
-
-                                    width: "18px",
-                                    height: "18px",
-
-                                    borderRadius: "50%",
-
-                                    border:
-                                        "1.5px solid rgba(245,245,245,0.7)",
-
-                                    background:
-                                        checkedTasks[task.title]
-                                            ? "rgba(245,245,245,0.75)"
-                                            : "transparent",
-
-                                    transition: "all 0.2s ease",
-
-                                    flexShrink: 0,
-
                                     display: "flex",
                                     alignItems: "center",
-                                    justifyContent: "center",
-
-                                    fontSize: "12px",
-                                    fontWeight: "600",
-
-                                    color: "#1a1d29",
+                                    gap: "12px",
                                 }}
                             >
-                                {checkedTasks[
-                                    task.title
-                                ] && "✓"}
-                            </div>
-
-                            <div>
                                 <div
-                                    style={{
-                                        fontWeight: "300",
+                                    onClick={(e) => {
+                                        e.stopPropagation();
 
-                                        fontSize: "0.9rem",
+                                        if (task.pendingCompletion) {
+                                            return;
+                                        }
 
-                                        letterSpacing: "-0.015em",
+                                        setLastCompletedTask(task);
 
-                                        marginBottom: "6px",
+                                        setToast(
+                                            "Task moved to Completed"
+                                        );
+
+                                        setTasks((prev) =>
+                                            prev.map((t) =>
+                                                t.id === task.id
+                                                    ? {
+                                                        ...t,
+                                                        pendingCompletion: true,
+                                                    }
+                                                    : t
+                                            )
+                                        );
+
+                                        const timeout = setTimeout(() => {
+                                            setTasks((prev) =>
+                                                prev.map((t) =>
+                                                    t.id === task.id
+                                                        ? {
+                                                            ...t,
+                                                            completed: true,
+                                                            pendingCompletion: false,
+                                                            completedDate: "Today",
+                                                        }
+                                                        : t
+                                                )
+                                            );
+                                        }, 4000);
+
+                                        setCompletionTimeout(timeout);
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
                                     }}
-                                >
-                                    {task.title}
-                                </div>
-
-                                <div
                                     style={{
+                                        cursor: "pointer",
+
+                                        width: "18px",
+                                        height: "18px",
+
+                                        borderRadius: "50%",
+
+                                        border:
+                                            "1.5px solid rgba(245,245,245,0.7)",
+
+                                        background:
+                                            task.pendingCompletion
+                                                ? "rgba(245,245,245,0.75)"
+                                                : "transparent",
+
+                                        transition: "all 0.2s ease",
+
+                                        flexShrink: 0,
+
                                         display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
 
-                                        gap: "6px",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
 
-                                        flexWrap: "wrap",
+                                        color: "#1a1d29",
                                     }}
                                 >
-                                    <span
+                                    {task.pendingCompletion && "✓"}
+                                </div>
+
+                                <div>
+                                    <div
                                         style={{
-                                            padding: "3px 8px",
+                                            fontWeight: "300",
 
-                                            borderRadius: "999px",
+                                            fontSize: "0.9rem",
 
-                                            fontSize: "0.68rem",
+                                            letterSpacing: "-0.015em",
 
-                                            background: "#72715c33",
-
-                                            border:
-                                                "1px solid #72715c66",
+                                            marginBottom: "6px",
                                         }}
                                     >
-                                        Task
-                                    </span>
+                                        {task.title}
+                                    </div>
 
-                                    <span
+                                    <div
                                         style={{
-                                            padding: "3px 8px",
+                                            display: "flex",
 
-                                            borderRadius: "999px",
+                                            gap: "6px",
 
-                                            fontSize: "0.68rem",
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
 
-                                            background:
-                                                task.category === "Work"
-                                                    ? "#063f4733"
-                                                    : task.category === "Study"
-                                                        ? "#29737633"
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background: "#72715c33",
+
+                                                border:
+                                                    "1px solid #72715c66",
+                                            }}
+                                        >
+                                            Task
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background:
+                                                    task.category === "Work"
+                                                        ? "#063f4733"
+                                                        : task.category === "Study"
+                                                            ? "#29737633"
+                                                            : task.category ===
+                                                                "Personal"
+                                                                ? "#5c939633"
+                                                                : "#10343933",
+
+                                                border:
+                                                    task.category === "Work"
+                                                        ? "1px solid #063f4766"
                                                         : task.category ===
-                                                            "Personal"
-                                                            ? "#5c939633"
-                                                            : "#10343933",
+                                                            "Study"
+                                                            ? "1px solid #29737666"
+                                                            : task.category ===
+                                                                "Personal"
+                                                                ? "1px solid #5c939666"
+                                                                : "1px solid #10343966",
+                                            }}
+                                        >
+                                            {task.category}
+                                        </span>
 
-                                            border:
-                                                task.category === "Work"
-                                                    ? "1px solid #063f4766"
-                                                    : task.category ===
-                                                        "Study"
-                                                        ? "1px solid #29737666"
-                                                        : task.category ===
-                                                            "Personal"
-                                                            ? "1px solid #5c939666"
-                                                            : "1px solid #10343966",
-                                        }}
-                                    >
-                                        {task.category}
-                                    </span>
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
 
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
+                                                borderRadius: "999px",
 
-                                            borderRadius: "999px",
+                                                fontSize: "0.68rem",
 
-                                            fontSize: "0.68rem",
+                                                background:
+                                                    task.priority === "High"
+                                                        ? "#ab313033"
+                                                        : task.priority ===
+                                                            "Medium"
+                                                            ? "#62929e33"
+                                                            : "#ffdb5833",
 
-                                            background:
-                                                task.priority === "High"
-                                                    ? "#ab313033"
-                                                    : task.priority ===
-                                                        "Medium"
-                                                        ? "#62929e33"
-                                                        : "#ffdb5833",
+                                                border:
+                                                    task.priority === "High"
+                                                        ? "1px solid #ab313066"
+                                                        : task.priority ===
+                                                            "Medium"
+                                                            ? "1px solid #62929e66"
+                                                            : "1px solid #ffdb5866",
+                                            }}
+                                        >
+                                            {task.priority}
+                                        </span>
 
-                                            border:
-                                                task.priority === "High"
-                                                    ? "1px solid #ab313066"
-                                                    : task.priority ===
-                                                        "Medium"
-                                                        ? "1px solid #62929e66"
-                                                        : "1px solid #ffdb5866",
-                                        }}
-                                    >
-                                        {task.priority}
-                                    </span>
+                                        <span
+                                            style={{
+                                                fontSize: "0.68rem",
 
-                                    <span
-                                        style={{
-                                            fontSize: "0.68rem",
+                                                color:
+                                                    "var(--text-secondary)",
 
-                                            color:
-                                                "var(--text-secondary)",
-
-                                            alignSelf: "center",
-                                        }}
-                                    >
-                                        {task.dueDate}
-                                    </span>
+                                                alignSelf: "center",
+                                            }}
+                                        >
+                                            {task.dueDate}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "12px",
-                            }}
-                        >
-
-                            <Pencil
-                                size={16}
-                                strokeWidth={1.5}
+                            <div
                                 style={{
-                                    cursor: "pointer",
-                                    transition:
-                                        "all 0.2s ease",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "12px",
                                 }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
+                            >
 
-                                    e.currentTarget.style.transform =
-                                        "scale(1.1)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "";
+                                <Pencil
+                                    size={16}
+                                    strokeWidth={1.5}
+                                    style={{
+                                        cursor: "pointer",
+                                        transition:
+                                            "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color =
+                                            "#F5F5F5";
 
-                                    e.currentTarget.style.transform =
-                                        "scale(1)";
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                                        e.currentTarget.style.transform =
+                                            "scale(1.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color =
+                                            "";
 
-                                    onEditTask(task);
-                                }}
-                            />
+                                        e.currentTarget.style.transform =
+                                            "scale(1)";
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
 
-                            <Trash2
-                                size={16}
-                                strokeWidth={1.5}
-                                style={{
-                                    cursor: "pointer",
-                                    transition:
-                                        "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
+                                        onEditTask(task);
+                                    }}
+                                />
 
-                                    e.currentTarget.style.transform =
-                                        "scale(1.1)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "";
+                                <Trash2
+                                    size={16}
+                                    strokeWidth={1.5}
+                                    style={{
+                                        cursor: "pointer",
+                                        transition:
+                                            "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
 
-                                    e.currentTarget.style.transform =
-                                        "scale(1)";
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
-                            />
+                                        e.currentTarget.style.transform =
+                                            "scale(1.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color =
+                                            "";
+
+                                        e.currentTarget.style.transform =
+                                            "scale(1)";
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        setTasks((prev) =>
+                                            prev.filter(
+                                                (t) => t.id !== task.id
+                                            )
+                                        );
+                                    }}
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
         </GlassCard>
     );

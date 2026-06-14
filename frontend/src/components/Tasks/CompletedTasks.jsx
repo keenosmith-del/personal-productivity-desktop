@@ -1,26 +1,16 @@
 import GlassCard from "../GlassCard";
 
-import { Trash2 } from "lucide-react";
+import { Trash2, RotateCcw } from "lucide-react";
 
-function CompletedTasks() {
-    const completedTasks = [
-        {
-            title: "Build Login Page",
-            category: "Work",
-            completed: "08 Jun",
-        },
-        {
-            title: "Create Dashboard",
-            category: "Personal",
-            completed: "06 Jun",
-        },
-        {
-            title: "Setup GitHub Repository",
-            category: "Study",
-            completed: "02 Jun",
-        },
-    ];
+import { useState } from "react";
 
+function CompletedTasks({
+    tasks,
+    setTasks,
+}) {
+    const [hoveredTask,
+        setHoveredTask] =
+        useState(null);
     return (
         <GlassCard
             style={{
@@ -99,190 +89,238 @@ function CompletedTasks() {
                     gap: "12px",
                 }}
             >
-                {completedTasks.map((task) => (
-                    <div
-                        key={task.title}
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-
-                            justifyContent: "space-between",
-
-                            padding: "8px 12px",
-
-                            borderRadius: "12px",
-
-                            opacity: 0.5,
-
-                            transition: "all 0.25s ease",
-
-                            cursor: "default",
-                        }}
-                    >
+                {tasks
+                    .filter(
+                        (task) =>
+                            task.completed
+                    )
+                    .map((task) => (
                         <div
+                            key={task.title}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "12px",
+
+                                justifyContent: "space-between",
+
+                                padding: "8px 12px",
+
+                                borderRadius: "12px",
+
+                                opacity: 0.5,
+
+                                transition: "all 0.25s ease",
+
+                                cursor: "default",
                             }}
                         >
                             <div
                                 style={{
-                                    width: "18px",
-                                    height: "18px",
-
-                                    borderRadius: "50%",
-
-                                    background:
-                                        "rgba(245,245,245,0.45)",
-
-                                    border:
-                                        "1.5px solid rgba(245,245,245,0.45)",
-
-                                    flexShrink: 0,
-
                                     display: "flex",
                                     alignItems: "center",
-                                    justifyContent: "center",
-
-                                    fontSize: "12px",
-                                    fontWeight: "600",
-
-                                    color: "#1a1d29",
+                                    gap: "12px",
                                 }}
                             >
-                                ✓
-                            </div>
-
-                            <div>
                                 <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        setTasks((prev) =>
+                                            prev.map((t) =>
+                                                t.id === task.id
+                                                    ? {
+                                                        ...t,
+                                                        completed: false,
+                                                        completedDate: null,
+                                                    }
+                                                    : t
+                                            )
+                                        );
+                                    }}
+                                    onMouseEnter={() =>
+                                        setHoveredTask(task.id)
+                                    }
+                                    onMouseLeave={() =>
+                                        setHoveredTask(null)
+                                    }
                                     style={{
-                                        fontWeight: "300",
+                                        cursor: "pointer",
 
-                                        color:
-                                            "rgba(255,255,255,0.7)",
+                                        width: "18px",
+                                        height: "18px",
 
-                                        fontSize: "0.9rem",
+                                        borderRadius: "50%",
 
-                                        letterSpacing: "-0.015em",
+                                        background:
+                                            hoveredTask === task.id
+                                                ? "rgba(245,245,245,0.75)"
+                                                : "rgba(245,245,245,0.45)",
 
-                                        marginBottom: "6px",
+                                        border:
+                                            hoveredTask === task.id
+                                                ? "1.5px solid rgba(245,245,245,0.75)"
+                                                : "1.5px solid rgba(245,245,245,0.45)",
+
+                                        flexShrink: 0,
+
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+
+                                        transition:
+                                            "all 0.2s ease",
+
+                                        color: "#1a1d29",
                                     }}
                                 >
-                                    {task.title}
+                                    {hoveredTask === task.id ? (
+                                        <RotateCcw
+                                            size={10}
+                                            strokeWidth={2}
+                                        />
+                                    ) : (
+                                        "✓"
+                                    )}
                                 </div>
 
-                                <div
-                                    style={{
-                                        display: "flex",
-
-                                        gap: "6px",
-
-                                        flexWrap: "wrap",
-                                    }}
-                                >
-                                    <span
+                                <div>
+                                    <div
                                         style={{
-                                            padding: "3px 8px",
-
-                                            borderRadius: "999px",
-
-                                            fontSize: "0.68rem",
-
-                                            background: "#72715c33",
-
-                                            border:
-                                                "1px solid #72715c66",
-                                        }}
-                                    >
-                                        Task
-                                    </span>
-
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-
-                                            borderRadius: "999px",
-
-                                            fontSize: "0.68rem",
-
-                                            background:
-                                                task.category === "Work"
-                                                    ? "#063f4733"
-                                                    : task.category === "Study"
-                                                        ? "#29737633"
-                                                        : "#5c939633",
-
-                                            border:
-                                                task.category === "Work"
-                                                    ? "1px solid #063f4766"
-                                                    : task.category === "Study"
-                                                        ? "1px solid #29737666"
-                                                        : "1px solid #5c939666",
-                                        }}
-                                    >
-                                        {task.category}
-                                    </span>
-
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-
-                                            borderRadius: "999px",
-
-                                            fontSize: "0.68rem",
-
-                                            background: "#728a6e33",
-
-                                            border:
-                                                "1px solid #728a6e66",
-                                        }}
-                                    >
-                                        Complete
-                                    </span>
-
-                                    <span
-                                        style={{
-                                            fontSize: "0.68rem",
+                                            fontWeight: "300",
 
                                             color:
-                                                "var(--text-secondary)",
+                                                "rgba(255,255,255,0.7)",
 
-                                            alignSelf: "center",
+                                            fontSize: "0.9rem",
+
+                                            letterSpacing: "-0.015em",
+
+                                            marginBottom: "6px",
                                         }}
                                     >
-                                        {task.completed}
-                                    </span>
+                                        {task.title}
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            display: "flex",
+
+                                            gap: "6px",
+
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background: "#72715c33",
+
+                                                border:
+                                                    "1px solid #72715c66",
+                                            }}
+                                        >
+                                            Task
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background:
+                                                    task.category === "Work"
+                                                        ? "#063f4733"
+                                                        : task.category === "Study"
+                                                            ? "#29737633"
+                                                            : "#5c939633",
+
+                                                border:
+                                                    task.category === "Work"
+                                                        ? "1px solid #063f4766"
+                                                        : task.category === "Study"
+                                                            ? "1px solid #29737666"
+                                                            : "1px solid #5c939666",
+                                            }}
+                                        >
+                                            {task.category}
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                padding: "3px 8px",
+
+                                                borderRadius: "999px",
+
+                                                fontSize: "0.68rem",
+
+                                                background: "#728a6e33",
+
+                                                border:
+                                                    "1px solid #728a6e66",
+                                            }}
+                                        >
+                                            Complete
+                                        </span>
+
+                                        <span
+                                            style={{
+                                                fontSize: "0.68rem",
+
+                                                color:
+                                                    "var(--text-secondary)",
+
+                                                alignSelf: "center",
+                                            }}
+                                        >
+                                            {task.completed}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <Trash2
+                                size={16}
+                                strokeWidth={1.5}
+                                style={{
+                                    cursor: "pointer",
+
+                                    transition:
+                                        "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color =
+                                        "#ff6b6b";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color =
+                                        "";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1)";
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    setTasks((prev) =>
+                                        prev.filter(
+                                            (t) => t.id !== task.id
+                                        )
+                                    );
+                                }}
+                            />
                         </div>
-
-                        <Trash2
-                            size={16}
-                            strokeWidth={1.5}
-                            style={{
-                                cursor: "pointer",
-
-                                transition:
-                                    "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.color =
-                                    "#ff6b6b";
-
-                                e.currentTarget.style.transform =
-                                    "scale(1.1)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.color =
-                                    "";
-
-                                e.currentTarget.style.transform =
-                                    "scale(1)";
-                            }}
-                        />
-                    </div>
-                ))}
+                    ))}
             </div>
         </GlassCard>
     );
