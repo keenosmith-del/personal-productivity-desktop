@@ -33,7 +33,7 @@ function MainLayout({ children }) {
       JSON.stringify(collapsed)
     );
   }, [collapsed]);
-  
+
   return (
     <div
       style={{
@@ -49,8 +49,16 @@ function MainLayout({ children }) {
       <main
         style={{
           flex: 1,
+
+          marginLeft:
+            collapsed
+              ? "88px"
+              : "280px",
+
           padding: "24px",
-          overflow: "hidden",
+
+          transition:
+            "margin-left 0.25s ease",
         }}
       >
         {children}

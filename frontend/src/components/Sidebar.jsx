@@ -165,6 +165,13 @@ function Sidebar({ collapsed, setCollapsed }) {
   return (
     <aside
       style={{
+        position: "fixed",
+
+        top: 0,
+        left: 0,
+
+        height: "100vh",
+
         width: collapsed
           ? "88px"
           : "280px",
@@ -177,6 +184,8 @@ function Sidebar({ collapsed, setCollapsed }) {
           : "20px",
 
         flexShrink: 0,
+
+        zIndex: 100,
       }}
     >
       <div
@@ -353,11 +362,12 @@ function Sidebar({ collapsed, setCollapsed }) {
 
         <div
           style={{
-            marginTop: "24px",
-            paddingTop: "24px",
+            marginTop: "16px",
 
-            borderTop:
-              "1px solid var(--glass-border)",
+            display: "flex",
+            flexDirection: "column",
+
+            gap: "8px",
           }}
         >
           {renderNavItem({
@@ -370,6 +380,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         <div
           style={{
             flex: 1,
+            minHeight: "24px",
           }}
         />
 
