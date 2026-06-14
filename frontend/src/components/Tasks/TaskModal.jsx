@@ -43,6 +43,12 @@ function TaskModal({
       "Personal"
     );
 
+  const [status, setStatus] =
+    useState(
+      task?.status ||
+      "Active"
+    );
+
   const [showCalendar, setShowCalendar] =
     useState(false);
 
@@ -73,6 +79,8 @@ function TaskModal({
       priority,
 
       category,
+
+      status,
 
       dueDate:
         selectedDate ===
@@ -471,6 +479,78 @@ function TaskModal({
                     e.currentTarget.style.background =
                       "transparent";
                   }
+                }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p
+            style={{
+              marginBottom: "10px",
+
+              color:
+                "var(--text-secondary)",
+
+              fontSize: "0.85rem",
+
+              fontWeight: "400",
+            }}
+          >
+            Status
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Active",
+                color: "#4d6893",
+              },
+              {
+                name: "In Progress",
+                color: "#e9b957",
+              },
+            ].map((item) => (
+              <button
+                key={item.name}
+                onClick={() =>
+                  setStatus(item.name)
+                }
+                style={{
+                  padding: "6px 12px",
+
+                  borderRadius: "999px",
+
+                  fontSize: "0.75rem",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "all 0.2s ease",
+
+                  background:
+                    status === item.name
+                      ? `${item.color}33`
+                      : "transparent",
+
+                  border:
+                    status === item.name
+                      ? `1px solid ${item.color}66`
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                  color:
+                    status === item.name
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
                 }}
               >
                 {item.name}
