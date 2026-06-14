@@ -14,13 +14,20 @@ function ActiveTasks({
     onViewTask,
     onEditTask,
     onNewTask,
+    onClearAll,
     toast,
     setToast,
     setLastCompletedTask,
+    setLastDeletedTask,
     completionTimeout,
     setCompletionTimeout,
 }) {
     // COMPONENT STATES
+    const activeTasks =
+        tasks.filter(
+            (task) =>
+                !task.completed
+        );
 
     return (
         <GlassCard
@@ -51,44 +58,96 @@ function ActiveTasks({
                     Active Tasks
                 </h2>
 
-                <button
-                    onClick={onNewTask}
+                <div
                     style={{
-                        background: "transparent",
-
-                        border: "1px solid rgba(255,255,255,0.08)",
-
-                        borderRadius: "999px",
-
-                        padding: "8px 14px",
-
-                        color: "var(--text-secondary)",
-
-                        fontSize: "0.8rem",
-
-                        fontWeight: "300",
-
-                        cursor: "pointer",
-
-                        transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-
-                        e.currentTarget.style.background =
-                            "rgba(255,255,255,0.04)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-
-                        e.currentTarget.style.background =
-                            "transparent";
+                        display: "flex",
+                        gap: "8px",
                     }}
                 >
-                    + New Task
-                </button>
+                    <button
+                        onClick={onNewTask}
+                        style={{
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: "999px",
+                            padding: "8px 14px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.8rem",
+                            fontWeight: "300",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
+                    >
+                        + New Task
+                    </button>
+
+                    <button
+                        onClick={onClearAll}
+                        disabled={
+                            activeTasks.length === 0
+                        }
+                        style={{
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: "999px",
+                            padding: "8px 14px",
+                            color:
+                                activeTasks.length === 0
+                                    ? "rgba(255,255,255,0.25)"
+                                    : "var(--text-secondary)",
+                            fontSize: "0.8rem",
+                            fontWeight: "300",
+                            cursor:
+                                activeTasks.length === 0
+                                    ? "not-allowed"
+                                    : "pointer",
+                            opacity:
+                                activeTasks.length === 0
+                                    ? 0.5
+                                    : 1,
+                        }}
+                        onMouseEnter={(e) => {
+                            if (
+                                activeTasks.length === 0
+                            )
+                                return;
+
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+                        }}
+                        onMouseLeave={(e) => {
+                            if (
+                                activeTasks.length === 0
+                            )
+                                return;
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
+                    >
+                        Clear All
+                    </button>
+                </div>
             </div>
 
             <div
@@ -96,14 +155,28 @@ function ActiveTasks({
                     display: "flex",
                     flexDirection: "column",
                     gap: "12px",
+
+                    maxHeight: "250px",
+
+                    overflowY: "auto",
+
+                    paddingRight: "4px",
                 }}
             >
-                {tasks
-                    .filter(
-                        (task) =>
-                            !task.completed
-                    )
-                    .map((task) => (
+                {activeTasks.length === 0 ? (
+                    <p
+                        style={{
+                            color:
+                                "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            textAlign: "left",
+                            padding: "24px 0",
+                        }}
+                    >
+                        No active tasks.
+                    </p>
+                ) : (
+                    activeTasks.map((task) => (
                         <div
                             key={task.title}
                             style={{
@@ -154,7 +227,7 @@ function ActiveTasks({
                                         setLastCompletedTask(task);
 
                                         setToast(
-                                            "Task moved to Completed"
+                                            "Task completed"
                                         );
 
                                         setTasks((prev) =>
@@ -439,16 +512,27 @@ function ActiveTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
+                                        setLastDeletedTask(task);
+
                                         setTasks((prev) =>
                                             prev.filter(
                                                 (t) => t.id !== task.id
                                             )
                                         );
+
+                                        setToast(
+                                            "Task deleted"
+                                        );
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
                                     }}
                                 />
                             </div>
                         </div>
-                    ))}
+                    ))
+                )}
             </div>
         </GlassCard>
     );

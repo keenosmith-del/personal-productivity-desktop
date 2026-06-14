@@ -1,17 +1,51 @@
 import GlassCard from "../GlassCard";
 
-function TaskStats() {
+function TaskStats({
+    tasks,
+}) {
+    // COMPONENT STATES
+    const activeTasks =
+        tasks.filter(
+            (task) =>
+                !task.completed
+        );
+
+    const completedTasks =
+        tasks.filter(
+            (task) =>
+                task.completed
+        );
+
+    const highCount =
+        activeTasks.filter(
+            (task) =>
+                task.priority === "High"
+        ).length;
+
+    const mediumCount =
+        activeTasks.filter(
+            (task) =>
+                task.priority === "Medium"
+        ).length;
+
+    const lowCount =
+        activeTasks.filter(
+            (task) =>
+                task.priority === "Low"
+        ).length;
+
+    // FUNCTIONS
     return (
         <GlassCard minHeight="220px">
             <div
                 style={{
                     display: "flex",
-                    justifyContent:
-                        "space-between",
-
-                    alignItems: "center",
+                    justifyContent: "space-between",
 
                     height: "100%",
+
+                    padding: "24px",
+                    minHeight: "320px",
                 }}
             >
                 <div>
@@ -37,7 +71,7 @@ function TaskStats() {
                             fontWeight: "400",
                         }}
                     >
-                        3
+                        {activeTasks.length}
                     </h1>
 
                     <p
@@ -56,7 +90,7 @@ function TaskStats() {
                             fontWeight: "400",
                         }}
                     >
-                        12
+                        {completedTasks.length}
                     </h1>
                 </div>
 
@@ -85,7 +119,7 @@ function TaskStats() {
                                 "1px solid #ab313066",
                         }}
                     >
-                        High • 1
+                        High • {highCount}
                     </span>
 
                     <span
@@ -102,7 +136,7 @@ function TaskStats() {
                                 "1px solid #62929e66",
                         }}
                     >
-                        Medium • 1
+                        Medium • {mediumCount}
                     </span>
 
                     <span
@@ -119,7 +153,7 @@ function TaskStats() {
                                 "1px solid #ffdb5866",
                         }}
                     >
-                        Low • 1
+                        Low • {lowCount}
                     </span>
 
                     <span
@@ -132,11 +166,10 @@ function TaskStats() {
 
                             background: "#4d689333",
 
-                            border:
-                                "1px solid #4d689366",
+                            border: "1px solid #4d689366",
                         }}
                     >
-                        Active • 3
+                        Active • {activeTasks.length}
                     </span>
 
                     <span
@@ -153,7 +186,7 @@ function TaskStats() {
                                 "1px solid #728a6e66",
                         }}
                     >
-                        Complete • 12
+                        Complete • {completedTasks.length}
                     </span>
                 </div>
             </div>
