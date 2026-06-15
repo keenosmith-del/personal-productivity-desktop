@@ -69,8 +69,7 @@ function GoalDetailsModal({
                 >
                     <h2
                         style={{
-                            fontWeight:
-                                "400",
+                            fontWeight: "400",
                         }}
                     >
                         Goal Details
@@ -137,8 +136,79 @@ function GoalDetailsModal({
                                     "400",
                             }}
                         >
-                            {goal}
+                            {goal.title}
                         </h3>
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "8px",
+                            flexWrap: "wrap",
+                            marginTop: "10px",
+                        }}
+                    >
+                        <span
+                            style={{
+                                padding: "4px 10px",
+                                borderRadius: "999px",
+                                fontSize: "0.75rem",
+
+                                background:
+                                    goal.priority === "High"
+                                        ? "#ab313033"
+                                        : goal.priority === "Medium"
+                                            ? "#62929e33"
+                                            : "#ffdb5833",
+
+                                border:
+                                    goal.priority === "High"
+                                        ? "1px solid #ab313066"
+                                        : goal.priority === "Medium"
+                                            ? "1px solid #62929e66"
+                                            : "1px solid #ffdb5866",
+                            }}
+                        >
+                            {goal.priority}
+                        </span>
+
+                        <span
+                            style={{
+                                padding: "4px 10px",
+                                borderRadius: "999px",
+                                fontSize: "0.75rem",
+
+                                background:
+                                    goal.status === "In Progress"
+                                        ? "#e9b95733"
+                                        : "#4d689333",
+
+                                border:
+                                    goal.status === "In Progress"
+                                        ? "1px solid #e9b95766"
+                                        : "1px solid #4d689366",
+                            }}
+                        >
+                            {goal.status}
+                        </span>
+                    </div>
+
+                    <div>
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+                                fontSize: "0.8rem",
+                                marginBottom: "6px",
+                            }}
+                        >
+                            Description
+                        </p>
+
+                        <p>
+                            {goal.description ||
+                                "No description"}
+                        </p>
                     </div>
 
                     <div>
@@ -160,32 +230,25 @@ function GoalDetailsModal({
                         <div>
                             <div
                                 style={{
-                                    display: "flex",
-                                    gap: "6px",
+                                    width: "100%",
+                                    height: "8px",
+                                    borderRadius: "999px",
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+                                    overflow: "hidden",
                                     marginBottom: "10px",
                                 }}
                             >
-                                {[1, 2, 3, 4, 5, 6, 7, 8].map(
-                                    (dot) => (
-                                        <div
-                                            key={dot}
-                                            style={{
-                                                width: "8px",
-                                                height: "8px",
-
-                                                borderRadius: "50%",
-
-                                                background:
-                                                    dot <= 5
-                                                        ? "#52677d"
-                                                        : "rgba(255,255,255,0.12)",
-                                            }}
-                                        />
-                                    )
-                                )}
+                                <div
+                                    style={{
+                                        width: `${goal.progress}%`,
+                                        height: "100%",
+                                        background: "#c59c70",
+                                    }}
+                                />
                             </div>
 
-                            <p>63% Complete</p>
+                            <p>{goal.progress}% Complete</p>
                         </div>
                     </div>
 
@@ -205,10 +268,7 @@ function GoalDetailsModal({
                             Target Date
                         </p>
 
-                        <p>
-                            December
-                            2026
-                        </p>
+                        <p>{goal.targetDate}</p>
                     </div>
 
                     <div>
@@ -217,30 +277,53 @@ function GoalDetailsModal({
                                 color:
                                     "var(--text-secondary)",
 
-                                fontSize:
-                                    "0.8rem",
+                                fontSize: "0.8rem",
 
-                                marginBottom:
-                                    "6px",
+                                marginBottom: "10px",
                             }}
                         >
-                            Milestones
+                            Associated Tasks
                         </p>
 
-                        <p>
-                            • Learn
-                            React
-                        </p>
-
-                        <p>
-                            • Learn
-                            Node.js
-                        </p>
-
-                        <p>
-                            • Launch
-                            Portfolio
-                        </p>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "8px",
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            {goal.associatedTasks?.length ? (
+                                goal.associatedTasks.map(
+                                    (task) => (
+                                        <span
+                                            key={task}
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius:
+                                                    "999px",
+                                                fontSize: "0.75rem",
+                                                background:
+                                                    "#72715c33",
+                                                border:
+                                                    "1px solid #72715c66",
+                                            }}
+                                        >
+                                            {task}
+                                        </span>
+                                    )
+                                )
+                            ) : (
+                                <span
+                                    style={{
+                                        color:
+                                            "var(--text-secondary)",
+                                        fontSize: "0.8rem",
+                                    }}
+                                >
+                                    No tasks linked
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

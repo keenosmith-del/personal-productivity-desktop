@@ -4,8 +4,6 @@ import {
   useEffect,
 } from "react";
 
-import SegmentedControl from "../SegmentedControl";
-
 import {
   X,
   Calendar,
@@ -13,19 +11,52 @@ import {
 
 function GoalModal({
   onClose,
+  onSave,
   mode = "create",
   goal = null,
 }) {
   const goalInputRef = useRef(null);
 
+  const [title, setTitle] =
+    useState(goal?.title || "");
+
+  const [description,
+    setDescription] =
+    useState(
+      goal?.description || ""
+    );
+
+  const [priority, setPriority] =
+    useState(
+      goal?.priority ||
+      "Medium"
+    );
+
+  const [status, setStatus] =
+    useState(
+      goal?.status ||
+      "Active"
+    );
+
+  const [associatedTasks, setAssociatedTasks] =
+    useState(
+      goal?.associatedTasks || []
+    );
+
   const [category, setCategory] =
-    useState("Work");
+    useState(
+      goal?.category ||
+      "Work"
+    );
 
   const [showCalendar, setShowCalendar] =
     useState(false);
 
   const [selectedDate, setSelectedDate] =
-    useState("Choose a date");
+    useState(
+      goal?.targetDate ||
+      "Choose a date"
+    );
 
   useEffect(() => {
     goalInputRef.current?.focus();
@@ -44,12 +75,43 @@ function GoalModal({
 
     borderRadius: "16px",
 
-    color:
-      "var(--text-primary)",
+    color: "var(--text-primary)",
 
     fontSize: "0.95rem",
 
     outline: "none",
+  };
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+
+    const goalData = {
+      id: goal?.id || Date.now(),
+
+      title,
+
+      description,
+
+      category,
+
+      priority,
+
+      status,
+
+      targetDate: selectedDate,
+
+      associatedTasks,
+
+      progress: goal?.progress || 0,
+
+      completed: goal?.completed || false,
+
+      pendingCompletion: false,
+    };
+
+    onSave(goalData);
+
+    onClose();
   };
 
   return (
@@ -145,6 +207,17 @@ function GoalModal({
 
         <input
           ref={goalInputRef}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSave();
+            }
+          }}
+          value={title}
+          onChange={(e) =>
+            setTitle(
+              e.target.value
+            )
+          }
           placeholder="Goal name"
           style={{
             width: "100%",
@@ -189,12 +262,18 @@ function GoalModal({
                 "var(--text-secondary)",
             }}
           >
-            Notes
+            Description
           </p>
 
           <textarea
             rows={3}
-            placeholder="Write any additional details..."
+            value={description}
+            onChange={(e) =>
+              setDescription(
+                e.target.value
+              )
+            }
+            placeholder="Describe your goal..."
             style={{
               width: "100%",
 
@@ -313,6 +392,248 @@ function GoalModal({
             ))}
           </div>
         </div>
+
+        <div>
+          <p
+            style={{
+              marginBottom: "10px",
+
+              color:
+                "var(--text-secondary)",
+
+              fontSize: "0.85rem",
+
+              fontWeight: "400",
+            }}
+          >
+            Priority
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Low",
+                color: "#ffdb58",
+              },
+              {
+                name: "Medium",
+                color: "#62929e",
+              },
+              {
+                name: "High",
+                color: "#ab3130",
+              },
+            ].map((item) => (
+              <button
+                key={item.name}
+                onClick={() =>
+                  setPriority(item.name)
+                }
+                style={{
+                  padding: "6px 12px",
+
+                  borderRadius: "999px",
+
+                  fontSize: "0.75rem",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "all 0.2s ease",
+
+                  background:
+                    priority === item.name
+                      ? `${item.color}33`
+                      : "transparent",
+
+                  border:
+                    priority === item.name
+                      ? `1px solid ${item.color}66`
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                  color:
+                    priority === item.name
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
+                }}
+                onMouseEnter={(e) => {
+                  if (
+                    priority !== item.name
+                  ) {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.04)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (
+                    priority !== item.name
+                  ) {
+                    e.currentTarget.style.background =
+                      "transparent";
+                  }
+                }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p
+            style={{
+              marginBottom: "10px",
+
+              color:
+                "var(--text-secondary)",
+
+              fontSize: "0.85rem",
+
+              fontWeight: "400",
+            }}
+          >
+            Status
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              {
+                name: "Active",
+                color: "#4d6893",
+              },
+              {
+                name: "In Progress",
+                color: "#e9b957",
+              },
+            ].map((item) => (
+              <button
+                key={item.name}
+                onClick={() =>
+                  setStatus(item.name)
+                }
+                style={{
+                  padding: "6px 12px",
+
+                  borderRadius: "999px",
+
+                  fontSize: "0.75rem",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "all 0.2s ease",
+
+                  background:
+                    status === item.name
+                      ? `${item.color}33`
+                      : "transparent",
+
+                  border:
+                    status === item.name
+                      ? `1px solid ${item.color}66`
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                  color:
+                    status === item.name
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
+                }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p
+            style={{
+              marginBottom: "10px",
+              color:
+                "var(--text-secondary)",
+              fontSize: "0.85rem",
+            }}
+          >
+            Associated Tasks
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              "Frontend Portfolio",
+              "LinkedIn Refresh",
+              "Apply to Jobs",
+            ].map((associatedTask) => {
+              const isSelected =
+                associatedTasks.includes(
+                  associatedTask
+                );
+
+              return (
+                <button
+                  key={associatedTask}
+                  type="button"
+                  onClick={() => {
+                    setAssociatedTasks(
+                      (prev) =>
+                        isSelected
+                          ? prev.filter(
+                            (task) =>
+                              task !==
+                              associatedTask
+                          )
+                          : [
+                            ...prev,
+                            associatedTask,
+                          ]
+                    );
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "999px",
+                    fontSize: "0.75rem",
+
+                    background: isSelected
+                      ? "#72715c55"
+                      : "transparent",
+
+                    border: isSelected
+                      ? "1px solid #72715caa"
+                      : "1px solid rgba(255,255,255,0.08)",
+
+                    color:
+                      "var(--text-primary)",
+
+                    cursor: "pointer",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                >
+                  {associatedTask}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div
           onClick={() =>
             setShowCalendar(
@@ -571,6 +892,7 @@ function GoalModal({
           </button>
 
           <button
+            onClick={handleSave}
             style={{
               background: "transparent",
 
