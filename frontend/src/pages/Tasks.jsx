@@ -179,15 +179,11 @@ function Tasks() {
           style={{
             position: "fixed",
             inset: 0,
-            background:
-              "rgba(0,0,0,0.45)",
-            backdropFilter:
-              "blur(12px)",
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(12px)",
             display: "flex",
-            justifyContent:
-              "center",
-            alignItems:
-              "center",
+            justifyContent: "center",
+            alignItems: "center",
             zIndex: 2000,
           }}
         >
@@ -358,15 +354,11 @@ function Tasks() {
           style={{
             position: "fixed",
             inset: 0,
-            background:
-              "rgba(0,0,0,0.45)",
-            backdropFilter:
-              "blur(12px)",
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(12px)",
             display: "flex",
-            justifyContent:
-              "center",
-            alignItems:
-              "center",
+            justifyContent: "center",
+            alignItems: "center",
             zIndex: 2000,
           }}
         >
@@ -377,12 +369,9 @@ function Tasks() {
             style={{
               width: "400px",
               padding: "28px",
-              borderRadius:
-                "24px",
-              background:
-                "rgba(20,20,20,0.85)",
-              border:
-                "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "24px",
+              background: "rgba(20,20,20,0.85)",
+              border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
             <h3
@@ -472,9 +461,7 @@ function Tasks() {
                     null
                   );
 
-                  setToast(
-                    "Active tasks cleared"
-                  );
+                  setToast("Active tasks cleared");
 
                   setTimeout(() => {
                     setToast("");

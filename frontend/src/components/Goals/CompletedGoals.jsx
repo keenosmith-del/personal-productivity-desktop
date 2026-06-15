@@ -1,24 +1,31 @@
 import GlassCard from "../GlassCard";
-import { Trash2 } from "lucide-react";
 
-function CompletedGoals() {
-  const completedGoals = [
-    {
-      title: "Learn React",
-      category: "Study",
-      completed: "03 Jun",
-    },
-    {
-      title: "Build Portfolio Website",
-      category: "Work",
-      completed: "28 May",
-    },
-    {
-      title: "Complete JavaScript Course",
-      category: "Study",
-      completed: "15 May",
-    },
-  ];
+import {
+  Trash2,
+  RotateCcw,
+} from "lucide-react";
+
+import { useState } from "react";
+
+function CompletedGoals({
+  goals,
+  setGoals,
+  setToast,
+  setLastCompletedGoal,
+  setLastDeletedGoal,
+  setLastAction,
+  onClearAll,
+}) {
+  // COMPONENT STATES
+  const completedGoals =
+    goals.filter(
+      (goal) =>
+        goal.completed
+    );
+
+  const [hoveredGoal,
+    setHoveredGoal] =
+    useState(null);
 
   return (
     <GlassCard>
@@ -40,24 +47,38 @@ function CompletedGoals() {
         </h2>
 
         <button
+          onClick={onClearAll}
+          disabled={
+            completedGoals.length === 0
+          }
           style={{
             background: "transparent",
 
-            border: "1px solid rgba(255,255,255,0.08)",
+            border:
+              "1px solid rgba(255,255,255,0.08)",
 
             borderRadius: "999px",
 
             padding: "8px 14px",
 
-            color: "var(--text-secondary)",
+            color:
+              completedGoals.length === 0
+                ? "rgba(255,255,255,0.25)"
+                : "var(--text-secondary)",
 
             fontSize: "0.8rem",
 
             fontWeight: "300",
 
-            cursor: "pointer",
+            cursor:
+              completedGoals.length === 0
+                ? "not-allowed"
+                : "pointer",
 
-            transition: "all 0.2s ease",
+            opacity:
+              completedGoals.length === 0
+                ? 0.5
+                : 1,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color =
@@ -83,188 +104,221 @@ function CompletedGoals() {
           display: "flex",
           flexDirection: "column",
           gap: "12px",
+
+          maxHeight: "380px",
+          overflowY: "auto",
+          paddingRight: "4px",
         }}
       >
-        {completedGoals.map((completed) => (
-          <div
-            key={completed.title}
+        {completedGoals.length === 0 ? (
+          <p
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-
-              padding: "8px 12px",
-
-              borderRadius: "12px",
-
-              opacity: 0.5,
-
-              transition:
-                "all 0.25s ease",
-
-              cursor: "default",
+              color:
+                "var(--text-secondary)",
+              fontSize: "0.85rem",
+              textAlign: "left",
+              padding: "24px 0",
             }}
           >
+            No completed goals.
+          </p>
+        ) : (
+          completedGoals.map((goal) => (
             <div
+              key={goal.title}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                justifyContent: "space-between",
+
+                padding: "8px 12px",
+
+                borderRadius: "12px",
+
+                opacity: 0.5,
+
+                transition: "all 0.25s ease",
+
+                cursor: "default",
               }}
             >
               <div
                 style={{
-                  width: "18px",
-                  height: "18px",
-
-                  borderRadius: "50%",
-
-                  background:
-                    "rgba(245,245,245,0.45)",
-
-                  border:
-                    "1.5px solid rgba(245,245,245,0.45)",
-
-                  flexShrink: 0,
-
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-
-                  fontSize: "12px",
-                  fontWeight: "600",
-
-                  color: "#1a1d29",
+                  gap: "12px",
                 }}
               >
-                ✓
-              </div>
-
-              <div>
                 <div
+                  onClick={() => {
+                    setGoals((prev) =>
+                      prev.map((g) =>
+                        g.id === goal.id
+                          ? {
+                            ...g,
+                            completed: false,
+                            completedDate: null,
+                            status: "Active",
+                          }
+                          : g
+                      )
+                    );
+
+                    setLastCompletedGoal(null);
+                    setLastDeletedGoal(null);
+                    setLastAction(null);
+
+                    setToast("Goal restored");
+
+                    setTimeout(() => {
+                      setToast("");
+                    }, 3000);
+                  }}
+                  onMouseEnter={() =>
+                    setHoveredGoal(goal.id)
+                  }
+                  onMouseLeave={() =>
+                    setHoveredGoal(null)
+                  }
                   style={{
-                    fontWeight: "300",
+                    cursor: "pointer",
 
-                    color:
-                      "rgba(255,255,255,0.7)",
+                    width: "18px",
+                    height: "18px",
 
-                    fontSize: "0.9rem",
+                    borderRadius: "50%",
 
-                    letterSpacing: "-0.015em",
+                    background:
+                      hoveredGoal === goal.id
+                        ? "rgba(245,245,245,0.75)"
+                        : "rgba(245,245,245,0.45)",
 
-                    marginBottom: "6px",
+                    border:
+                      hoveredGoal === goal.id
+                        ? "1.5px solid rgba(245,245,245,0.75)"
+                        : "1.5px solid rgba(245,245,245,0.45)",
+
+                    flexShrink: 0,
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                    transition: "all 0.2s ease",
+
+                    color: "#1a1d29",
                   }}
                 >
-                  {completed.title}
+                  {hoveredGoal === goal.id ? (
+                    <RotateCcw
+                      size={10}
+                      strokeWidth={2}
+                    />
+                  ) : (
+                    "✓"
+                  )}
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-
-                    gap: "6px",
-
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <span
+                <div>
+                  <div
                     style={{
-                      padding: "3px 8px",
-
-                      borderRadius: "999px",
-
-                      fontSize: "0.68rem",
-
-                      background: "#c59c7033",
-
-                      border:
-                        "1px solid #c59c7066",
-                    }}
-                  >
-                    Goal
-                  </span>
-
-                  <span
-                    style={{
-                      padding: "3px 8px",
-
-                      borderRadius: "999px",
-
-                      fontSize: "0.68rem",
-
-                      background:
-                        completedGoals.category === "Work"
-                          ? "#063f4733"
-                          : "#29737633",
-
-                      border:
-                        completedGoals.category === "Work"
-                          ? "1px solid #063f4766"
-                          : "1px solid #29737666",
-                    }}
-                  >
-                    {completed.category}
-                  </span>
-
-                  <span
-                    style={{
-                      padding: "3px 8px",
-
-                      borderRadius: "999px",
-
-                      fontSize: "0.68rem",
-
-                      background: "#728a6e33",
-
-                      border:
-                        "1px solid #728a6e66",
-                    }}
-                  >
-                    Complete
-                  </span>
-
-                  <span
-                    style={{
-                      fontSize: "0.68rem",
+                      fontWeight: "300",
 
                       color:
-                        "var(--text-secondary)",
+                        "rgba(255,255,255,0.7)",
 
-                      alignSelf: "center",
+                      fontSize: "0.9rem",
+
+                      letterSpacing: "-0.015em",
+
+                      marginBottom: "6px",
                     }}
                   >
-                    {completed.completed}
-                  </span>
+                    {goal.title}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+
+                      gap: "6px",
+
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        padding: "3px 8px",
+
+                        borderRadius: "999px",
+
+                        fontSize: "0.68rem",
+
+                        background: "#728a6e33",
+
+                        border:
+                          "1px solid #728a6e66",
+                      }}
+                    >
+                      Complete
+                    </span>
+
+                    <span
+                      style={{
+                        fontSize: "0.68rem",
+
+                        color:
+                          "var(--text-secondary)",
+
+                        alignSelf: "center",
+                      }}
+                    >
+                      {goal.completed}
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              <Trash2
+                size={16}
+                strokeWidth={1.5}
+                style={{
+                  cursor: "pointer",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#ff6b6b";
+
+                  e.currentTarget.style.transform = "scale(1.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color =
+                    "";
+
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  setLastDeletedGoal(goal);
+
+                  setLastAction("delete");
+
+                  setGoals((prev) =>
+                    prev.filter((g) => g.id !== goal.id)
+                  );
+
+                  setToast("Goal deleted");
+
+                  setTimeout(() => {
+                    setToast("");
+                  }, 3000);
+                }}
+              />
             </div>
-
-            <Trash2
-              size={16}
-              strokeWidth={1.5}
-              style={{
-                cursor: "pointer",
-
-                transition:
-                  "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color =
-                  "#ff6b6b";
-
-                e.currentTarget.style.transform =
-                  "scale(1.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color =
-                  "";
-
-                e.currentTarget.style.transform =
-                  "scale(1)";
-              }}
-            />
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </GlassCard>
   );
