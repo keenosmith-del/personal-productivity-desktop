@@ -2,7 +2,34 @@ import GlassCard from "../GlassCard";
 import GoalModal from "./GoalModal";
 import { Plus } from "lucide-react";
 
-function GoalOverview() {
+function GoalOverview({ goals }) {
+    const activeGoals = goals.filter(
+        (goal) => !goal.completed
+    );
+
+    const completedGoals = goals.filter(
+        (goal) => goal.completed
+    );
+
+    const closestGoal = [...activeGoals].sort(
+        (a, b) => b.progress - a.progress
+    )[0];
+
+    const recentlyCompleted =
+        completedGoals[
+        completedGoals.length - 1
+        ];
+
+    const overallProgress =
+        activeGoals.length > 0
+            ? Math.round(
+                activeGoals.reduce(
+                    (total, goal) =>
+                        total + goal.progress,
+                    0
+                ) / activeGoals.length
+            )
+            : 0;
     return (
         <GlassCard minHeight="220px">
             <div
@@ -33,6 +60,7 @@ function GoalOverview() {
                     gap: "24px",
                 }}
             >
+                {/* FIRST COL */}
                 <div
                     style={{
                         display: "flex",
@@ -46,7 +74,7 @@ function GoalOverview() {
                                 "var(--text-secondary)",
                         }}
                     >
-                        Active Goals
+                        Overall Progress
                     </p>
 
                     <h2
@@ -54,76 +82,7 @@ function GoalOverview() {
                             fontWeight: "400",
                         }}
                     >
-                        4
-                    </h2>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "6px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        <span
-                            style={{
-                                padding: "4px 8px",
-                                borderRadius: "999px",
-                                fontSize: "0.68rem",
-                                background: "#063f4733",
-                                border: "1px solid #063f4766",
-                            }}
-                        >
-                            Work 1
-                        </span>
-
-                        <span
-                            style={{
-                                padding: "4px 8px",
-                                borderRadius: "999px",
-                                fontSize: "0.68rem",
-                                background: "#29737633",
-                                border: "1px solid #29737666",
-                            }}
-                        >
-                            Study 2
-                        </span>
-
-                        <span
-                            style={{
-                                padding: "4px 8px",
-                                borderRadius: "999px",
-                                fontSize: "0.68rem",
-                                background: "#5c939633",
-                                border: "1px solid #5c939666",
-                            }}
-                        >
-                            Personal 1
-                        </span>
-                    </div>
-                </div>
-
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "18px",
-                    }}
-                >
-                    <p
-                        style={{
-                            color:
-                                "var(--text-secondary)",
-                        }}
-                    >
-                        Completion Rate
-                    </p>
-
-                    <h2
-                        style={{
-                            fontWeight: "400",
-                        }}
-                    >
-                        72%
+                        {overallProgress}%
                     </h2>
 
                     <div
@@ -146,7 +105,7 @@ function GoalOverview() {
                         >
                             <div
                                 style={{
-                                    width: "72%",
+                                    width: `${overallProgress}%`,
 
                                     height: "100%",
 
@@ -158,29 +117,26 @@ function GoalOverview() {
                         </div>
                     </div>
 
-                    <div
+                    <span
                         style={{
-                            marginTop: "10px",
+                            padding: "4px 8px",
+
+                            borderRadius: "999px",
+
+                            fontSize: "0.68rem",
+
+                            background: "#c59c7033",
+
+                            border: "1px solid #c59c7066",
+
+                            width: "fit-content",
                         }}
                     >
-                        <span
-                            style={{
-                                padding: "4px 8px",
-
-                                borderRadius: "999px",
-
-                                fontSize: "0.68rem",
-
-                                background: "#728a6e33",
-
-                                border: "1px solid #728a6e66",
-                            }}
-                        >
-                            +8 Completed
-                        </span>
-                    </div>
+                        {activeGoals.length} Active Goals
+                    </span>
                 </div>
 
+                {/* SECOND COL */}
                 <div
                     style={{
                         display: "flex",
@@ -194,58 +150,152 @@ function GoalOverview() {
                                 "var(--text-secondary)",
                         }}
                     >
-                        Current Streak
+                        Closest To Completion
                     </p>
 
                     <h2
                         style={{
                             fontWeight: "400",
+                            fontSize: "1.2rem",
                         }}
                     >
-                        14 Days
+                        {closestGoal?.title ||
+                            "Nothing here yet"}
                     </h2>
 
-                    <div
+                    <span
                         style={{
-                            display: "flex",
-                            gap: "6px",
-                            flexWrap: "wrap",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.8rem",
                         }}
                     >
-                        <span
-                            style={{
-                                padding: "4px 8px",
+                        Create a goal to start tracking progress
+                    </span>
 
-                                borderRadius: "999px",
+                    {closestGoal && (
+                        <>
+                            <span
+                                style={{
+                                    padding: "4px 8px",
 
-                                fontSize: "0.68rem",
+                                    borderRadius: "999px",
 
-                                background: "#e9b95733",
+                                    fontSize: "0.68rem",
 
-                                border: "1px solid #e9b95766",
-                            }}
-                        >
-                            Best 21 Days
-                        </span>
+                                    background:
+                                        closestGoal.category === "Work"
+                                            ? "#063f4733"
+                                            : closestGoal.category === "Study"
+                                                ? "#29737633"
+                                                : closestGoal.category === "Personal"
+                                                    ? "#5c939633"
+                                                    : "#10343933",
 
-                        <span
-                            style={{
-                                padding: "4px 8px",
+                                    border:
+                                        closestGoal.category === "Work"
+                                            ? "1px solid #063f4766"
+                                            : closestGoal.category === "Study"
+                                                ? "1px solid #29737666"
+                                                : closestGoal.category === "Personal"
+                                                    ? "1px solid #5c939666"
+                                                    : "1px solid #10343966",
 
-                                borderRadius: "999px",
+                                    width: "fit-content",
+                                }}
+                            >
+                                {closestGoal.category}
+                            </span>
 
-                                fontSize: "0.68rem",
+                            <span
+                                style={{
+                                    color:
+                                        "var(--text-secondary)",
 
-                                background: "#728a6e33",
-
-                                border: "1px solid #728a6e66",
-                            }}
-                        >
-                            +14 Current
-                        </span>
-                    </div>
+                                    fontSize: "0.8rem",
+                                }}
+                            >
+                                {closestGoal.progress}% Complete
+                            </span>
+                        </>
+                    )}
                 </div>
 
+                {/* THIRD COL */}
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "18px",
+                    }}
+                >
+                    <p
+                        style={{
+                            color:
+                                "var(--text-secondary)",
+                        }}
+                    >
+                        Recently Completed
+                    </p>
+
+                    <h2
+                        style={{
+                            fontWeight: "400",
+                            fontSize: "1.2rem",
+                        }}
+                    >
+                        {recentlyCompleted?.title ||
+                            "-"}
+                    </h2>
+
+                    {recentlyCompleted && (
+                        <>
+                            <span
+                                style={{
+                                    padding: "4px 8px",
+
+                                    borderRadius: "999px",
+
+                                    fontSize: "0.68rem",
+
+                                    background:
+                                        recentlyCompleted.category === "Work"
+                                            ? "#063f4733"
+                                            : recentlyCompleted.category === "Study"
+                                                ? "#29737633"
+                                                : recentlyCompleted.category === "Personal"
+                                                    ? "#5c939633"
+                                                    : "#10343933",
+
+                                    border:
+                                        recentlyCompleted.category === "Work"
+                                            ? "1px solid #063f4766"
+                                            : recentlyCompleted.category === "Study"
+                                                ? "1px solid #29737666"
+                                                : recentlyCompleted.category === "Personal"
+                                                    ? "1px solid #5c939666"
+                                                    : "1px solid #10343966",
+
+                                    width: "fit-content",
+                                }}
+                            >
+                                {recentlyCompleted.category}
+                            </span>
+
+                            <span
+                                style={{
+                                    color:
+                                        "var(--text-secondary)",
+
+                                    fontSize: "0.8rem",
+                                }}
+                            >
+                                Recently completed
+                            </span>
+                        </>
+                    )}
+                </div>
+
+                {/* FOURTH COL */}
                 <div
                     style={{
                         display: "flex",
@@ -267,7 +317,7 @@ function GoalOverview() {
                             fontWeight: "400",
                         }}
                     >
-                        8
+                        {completedGoals.length}
                     </h2>
 
                     <div
@@ -286,7 +336,7 @@ function GoalOverview() {
                                 border: "1px solid #728a6e66",
                             }}
                         >
-                            Complete 8
+                            Complete {completedGoals.length}
                         </span>
 
                         <span
@@ -298,7 +348,7 @@ function GoalOverview() {
                                 border: "1px solid #4d689366",
                             }}
                         >
-                            Active 4
+                            Active {activeGoals.length}
                         </span>
                     </div>
                 </div>
