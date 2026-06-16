@@ -4,8 +4,6 @@ import {
     useEffect
 } from "react";
 
-import SegmentedControl from "../SegmentedControl";
-
 import {
     X,
     Calendar,
@@ -13,6 +11,7 @@ import {
 
 function ReminderModal({
     onClose,
+    onSave,
     mode = "create",
     reminder = null,
 }) {
@@ -21,36 +20,62 @@ function ReminderModal({
     const [category, setCategory] =
         useState("Work");
 
+    const [priority, setPriority] =
+        useState(null);
+
+    const [linkedType, setLinkedType] =
+        useState("None");
+
+    const [linkedName, setLinkedName] =
+        useState("");
+
     const [showCalendar, setShowCalendar] =
         useState(false);
 
     const [selectedDate, setSelectedDate] =
         useState("Choose a date");
 
-    useEffect(() => {
-        reminderInputRef.current?.focus();
-    }, []);
+    const [title, setTitle] =
+        useState("");
+
+    const [notes, setNotes] =
+        useState("");
 
     const inputStyle = {
         width: "100%",
 
         padding: "14px 18px",
 
-        background:
-            "rgba(255,255,255,0.05)",
+        background: "rgba(255,255,255,0.05)",
 
-        border:
-            "1px solid rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.08)",
 
         borderRadius: "16px",
 
-        color:
-            "var(--text-primary)",
+        color: "var(--text-primary)",
 
         fontSize: "0.95rem",
 
         outline: "none",
     };
+
+    // FUNCTIONS
+    useEffect(() => {
+        reminderInputRef.current?.focus();
+
+        if (mode === "edit" && reminder) {
+            setTitle(reminder.title || "");
+            setNotes(reminder.notes || "");
+            setCategory(reminder.category || "Work");
+            setPriority(reminder.priority || null);
+            setLinkedType(
+                reminder.linkedType || "None"
+            );
+            setSelectedDate(
+                reminder.date || "Choose a date"
+            );
+        }
+    }, [mode, reminder]);
 
     return (
         <div
@@ -59,11 +84,9 @@ function ReminderModal({
                 position: "fixed",
                 inset: 0,
 
-                background:
-                    "rgba(0,0,0,0.55)",
+                background: "rgba(0,0,0,0.55)",
 
-                backdropFilter:
-                    "blur(12px)",
+                backdropFilter: "blur(12px)",
 
                 display: "flex",
 
@@ -147,6 +170,10 @@ function ReminderModal({
 
                 <input
                     ref={reminderInputRef}
+                    value={title}
+                    onChange={(e) =>
+                        setTitle(e.target.value)
+                    }
                     placeholder="Reminder name"
                     style={{
                         width: "100%",
@@ -194,13 +221,16 @@ function ReminderModal({
                     </p>
 
                     <textarea
+                        value={notes}
+                        onChange={(e) =>
+                            setNotes(e.target.value)
+                        }
                         rows={3}
                         placeholder="Write any additional details..."
                         style={{
                             width: "100%",
 
-                            background:
-                                "transparent",
+                            background: "transparent",
 
                             border: "none",
 
@@ -208,11 +238,9 @@ function ReminderModal({
 
                             resize: "none",
 
-                            color:
-                                "var(--text-primary)",
+                            color: "var(--text-primary)",
 
-                            fontFamily:
-                                "inherit",
+                            fontFamily: "inherit",
 
                             fontSize: "0.95rem",
                         }}
@@ -224,8 +252,7 @@ function ReminderModal({
                         style={{
                             marginBottom: "10px",
 
-                            color:
-                                "var(--text-secondary)",
+                            color: "var(--text-secondary)",
 
                             fontSize: "0.85rem",
 
@@ -274,8 +301,7 @@ function ReminderModal({
 
                                     cursor: "pointer",
 
-                                    transition:
-                                        "all 0.2s ease",
+                                    transition: "all 0.2s ease",
 
                                     background:
                                         category === item.name
@@ -304,12 +330,136 @@ function ReminderModal({
                                     if (
                                         category !== item.name
                                     ) {
-                                        e.currentTarget.style.background =
-                                            "transparent";
+                                        e.currentTarget.style.background = "transparent";
                                     }
                                 }}
                             >
                                 {item.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Priority
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        {["High", "Medium", "Low"].map(
+                            (item) => (
+                                <button
+                                    key={item}
+                                    onClick={() =>
+                                        setPriority(item)
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        borderRadius: "999px",
+                                        fontSize: "0.75rem",
+                                        cursor: "pointer",
+
+                                        background:
+                                            priority === item
+                                                ? item === "High"
+                                                    ? "#ab313033"
+                                                    : item === "Medium"
+                                                        ? "#62929e33"
+                                                        : "#ffdb5833"
+                                                : "transparent",
+
+                                        border:
+                                            priority === item
+                                                ? item === "High"
+                                                    ? "1px solid #ab313066"
+                                                    : item === "Medium"
+                                                        ? "1px solid #62929e66"
+                                                        : "1px solid #ffdb5866"
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                        color:
+                                            priority === item
+                                                ? "var(--text-primary)"
+                                                : "var(--text-secondary)",
+                                    }}
+                                >
+                                    {item}
+                                </button>
+                            )
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Linked To
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        {[
+                            "None",
+                            "Goal",
+                            "Task",
+                            "Project",
+                        ].map((item) => (
+                            <button
+                                key={item}
+                                onClick={() => {
+                                    setLinkedType(item);
+
+                                    if (item === "None") {
+                                        setLinkedName("");
+                                    }
+                                }}
+                                style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "999px",
+                                    fontSize: "0.75rem",
+                                    cursor: "pointer",
+
+                                    background:
+                                        linkedType === item
+                                            ? "#4d689333"
+                                            : "transparent",
+
+                                    border:
+                                        linkedType === item
+                                            ? "1px solid #4d689366"
+                                            : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        linkedType === item
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+                                }}
+                            >
+                                {item}
                             </button>
                         ))}
                     </div>
@@ -324,8 +474,7 @@ function ReminderModal({
                     style={{
                         display: "flex",
 
-                        justifyContent:
-                            "space-between",
+                        justifyContent: "space-between",
 
                         alignItems: "center",
 
@@ -573,6 +722,36 @@ function ReminderModal({
                     </button>
 
                     <button
+                        onClick={() => {
+                            onSave({
+                                id:
+                                    mode === "edit"
+                                        ? reminder.id
+                                        : Date.now(),
+
+                                title,
+                                notes,
+
+                                category,
+                                priority,
+
+                                date:
+                                    selectedDate ===
+                                        "Choose a date"
+                                        ? null
+                                        : selectedDate,
+
+                                linkedType:
+                                    linkedType === "None"
+                                        ? null
+                                        : linkedType,
+
+                                completed:
+                                    mode === "edit"
+                                        ? reminder.completed
+                                        : false,
+                            });
+                        }}
                         style={{
                             background: "transparent",
 

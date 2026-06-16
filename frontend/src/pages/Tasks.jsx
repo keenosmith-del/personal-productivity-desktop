@@ -218,8 +218,7 @@ function Tasks() {
                 marginBottom: "24px",
               }}
             >
-              This action cannot be
-              undone.
+              This action cannot be undone.
             </p>
 
             <div

@@ -159,6 +159,32 @@ function ReminderDetailsModal({
                                 {reminder.category}
                             </span>
 
+                            {reminder.priority && (
+                                <span
+                                    style={{
+                                        padding: "4px 8px",
+                                        borderRadius: "999px",
+                                        fontSize: "0.68rem",
+
+                                        background:
+                                            reminder.priority === "High"
+                                                ? "#ab313033"
+                                                : reminder.priority === "Medium"
+                                                    ? "#62929e33"
+                                                    : "#ffdb5833",
+
+                                        border:
+                                            reminder.priority === "High"
+                                                ? "1px solid #ab313066"
+                                                : reminder.priority === "Medium"
+                                                    ? "1px solid #62929e66"
+                                                    : "1px solid #ffdb5866",
+                                    }}
+                                >
+                                    {reminder.priority}
+                                </span>
+                            )}
+
                             <span
                                 style={{
                                     padding: "4px 8px",
@@ -173,7 +199,9 @@ function ReminderDetailsModal({
                                         "1px solid #4d689366",
                                 }}
                             >
-                                Active
+                                {reminder.completed
+                                    ? "Completed"
+                                    : "Active"}
                             </span>
                         </div>
                     </div>
@@ -191,8 +219,8 @@ function ReminderDetailsModal({
                         </p>
 
                         <p>
-                            Placeholder description for
-                            reminder details.
+                            {reminder.notes ||
+                                "No notes added."}
                         </p>
                     </div>
 
@@ -209,6 +237,54 @@ function ReminderDetailsModal({
                         </p>
 
                         <p>{reminder.date}</p>
+                    </div>
+
+                    <div>
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+                                fontSize: "0.8rem",
+                                marginBottom: "6px",
+                            }}
+                        >
+                            Linked To
+                        </p>
+
+                        {reminder.linkedType ? (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "8px",
+                                    alignItems: "center",
+                                    flexWrap: "wrap",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        padding: "4px 8px",
+
+                                        borderRadius: "999px",
+
+                                        fontSize: "0.68rem",
+
+                                        background: "#4d689333",
+
+                                        border: "1px solid #4d689366",
+                                    }}
+                                >
+                                    {reminder.linkedType}
+                                </span>
+
+                                <span>
+                                    {reminder.linkedName}
+                                </span>
+                            </div>
+                        ) : (
+                            <p>
+                                Not linked to anything.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

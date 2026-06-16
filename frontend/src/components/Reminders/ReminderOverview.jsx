@@ -1,6 +1,35 @@
 import GlassCard from "../GlassCard";
 
-function ReminderOverview() {
+function ReminderOverview({
+    reminders,
+}) {
+    const activeReminders =
+        reminders.filter(
+            (reminder) =>
+                !reminder.completed
+        );
+
+    const categoryCounts =
+        activeReminders.reduce(
+            (acc, reminder) => {
+                if (!reminder.category)
+                    return acc;
+
+                acc[reminder.category] =
+                    (acc[
+                        reminder.category
+                    ] || 0) + 1;
+
+                return acc;
+            },
+            {}
+        );
+
+    const recentReminders =
+        reminders
+            .slice(-2)
+            .reverse();
+
     return (
         <GlassCard minHeight="520px">
             <div
@@ -35,7 +64,7 @@ function ReminderOverview() {
                             marginBottom: "16px",
                         }}
                     >
-                        12
+                        {activeReminders.length}
                     </h2>
 
                     <div
@@ -54,7 +83,11 @@ function ReminderOverview() {
                                 border: "1px solid #83545c66",
                             }}
                         >
-                            Today 3
+                            Today {
+                                activeReminders.filter(
+                                    (r) => r.date === "Today"
+                                ).length
+                            }
                         </span>
 
                         <span
@@ -66,7 +99,11 @@ function ReminderOverview() {
                                 border: "1px solid #83545c66",
                             }}
                         >
-                            Tomorrow 4
+                            Tomorrow {
+                                activeReminders.filter(
+                                    (r) => r.date === "Tomorrow"
+                                ).length
+                            }
                         </span>
 
                         <span
@@ -78,7 +115,14 @@ function ReminderOverview() {
                                 border: "1px solid #83545c66",
                             }}
                         >
-                            This Week 5
+                            This Week {
+                                activeReminders.filter(
+                                    (r) =>
+                                        r.date === "Friday" ||
+                                        r.date === "Monday" ||
+                                        r.date === "Next Week"
+                                ).length
+                            }
                         </span>
                     </div>
                 </div>
@@ -110,7 +154,9 @@ function ReminderOverview() {
                                 border: "1px solid #063f4766",
                             }}
                         >
-                            Work 5
+                            Work {
+                                categoryCounts.Work || 0
+                            }
                         </span>
 
                         <span
@@ -122,7 +168,9 @@ function ReminderOverview() {
                                 border: "1px solid #29737666",
                             }}
                         >
-                            Study 4
+                            Study {
+                                categoryCounts.Study || 0
+                            }
                         </span>
 
                         <span
@@ -134,7 +182,9 @@ function ReminderOverview() {
                                 border: "1px solid #5c939666",
                             }}
                         >
-                            Personal 2
+                            Personal {
+                                categoryCounts.Personal || 0
+                            }
                         </span>
 
                         <span
@@ -146,7 +196,9 @@ function ReminderOverview() {
                                 border: "1px solid #10343966",
                             }}
                         >
-                            Health 1
+                            Health {
+                                categoryCounts.Health || 0
+                            }
                         </span>
                     </div>
                 </div>
@@ -191,18 +243,19 @@ function ReminderOverview() {
                                     Reminder
                                 </span>
 
-                                <span
-                                    style={{
-                                        padding: "3px 8px",
-                                        borderRadius: "999px",
-                                        fontSize: "0.68rem",
-                                        background: "#063f4733",
-                                        border:
-                                            "1px solid #063f4766",
-                                    }}
-                                >
-                                    Work
-                                </span>
+                                {recentReminders[0]?.category && (
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+                                            borderRadius: "999px",
+                                            fontSize: "0.68rem",
+                                            background: "#063f4733",
+                                            border: "1px solid #063f4766",
+                                        }}
+                                    >
+                                        {recentReminders[0].category}
+                                    </span>
+                                )}
                             </div>
 
                             <div
@@ -210,7 +263,8 @@ function ReminderOverview() {
                                     fontSize: "0.85rem",
                                 }}
                             >
-                                Portfolio Review
+                                {recentReminders[0]?.title ||
+                                    "No reminders"}
                             </div>
                         </div>
 
@@ -236,18 +290,19 @@ function ReminderOverview() {
                                     Reminder
                                 </span>
 
-                                <span
-                                    style={{
-                                        padding: "3px 8px",
-                                        borderRadius: "999px",
-                                        fontSize: "0.68rem",
-                                        background: "#29737633",
-                                        border:
-                                            "1px solid #29737666",
-                                    }}
-                                >
-                                    Study
-                                </span>
+                                {recentReminders[1]?.category && (
+                                    <span
+                                        style={{
+                                            padding: "3px 8px",
+                                            borderRadius: "999px",
+                                            fontSize: "0.68rem",
+                                            background: "#063f4733",
+                                            border: "1px solid #063f4766",
+                                        }}
+                                    >
+                                        {recentReminders[1].category}
+                                    </span>
+                                )}
                             </div>
 
                             <div
@@ -255,7 +310,8 @@ function ReminderOverview() {
                                     fontSize: "0.85rem",
                                 }}
                             >
-                                Submit Assignment
+                                {recentReminders[1]?.title ||
+                                    "No reminders"}
                             </div>
                         </div>
                     </div>

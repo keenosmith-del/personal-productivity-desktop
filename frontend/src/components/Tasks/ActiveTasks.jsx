@@ -105,16 +105,20 @@ function ActiveTasks({
                             border: "1px solid rgba(255,255,255,0.08)",
                             borderRadius: "999px",
                             padding: "8px 14px",
+                            
                             color:
                                 activeTasks.length === 0
                                     ? "rgba(255,255,255,0.25)"
                                     : "var(--text-secondary)",
+
                             fontSize: "0.8rem",
                             fontWeight: "300",
+
                             cursor:
                                 activeTasks.length === 0
                                     ? "not-allowed"
                                     : "pointer",
+
                             opacity:
                                 activeTasks.length === 0
                                     ? 0.5
@@ -492,8 +496,7 @@ function ActiveTasks({
                                     strokeWidth={1.5}
                                     style={{
                                         cursor: "pointer",
-                                        transition:
-                                            "all 0.2s ease",
+                                        transition: "all 0.2s ease",
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.color =

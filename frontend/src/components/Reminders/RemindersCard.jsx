@@ -5,34 +5,25 @@ import {
     Trash2,
 } from "lucide-react";
 
-const reminders = [
-    {
-        title: "Portfolio Review",
-        category: "Work",
-        date: "Friday",
-    },
-
-    {
-        title: "Submit Assignment",
-        category: "Study",
-        date: "Tomorrow",
-    },
-
-    {
-        title: "Doctor Appointment",
-        category: "Health",
-        date: "Next Week",
-    },
-];
-
 function RemindersCard({
+    reminders,
+    setReminders,
     onNewReminder,
     onViewReminder,
     onEditReminder,
+    onClearAll,
+    toast,
+    setToast,
+    setLastCompletedReminder,
+    setLastDeletedReminder,
+    completionTimeout,
+    setCompletionTimeout,
 }) {
-    const [completedReminders,
-        setCompletedReminders] =
-        useState([]);
+    const sortedReminders = [...reminders].sort(
+        (a, b) =>
+            Number(a.completed) -
+            Number(b.completed)
+    );
     return (
         <GlassCard minHeight="520px">
             <div
@@ -52,44 +43,100 @@ function RemindersCard({
                     Reminders
                 </h2>
 
-                <button
-                    onClick={onNewReminder}
+                <div
                     style={{
-                        background: "transparent",
-
-                        border: "1px solid rgba(255,255,255,0.08)",
-
-                        borderRadius: "999px",
-
-                        padding: "8px 14px",
-
-                        color: "var(--text-secondary)",
-
-                        fontSize: "0.8rem",
-
-                        fontWeight: "300",
-
-                        cursor: "pointer",
-
-                        transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-
-                        e.currentTarget.style.background =
-                            "rgba(255,255,255,0.04)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-
-                        e.currentTarget.style.background =
-                            "transparent";
+                        display: "flex",
+                        gap: "8px",
                     }}
                 >
-                    + New Reminder
-                </button>
+                    <button
+                        onClick={onNewReminder}
+                        style={{
+                            background: "transparent",
+
+                            border: "1px solid rgba(255,255,255,0.08)",
+
+                            borderRadius: "999px",
+
+                            padding: "8px 14px",
+
+                            color: "var(--text-secondary)",
+
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
+                    >
+                        + New Reminder
+                    </button>
+
+                    <button
+                        onClick={onClearAll}
+                        disabled={reminders.length === 0}
+                        style={{
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: "999px",
+                            padding: "8px 14px",
+
+                            color:
+                                reminders.length === 0
+                                    ? "rgba(255,255,255,0.25)"
+                                    : "var(--text-secondary)",
+
+                            fontSize: "0.8rem",
+                            fontWeight: "300",
+
+                            cursor:
+                                reminders.length === 0
+                                    ? "not-allowed"
+                                    : "pointer",
+
+                            opacity:
+                                reminders.length === 0
+                                    ? 0.5
+                                    : 1,
+                        }}
+                        onMouseEnter={(e) => {
+                            if (reminders.length == 0) return;
+
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+                        }}
+                        onMouseLeave={(e) => {
+                            if (reminders.length === 0) return;
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                            e.currentTarget.style.background =
+                                "transparent";
+                        }}
+                    >
+                        Clear All
+                    </button>
+                </div>
             </div>
 
             <div
@@ -97,10 +144,17 @@ function RemindersCard({
                     display: "flex",
                     flexDirection: "column",
                     gap: "12px",
+
+                    maxHeight: "420px",
+                    overflowY: "auto",
                 }}
             >
-                {reminders.map((reminder) => {
-                    const isCompleted = completedReminders.includes(reminder.title);
+                {sortedReminders.map((reminder) => {
+                    const isCompleted =
+                        reminder.completed;
+
+                    const isPending =
+                        reminder.pendingCompletion;
 
                     return (
                         <div
@@ -117,7 +171,7 @@ function RemindersCard({
 
                                 borderRadius: "12px",
 
-                                transition: "all 0.25s ease",
+                                transition: "all 0.35s ease",
 
                                 cursor: "pointer",
                             }}
@@ -141,21 +195,40 @@ function RemindersCard({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        setCompletedReminders(
-                                            (prev) =>
-                                                prev.includes(
-                                                    reminder.title
-                                                )
-                                                    ? prev.filter(
-                                                        (r) =>
-                                                            r !==
-                                                            reminder.title
-                                                    )
-                                                    : [
-                                                        ...prev,
-                                                        reminder.title,
-                                                    ]
+                                        setReminders((prev) =>
+                                            prev.map((r) =>
+                                                r.id === reminder.id
+                                                    ? {
+                                                        ...r,
+                                                        pendingCompletion: true,
+                                                    }
+                                                    : r
+                                            )
                                         );
+
+                                        setToast(
+                                            reminder.completed
+                                                ? "Reminder restored"
+                                                : "Reminder completed"
+                                        );
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 3000);
+
+                                        setTimeout(() => {
+                                            setReminders((prev) =>
+                                                prev.map((r) =>
+                                                    r.id === reminder.id
+                                                        ? {
+                                                            ...r,
+                                                            completed: !r.completed,
+                                                            pendingCompletion: false,
+                                                        }
+                                                        : r
+                                                )
+                                            );
+                                        }, 350);
                                     }}
                                     style={{
                                         cursor: "pointer",
@@ -164,11 +237,10 @@ function RemindersCard({
 
                                         borderRadius: "50%",
 
-                                        border:
-                                            "1.5px solid rgba(245,245,245,0.7)",
+                                        border: "1.5px solid rgba(245,245,245,0.7)",
 
                                         background:
-                                            isCompleted
+                                            isCompleted || isPending
                                                 ? "rgba(245,245,245,0.7)"
                                                 : "transparent",
 
@@ -186,7 +258,7 @@ function RemindersCard({
                                         color: "#1a1d29",
                                     }}
                                 >
-                                    {isCompleted && "✓"}
+                                    {(isCompleted || isPending) && "✓"}
                                 </div>
 
                                 <div>
@@ -197,12 +269,16 @@ function RemindersCard({
                                             fontSize: "0.9rem",
 
                                             opacity:
-                                                isCompleted
+                                                isCompleted || isPending
                                                     ? 0.55
                                                     : 1,
 
-                                            letterSpacing:
-                                                "-0.015em",
+                                            transform:
+                                                isPending
+                                                    ? "translateX(6px)"
+                                                    : "translateX(0)",
+
+                                            letterSpacing: "-0.015em",
 
                                             marginBottom: "6px",
                                         }}
@@ -219,73 +295,103 @@ function RemindersCard({
                                             flexWrap: "wrap",
                                         }}
                                     >
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
 
-                                                borderRadius: "999px",
+                                        {reminder.category && (
+                                            <span
+                                                style={{
+                                                    padding: "3px 8px",
 
-                                                fontSize: "0.68rem",
+                                                    borderRadius: "999px",
 
-                                                background: "#83545c33",
+                                                    fontSize: "0.68rem",
 
-                                                border:
-                                                    "1px solid #83545c66",
-                                            }}
-                                        >
-                                            Reminder
-                                        </span>
-
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
-
-                                                borderRadius: "999px",
-
-                                                fontSize: "0.68rem",
-
-                                                background:
-                                                    reminder.category === "Work"
-                                                        ? "#063f4733"
-                                                        : reminder.category ===
-                                                            "Study"
-                                                            ? "#29737633"
+                                                    background:
+                                                        reminder.category === "Work"
+                                                            ? "#063f4733"
                                                             : reminder.category ===
-                                                                "Personal"
-                                                                ? "#5c939633"
-                                                                : "#10343933",
+                                                                "Study"
+                                                                ? "#29737633"
+                                                                : reminder.category ===
+                                                                    "Personal"
+                                                                    ? "#5c939633"
+                                                                    : "#10343933",
 
-                                                border:
-                                                    reminder.category === "Work"
-                                                        ? "1px solid #063f4766"
-                                                        : reminder.category ===
-                                                            "Study"
-                                                            ? "1px solid #29737666"
+                                                    border:
+                                                        reminder.category === "Work"
+                                                            ? "1px solid #063f4766"
                                                             : reminder.category ===
-                                                                "Personal"
-                                                                ? "1px solid #5c939666"
-                                                                : "1px solid #10343966",
-                                            }}
-                                        >
-                                            {reminder.category}
-                                        </span>
+                                                                "Study"
+                                                                ? "1px solid #29737666"
+                                                                : reminder.category ===
+                                                                    "Personal"
+                                                                    ? "1px solid #5c939666"
+                                                                    : "1px solid #10343966",
+                                                }}
+                                            >
+                                                {reminder.category}
+                                            </span>
+                                        )}
 
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
+                                        {reminder.priority && (
+                                            <span
+                                                style={{
+                                                    padding: "3px 8px",
+                                                    borderRadius: "999px",
+                                                    fontSize: "0.68rem",
 
-                                                borderRadius: "999px",
+                                                    background:
+                                                        reminder.priority === "High"
+                                                            ? "#ab313033"
+                                                            : reminder.priority === "Medium"
+                                                                ? "#62929e33"
+                                                                : "#ffdb5833",
 
-                                                fontSize: "0.68rem",
+                                                    border:
+                                                        reminder.priority === "High"
+                                                            ? "1px solid #ab313066"
+                                                            : reminder.priority === "Medium"
+                                                                ? "1px solid #62929e66"
+                                                                : "1px solid #ffdb5866",
+                                                }}
+                                            >
+                                                {reminder.priority}
+                                            </span>
+                                        )}
+                                        {reminder.linkedType && (
+                                            <span
+                                                style={{
+                                                    padding: "3px 8px",
 
-                                                background: "#4d689333",
+                                                    borderRadius: "999px",
 
-                                                border:
-                                                    "1px solid #4d689366",
-                                            }}
-                                        >
-                                            {reminder.date}
-                                        </span>
+                                                    fontSize: "0.68rem",
+
+                                                    background: "#4d689333",
+
+                                                    border: "1px solid #4d689366",
+                                                }}
+                                            >
+                                                {reminder.linkedType}
+                                            </span>
+                                        )}
+                                        {reminder.date && (
+                                            <span
+                                                style={{
+                                                    padding: "3px 8px",
+
+                                                    borderRadius: "999px",
+
+                                                    fontSize: "0.68rem",
+
+                                                    background: "#4d689333",
+
+                                                    border:
+                                                        "1px solid #4d689366",
+                                                }}
+                                            >
+                                                {reminder.date}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
 
@@ -330,6 +436,7 @@ function RemindersCard({
                                     strokeWidth={1.5}
                                     style={{
                                         cursor: "pointer",
+                                        transition: "0.2s ease",
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.color =
@@ -347,6 +454,20 @@ function RemindersCard({
                                     }}
                                     onClick={(e) => {
                                         e.stopPropagation();
+
+                                        setLastDeletedReminder(reminder);
+
+                                        setReminders((prev) =>
+                                            prev.filter(
+                                                (r) => r.id !== reminder.id
+                                            )
+                                        );
+
+                                        setToast("Reminder deleted");
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
                                     }}
                                 />
                             </div>
