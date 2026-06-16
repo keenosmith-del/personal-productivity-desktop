@@ -4,8 +4,6 @@ import {
   useEffect
 } from "react";
 
-import SegmentedControl from "../SegmentedControl";
-
 import {
   X,
   Calendar,
@@ -446,8 +444,7 @@ function TaskModal({
 
                   cursor: "pointer",
 
-                  transition:
-                    "all 0.2s ease",
+                  transition: "all 0.2s ease",
 
                   background:
                     priority === item.name

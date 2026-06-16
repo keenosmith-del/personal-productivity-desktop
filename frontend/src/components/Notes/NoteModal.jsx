@@ -8,14 +8,29 @@ import { X } from "lucide-react";
 
 function NoteModal({
     onClose,
+    onSave,
     mode = "create",
     note = null,
 }) {
     const noteInputRef = useRef(null);
 
+    const [title, setTitle] =
+        useState("");
+
+    const [content, setContent] =
+        useState("");
+
     useEffect(() => {
         noteInputRef.current?.focus();
-    }, []);
+
+        if (mode === "edit" && note) {
+            setTitle(note.title || "");
+
+            setContent(
+                note.content || ""
+            );
+        }
+    }, [mode, note]);
 
     const inputStyle = {
         width: "100%",
@@ -133,6 +148,10 @@ function NoteModal({
 
                 <input
                     ref={noteInputRef}
+                    value={title}
+                    onChange={(e) =>
+                        setTitle(e.target.value)
+                    }
                     placeholder="Title"
                     style={{
                         width: "100%",
@@ -160,6 +179,10 @@ function NoteModal({
                 />
 
                 <textarea
+                    value={content}
+                    onChange={(e) =>
+                        setContent(e.target.value)
+                    }
                     rows={3}
                     placeholder="Start Writing..."
                     style={{
@@ -235,6 +258,15 @@ function NoteModal({
                     </button>
 
                     <button
+                        onClick={() => {
+                            onSave({
+                                ...note,
+
+                                title,
+
+                                content,
+                            });
+                        }}
                         style={{
                             background: "transparent",
 

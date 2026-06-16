@@ -8,39 +8,11 @@ import {
 } from "lucide-react";
 
 function RecentNotes({
+    notes,
     onNewNote,
     onEditNote,
     onPinNote,
 }) {
-    // COMPONENT STATES
-    const notes = [
-        {
-            title: "Meeting Notes",
-
-            category: "Work",
-
-            project: "Portfolio",
-
-            date: "12 Jun 2026",
-
-            preview: "Need to review portfolio and update projects before the next application cycle begins.",
-        },
-
-        {
-            title: "Project Ideas",
-
-            category: "Study",
-
-            project:
-                "Productivity App",
-
-            date: "8 Jun 2026",
-
-            preview:
-                "AI productivity dashboard improvements including calendar integration and project tracking.",
-        },
-    ];
-
     const [pinnedNotes, setPinnedNotes] =
         useState([]);
 
@@ -227,27 +199,6 @@ function RecentNotes({
                             >
                                 {note.category}
                             </span>
-
-                            <span
-                                style={{
-                                    padding: "4px 8px",
-
-                                    borderRadius: "999px",
-
-                                    fontSize: "0.7rem",
-
-                                    background:
-                                        "rgba(82,103,125,0.20)",
-
-                                    border:
-                                        "1px solid rgba(82,103,125,0.40)",
-
-                                    color:
-                                        "var(--text-secondary)",
-                                }}
-                            >
-                                {note.project}
-                            </span>
                         </div>
 
                         <p
@@ -269,7 +220,7 @@ function RecentNotes({
                                 fontSize: "0.85rem",
                             }}
                         >
-                            {note.preview}
+                            {note.content}
                         </p>
 
                         <p

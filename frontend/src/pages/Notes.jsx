@@ -2,9 +2,11 @@ import MainLayout from "../layouts/MainLayout";
 
 import { useState } from "react";
 
-import NoteModal from"../components/Notes/NoteModal";
+import NoteModal from "../components/Notes/NoteModal";
 import RecentNotes from "../components/Notes/RecentNotes";
 import PinnedNotes from "../components/Notes/PinnedNotes";
+
+import { initialNotes } from "../data/notes";
 
 function Notes() {
   const [showNoteModal,
@@ -14,6 +16,9 @@ function Notes() {
   const [editingNote,
     setEditingNote] =
     useState(null);
+
+  const [notes, setNotes] =
+    useState(initialNotes);
 
   const [toast,
     setToast] =
@@ -33,6 +38,7 @@ function Notes() {
         }}
       >
         <RecentNotes
+          notes={notes}
           onNewNote={() =>
             setShowNoteModal(true)
           }
@@ -77,6 +83,23 @@ function Notes() {
           onClose={() =>
             setEditingNote(null)
           }
+          onSave={(updatedNote) => {
+            setNotes((prev) =>
+              prev.map((note) =>
+                note.id === updatedNote.id
+                  ? updatedNote
+                  : note
+              )
+            );
+
+            setToast("Note updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingNote(null);
+          }}
         />
       )}
       {toast && (
