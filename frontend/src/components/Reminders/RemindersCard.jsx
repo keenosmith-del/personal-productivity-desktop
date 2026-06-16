@@ -19,11 +19,6 @@ function RemindersCard({
     completionTimeout,
     setCompletionTimeout,
 }) {
-    const sortedReminders = [...reminders].sort(
-        (a, b) =>
-            Number(a.completed) -
-            Number(b.completed)
-    );
     return (
         <GlassCard minHeight="520px">
             <div
@@ -149,7 +144,7 @@ function RemindersCard({
                     overflowY: "auto",
                 }}
             >
-                {sortedReminders.map((reminder) => {
+                {reminders.map((reminder) => {
                     const isCompleted =
                         reminder.completed;
 
@@ -272,11 +267,6 @@ function RemindersCard({
                                                 isCompleted || isPending
                                                     ? 0.55
                                                     : 1,
-
-                                            transform:
-                                                isPending
-                                                    ? "translateX(6px)"
-                                                    : "translateX(0)",
 
                                             letterSpacing: "-0.015em",
 

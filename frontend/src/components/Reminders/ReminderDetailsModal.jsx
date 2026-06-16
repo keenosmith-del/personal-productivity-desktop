@@ -125,65 +125,65 @@ function ReminderDetailsModal({
                                 Reminder
                             </span>
 
-                            <span
-                                style={{
-                                    padding: "4px 8px",
+                            {reminder.category &&
+                                reminder.category !== "None" && (
+                                    <span
+                                        style={{
+                                            padding: "4px 8px",
 
-                                    borderRadius: "999px",
+                                            borderRadius: "999px",
 
-                                    fontSize: "0.68rem",
+                                            fontSize: "0.68rem",
 
-                                    background:
-                                        reminder.category === "Work"
-                                            ? "#063f4733"
-                                            : reminder.category ===
-                                                "Study"
-                                                ? "#29737633"
-                                                : reminder.category ===
-                                                    "Personal"
-                                                    ? "#5c939633"
-                                                    : "#10343933",
+                                            background:
+                                                reminder.category === "Work"
+                                                    ? "#063f4733"
+                                                    : reminder.category === "Study"
+                                                        ? "#29737633"
+                                                        : reminder.category === "Personal"
+                                                            ? "#5c939633"
+                                                            : "#10343933",
 
-                                    border:
-                                        reminder.category === "Work"
-                                            ? "1px solid #063f4766"
-                                            : reminder.category ===
-                                                "Study"
-                                                ? "1px solid #29737666"
-                                                : reminder.category ===
-                                                    "Personal"
-                                                    ? "1px solid #5c939666"
-                                                    : "1px solid #10343966",
-                                }}
-                            >
-                                {reminder.category}
-                            </span>
+                                            border:
+                                                reminder.category === "Work"
+                                                    ? "1px solid #063f4766"
+                                                    : reminder.category === "Study"
+                                                        ? "1px solid #29737666"
+                                                        : reminder.category === "Personal"
+                                                            ? "1px solid #5c939666"
+                                                            : "1px solid #10343966",
+                                        }}
+                                    >
+                                        {reminder.category}
+                                    </span>
+                                )}
 
-                            {reminder.priority && (
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
-                                        borderRadius: "999px",
-                                        fontSize: "0.68rem",
+                            {reminder.priority &&
+                                reminder.priority !== "None" && (
+                                    <span
+                                        style={{
+                                            padding: "4px 8px",
+                                            borderRadius: "999px",
+                                            fontSize: "0.68rem",
 
-                                        background:
-                                            reminder.priority === "High"
-                                                ? "#ab313033"
-                                                : reminder.priority === "Medium"
-                                                    ? "#62929e33"
-                                                    : "#ffdb5833",
+                                            background:
+                                                reminder.priority === "High"
+                                                    ? "#ab313033"
+                                                    : reminder.priority === "Medium"
+                                                        ? "#62929e33"
+                                                        : "#ffdb5833",
 
-                                        border:
-                                            reminder.priority === "High"
-                                                ? "1px solid #ab313066"
-                                                : reminder.priority === "Medium"
-                                                    ? "1px solid #62929e66"
-                                                    : "1px solid #ffdb5866",
-                                    }}
-                                >
-                                    {reminder.priority}
-                                </span>
-                            )}
+                                            border:
+                                                reminder.priority === "High"
+                                                    ? "1px solid #ab313066"
+                                                    : reminder.priority === "Medium"
+                                                        ? "1px solid #62929e66"
+                                                        : "1px solid #ffdb5866",
+                                        }}
+                                    >
+                                        {reminder.priority}
+                                    </span>
+                                )}
 
                             <span
                                 style={{

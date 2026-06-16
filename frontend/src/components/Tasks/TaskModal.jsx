@@ -311,13 +311,13 @@ function TaskModal({
           />
         </div>
 
+        {/* CHIPS */}
         <div>
           <p
             style={{
               marginBottom: "10px",
 
-              color:
-                "var(--text-secondary)",
+              color: "var(--text-secondary)",
 
               fontSize: "0.85rem",
 

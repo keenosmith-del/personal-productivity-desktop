@@ -221,99 +221,105 @@ function ReminderOverview({
                             gap: "14px",
                         }}
                     >
-                        <div>
-                            <div
+                        {recentReminders.length === 0 ? (
+                            <p
                                 style={{
-                                    display: "flex",
-                                    gap: "6px",
-                                    flexWrap: "wrap",
-                                    marginBottom: "6px",
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        padding: "3px 8px",
-                                        borderRadius: "999px",
-                                        fontSize: "0.68rem",
-                                        background: "#83545c33",
-                                        border:
-                                            "1px solid #83545c66",
-                                    }}
-                                >
-                                    Reminder
-                                </span>
-
-                                {recentReminders[0]?.category && (
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-                                            borderRadius: "999px",
-                                            fontSize: "0.68rem",
-                                            background: "#063f4733",
-                                            border: "1px solid #063f4766",
-                                        }}
-                                    >
-                                        {recentReminders[0].category}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div
-                                style={{
+                                    color:
+                                        "var(--text-secondary)",
                                     fontSize: "0.85rem",
                                 }}
                             >
-                                {recentReminders[0]?.title ||
-                                    "No reminders"}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "6px",
-                                    flexWrap: "wrap",
-                                    marginBottom: "6px",
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        padding: "3px 8px",
-                                        borderRadius: "999px",
-                                        fontSize: "0.68rem",
-                                        background: "#83545c33",
-                                        border:
-                                            "1px solid #83545c66",
-                                    }}
-                                >
-                                    Reminder
-                                </span>
-
-                                {recentReminders[1]?.category && (
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-                                            borderRadius: "999px",
-                                            fontSize: "0.68rem",
-                                            background: "#063f4733",
-                                            border: "1px solid #063f4766",
-                                        }}
+                                No reminders.
+                            </p>
+                        ) : (
+                            recentReminders.map(
+                                (reminder) => (
+                                    <div
+                                        key={reminder.id}
                                     >
-                                        {recentReminders[1].category}
-                                    </span>
-                                )}
-                            </div>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                gap: "6px",
+                                                flexWrap:
+                                                    "wrap",
+                                                marginBottom:
+                                                    "6px",
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    padding:
+                                                        "3px 8px",
+                                                    borderRadius:
+                                                        "999px",
+                                                    fontSize:
+                                                        "0.68rem",
+                                                    background:
+                                                        "#83545c33",
+                                                    border:
+                                                        "1px solid #83545c66",
+                                                }}
+                                            >
+                                                Reminder
+                                            </span>
 
-                            <div
-                                style={{
-                                    fontSize: "0.85rem",
-                                }}
-                            >
-                                {recentReminders[1]?.title ||
-                                    "No reminders"}
-                            </div>
-                        </div>
+                                            {reminder.category && (
+                                                <span
+                                                    style={{
+                                                        padding:
+                                                            "3px 8px",
+                                                        borderRadius:
+                                                            "999px",
+                                                        fontSize:
+                                                            "0.68rem",
+
+                                                        background:
+                                                            reminder.category ===
+                                                                "Work"
+                                                                ? "#063f4733"
+                                                                : reminder.category ===
+                                                                    "Study"
+                                                                    ? "#29737633"
+                                                                    : reminder.category ===
+                                                                        "Personal"
+                                                                        ? "#5c939633"
+                                                                        : "#10343933",
+
+                                                        border:
+                                                            reminder.category ===
+                                                                "Work"
+                                                                ? "1px solid #063f4766"
+                                                                : reminder.category ===
+                                                                    "Study"
+                                                                    ? "1px solid #29737666"
+                                                                    : reminder.category ===
+                                                                        "Personal"
+                                                                        ? "1px solid #5c939666"
+                                                                        : "1px solid #10343966",
+                                                    }}
+                                                >
+                                                    {
+                                                        reminder.category
+                                                    }
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div
+                                            style={{
+                                                fontSize:
+                                                    "0.85rem",
+                                            }}
+                                        >
+                                            {
+                                                reminder.title
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            )
+                        )}
                     </div>
                 </div>
             </div>
