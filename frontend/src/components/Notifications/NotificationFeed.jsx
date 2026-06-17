@@ -8,36 +8,16 @@ import {
 import { useState } from "react";
 
 import NotificationModal from "./NotificationModal";
+import { initialNotifications } from "../../data/notifications";
 
-function NotificationFeed() {
-    const notifications = [
-        {
-            title: "Task Completed",
-            type: "task",
-            description: "Finish Productivity Desktop was completed.",
-            time: "5 min ago",
-        },
-        {
-            title: "Goal Progress",
-            type: "goal",
-            description: "Portfolio Website is now 75% complete.",
-            time: "1 hour ago",
-        },
-        {
-            title: "Reminder Due",
-            type: "reminder",
-            description: "Submit Course Assignment tomorrow.",
-            time: "3 hours ago",
-        },
-        {
-            title: "Daily Summary",
-            type: null,
-            description:
-                "You completed 3 tasks today.",
-            time: "Yesterday",
-        },
-    ];
-
+function NotificationFeed({
+    notifications,
+    setNotifications,
+    toast,
+    setToast,
+    lastDeletedNotification,
+    setLastDeletedNotification,
+}) {
     const [
         selectedNotification,
         setSelectedNotification,
@@ -50,7 +30,17 @@ function NotificationFeed() {
 
     return (
         <>
-            <GlassCard minHeight="700px">
+            <GlassCard
+                style={{
+                    background: "var(--glass-bg)",
+                    border: "1px solid var(--glass-border)",
+                    borderRadius: "var(--radius-large)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    padding: "24px",
+                    minHeight: "400px",
+                }}
+            >
                 <div
                     style={{
                         display: "flex",
@@ -69,6 +59,10 @@ function NotificationFeed() {
                     </h2>
 
                     <button
+                        disabled={notifications.length === 0}
+                        onClick={() =>
+                            setNotifications([])
+                        }
                         style={{
                             background: "transparent",
 
@@ -78,17 +72,31 @@ function NotificationFeed() {
 
                             padding: "8px 14px",
 
-                            color: "var(--text-secondary)",
+                            color:
+                                notifications.length === 0
+                                    ? "rgba(255,255,255,0.25)"
+                                    : "var(--text-secondary)",
+
+                            cursor:
+                                notifications.length === 0
+                                    ? "not-allowed"
+                                    : "pointer",
+
+                            opacity:
+                                notifications.length === 0
+                                    ? 0.5
+                                    : 1,
 
                             fontSize: "0.8rem",
 
                             fontWeight: "300",
 
-                            cursor: "pointer",
-
                             transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
+                            if (notifications.length === 0)
+                                return;
+
                             e.currentTarget.style.color =
                                 "var(--text-primary)";
 
@@ -96,6 +104,8 @@ function NotificationFeed() {
                                 "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
+                            if (notifications.length === 0)
+                                return;
                             e.currentTarget.style.color =
                                 "var(--text-secondary)";
 
@@ -112,12 +122,29 @@ function NotificationFeed() {
                         display: "flex",
                         flexDirection: "column",
                         gap: "16px",
+
+                        maxHeight: "750px",
+
+                        overflow: "auto",
+
+                        paddingRight: "4px",
                     }}
                 >
-                    {notifications.map(
-                        (notification) => (
+                    {notifications.length === 0 ? (
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+                                fontSize: "0.85rem",
+                                padding: "24px 0",
+                            }}
+                        >
+                            No notifications.
+                        </p>
+                    ) : (
+                        notifications.map((notification) => (
                             <div
-                                key={notification.title}
+                                key={notification.id}
                                 onClick={() =>
                                     setSelectedNotification(
                                         notification
@@ -173,17 +200,18 @@ function NotificationFeed() {
                                             strokeWidth={1.5}
                                             fill={
                                                 favourites.includes(
-                                                    notification.title
+                                                    notification.id
                                                 )
                                                     ? "currentColor"
                                                     : "none"
                                             }
+
                                             style={{
                                                 cursor: "pointer",
 
                                                 color:
                                                     favourites.includes(
-                                                        notification.title
+                                                        notification.id
                                                     )
                                                         ? "#F5F5F5"
                                                         : "",
@@ -194,20 +222,32 @@ function NotificationFeed() {
                                             onClick={(e) => {
                                                 e.stopPropagation();
 
+                                                const isStarred =
+                                                    favourites.includes(
+                                                        notification.id
+                                                    );
+
                                                 setFavourites((prev) =>
-                                                    prev.includes(
-                                                        notification.title
-                                                    )
+                                                    isStarred
                                                         ? prev.filter(
                                                             (item) =>
-                                                                item !==
-                                                                notification.title
+                                                                item !== notification.id
                                                         )
                                                         : [
                                                             ...prev,
-                                                            notification.title,
+                                                            notification.id,
                                                         ]
                                                 );
+
+                                                setToast(
+                                                    isStarred
+                                                        ? "Notification unstarred"
+                                                        : "Notification starred"
+                                                );
+
+                                                setTimeout(() => {
+                                                    setToast("");
+                                                }, 3000);
                                             }}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.transform =
@@ -244,6 +284,40 @@ function NotificationFeed() {
                                             }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
+
+                                                setLastDeletedNotification({
+                                                    ...notification,
+                                                    wasStarred:
+                                                        favourites.includes(
+                                                            notification.id
+                                                        ),
+                                                });
+
+                                                setNotifications((prev) =>
+                                                    prev.filter(
+                                                        (item) =>
+                                                            item.id !== notification.id
+                                                    )
+                                                );
+
+                                                setFavourites((prev) =>
+                                                    prev.filter(
+                                                        (id) =>
+                                                            id !== notification.id
+                                                    )
+                                                );
+
+                                                setToast(
+                                                    "Notification deleted"
+                                                );
+
+                                                setTimeout(() => {
+                                                    setToast("");
+
+                                                    setLastDeletedNotification(
+                                                        null
+                                                    );
+                                                }, 4000);
                                             }}
                                         />
                                     </div>
@@ -332,7 +406,7 @@ function NotificationFeed() {
                                     }
                                 </small>
                             </div>
-                        )
+                        ))
                     )}
                 </div>
             </GlassCard>
