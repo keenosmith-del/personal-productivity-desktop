@@ -9,22 +9,16 @@ import {
 } from "lucide-react";
 
 function PinnedNotes({
+    notes,
+    setNotes,
+    pinnedNotes,
+    setPinnedNotes,
+    setLastDeletedNote,
+    setToast,
     onEditNote,
     onUnpinNote,
+    onClearAll,
 }) {
-    // COMPONENT STATES
-    const [isPinned,
-        setIsPinned] =
-        useState(true);
-
-    const note = {
-        title: "Portfolio Ideas",
-        category: "Goal",
-        project: "Portfolio",
-        date: "10 Jun 2026",
-    };
-
-    // FUNCTIONS
     return (
         <GlassCard minHeight="520px">
             <div
@@ -45,6 +39,8 @@ function PinnedNotes({
                 </h2>
 
                 <button
+                    onClick={onClearAll}
+                    disabled={pinnedNotes.length === 0}
                     style={{
                         background: "transparent",
 
@@ -54,17 +50,30 @@ function PinnedNotes({
 
                         padding: "8px 14px",
 
-                        color: "var(--text-secondary)",
+                        color:
+                            pinnedNotes.length === 0
+                                ? "rgba(255,255,255,0.25)"
+                                : "var(--text-secondary)",
 
-                        fontSize: "0.85rem",
+                        fontSize: "0.8rem",
 
-                        fontWeight: "400",
+                        fontWeight: "300",
 
-                        cursor: "pointer",
+                        cursor:
+                            pinnedNotes.length === 0
+                                ? "not-allowed"
+                                : "pointer",
 
                         transition: "all 0.2s ease",
+
+                        opacity:
+                            pinnedNotes.length === 0
+                                ? 0.5
+                                : 1,
                     }}
                     onMouseEnter={(e) => {
+                        if (pinnedNotes.length === 0) return;
+
                         e.currentTarget.style.color =
                             "var(--text-primary)";
 
@@ -72,6 +81,8 @@ function PinnedNotes({
                             "rgba(255,255,255,0.04)";
                     }}
                     onMouseLeave={(e) => {
+                        if (pinnedNotes.length === 0) return;
+
                         e.currentTarget.style.color =
                             "var(--text-secondary)";
 
@@ -79,231 +90,268 @@ function PinnedNotes({
                             "transparent";
                     }}
                 >
-                    Clear all
+                    Unpin all
                 </button>
             </div>
 
             <div
                 style={{
-                    padding: "10px 12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
 
-                    borderRadius: "12px",
+                    maxHeight: "600px",
 
-                    transition: "all 0.2s ease",
+                    overflowY: "auto",
 
-                    cursor: "pointer",
-                }}
-                onClick={() =>
-                    onEditNote({
-                        title: "Portfolio Ideas",
-                    })
-                }
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                        "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                        "transparent";
+                    paddingRight: "4px",
                 }}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                    }}
-                >
-                    <Pin
-                        fill={
-                            isPinned
-                                ? "currentColor"
-                                : "none"
-                        }
-                        size={16}
-                        strokeWidth={1.5}
+                {pinnedNotes.length === 0 ? (
+                    <p
                         style={{
-                            cursor: "pointer",
-
-                            transition:
-                                "all 0.2s ease",
-
-                            flexShrink: 0,
-                        }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-
-                            setIsPinned(
-                                (prev) => !prev
-                            );
-
-                            onUnpinNote();
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.opacity =
-                                "0.7";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.opacity =
-                                "1";
-                        }}
-                    />
-
-                    <h4
-                        style={{
-                            fontWeight: "300",
-                            letterSpacing: "-0.015em",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            textAlign: "left",
+                            padding: "24px 0",
                         }}
                     >
-                        Portfolio Ideas
-                    </h4>
-                </div>
+                        Nothing pinned yet.
+                    </p>
+                ) : (
+                    pinnedNotes.map((note) => (
+                        <div
+                            key={note.id}
+                            style={{
+                                padding: "10px 12px",
 
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        marginTop: "8px",
-                        marginBottom: "12px",
-                    }}
-                >
-                    <span
-                        style={{
-                            padding: "4px 8px",
+                                borderRadius: "12px",
 
-                            borderRadius: "999px",
+                                transition: "all 0.2s ease",
 
-                            fontSize: "0.7rem",
+                                cursor: "pointer",
+                            }}
+                            onClick={() =>
+                                onEditNote(note)
+                            }
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "transparent";
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                }}
+                            >
+                                <Pin
+                                    fill="currentColor"
 
-                            background:
-                                "rgba(197,156,112,0.20)",
+                                    size={16}
+                                    strokeWidth={1.5}
+                                    style={{
+                                        cursor: "pointer",
 
-                            border:
-                                "1px solid rgba(197,156,112,0.40)",
+                                        transition:
+                                            "all 0.2s ease",
 
-                            color:
-                                "var(--text-secondary)",
-                        }}
-                    >
-                        Goal
-                    </span>
+                                        flexShrink: 0,
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
 
-                    <span
-                        style={{
-                            padding: "4px 8px",
+                                        setPinnedNotes((prev) =>
+                                            prev.filter(
+                                                (n) => n.id !== note.id
+                                            )
+                                        );
 
-                            borderRadius: "999px",
+                                        onUnpinNote();
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.opacity =
+                                            "0.7";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.opacity =
+                                            "1";
+                                    }}
+                                />
 
-                            fontSize: "0.7rem",
+                                <h4
+                                    style={{
+                                        fontWeight: "300",
+                                        letterSpacing: "-0.015em",
+                                    }}
+                                >
+                                    {note.title}
+                                </h4>
+                            </div>
 
-                            background:
-                                "rgba(82,103,125,0.20)",
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    marginTop: "8px",
+                                    marginBottom: "12px",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        padding: "4px 8px",
 
-                            border:
-                                "1px solid rgba(82,103,125,0.40)",
+                                        borderRadius: "999px",
 
-                            color:
-                                "var(--text-secondary)",
-                        }}
-                    >
-                        Portfolio
-                    </span>
-                </div>
+                                        fontSize: "0.7rem",
 
-                <p
-                    style={{
-                        color:
-                            "var(--text-secondary)",
+                                        background:
+                                            "rgba(197,156,112,0.20)",
 
-                        marginTop: "6px",
+                                        border:
+                                            "1px solid rgba(197,156,112,0.40)",
 
-                        fontSize: "0.85rem",
-                    }}
-                >
-                    Potential improvements for project
-                    showcase and UI polish...
-                </p>
+                                        color:
+                                            "var(--text-secondary)",
+                                    }}
+                                >
+                                    {note.category}
+                                </span>
+                            </div>
 
-                <p
-                    style={{
-                        marginTop: "10px",
+                            <p
+                                style={{
+                                    color:
+                                        "var(--text-secondary)",
 
-                        fontSize: "0.75rem",
+                                    display: "-webkit-box",
 
-                        color:
-                            "var(--text-secondary)",
+                                    WebkitLineClamp: 3,
 
-                        opacity: 0.8,
-                    }}
-                >
-                    10 Jun 2026
-                </p>
+                                    WebkitBoxOrient:
+                                        "vertical",
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "12px",
-                        marginTop: "12px",
-                    }}
-                >
-                    <Pencil
-                        size={16}
-                        strokeWidth={1.5}
-                        style={{
-                            cursor: "pointer",
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "#F5F5F5";
+                                    overflow: "hidden",
 
-                            e.currentTarget.style.transform =
-                                "scale(1.1)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "";
+                                    marginTop: "6px",
 
-                            e.currentTarget.style.transform =
-                                "scale(1)";
-                        }}
-                        onClick={(e) => {
-                            e.stopPropagation();
+                                    fontSize: "0.85rem",
+                                }}
+                            >
+                                {note.content}
+                            </p>
 
-                            onEditNote(note);
-                        }}
-                    />
+                            <p
+                                style={{
+                                    marginTop: "10px",
 
-                    <Trash2
-                        size={16}
-                        strokeWidth={1.5}
-                        style={{
-                            cursor: "pointer",
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "#ff6b6b";
+                                    fontSize: "0.75rem",
 
-                            e.currentTarget.style.transform =
-                                "scale(1.1)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "";
+                                    color:
+                                        "var(--text-secondary)",
 
-                            e.currentTarget.style.transform =
-                                "scale(1)";
-                        }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                        }}
-                    />
-                </div>
+                                    opacity: 0.8,
+                                }}
+                            >
+                                {note.date}
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    gap: "12px",
+                                    marginTop: "12px",
+                                }}
+                            >
+                                <Pencil
+                                    size={16}
+                                    strokeWidth={1.5}
+                                    style={{
+                                        cursor: "pointer",
+                                        transition:
+                                            "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color =
+                                            "#F5F5F5";
+
+                                        e.currentTarget.style.transform =
+                                            "scale(1.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color =
+                                            "";
+
+                                        e.currentTarget.style.transform =
+                                            "scale(1)";
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        onEditNote(note);
+                                    }}
+                                />
+
+                                <Trash2
+                                    size={16}
+                                    strokeWidth={1.5}
+                                    style={{
+                                        cursor: "pointer",
+                                        transition:
+                                            "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
+
+                                        e.currentTarget.style.transform =
+                                            "scale(1.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color =
+                                            "";
+
+                                        e.currentTarget.style.transform =
+                                            "scale(1)";
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        setLastDeletedNote({
+                                            ...note,
+                                            wasPinned: true,
+                                        });
+
+                                        setNotes((prev) =>
+                                            prev.filter(
+                                                (n) => n.id !== note.id
+                                            )
+                                        );
+
+                                        setPinnedNotes((prev) =>
+                                            prev.filter(
+                                                (n) => n.id !== note.id
+                                            )
+                                        );
+
+                                        setToast("Note deleted");
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </GlassCard>
     );

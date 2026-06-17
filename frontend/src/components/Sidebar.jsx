@@ -17,7 +17,7 @@ import {
 function Sidebar({ collapsed, setCollapsed }) {
   const mainNavItems = [
     {
-      label: "Analytics",
+      label: "Dashboard",
       path: "/analytics",
       icon: BarChart3,
     },
