@@ -134,6 +134,33 @@ function Notes() {
           onClose={() =>
             setShowNoteModal(false)
           }
+          onSave={(newNote) => {
+            setNotes((prev) => [
+              {
+                ...newNote,
+                id: Date.now(),
+                date: new Date()
+                  .toLocaleDateString(
+                    "en-GB",
+                    {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    }
+                  )
+                  .replace(",", ""),
+              },
+              ...prev,
+            ]);
+
+            setToast("Note created");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setShowNoteModal(false);
+          }}
         />
       )}
       {editingNote && (
