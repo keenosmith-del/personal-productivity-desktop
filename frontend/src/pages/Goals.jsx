@@ -63,7 +63,7 @@ function Goals() {
         }}
       >
 
-        <GoalOverview />
+        <GoalOverview goals={goals} />
 
         <div
           style={{
