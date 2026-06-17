@@ -1,6 +1,13 @@
 import GlassCard from "../GlassCard";
 
+import {
+    Pin,
+    Pencil,
+    Trash2,
+} from "lucide-react";
+
 function AllProjectsCard({
+    projects,
     onNewProject,
 }) {
     return (
@@ -17,8 +24,7 @@ function AllProjectsCard({
                     style={{
                         display: "flex",
 
-                        justifyContent:
-                            "space-between",
+                        justifyContent: "space-between",
 
                         alignItems: "center",
 
@@ -94,112 +100,158 @@ function AllProjectsCard({
                     <p
                         style={{
                             fontWeight: "400",
-                            color:
-                                "var(--text-primary)",
+                            color: "var(--text-primary)",
                             marginBottom: "6px",
                         }}
                     >
-                        3 Projects
+                        {projects.length} Projects
                     </p>
 
-                    <div
-                        style={{
-                            justifyContent: "space-between",
-                            alignItems: "center",
-
-                            cursor: "pointer",
-
-                            padding: "8px 12px",
-
-                            borderRadius: "12px",
-
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                    >
-                        <p
+                    {/* ROWS */}
+                    {projects.map((project) => (
+                        <div
+                            key={project.id}
                             style={{
-                                fontWeight: "300",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                display: "flex",
+
+                                cursor: "pointer",
+
+                                padding: "8px 12px",
+
+                                borderRadius: "12px",
+
+                                transition:
+                                    "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "transparent";
                             }}
                         >
-                            Portfolio Website
-                        </p>
+                            <>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                    }}
+                                >
+                                    <Pin
+                                        size={15}
+                                        strokeWidth={1.5}
+                                        fill={
+                                            project.pinned
+                                                ? "currentColor"
+                                                : "none"
+                                        }
+                                        style={{
+                                            flexShrink: 0,
+                                        }}
+                                    />
 
-                    </div>
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
 
-                    <div
-                        style={{
-                            justifyContent: "space-between",
-                            alignItems: "center",
+                                            borderRadius: "50%",
 
-                            cursor: "pointer",
+                                            border:
+                                                "1.5px solid rgba(245,245,245,0.7)",
 
-                            padding: "8px 12px",
+                                            background:
+                                                project.completed
+                                                    ? "rgba(245,245,245,0.75)"
+                                                    : "transparent",
 
-                            borderRadius: "12px",
+                                            flexShrink: 0,
 
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontWeight: "300",
-                            }}
-                        >
-                            Productivity App
-                        </p>
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
 
-                    </div>
+                                            fontSize: "12px",
+                                            fontWeight: "600",
 
-                    <div
-                        style={{
-                            justifyContent: "space-between",
-                            alignItems: "center",
+                                            color: "#1a1d29",
+                                        }}
+                                    >
+                                        {project.completed && "✓"}
+                                    </div>
 
-                            cursor: "pointer",
+                                    <p
+                                        style={{
+                                            fontWeight: "300",
+                                        }}
+                                    >
+                                        {project.title}
+                                    </p>
+                                </div>
 
-                            padding: "8px 12px",
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Pencil
+                                        size={16}
+                                        strokeWidth={1.5}
+                                        style={{
+                                            cursor: "pointer",
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
 
-                            borderRadius: "12px",
+                                            e.currentTarget.style.transform =
+                                                "scale(1.1)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                                "";
 
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontWeight: "300",
-                            }}
-                        >
-                            Deploy Website
-                        </p>
+                                            e.currentTarget.style.transform =
+                                                "scale(1)";
+                                        }}
+                                    />
 
-                    </div>
+                                    <Trash2
+                                        size={16}
+                                        strokeWidth={1.5}
+                                        style={{
+                                            cursor: "pointer",
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color =
+                                                "#ff6b6b";
+
+                                            e.currentTarget.style.transform =
+                                                "scale(1.1)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                                "";
+
+                                            e.currentTarget.style.transform =
+                                                "scale(1)";
+                                        }}
+                                    />
+                                </div>
+                            </>
+                        </div>
+                    ))}
                 </div>
 
                 <div

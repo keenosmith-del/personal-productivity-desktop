@@ -1,5 +1,11 @@
 import GlassCard from "../GlassCard";
 
+import {
+    Pin,
+    Pencil,
+    Trash2,
+} from "lucide-react";
+
 function ProjectCard({
     project,
 }) {
@@ -34,17 +40,129 @@ function ProjectCard({
                         "var(--glass-bg)";
                 }}
             >
-                <h2
+                <div
                     style={{
-                        fontWeight: "500",
-
-                        fontSize: "1.1rem",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
 
                         marginBottom: "24px",
                     }}
                 >
-                    {project.title}
-                </h2>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                        }}
+                    >
+                        <Pin
+                            size={16}
+                            strokeWidth={1.5}
+                            fill={
+                                project.pinned
+                                    ? "currentColor"
+                                    : "none"
+                            }
+                            style={{
+                                flexShrink: 0,
+                            }}
+                        />
+
+                        <div
+                            style={{
+                                width: "18px",
+                                height: "18px",
+
+                                borderRadius: "50%",
+
+                                border:
+                                    "1.5px solid rgba(245,245,245,0.7)",
+
+                                background:
+                                    project.completed
+                                        ? "rgba(245,245,245,0.75)"
+                                        : "transparent",
+
+                                flexShrink: 0,
+
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+
+                                fontSize: "12px",
+                                fontWeight: "600",
+
+                                color: "#1a1d29",
+                            }}
+                        >
+                            {project.completed && "✓"}
+                        </div>
+
+                        <h2
+                            style={{
+                                fontWeight: "500",
+                                fontSize: "1.1rem",
+                            }}
+                        >
+                            {project.title}
+                        </h2>
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                        }}
+                    >
+                        <Pencil
+                            size={16}
+                            strokeWidth={1.5}
+                            style={{
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color =
+                                    "#F5F5F5";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color =
+                                    "";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1)";
+                            }}
+                        />
+
+                        <Trash2
+                            size={16}
+                            strokeWidth={1.5}
+                            style={{
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color =
+                                    "#ff6b6b";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color =
+                                    "";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1)";
+                            }}
+                        />
+                    </div>
+                </div>
 
                 <div
                     style={{

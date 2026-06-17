@@ -6,25 +6,64 @@ import { Calendar } from "lucide-react";
 
 function ProjectModal({
     onClose,
+    onSave,
     mode = "create",
 }) {
     const projectInputRef = useRef(null);
 
-    const [category, setCategory] =
-        useState("Work");
+    const [category, setCategory] = useState("Work");
 
-    const [theme, setTheme] =
-        useState("Portfolio");
+    const [priority, setPriority] =
+        useState("Medium");
 
-    const [showCalendar, setShowCalendar] =
-        useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
 
-    const [selectedDate, setSelectedDate] =
-        useState("Choose a date");
+    const [selectedDate, setSelectedDate] = useState("Choose a date");
+
+    const [title, setTitle] = useState("");
+
+    const [description, setDescription] = useState("");
+
+    const [status, setStatus] =
+        useState("Active");
+
+    const [selectedTasks, setSelectedTasks] = useState([]);
+
+    const [selectedGoals, setSelectedGoals] =
+        useState([]);
+
+    const [selectedReminders, setSelectedReminders] =
+        useState([]);
+
+    const [selectedNotes, setSelectedNotes] =
+        useState([]);
 
     useEffect(() => {
         projectInputRef.current?.focus();
     }, []);
+
+    // dummy data
+    const dummyTasks = [
+        "Build Dashboard",
+        "Fix Login Page",
+        "Deploy Backend",
+    ];
+
+    const dummyGoals = [
+        "Get First Developer Job",
+        "Launch Portfolio",
+        "Complete AI Course",
+    ];
+
+    const dummyReminders = [
+        "Apply for Jobs",
+        "Submit Assignment",
+    ];
+
+    const dummyNotes = [
+        "Meeting Notes",
+        "Frontend Ideas",
+    ];
 
     return (
         <div
@@ -53,7 +92,10 @@ function ProjectModal({
                     e.stopPropagation()
                 }
                 style={{
-                    width: "500px",
+                    // bigger modal
+                    width: "700px",
+                    maxHeight: "90vh",
+                    overflowY: "auto",
 
                     background:
                         "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
@@ -111,6 +153,10 @@ function ProjectModal({
 
                 <input
                     ref={projectInputRef}
+                    value={title}
+                    onChange={(e) =>
+                        setTitle(e.target.value)
+                    }
                     placeholder="Project name"
                     style={{
                         width: "100%",
@@ -160,6 +206,12 @@ function ProjectModal({
                     </p>
 
                     <textarea
+                        value={description}
+                        onChange={(e) =>
+                            setDescription(
+                                e.target.value
+                            )
+                        }
                         rows={3}
                         placeholder="Describe your project..."
                         style={{
@@ -189,11 +241,286 @@ function ProjectModal({
                     <p
                         style={{
                             marginBottom: "10px",
-
-                            color:
-                                "var(--text-secondary)",
-
+                            color: "var(--text-secondary)",
                             fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Tasks
+                    </p>
+
+                    {/* TASK CHIPS BEGIN */}
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                        }}
+                    >
+                        {[
+                            "None",
+                            ...dummyTasks,
+                        ].map((task) => (
+                            <button
+                                key={task}
+                                onClick={() => {
+                                    if (task === "None") {
+                                        setSelectedTasks([]);
+                                        return;
+                                    }
+
+                                    setSelectedTasks((prev) =>
+                                        prev.includes(task)
+                                            ? prev.filter(
+                                                (t) =>
+                                                    t !== task
+                                            )
+                                            : [
+                                                ...prev,
+                                                task,
+                                            ]
+                                    );
+                                }}
+                                style={{
+                                    padding: "6px 12px",
+
+                                    borderRadius: "999px",
+
+                                    flexShrink: 0,
+
+                                    fontSize: "0.75rem",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+
+                                    background:
+                                        task === "None"
+                                            ? selectedTasks.length ===
+                                                0
+                                                ? "#013e3733"
+                                                : "transparent"
+                                            : selectedTasks.includes(
+                                                task
+                                            )
+                                                ? "#72715c33"
+                                                : "transparent",
+
+                                    border:
+                                        task === "None"
+                                            ? selectedTasks.length ===
+                                                0
+                                                ? "1px solid #013e3766"
+                                                : "1px solid rgba(255,255,255,0.08)"
+                                            : selectedTasks.includes(
+                                                task
+                                            )
+                                                ? "1px solid #72715c66"
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        task === "None"
+                                            ? selectedTasks.length ===
+                                                0
+                                                ? "var(--text-primary)"
+                                                : "var(--text-secondary)"
+                                            : selectedTasks.includes(
+                                                task
+                                            )
+                                                ? "var(--text-primary)"
+                                                : "var(--text-secondary)",
+                                }}
+                            >
+                                {task}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Goals
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                        }}
+                    >
+                        {["None", ...dummyGoals].map((goal) => (
+                            <button
+                                key={goal}
+                                onClick={() => {
+                                    if (goal === "None") {
+                                        setSelectedGoals([]);
+                                        return;
+                                    }
+
+                                    setSelectedGoals((prev) =>
+                                        prev.includes(goal)
+                                            ? prev.filter(
+                                                (g) => g !== goal
+                                            )
+                                            : [...prev, goal]
+                                    );
+                                }}
+                                style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "999px",
+                                    flexShrink: 0,
+                                    fontSize: "0.75rem",
+                                    cursor: "pointer",
+
+                                    background:
+                                        goal === "None"
+                                            ? selectedGoals.length === 0
+                                                ? "#013e3733"
+                                                : "transparent"
+                                            : selectedGoals.includes(goal)
+                                                ? "#c59c7033"
+                                                : "transparent",
+
+                                    border:
+                                        goal === "None"
+                                            ? selectedGoals.length === 0
+                                                ? "1px solid #013e3766"
+                                                : "1px solid rgba(255,255,255,0.08)"
+                                            : selectedGoals.includes(goal)
+                                                ? "1px solid #c59c7066"
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        selectedGoals.includes(goal) ||
+                                            (goal === "None" &&
+                                                selectedGoals.length === 0)
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+                                }}
+                            >
+                                {goal}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Reminder
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                        }}
+                    >
+                        {["None", ...dummyReminders].map((reminder) => (
+                            <button
+                                key={reminder}
+                                onClick={() => {
+                                    if (reminder === "None") {
+                                        setSelectedReminders([]);
+                                        return;
+                                    }
+
+                                    setSelectedReminders((prev) =>
+                                        prev.includes(reminder)
+                                            ? prev.filter(
+                                                (r) => r !== reminder
+                                            )
+                                            : [...prev, reminder]
+                                    );
+                                }}
+                                style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "999px",
+                                    flexShrink: 0,
+                                    fontSize: "0.75rem",
+                                    cursor: "pointer",
+
+                                    background:
+                                        reminder === "None"
+                                            ? selectedReminders.length === 0
+                                                ? "#013e3733"
+                                                : "transparent"
+                                            : selectedReminders.includes(reminder)
+                                                ? "#83545c66"
+                                                : "transparent",
+
+                                    border:
+                                        reminder === "None"
+                                            ? selectedReminders.length === 0
+                                                ? "1px solid #013e3766"
+                                                : "1px solid rgba(255,255,255,0.08)"
+                                            : selectedReminders.includes(reminder)
+                                                ? "1px solid #83545c66"
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        selectedReminders.includes(reminder) ||
+                                            (reminder === "None" &&
+                                                selectedReminders.length === 0)
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+                                }}
+                            >
+                                {reminder}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
                         }}
                     >
                         Category
@@ -203,62 +530,60 @@ function ProjectModal({
                         style={{
                             display: "flex",
                             gap: "10px",
-                            flexWrap: "wrap",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
                         }}
                     >
                         {[
                             {
                                 name: "Work",
-                                color: "#1a1d29",
+                                color: "#063f47",
                             },
                             {
                                 name: "Study",
-                                color: "#3d3f4a",
+                                color: "#297376",
                             },
                             {
                                 name: "Personal",
-                                color: "#c59c70",
-                            },
-                            {
-                                name: "Health",
-                                color: "#7d8491",
+                                color: "#5c9396",
                             },
                         ].map((item) => (
                             <button
                                 key={item.name}
                                 onClick={() =>
-                                    setCategory(
-                                        item.name
-                                    )
+                                    setCategory(item.name)
                                 }
                                 style={{
-                                    padding:
-                                        "6px 12px",
+                                    padding: "6px 12px",
 
-                                    borderRadius:
-                                        "999px",
+                                    borderRadius: "999px",
 
-                                    fontSize:
-                                        "0.75rem",
+                                    flexShrink: 0,
 
-                                    cursor:
-                                        "pointer",
+                                    fontSize: "0.75rem",
+
+                                    cursor: "pointer",
 
                                     background:
-                                        category ===
-                                            item.name
+                                        category === item.name
                                             ? `${item.color}33`
                                             : "transparent",
 
                                     border:
-                                        category ===
-                                            item.name
+                                        category === item.name
                                             ? `1px solid ${item.color}66`
                                             : "1px solid rgba(255,255,255,0.08)",
 
                                     color:
-                                        category ===
-                                            item.name
+                                        category === item.name
                                             ? "var(--text-primary)"
                                             : "var(--text-secondary)",
                                 }}
@@ -273,76 +598,160 @@ function ProjectModal({
                     <p
                         style={{
                             marginBottom: "10px",
-
-                            color:
-                                "var(--text-secondary)",
-
+                            color: "var(--text-secondary)",
                             fontSize: "0.85rem",
+                            fontWeight: "400",
                         }}
                     >
-                        Project Theme
+                        Priority
                     </p>
 
                     <div
                         style={{
                             display: "flex",
                             gap: "10px",
-                            flexWrap: "wrap",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
                         }}
                     >
                         {[
                             {
-                                name: "Portfolio",
-                                color: "#c59c70",
+                                name: "None",
+                                color: "#013e37",
                             },
                             {
-                                name: "Productivity",
-                                color: "#72715c",
+                                name: "Low",
+                                color: "#ffdb58",
                             },
                             {
-                                name: "Business",
-                                color: "#83545c",
+                                name: "Medium",
+                                color: "#62929e",
                             },
                             {
-                                name: "Creative",
-                                color: "#854c49",
+                                name: "High",
+                                color: "#ab3130",
                             },
                         ].map((item) => (
                             <button
                                 key={item.name}
                                 onClick={() =>
-                                    setTheme(
-                                        item.name
-                                    )
+                                    setPriority(item.name)
                                 }
                                 style={{
-                                    padding:
-                                        "6px 12px",
+                                    padding: "6px 12px",
 
-                                    borderRadius:
-                                        "999px",
+                                    borderRadius: "999px",
 
-                                    fontSize:
-                                        "0.75rem",
+                                    flexShrink: 0,
 
-                                    cursor:
-                                        "pointer",
+                                    fontSize: "0.75rem",
+
+                                    cursor: "pointer",
 
                                     background:
-                                        theme ===
-                                            item.name
+                                        priority === item.name
                                             ? `${item.color}33`
                                             : "transparent",
 
                                     border:
-                                        theme ===
-                                            item.name
+                                        priority === item.name
                                             ? `1px solid ${item.color}66`
                                             : "1px solid rgba(255,255,255,0.08)",
 
                                     color:
-                                        theme ===
-                                            item.name
+                                        priority === item.name
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+                                }}
+                            >
+                                {item.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Status
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                        }}
+                    >
+                        {[
+                            {
+                                name: "Active",
+                                color: "#4d6893",
+                            },
+                            {
+                                name: "In Progress",
+                                color: "#e9b957",
+                            },
+                            {
+                                name: "Overdue",
+                                color: "#85222f",
+                            },
+                            {
+                                name: "Complete",
+                                color: "#728a6e",
+                            },
+                        ].map((item) => (
+                            <button
+                                key={item.name}
+                                onClick={() =>
+                                    setStatus(item.name)
+                                }
+                                style={{
+                                    padding: "6px 12px",
+
+                                    borderRadius: "999px",
+
+                                    flexShrink: 0,
+
+                                    fontSize: "0.75rem",
+
+                                    cursor: "pointer",
+
+                                    background:
+                                        status === item.name
+                                            ? `${item.color}33`
+                                            : "transparent",
+
+                                    border:
+                                        status === item.name
+                                            ? `1px solid ${item.color}66`
+                                            : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        status === item.name
                                             ? "var(--text-primary)"
                                             : "var(--text-secondary)",
                                 }}
@@ -611,6 +1020,32 @@ function ProjectModal({
                     </button>
 
                     <button
+                        onClick={() => {
+                            onSave({
+                                title,
+
+                                description,
+
+                                category,
+
+                                dueDate:
+                                    selectedDate,
+
+                                tasks: 0,
+
+                                goals: 0,
+
+                                notes: 0,
+
+                                reminders: 0,
+
+                                priority: "Medium",
+
+                                progress: 0,
+
+                                status: "Active",
+                            });
+                        }}
                         style={{
                             background:
                                 "transparent",
@@ -651,7 +1086,7 @@ function ProjectModal({
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

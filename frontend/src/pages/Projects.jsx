@@ -5,54 +5,15 @@ import ProjectCard from "../components/Projects/ProjectCard";
 import ProjectModal from "../components/Projects/ProjectModal";
 
 import { useState } from "react";
+import { initialProjects } from "../data/projects";
 
 function Projects() {
     const [showProjectModal,
         setShowProjectModal] =
         useState(false);
-    const projects = [
-        {
-            title: "Portfolio Website",
-            tasks: 12,
-            goals: 3,
-            notes: 4,
-            reminders: 2,
 
-            category: "Work",
-            priority: "High",
-            progress: 72,
-
-            status: "Active",
-        },
-
-        {
-            title: "Productivity App",
-            tasks: 8,
-            goals: 2,
-            notes: 6,
-            reminders: 3,
-
-            category: "Study",
-            priority: "Medium",
-            progress: 58,
-
-            status: "Active",
-        },
-
-        {
-            title: "Job Search",
-            tasks: 5,
-            goals: 1,
-            notes: 2,
-            reminders: 1,
-
-            category: "Personal",
-            priority: "Low",
-            progress: 100,
-
-            status: "Complete",
-        },
-    ];
+    const [projects, setProjects] =
+        useState(initialProjects);
 
     return (
         <>
@@ -68,6 +29,7 @@ function Projects() {
                     }}
                 >
                     <AllProjectsCard
+                        projects={projects}
                         onNewProject={() =>
                             setShowProjectModal(true)
                         }
@@ -87,6 +49,19 @@ function Projects() {
                     onClose={() =>
                         setShowProjectModal(false)
                     }
+                    onSave={(project) => {
+                        setProjects((prev) => [
+                            {
+                                id: Date.now(),
+
+                                ...project,
+                            },
+
+                            ...prev,
+                        ]);
+
+                        setShowProjectModal(false);
+                    }}
                 />
             )}
         </>
