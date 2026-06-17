@@ -20,6 +20,9 @@ function NoteModal({
     const [content, setContent] =
         useState("");
 
+    const [linkedTo, setLinkedTo] =
+        useState([]);
+
     useEffect(() => {
         noteInputRef.current?.focus();
 
@@ -28,6 +31,10 @@ function NoteModal({
 
             setContent(
                 note.content || ""
+            );
+
+            setLinkedTo(
+                note?.linkedTo || []
             );
         }
     }, [mode, note]);
@@ -51,6 +58,27 @@ function NoteModal({
         fontSize: "0.95rem",
 
         outline: "none",
+    };
+
+    // helper function
+    const toggleLinkedTo = (type) => {
+        if (type === "None") {
+            setLinkedTo([]);
+
+            return;
+        }
+
+        setLinkedTo((prev) =>
+            prev.includes(type)
+                ? prev.filter(
+                    (item) =>
+                        item !== type
+                )
+                : [
+                    ...prev,
+                    type,
+                ]
+        );
     };
 
     return (
@@ -178,6 +206,107 @@ function NoteModal({
                     }}
                 />
 
+                {/* CHIPS */}
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+
+                            color:
+                                "var(--text-secondary)",
+
+                            fontSize: "0.85rem",
+
+                            fontWeight: "300",
+                        }}
+                    >
+                        Linked To
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        {[
+                            {
+                                name: "None",
+                                color: "#013e37",
+                            },
+                            {
+                                name: "Goal",
+                                color: "#ffefb3",
+                            },
+                            {
+                                name: "Project",
+                                color: "#7a553a",
+                            },
+                            {
+                                name: "Task",
+                                color: "#52677d",
+                            },
+                            {
+                                name: "Reminder",
+                                color: "#b08968",
+                            },
+                        ].map((item) => {
+                            const isSelected =
+                                item.name === "None"
+                                    ? linkedTo.length === 0
+                                    : linkedTo.includes(
+                                        item.name
+                                    );
+
+                            return (
+                                <button
+                                    key={item.name}
+                                    type="button"
+                                    onClick={() =>
+                                        toggleLinkedTo(
+                                            item.name
+                                        )
+                                    }
+                                    style={{
+                                        padding:
+                                            "6px 12px",
+
+                                        borderRadius:
+                                            "999px",
+
+                                        fontSize:
+                                            "0.75rem",
+
+                                        cursor:
+                                            "pointer",
+
+                                        transition:
+                                            "all 0.2s ease",
+
+                                        background:
+                                            isSelected
+                                                ? `${item.color}33`
+                                                : "transparent",
+
+                                        border:
+                                            isSelected
+                                                ? `1px solid ${item.color}66`
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                        color:
+                                            isSelected
+                                                ? "var(--text-primary)"
+                                                : "var(--text-secondary)",
+                                    }}
+                                >
+                                    {item.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
                 <textarea
                     value={content}
                     onChange={(e) =>
@@ -265,6 +394,8 @@ function NoteModal({
                                 title,
 
                                 content,
+
+                                linkedTo,
                             });
                         }}
                         style={{

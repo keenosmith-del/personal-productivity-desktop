@@ -319,7 +319,7 @@ function TaskModal({
 
               fontSize: "0.85rem",
 
-              fontWeight: "400",
+              fontWeight: "300",
             }}
           >
             Category

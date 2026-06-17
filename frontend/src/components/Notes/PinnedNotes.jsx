@@ -8,6 +8,28 @@ import {
     Trash2
 } from "lucide-react";
 
+const linkedToColors = {
+    Goal: {
+        background: "#ffefb333",
+        border: "#ffefb366",
+    },
+
+    Project: {
+        background: "#7a553a33",
+        border: "#7a553a66",
+    },
+
+    Task: {
+        background: "#52677d33",
+        border: "#52677d66",
+    },
+
+    Reminder: {
+        background: "#b0896833",
+        border: "#b0896866",
+    },
+};
+
 function PinnedNotes({
     notes,
     setNotes,
@@ -197,32 +219,38 @@ function PinnedNotes({
                             <div
                                 style={{
                                     display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
+                                    gap: "8px",
+                                    flexWrap: "wrap",
                                     marginTop: "8px",
                                     marginBottom: "12px",
                                 }}
                             >
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
+                                {note.linkedTo?.map((item) => (
+                                    <span
+                                        key={item}
+                                        style={{
+                                            padding: "4px 8px",
 
-                                        borderRadius: "999px",
+                                            borderRadius: "999px",
 
-                                        fontSize: "0.7rem",
+                                            fontSize: "0.7rem",
 
-                                        background:
-                                            "rgba(197,156,112,0.20)",
+                                            background:
+                                                linkedToColors[item]
+                                                    ?.background,
 
-                                        border:
-                                            "1px solid rgba(197,156,112,0.40)",
+                                            border:
+                                                `1px solid ${linkedToColors[item]
+                                                    ?.border
+                                                }`,
 
-                                        color:
-                                            "var(--text-secondary)",
-                                    }}
-                                >
-                                    {note.category}
-                                </span>
+                                            color:
+                                                "var(--text-secondary)",
+                                        }}
+                                    >
+                                        {item}
+                                    </span>
+                                ))}
                             </div>
 
                             <p
