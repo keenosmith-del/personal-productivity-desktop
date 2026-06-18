@@ -8,6 +8,9 @@ import {
 
 function ProjectCard({
     project,
+    onView,
+    onTogglePin,
+    onToggleComplete,
 }) {
     const statusColors = {
         Active: "#52677d",
@@ -22,6 +25,7 @@ function ProjectCard({
     return (
         <GlassCard minHeight="260px">
             <div
+                onClick={onView}
                 style={{
                     height: "100%",
 
@@ -65,12 +69,41 @@ function ProjectCard({
                                     : "none"
                             }
                             style={{
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
                                 flexShrink: 0,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color =
+                                    "#F5F5F5";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color =
+                                    "";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1)";
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+
+                                onTogglePin(project.id);
                             }}
                         />
 
+                        {/* CIRCLE DIV */}
                         <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+
+                                onToggleComplete(project.id);
+                            }}
                             style={{
+                                cursor: "pointer",
+
                                 width: "18px",
                                 height: "18px",
 
@@ -83,6 +116,8 @@ function ProjectCard({
                                     project.completed
                                         ? "rgba(245,245,245,0.75)"
                                         : "transparent",
+
+                                transition: "all 0.2s ease",
 
                                 flexShrink: 0,
 
@@ -137,6 +172,9 @@ function ProjectCard({
                                 e.currentTarget.style.transform =
                                     "scale(1)";
                             }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                            }}
                         />
 
                         <Trash2
@@ -159,6 +197,9 @@ function ProjectCard({
 
                                 e.currentTarget.style.transform =
                                     "scale(1)";
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
                             }}
                         />
                     </div>

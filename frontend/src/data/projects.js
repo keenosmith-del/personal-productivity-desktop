@@ -3,6 +3,9 @@ export const initialProjects = [
     id: 1,
     title: "Portfolio Website",
 
+    pinned: true,
+    completed: false,
+
     tasks: 12,
     goals: 3,
     notes: 4,
@@ -19,6 +22,9 @@ export const initialProjects = [
     id: 2,
     title: "Productivity App",
 
+    pinned: true,
+    completed: false,
+
     tasks: 8,
     goals: 2,
     notes: 6,
@@ -34,6 +40,9 @@ export const initialProjects = [
   {
     id: 3,
     title: "Job Search",
+
+    pinned: false,
+    completed: true,
 
     tasks: 5,
     goals: 1,

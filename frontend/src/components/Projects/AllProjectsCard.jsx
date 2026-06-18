@@ -9,6 +9,8 @@ import {
 function AllProjectsCard({
     projects,
     onNewProject,
+    onTogglePin,
+    onToggleComplete,
 }) {
     return (
         <GlassCard minHeight="260px">
@@ -122,8 +124,7 @@ function AllProjectsCard({
 
                                 borderRadius: "12px",
 
-                                transition:
-                                    "all 0.2s ease",
+                                transition: "all 0.2s ease",
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.background =
@@ -151,12 +152,41 @@ function AllProjectsCard({
                                                 : "none"
                                         }
                                         style={{
+                                            cursor: "pointer",
+                                            transition: "all 0.2s ease",
                                             flexShrink: 0,
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
+
+                                            e.currentTarget.style.transform =
+                                                "scale(1.1)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color =
+                                                "";
+
+                                            e.currentTarget.style.transform =
+                                                "scale(1)";
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            onTogglePin(project.id);
                                         }}
                                     />
 
+                                    {/* CIRCLE DIV */}
                                     <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            onToggleComplete(project.id);
+                                        }}
                                         style={{
+                                            cursor: "pointer",
+
                                             width: "18px",
                                             height: "18px",
 
@@ -169,6 +199,8 @@ function AllProjectsCard({
                                                 project.completed
                                                     ? "rgba(245,245,245,0.75)"
                                                     : "transparent",
+
+                                            transition: "all 0.2s ease",
 
                                             flexShrink: 0,
 

@@ -63,6 +63,10 @@ function ProjectModal({
     const dummyNotes = [
         "Meeting Notes",
         "Frontend Ideas",
+        "Backend Architecture",
+        "UI Improvements",
+        "Deployment Checklist",
+        "API Research",
     ];
 
     return (
@@ -509,6 +513,90 @@ function ProjectModal({
                                 }}
                             >
                                 {reminder}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <p
+                        style={{
+                            marginBottom: "10px",
+                            color: "var(--text-secondary)",
+                            fontSize: "0.85rem",
+                            fontWeight: "400",
+                        }}
+                    >
+                        Notes
+                    </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+
+                            overflowX: "auto",
+                            overflowY: "hidden",
+
+                            flexWrap: "nowrap",
+
+                            paddingBottom: "4px",
+
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                        }}
+                    >
+                        {["None", ...dummyNotes].map((note) => (
+                            <button
+                                key={note}
+                                onClick={() => {
+                                    if (note === "None") {
+                                        setSelectedNotes([]);
+                                        return;
+                                    }
+
+                                    setSelectedNotes((prev) =>
+                                        prev.includes(note)
+                                            ? prev.filter(
+                                                (n) => n !== note
+                                            )
+                                            : [...prev, note]
+                                    );
+                                }}
+                                style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "999px",
+                                    flexShrink: 0,
+                                    fontSize: "0.75rem",
+                                    cursor: "pointer",
+
+                                    background:
+                                        note === "None"
+                                            ? selectedNotes.length === 0
+                                                ? "#013e3733"
+                                                : "transparent"
+                                            : selectedNotes.includes(note)
+                                                ? "#52677d33"
+                                                : "transparent",
+
+                                    border:
+                                        note === "None"
+                                            ? selectedNotes.length === 0
+                                                ? "1px solid #013e3766"
+                                                : "1px solid rgba(255,255,255,0.08)"
+                                            : selectedNotes.includes(note)
+                                                ? "1px solid #52677d66"
+                                                : "1px solid rgba(255,255,255,0.08)",
+
+                                    color:
+                                        selectedNotes.includes(note) ||
+                                            (note === "None" &&
+                                                selectedNotes.length === 0)
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+                                }}
+                            >
+                                {note}
                             </button>
                         ))}
                     </div>
@@ -1028,22 +1116,29 @@ function ProjectModal({
 
                                 category,
 
-                                dueDate:
-                                    selectedDate,
+                                priority,
 
-                                tasks: 0,
+                                status,
 
-                                goals: 0,
+                                dueDate: selectedDate,
 
-                                notes: 0,
+                                selectedTasks,
 
-                                reminders: 0,
+                                selectedGoals,
 
-                                priority: "Medium",
+                                selectedNotes,
+
+                                selectedReminders,
+
+                                tasks: selectedTasks.length,
+
+                                goals: selectedGoals.length,
+
+                                notes: selectedNotes.length,
+
+                                reminders: selectedReminders.length,
 
                                 progress: 0,
-
-                                status: "Active",
                             });
                         }}
                         style={{
