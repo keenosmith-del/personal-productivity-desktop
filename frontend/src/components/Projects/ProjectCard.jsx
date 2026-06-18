@@ -14,12 +14,11 @@ function ProjectCard({
 }) {
     const statusColors = {
         Active: "#52677d",
-
         Completed: "#72715c",
-
         Paused: "#83545c",
-
         Archived: "#854c49",
+        "In Progress": "#e9b957",
+        Overdue: "#ab3130",
     };
 
     return (
@@ -207,24 +206,23 @@ function ProjectCard({
 
                 <div
                     style={{
+                        fontSize: "0.72rem",
+                        color: "var(--text-secondary)",
+                        fontWeight: "300",
+                        marginBottom: "16px",
+                    }}
+                >
+                    {project.dueDate}
+                </div>
+
+                <div
+                    style={{
                         display: "flex",
                         gap: "6px",
                         flexWrap: "wrap",
                         marginBottom: "20px",
                     }}
                 >
-                    <span
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "999px",
-                            fontSize: "0.68rem",
-
-                            background: "#854c4933",
-                            border: "1px solid #854c4966",
-                        }}
-                    >
-                        Project
-                    </span>
 
                     <span
                         style={{
@@ -290,55 +288,65 @@ function ProjectCard({
                         display: "flex",
                         gap: "8px",
                         flexWrap: "wrap",
+
+                        marginBottom: "20px",
                     }}
                 >
-                    <span
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "999px",
-                            fontSize: "0.68rem",
-                            background: "#72715c33",
-                            border: "1px solid #72715c66",
-                        }}
-                    >
-                        {project.tasks} Tasks
-                    </span>
+                    {project.tasks > 0 && (
+                        <span
+                            style={{
+                                padding: "4px 8px",
+                                borderRadius: "999px",
+                                fontSize: "0.68rem",
+                                background: "#72715c33",
+                                border: "1px solid #72715c66",
+                            }}
+                        >
+                            {project.tasks} Task{project.tasks !== 1 ? "s" : ""}
+                        </span>
+                    )}
 
-                    <span
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "999px",
-                            fontSize: "0.68rem",
-                            background: "#c59c7033",
-                            border: "1px solid #c59c7066",
-                        }}
-                    >
-                        {project.goals} Goals
-                    </span>
+                    {project.goals > 0 && (
+                        <span
+                            style={{
+                                padding: "4px 8px",
+                                borderRadius: "999px",
+                                fontSize: "0.68rem",
+                                background: "#c59c7033",
+                                border: "1px solid #c59c7066",
+                            }}
+                        >
+                            {project.goals} Goal{project.goals !== 1 ? "s" : ""}
+                        </span>
+                    )}
 
-                    <span
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "999px",
-                            fontSize: "0.68rem",
-                            background: "#52677d33",
-                            border: "1px solid #52677d66",
-                        }}
-                    >
-                        {project.notes} Notes
-                    </span>
+                    {project.notes > 0 && (
+                        <span
+                            style={{
+                                padding: "4px 8px",
+                                borderRadius: "999px",
+                                fontSize: "0.68rem",
+                                background: "#52677d33",
+                                border: "1px solid #52677d66",
+                            }}
+                        >
+                            {project.notes} Note{project.notes !== 1 ? "s" : ""}
+                        </span>
+                    )}
 
-                    <span
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "999px",
-                            fontSize: "0.68rem",
-                            background: "#83545c33",
-                            border: "1px solid #83545c66",
-                        }}
-                    >
-                        {project.reminders} Reminders
-                    </span>
+                    {project.reminders > 0 && (
+                        <span
+                            style={{
+                                padding: "4px 8px",
+                                borderRadius: "999px",
+                                fontSize: "0.68rem",
+                                background: "#83545c33",
+                                border: "1px solid #83545c66",
+                            }}
+                        >
+                            {project.reminders} Reminder{project.reminders !== 1 ? "s" : ""}
+                        </span>
+                    )}
                 </div>
 
                 <>

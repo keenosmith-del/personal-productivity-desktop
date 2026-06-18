@@ -11,6 +11,8 @@ function AllProjectsCard({
     onNewProject,
     onTogglePin,
     onToggleComplete,
+    onDeleteProject,
+    onEditProject,
 }) {
     return (
         <GlassCard minHeight="260px">
@@ -255,6 +257,11 @@ function AllProjectsCard({
                                             e.currentTarget.style.transform =
                                                 "scale(1)";
                                         }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            onEditProject(project);
+                                        }}
                                     />
 
                                     <Trash2
@@ -262,8 +269,7 @@ function AllProjectsCard({
                                         strokeWidth={1.5}
                                         style={{
                                             cursor: "pointer",
-                                            transition:
-                                                "all 0.2s ease",
+                                            transition: "all 0.2s ease",
                                         }}
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.color =
@@ -278,6 +284,11 @@ function AllProjectsCard({
 
                                             e.currentTarget.style.transform =
                                                 "scale(1)";
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            onDeleteProject(project.id);
                                         }}
                                     />
                                 </div>

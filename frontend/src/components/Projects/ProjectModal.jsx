@@ -8,35 +8,68 @@ function ProjectModal({
     onClose,
     onSave,
     mode = "create",
+    project,
 }) {
     const projectInputRef = useRef(null);
 
-    const [category, setCategory] = useState("Work");
+    const [showCalendar, setShowCalendar] =
+        useState(false);
+
+    const [category, setCategory] =
+        useState(project?.category || "Work");
 
     const [priority, setPriority] =
-        useState("Medium");
+        useState(
+            project?.priority || "Medium"
+        );
 
-    const [showCalendar, setShowCalendar] = useState(false);
+    const [selectedDate, setSelectedDate] =
+        useState(
+            project?.dueDate ||
+            new Date().toLocaleDateString(
+                "en-GB",
+                {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                }
+            )
+        );
 
-    const [selectedDate, setSelectedDate] = useState("Choose a date");
+    const [title, setTitle] =
+        useState(project?.title || "");
 
-    const [title, setTitle] = useState("");
-
-    const [description, setDescription] = useState("");
+    const [description, setDescription] =
+        useState(
+            project?.description || ""
+        );
 
     const [status, setStatus] =
-        useState("Active");
+        useState(
+            project?.status || "Active"
+        );
 
-    const [selectedTasks, setSelectedTasks] = useState([]);
+    const [selectedTasks, setSelectedTasks] =
+        useState(
+            project?.selectedTasks || []
+        );
 
     const [selectedGoals, setSelectedGoals] =
-        useState([]);
+        useState(
+            project?.selectedGoals || []
+        );
 
-    const [selectedReminders, setSelectedReminders] =
-        useState([]);
+    const [
+        selectedReminders,
+        setSelectedReminders,
+    ] = useState(
+        project?.selectedReminders || []
+    );
 
     const [selectedNotes, setSelectedNotes] =
-        useState([]);
+        useState(
+            project?.selectedNotes || []
+        );
 
     useEffect(() => {
         projectInputRef.current?.focus();
@@ -712,10 +745,6 @@ function ProjectModal({
                     >
                         {[
                             {
-                                name: "None",
-                                color: "#013e37",
-                            },
-                            {
                                 name: "Low",
                                 color: "#ffdb58",
                             },
@@ -804,11 +833,19 @@ function ProjectModal({
                                 color: "#e9b957",
                             },
                             {
+                                name: "Paused",
+                                color: "#83545c",
+                            },
+                            {
+                                name: "Archived",
+                                color: "#854c49",
+                            },
+                            {
                                 name: "Overdue",
                                 color: "#85222f",
                             },
                             {
-                                name: "Complete",
+                                name: "Completed",
                                 color: "#728a6e",
                             },
                         ].map((item) => (

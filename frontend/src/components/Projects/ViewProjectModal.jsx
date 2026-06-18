@@ -170,24 +170,23 @@ function ViewProjectModal({
                     }}
                 >
 
-                    <div>
-                        <p
-                            style={{
-                                color: "var(--text-secondary)",
+                    {project.description?.trim() && (
+                        <div>
+                            <p
+                                style={{
+                                    color: "var(--text-secondary)",
+                                    fontSize: "0.8rem",
+                                    marginBottom: "6px",
+                                }}
+                            >
+                                Description
+                            </p>
 
-                                fontSize: "0.8rem",
+                            <p>{project.description}</p>
+                        </div>
+                    )}
 
-                                marginBottom: "6px",
-                            }}
-                        >
-                            Description
-                        </p>
-
-                        <p>
-                            {project.description || "No description"}
-                        </p>
-                    </div>
-
+                    {/* CHIPS */}
                     <div
                         style={{
                             display: "flex",
@@ -231,89 +230,28 @@ function ViewProjectModal({
                         >
                             {project.priority}
                         </span>
-
-                        {/* CHIPS */}
-                        <span
-                            style={{
-                                padding: "4px 10px",
-                                borderRadius: "999px",
-                                fontSize: "0.75rem",
-
-                                background:
-                                    project.status === "Active"
-                                        ? "#4d689333"
-                                        : project.status === "In Progress"
-                                            ? "#e9b95733"
-                                            : project.status === "Overdue"
-                                                ? "#85222f33"
-                                                : "#728a6e33",
-
-                                border:
-                                    project.status === "Active"
-                                        ? "1px solid #4d689366"
-                                        : project.status === "In Progress"
-                                            ? "1px solid #e9b95766"
-                                            : project.status === "Overdue"
-                                                ? "1px solid #85222f66"
-                                                : "1px solid #728a6e66",
-                            }}
-                        >
-                            {project.status}
-                        </span>
                     </div>
 
                     <div>
                         <p
                             style={{
                                 color: "var(--text-secondary)",
-
                                 fontSize: "0.8rem",
-
-                                marginBottom: "6px",
+                                marginBottom: "10px",
                             }}
                         >
                             Due Date
                         </p>
 
-                        <p>
-                            {project.dueDate || "No due date"}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-
-                                fontSize:
-                                    "0.8rem",
-
-                                marginBottom:
-                                    "10px",
-                            }}
-                        >
-                            Linked Items
-                        </p>
-
                         <div
                             style={{
                                 display: "flex",
-                                gap: "8px",
-                                flexWrap: "wrap",
+                                alignItems: "center",
+                                gap: "10px",
                             }}
                         >
-                            <span
-                                style={{
-                                    padding: "4px 10px",
-                                    borderRadius: "999px",
-                                    fontSize: "0.75rem",
-
-                                    background: "#72715c33",
-                                    border: "1px solid #72715c66",
-                                }}
-                            >
-                                {project.tasks} Tasks
+                            <span>
+                                {project.dueDate || "No due date"} 
                             </span>
 
                             <span
@@ -322,40 +260,129 @@ function ViewProjectModal({
                                     borderRadius: "999px",
                                     fontSize: "0.75rem",
 
-                                    background: "#c59c7033",
-                                    border: "1px solid #c59c7066",
+                                    background:
+                                        project.status === "Active"
+                                            ? "#4d689333"
+                                            : project.status === "In Progress"
+                                                ? "#e9b95733"
+                                                : project.status === "Paused"
+                                                    ? "#83545c33"
+                                                    : project.status === "Archived"
+                                                        ? "#854c4933"
+                                                        : project.status === "Overdue"
+                                                            ? "#85222f33"
+                                                            : "#728a6e33",
+
+                                    border:
+                                        project.status === "Active"
+                                            ? "1px solid #4d689366"
+                                            : project.status === "In Progress"
+                                                ? "1px solid #e9b95766"
+                                                : project.status === "Paused"
+                                                    ? "1px solid #83545c66"
+                                                    : project.status === "Archived"
+                                                        ? "1px solid #854c4966"
+                                                        : project.status === "Overdue"
+                                                            ? "1px solid #85222f66"
+                                                            : "1px solid #728a6e66",
                                 }}
                             >
-                                {project.goals} Goals
-                            </span>
-
-                            <span
-                                style={{
-                                    padding: "4px 10px",
-                                    borderRadius: "999px",
-                                    fontSize: "0.75rem",
-
-                                    background: "#52677d33",
-                                    border: "1px solid #52677d66",
-                                }}
-                            >
-                                {project.notes} Notes
-                            </span>
-
-                            <span
-                                style={{
-                                    padding: "4px 10px",
-                                    borderRadius: "999px",
-                                    fontSize: "0.75rem",
-
-                                    background: "#83545c33",
-                                    border: "1px solid #83545c66",
-                                }}
-                            >
-                                {project.reminders} Reminders
+                                {project.status}
                             </span>
                         </div>
                     </div>
+
+                    {(
+                        project.tasks > 0 ||
+                        project.goals > 0 ||
+                        project.notes > 0 ||
+                        project.reminders > 0
+                    ) && (
+                            <div>
+                                <p
+                                    style={{
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        fontSize:
+                                            "0.8rem",
+
+                                        marginBottom:
+                                            "10px",
+                                    }}
+                                >
+                                    Linked Items
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "8px",
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    {project.tasks > 0 && (
+                                        <span
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius: "999px",
+                                                fontSize: "0.75rem",
+
+                                                background: "#72715c33",
+                                                border: "1px solid #72715c66",
+                                            }}
+                                        >
+                                            {project.tasks} Tasks
+                                        </span>
+                                    )}
+
+                                    {project.goals > 0 && (
+                                        <span
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius: "999px",
+                                                fontSize: "0.75rem",
+
+                                                background: "#c59c7033",
+                                                border: "1px solid #c59c7066",
+                                            }}
+                                        >
+                                            {project.goals} Goals
+                                        </span>
+                                    )}
+
+                                    {project.notes > 0 && (
+                                        <span
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius: "999px",
+                                                fontSize: "0.75rem",
+
+                                                background: "#52677d33",
+                                                border: "1px solid #52677d66",
+                                            }}
+                                        >
+                                            {project.notes} Notes
+                                        </span>
+                                    )}
+
+                                    {project.reminders > 0 && (
+                                        <span
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius: "999px",
+                                                fontSize: "0.75rem",
+
+                                                background: "#83545c33",
+                                                border: "1px solid #83545c66",
+                                            }}
+                                        >
+                                            {project.reminders} Reminders
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                     <div>
                         <p

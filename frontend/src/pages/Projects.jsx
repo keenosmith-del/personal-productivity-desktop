@@ -4,6 +4,8 @@ import AllProjectsCard from "../components/Projects/AllProjectsCard";
 import ProjectCard from "../components/Projects/ProjectCard";
 import ProjectModal from "../components/Projects/ProjectModal";
 import ViewProjectModal from "../components/Projects/ViewProjectModal";
+import CompletedProjectsCard from "../components/Projects/CompletedProjectsCard";
+import PinnedProjectsCard from "../components/Projects/PinnedProjectsCard";
 
 import { useState } from "react";
 import { initialProjects } from "../data/projects";
@@ -17,6 +19,9 @@ function Projects() {
         useState(initialProjects);
 
     const [selectedProjectId, setSelectedProjectId] =
+        useState(null);
+
+    const [editingProject, setEditingProject] =
         useState(null);
 
     const selectedProject =
@@ -34,6 +39,21 @@ function Projects() {
                         pinned: !project.pinned,
                     }
                     : project
+            )
+        );
+    };
+
+    const handleEditProject = (project) => {
+        setEditingProject(project);
+
+        setShowProjectModal(true);
+    };
+
+    const handleDeleteProject = (projectId) => {
+        setProjects((prev) =>
+            prev.filter(
+                (project) =>
+                    project.id !== projectId
             )
         );
     };
@@ -71,6 +91,18 @@ function Projects() {
                         }
                         onTogglePin={handleTogglePin}
                         onToggleComplete={handleToggleComplete}
+                        onDeleteProject={handleDeleteProject}
+                        onEditProject={handleEditProject}
+                    />
+
+                    <CompletedProjectsCard
+                        projects={projects}
+                    />
+
+                    <PinnedProjectsCard
+                        projects={projects}
+                        onTogglePin={handleTogglePin}
+                        onToggleComplete={handleToggleComplete}
                     />
 
                     {projects.map((project) => (
@@ -102,21 +134,43 @@ function Projects() {
 
             {showProjectModal && (
                 <ProjectModal
-                    onClose={() =>
-                        setShowProjectModal(false)
+                    mode={
+                        editingProject
+                            ? "edit"
+                            : "create"
                     }
-                    onSave={(project) => {
-                        setProjects((prev) => [
-                            {
-                                id: Date.now(),
+                    project={editingProject}
+                    onClose={() => {
+                        setShowProjectModal(false);
 
-                                ...project,
-                            },
-
-                            ...prev,
-                        ]);
+                        setEditingProject(null);
+                    }}
+                    onSave={(projectData) => {
+                        if (editingProject) {
+                            setProjects((prev) =>
+                                prev.map((project) =>
+                                    project.id ===
+                                        editingProject.id
+                                        ? {
+                                            ...project,
+                                            ...projectData,
+                                        }
+                                        : project
+                                )
+                            );
+                        } else {
+                            setProjects((prev) => [
+                                {
+                                    id: Date.now(),
+                                    ...projectData,
+                                },
+                                ...prev,
+                            ]);
+                        }
 
                         setShowProjectModal(false);
+
+                        setEditingProject(null);
                     }}
                 />
             )}

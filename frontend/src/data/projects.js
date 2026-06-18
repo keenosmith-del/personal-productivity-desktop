@@ -55,4 +55,41 @@ export const initialProjects = [
 
     status: "Completed",
   },
+  {
+    id: 4,
+    title: "Fitness Tracker",
+
+    pinned: false,
+    completed: false,
+
+    tasks: 9,
+    goals: 4,
+    notes: 3,
+    reminders: 5,
+
+    category: "Personal",
+    priority: "Medium",
+    progress: 41,
+
+    status: "In Progress",
+  },
+
+  {
+    id: 5,
+    title: "Final Year Studies",
+
+    pinned: true,
+    completed: false,
+
+    tasks: 18,
+    goals: 6,
+    notes: 12,
+    reminders: 4,
+
+    category: "Study",
+    priority: "High",
+    progress: 84,
+
+    status: "Active",
+  },
 ];
