@@ -8,10 +8,16 @@ import {
 
 function PinnedProjectsCard({
     projects,
-    onNewProject,
     onTogglePin,
     onToggleComplete,
+    onUnpinAll,
+    onDeleteProject,
+    onEditProject,
+    onViewProject,
 }) {
+    const pinnedProjects = projects.filter(
+        (project) => project.pinned
+    );
     return (
         <GlassCard minHeight="260px">
             <div
@@ -43,25 +49,30 @@ function PinnedProjectsCard({
                     </h2>
 
                     <button
-                        onClick={onNewProject}
+                        onClick={onUnpinAll}
                         style={{
                             background: "transparent",
-
                             border: "1px solid rgba(255,255,255,0.08)",
-
                             borderRadius: "999px",
-
                             padding: "8px 14px",
 
-                            color: "var(--text-secondary)",
+                            color:
+                                pinnedProjects.length === 0
+                                    ? "rgba(255,255,255,0.25)"
+                                    : "var(--text-secondary)",
 
                             fontSize: "0.8rem",
-
                             fontWeight: "300",
 
-                            cursor: "pointer",
+                            cursor:
+                                pinnedProjects.length === 0
+                                    ? "not-allowed"
+                                    : "pointer",
 
-                            transition: "all 0.2s ease",
+                            opacity:
+                                pinnedProjects.length === 0
+                                    ? 0.5
+                                    : 1,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
@@ -121,6 +132,7 @@ function PinnedProjectsCard({
                         .map((project) => (
                             <div
                                 key={project.id}
+                                onClick={() => onViewProject(project.id)}
                                 style={{
                                     justifyContent: "space-between",
                                     alignItems: "center",
@@ -263,6 +275,11 @@ function PinnedProjectsCard({
                                                 e.currentTarget.style.transform =
                                                     "scale(1)";
                                             }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                onEditProject(project);
+                                            }}
                                         />
 
                                         <Trash2
@@ -286,6 +303,11 @@ function PinnedProjectsCard({
 
                                                 e.currentTarget.style.transform =
                                                     "scale(1)";
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                onDeleteProject(project.id);
                                             }}
                                         />
                                     </div>

@@ -7,6 +7,7 @@ function ViewProjectModal({
     onClose,
     onTogglePin,
     onToggleComplete,
+    onEditProject,
 }) {
     if (!project) return null;
 
@@ -237,7 +238,7 @@ function ViewProjectModal({
                             style={{
                                 color: "var(--text-secondary)",
                                 fontSize: "0.8rem",
-                                marginBottom: "10px",
+                                marginBottom: "6px",
                             }}
                         >
                             Due Date
@@ -250,45 +251,13 @@ function ViewProjectModal({
                                 gap: "10px",
                             }}
                         >
-                            <span>
-                                {project.dueDate || "No due date"} 
-                            </span>
+                            <span>{project.dueDate}</span>
 
-                            <span
-                                style={{
-                                    padding: "4px 10px",
-                                    borderRadius: "999px",
-                                    fontSize: "0.75rem",
-
-                                    background:
-                                        project.status === "Active"
-                                            ? "#4d689333"
-                                            : project.status === "In Progress"
-                                                ? "#e9b95733"
-                                                : project.status === "Paused"
-                                                    ? "#83545c33"
-                                                    : project.status === "Archived"
-                                                        ? "#854c4933"
-                                                        : project.status === "Overdue"
-                                                            ? "#85222f33"
-                                                            : "#728a6e33",
-
-                                    border:
-                                        project.status === "Active"
-                                            ? "1px solid #4d689366"
-                                            : project.status === "In Progress"
-                                                ? "1px solid #e9b95766"
-                                                : project.status === "Paused"
-                                                    ? "1px solid #83545c66"
-                                                    : project.status === "Archived"
-                                                        ? "1px solid #854c4966"
-                                                        : project.status === "Overdue"
-                                                            ? "1px solid #85222f66"
-                                                            : "1px solid #728a6e66",
-                                }}
-                            >
-                                {project.status}
-                            </span>
+                            {!project.completed && (
+                                <span>
+                                    {project.status}
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -384,62 +353,70 @@ function ViewProjectModal({
                             </div>
                         )}
 
-                    <div>
-                        <p
-                            style={{
-                                color:
-                                    "var(--text-secondary)",
-
-                                fontSize:
-                                    "0.8rem",
-
-                                marginBottom:
-                                    "6px",
-                            }}
-                        >
-                            Progress
-                        </p>
-
+                    {!project.completed ? (
                         <div>
-                            <div
+                            <p
                                 style={{
-                                    width: "100%",
-
-                                    height: "8px",
-
-                                    borderRadius:
-                                        "999px",
-
-                                    background:
-                                        "rgba(255,255,255,0.08)",
-
-                                    overflow:
-                                        "hidden",
-
-                                    marginBottom:
-                                        "10px",
+                                    color: "var(--text-secondary)",
+                                    fontSize: "0.8rem",
+                                    marginBottom: "6px",
                                 }}
                             >
+                                Progress
+                            </p>
+
+                            <div>
                                 <div
                                     style={{
-                                        width:
-                                            `${project.progress}%`,
-
-                                        height:
-                                            "100%",
-
-                                        background:
-                                            "#c59c70",
+                                        width: "100%",
+                                        height: "8px",
+                                        borderRadius: "999px",
+                                        background: "rgba(255,255,255,0.08)",
+                                        overflow: "hidden",
+                                        marginBottom: "10px",
                                     }}
-                                />
-                            </div>
+                                >
+                                    <div
+                                        style={{
+                                            width: `${project.progress}%`,
+                                            height: "100%",
+                                            background: "#c59c70",
+                                        }}
+                                    />
+                                </div>
 
-                            <p>
-                                {project.progress}% Complete
+                                <p>{project.progress}% Complete</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div
+                            style={{
+                                padding: "14px",
+                                borderRadius: "16px",
+                                background: "rgba(114,138,110,0.12)",
+                                border: "1px solid rgba(114,138,110,0.25)",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: "500",
+                                    marginBottom: "4px",
+                                }}
+                            >
+                                ✓ Project Completed
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "0.8rem",
+                                    color: "var(--text-secondary)",
+                                }}
+                            >
+                                Completed on {project.completedDate}
                             </p>
                         </div>
-                    </div>
-
+                    )}
                 </div>
 
                 <div
@@ -493,24 +470,20 @@ function ViewProjectModal({
                     </button>
 
                     <button
+                        onClick={() => {
+                            if (project.completed) {
+                                onToggleComplete(project.id);
+                            } else {
+                                onEditProject(project);
+                            }
+                        }}
                         style={{
-                            background:
-                                "transparent",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius:
-                                "999px",
-
-                            padding:
-                                "8px 14px",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            cursor:
-                                "pointer",
+                            background: "transparent",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: "999px",
+                            padding: "8px 14px",
+                            color: "var(--text-secondary)",
+                            cursor: "pointer",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
@@ -527,10 +500,11 @@ function ViewProjectModal({
                                 "transparent";
                         }}
                     >
-                        Edit Project
+                        {project.completed
+                            ? "Restore Project"
+                            : "Edit Project"}
                     </button>
                 </div>
-
             </div>
         </div>
     );

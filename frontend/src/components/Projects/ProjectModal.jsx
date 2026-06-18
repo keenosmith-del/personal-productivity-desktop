@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 
 import { Calendar } from "lucide-react";
 
+import DatePickerModal from "../DatePickerModal";
+
 function ProjectModal({
     onClose,
     onSave,
@@ -13,6 +15,9 @@ function ProjectModal({
     const projectInputRef = useRef(null);
 
     const [showCalendar, setShowCalendar] =
+        useState(false);
+
+    const [showDatePicker, setShowDatePicker] =
         useState(false);
 
     const [category, setCategory] =
@@ -889,9 +894,7 @@ function ProjectModal({
 
                 <div
                     onClick={() =>
-                        setShowCalendar(
-                            !showCalendar
-                        )
+                        setShowDatePicker(true)
                     }
                     style={{
                         display: "flex",
@@ -941,7 +944,7 @@ function ProjectModal({
                         strokeWidth={1.5}
                     />
                 </div>
-                {showCalendar && (
+                {false && (
                     <div
                         style={{
                             background: "rgba(255,255,255,0.04)",
@@ -1218,7 +1221,18 @@ function ProjectModal({
                     </button>
                 </div>
             </div>
-        </div >
+            <DatePickerModal
+                isOpen={showDatePicker}
+                selectedDate={selectedDate}
+                onSelect={(date) => {
+                    setSelectedDate(date);
+                    setShowDatePicker(false);
+                }}
+                onClose={() =>
+                    setShowDatePicker(false)
+                }
+            />
+        </div>
     );
 }
 

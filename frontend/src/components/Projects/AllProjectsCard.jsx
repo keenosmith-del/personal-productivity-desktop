@@ -13,6 +13,8 @@ function AllProjectsCard({
     onToggleComplete,
     onDeleteProject,
     onEditProject,
+    onClearAll,
+    onViewProject,
 }) {
     return (
         <GlassCard minHeight="260px">
@@ -44,44 +46,108 @@ function AllProjectsCard({
                         All Projects
                     </h2>
 
-                    <button
-                        onClick={onNewProject}
+                    <div
                         style={{
-                            background: "transparent",
-
-                            border: "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius: "999px",
-
-                            padding: "8px 14px",
-
-                            color: "var(--text-secondary)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "var(--text-primary)";
-
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "var(--text-secondary)";
-
-                            e.currentTarget.style.background =
-                                "transparent";
+                            display: "flex",
+                            gap: "8px",
                         }}
                     >
-                        + New Project
-                    </button>
+                        <button
+                            onClick={onNewProject}
+                            style={{
+                                background: "transparent",
+
+                                border: "1px solid rgba(255,255,255,0.08)",
+
+                                borderRadius: "999px",
+
+                                padding: "8px 14px",
+
+                                color: "var(--text-secondary)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+
+                                e.currentTarget.style.background =
+                                    "transparent";
+                            }}
+                        >
+                            + New Project
+                        </button>
+
+                        <button
+                            onClick={onClearAll}
+                            disabled={
+                                projects.length === 0
+                            }
+                            style={{
+                                background: "transparent",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: "999px",
+                                padding: "8px 14px",
+
+                                color:
+                                    projects.length === 0
+                                        ? "rgba(255,255,255,0.25)"
+                                        : "var(--text-secondary)",
+
+                                fontSize: "0.8rem",
+                                fontWeight: "300",
+
+                                cursor:
+                                    projects.length === 0
+                                        ? "not-allowed"
+                                        : "pointer",
+
+                                opacity:
+                                    projects.length === 0
+                                        ? 0.5
+                                        : 1,
+                            }}
+                            onMouseEnter={(e) => {
+                                if (
+                                    projects.length === 0
+                                )
+                                    return;
+
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (
+                                    projects.length === 0
+                                )
+                                    return;
+
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+
+                                e.currentTarget.style.background =
+                                    "transparent";
+                            }}
+                        >
+                            Clear All
+                        </button>
+                    </div>
                 </div>
 
                 <div
@@ -115,6 +181,7 @@ function AllProjectsCard({
                     {projects.map((project) => (
                         <div
                             key={project.id}
+                            onClick={() => onViewProject(project.id)}
                             style={{
                                 justifyContent: "space-between",
                                 alignItems: "center",

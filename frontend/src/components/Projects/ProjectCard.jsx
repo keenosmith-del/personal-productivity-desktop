@@ -11,6 +11,8 @@ function ProjectCard({
     onView,
     onTogglePin,
     onToggleComplete,
+    onEditProject,
+    onDeleteProject,
 }) {
     const statusColors = {
         Active: "#52677d",
@@ -173,6 +175,8 @@ function ProjectCard({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
+
+                                onEditProject(project);
                             }}
                         />
 
@@ -199,6 +203,8 @@ function ProjectCard({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
+
+                                onDeleteProject(project.id);
                             }}
                         />
                     </div>

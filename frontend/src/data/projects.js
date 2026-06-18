@@ -3,6 +3,9 @@ export const initialProjects = [
     id: 1,
     title: "Portfolio Website",
 
+    dueDate: "25 Jun 2026",
+    completedDate: null,
+
     pinned: true,
     completed: false,
 
@@ -20,7 +23,10 @@ export const initialProjects = [
 
   {
     id: 2,
-    title: "Productivity App",
+    title: "Productivity Desktop",
+
+    dueDate: "18 Jul 2026",
+    completedDate: null,
 
     pinned: true,
     completed: false,
@@ -30,16 +36,19 @@ export const initialProjects = [
     notes: 6,
     reminders: 3,
 
-    category: "Study",
+    category: "Work",
     priority: "Medium",
     progress: 58,
 
-    status: "Active",
+    status: "In Progress",
   },
 
   {
     id: 3,
-    title: "Job Search",
+    title: "Job Applications",
+
+    dueDate: "10 May 2026",
+    completedDate: "9 May 2026",
 
     pinned: false,
     completed: true,
@@ -55,9 +64,13 @@ export const initialProjects = [
 
     status: "Completed",
   },
+
   {
     id: 4,
-    title: "Fitness Tracker",
+    title: "Gym Tracker",
+
+    dueDate: "02 Aug 2026",
+    completedDate: null,
 
     pinned: false,
     completed: false,
@@ -71,12 +84,15 @@ export const initialProjects = [
     priority: "Medium",
     progress: 41,
 
-    status: "In Progress",
+    status: "Paused",
   },
 
   {
     id: 5,
-    title: "Final Year Studies",
+    title: "Generative AI Course",
+
+    dueDate: "30 Jun 2026",
+    completedDate: null,
 
     pinned: true,
     completed: false,
@@ -91,5 +107,49 @@ export const initialProjects = [
     progress: 84,
 
     status: "Active",
+  },
+
+  {
+    id: 6,
+    title: "Learning Analytics Platform",
+
+    dueDate: "15 Jul 2026",
+    completedDate: null,
+
+    pinned: false,
+    completed: false,
+
+    tasks: 14,
+    goals: 3,
+    notes: 7,
+    reminders: 2,
+
+    category: "Study",
+    priority: "High",
+    progress: 37,
+
+    status: "In Progress",
+  },
+
+  {
+    id: 7,
+    title: "Music API Project",
+
+    dueDate: "05 Jun 2026",
+    completedDate: null,
+
+    pinned: false,
+    completed: false,
+
+    tasks: 11,
+    goals: 2,
+    notes: 5,
+    reminders: 3,
+
+    category: "Work",
+    priority: "Medium",
+    progress: 63,
+
+    status: "Overdue",
   },
 ];

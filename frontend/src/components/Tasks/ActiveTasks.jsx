@@ -332,23 +332,6 @@ function ActiveTasks({
 
                                                 fontSize: "0.68rem",
 
-                                                background: "#72715c33",
-
-                                                border:
-                                                    "1px solid #72715c66",
-                                            }}
-                                        >
-                                            Task
-                                        </span>
-
-                                        <span
-                                            style={{
-                                                padding: "3px 8px",
-
-                                                borderRadius: "999px",
-
-                                                fontSize: "0.68rem",
-
                                                 background:
                                                     task.category === "Work"
                                                         ? "#063f4733"

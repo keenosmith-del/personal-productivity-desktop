@@ -43,6 +43,18 @@ function Projects() {
         );
     };
 
+    const handleClearAllProjects = () => {
+        setProjects([]);
+    };
+
+    const handleClearAllCompleted = () => {
+        setProjects((prev) =>
+            prev.filter(
+                (project) => !project.completed
+            )
+        );
+    };
+
     const handleEditProject = (project) => {
         setEditingProject(project);
 
@@ -58,6 +70,15 @@ function Projects() {
         );
     };
 
+    const handleUnpinAllProjects = () => {
+        setProjects((prev) =>
+            prev.map((project) => ({
+                ...project,
+                pinned: false,
+            }))
+        );
+    };
+
     const handleToggleComplete = (projectId) => {
         setProjects((prev) =>
             prev.map((project) =>
@@ -65,6 +86,25 @@ function Projects() {
                     ? {
                         ...project,
                         completed: !project.completed,
+
+                        completedDate: !project.completed
+                            ? new Date().toLocaleDateString(
+                                "en-GB",
+                                {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                }
+                            )
+                            : null,
+
+                        status: !project.completed
+                            ? "Completed"
+                            : "Active",
+
+                        progress: !project.completed
+                            ? 100
+                            : project.progress,
                     }
                     : project
             )
@@ -93,16 +133,26 @@ function Projects() {
                         onToggleComplete={handleToggleComplete}
                         onDeleteProject={handleDeleteProject}
                         onEditProject={handleEditProject}
+                        onClearAll={handleClearAllProjects}
+                        onViewProject={setSelectedProjectId}
                     />
 
                     <CompletedProjectsCard
                         projects={projects}
+                        onClearAll={handleClearAllCompleted}
+                        onToggleComplete={handleToggleComplete}
+                        onDeleteProject={handleDeleteProject}
+                        onViewProject={setSelectedProjectId}
                     />
 
                     <PinnedProjectsCard
                         projects={projects}
                         onTogglePin={handleTogglePin}
                         onToggleComplete={handleToggleComplete}
+                        onUnpinAll={handleUnpinAllProjects}
+                        onDeleteProject={handleDeleteProject}
+                        onEditProject={handleEditProject}
+                        onViewProject={setSelectedProjectId}
                     />
 
                     {projects.map((project) => (
@@ -114,6 +164,8 @@ function Projects() {
                             }
                             onTogglePin={handleTogglePin}
                             onToggleComplete={handleToggleComplete}
+                            onEditProject={handleEditProject}
+                            onDeleteProject={handleDeleteProject}
                         />
                     ))}
 
@@ -124,9 +176,8 @@ function Projects() {
                                 setSelectedProjectId(null)
                             }
                             onTogglePin={handleTogglePin}
-                            onToggleComplete={
-                                handleToggleComplete
-                            }
+                            onToggleComplete={handleToggleComplete}
+                            onEditProject={handleEditProject}
                         />
                     )}
                 </div>
