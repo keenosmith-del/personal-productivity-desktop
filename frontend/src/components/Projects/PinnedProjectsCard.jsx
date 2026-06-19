@@ -10,10 +10,10 @@ function PinnedProjectsCard({
     projects,
     onTogglePin,
     onToggleComplete,
-    onUnpinAll,
     onDeleteProject,
     onEditProject,
     onViewProject,
+    onShowUnpinModal,
 }) {
     const pinnedProjects = projects.filter(
         (project) => project.pinned
@@ -49,7 +49,7 @@ function PinnedProjectsCard({
                     </h2>
 
                     <button
-                        onClick={onUnpinAll}
+                        onClick={onShowUnpinModal}
                         style={{
                             background: "transparent",
                             border: "1px solid rgba(255,255,255,0.08)",
@@ -75,6 +75,9 @@ function PinnedProjectsCard({
                                     : 1,
                         }}
                         onMouseEnter={(e) => {
+                            if (pinnedProjects.length === 0)
+                                return;
+
                             e.currentTarget.style.color =
                                 "var(--text-primary)";
 
@@ -82,6 +85,9 @@ function PinnedProjectsCard({
                                 "rgba(255,255,255,0.04)";
                         }}
                         onMouseLeave={(e) => {
+                            if (pinnedProjects.length === 0)
+                                return;
+
                             e.currentTarget.style.color =
                                 "var(--text-secondary)";
 
@@ -110,210 +116,216 @@ function PinnedProjectsCard({
                         paddingRight: "4px",
                     }}
                 >
-                    <p
-                        style={{
-                            fontWeight: "400",
-                            color: "var(--text-primary)",
-                            marginBottom: "6px",
-                        }}
-                    >
-                        {
-                            projects.filter(
-                                (project) => project.pinned
-                            ).length
-                        } Pinned
-                    </p>
-
-                    {/* ROWS */}
-                    {projects
-                        .filter(
-                            (project) => project.pinned
-                        )
-                        .map((project) => (
-                            <div
-                                key={project.id}
-                                onClick={() => onViewProject(project.id)}
+                    {pinnedProjects.length === 0 ? (
+                        <p
+                            style={{
+                                color: "var(--text-secondary)",
+                                fontSize: "0.85rem",
+                                padding: "24px 0",
+                            }}
+                        >
+                            No pinned projects.
+                        </p>
+                    ) : (
+                        <>
+                            <p
                                 style={{
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    display: "flex",
-
-                                    cursor: "pointer",
-
-                                    padding: "8px 12px",
-
-                                    borderRadius: "12px",
-
-                                    transition: "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
+                                    fontWeight: "400",
+                                    color: "var(--text-primary)",
+                                    marginBottom: "6px",
                                 }}
                             >
-                                <>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "10px",
-                                        }}
-                                    >
-                                        <Pin
-                                            size={15}
-                                            strokeWidth={1.5}
-                                            fill={
-                                                project.pinned
-                                                    ? "currentColor"
-                                                    : "none"
-                                            }
-                                            style={{
-                                                cursor: "pointer",
-                                                transition: "all 0.2s ease",
-                                                flexShrink: 0,
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "#F5F5F5";
+                                {pinnedProjects.length} Pinned
+                            </p>
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1.1)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "";
+                            {/* ROWS */}
+                            {pinnedProjects.map((project) => (
+                                <div
+                                    key={project.id}
+                                    onClick={() => onViewProject(project.id)}
+                                    style={{
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        display: "flex",
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1)";
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
+                                        cursor: "pointer",
 
-                                                onTogglePin(project.id);
-                                            }}
-                                        />
+                                        padding: "8px 12px",
 
-                                        {/* CIRCLE DIV */}
+                                        borderRadius: "12px",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+                                    }}
+                                >
+                                    <>
                                         <div
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-
-                                                onToggleComplete(project.id);
-                                            }}
                                             style={{
-                                                cursor: "pointer",
-
-                                                width: "18px",
-                                                height: "18px",
-
-                                                borderRadius: "50%",
-
-                                                border:
-                                                    "1.5px solid rgba(245,245,245,0.7)",
-
-                                                background:
-                                                    project.completed
-                                                        ? "rgba(245,245,245,0.75)"
-                                                        : "transparent",
-
-                                                transition: "all 0.2s ease",
-
-                                                flexShrink: 0,
-
                                                 display: "flex",
                                                 alignItems: "center",
-                                                justifyContent: "center",
-
-                                                fontSize: "12px",
-                                                fontWeight: "600",
-
-                                                color: "#1a1d29",
+                                                gap: "10px",
                                             }}
                                         >
-                                            {project.completed && "✓"}
+                                            <Pin
+                                                size={15}
+                                                strokeWidth={1.5}
+                                                fill={
+                                                    project.pinned
+                                                        ? "currentColor"
+                                                        : "none"
+                                                }
+                                                style={{
+                                                    cursor: "pointer",
+                                                    transition: "all 0.2s ease",
+                                                    flexShrink: 0,
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "#F5F5F5";
+
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1.1)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "";
+
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1)";
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+
+                                                    onTogglePin(project.id);
+                                                }}
+                                            />
+
+                                            {/* CIRCLE DIV */}
+                                            <div
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+
+                                                    onToggleComplete(project.id);
+                                                }}
+                                                style={{
+                                                    cursor: "pointer",
+
+                                                    width: "18px",
+                                                    height: "18px",
+
+                                                    borderRadius: "50%",
+
+                                                    border:
+                                                        "1.5px solid rgba(245,245,245,0.7)",
+
+                                                    background:
+                                                        project.completed
+                                                            ? "rgba(245,245,245,0.75)"
+                                                            : "transparent",
+
+                                                    transition: "all 0.2s ease",
+
+                                                    flexShrink: 0,
+
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+
+                                                    fontSize: "12px",
+                                                    fontWeight: "600",
+
+                                                    color: "#1a1d29",
+                                                }}
+                                            >
+                                                {project.completed && "✓"}
+                                            </div>
+
+                                            <p
+                                                style={{
+                                                    fontWeight: "300",
+                                                }}
+                                            >
+                                                {project.title}
+                                            </p>
                                         </div>
 
-                                        <p
+                                        <div
                                             style={{
-                                                fontWeight: "300",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "12px",
                                             }}
                                         >
-                                            {project.title}
-                                        </p>
-                                    </div>
+                                            <Pencil
+                                                size={16}
+                                                strokeWidth={1.5}
+                                                style={{
+                                                    cursor: "pointer",
+                                                    transition:
+                                                        "all 0.2s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "#F5F5F5";
 
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <Pencil
-                                            size={16}
-                                            strokeWidth={1.5}
-                                            style={{
-                                                cursor: "pointer",
-                                                transition:
-                                                    "all 0.2s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "#F5F5F5";
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1.1)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "";
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1.1)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "";
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1)";
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1)";
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
+                                                    onEditProject(project);
+                                                }}
+                                            />
 
-                                                onEditProject(project);
-                                            }}
-                                        />
+                                            <Trash2
+                                                size={16}
+                                                strokeWidth={1.5}
+                                                style={{
+                                                    cursor: "pointer",
+                                                    transition:
+                                                        "all 0.2s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "#ff6b6b";
 
-                                        <Trash2
-                                            size={16}
-                                            strokeWidth={1.5}
-                                            style={{
-                                                cursor: "pointer",
-                                                transition:
-                                                    "all 0.2s ease",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "#ff6b6b";
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1.1)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.color =
+                                                        "";
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1.1)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.color =
-                                                    "";
+                                                    e.currentTarget.style.transform =
+                                                        "scale(1)";
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
 
-                                                e.currentTarget.style.transform =
-                                                    "scale(1)";
-                                            }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-
-                                                onDeleteProject(project.id);
-                                            }}
-                                        />
-                                    </div>
-                                </>
-                            </div>
-                        ))}
+                                                    onDeleteProject(project.id);
+                                                }}
+                                            />
+                                        </div>
+                                    </>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
 
                 <div
