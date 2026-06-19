@@ -12,6 +12,7 @@ import {
   Settings,
   NotebookPen,
   Folder,
+  Search,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -55,6 +56,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Notifications",
       path: "/notifications",
       icon: Bell,
+    },
+    {
+      label: "Search",
+      path: "/search",
+      icon: Search,
     },
   ];
 

@@ -12,6 +12,7 @@ import Settings from "./pages/Settings";
 import Reminders from "./pages/Reminders";
 import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
+import GlobalSearch from "./pages/GlobalSearch";
 
 function App() {
   return (
@@ -57,6 +58,11 @@ function App() {
         <Route
           path="/notifications"
           element={<Notifications />}
+        />
+
+        <Route
+          path="/search"
+          element={<GlobalSearch />}
         />
 
         <Route
