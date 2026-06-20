@@ -1,16 +1,3 @@
-/**
- * Main application layout.
- *
- * Used by:
- * - Dashboard
- * - Tasks
- * - Goals
- * - Calendar
- *
- * Not used by:
- * - Login
- */
-
 import Sidebar from "../components/Sidebar";
 import { useEffect, useState } from "react";
 

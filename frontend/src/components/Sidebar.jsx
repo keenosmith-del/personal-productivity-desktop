@@ -94,7 +94,7 @@ function Sidebar({ collapsed, setCollapsed }) {
 
           gap: collapsed ? "0" : "12px",
 
-          padding: "14px",
+          padding: "8px 12px",
 
           borderRadius:
             "var(--radius-small)",
@@ -156,13 +156,20 @@ function Sidebar({ collapsed, setCollapsed }) {
           }}
         >
           <Icon
-            size={20}
-            strokeWidth={1.5}
+            size={18}
+            strokeWidth={1.2}
           />
         </div>
 
         {!collapsed && (
-          <span>{item.label}</span>
+          <span
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: "300",
+            }}
+          >
+            {item.label}
+          </span>
         )}
       </NavLink>
     );
@@ -207,7 +214,6 @@ function Sidebar({ collapsed, setCollapsed }) {
           borderRadius:
             "var(--radius-large)",
 
-          // AGAIN that fucking fuzzy frosty line
           //backdropFilter: "blur(20px)",
 
           //WebkitBackdropFilter: "blur(20px)",
@@ -217,7 +223,7 @@ function Sidebar({ collapsed, setCollapsed }) {
 
           padding: collapsed
             ? "12px"
-            : "28px",
+            : "20px",
         }}
       >
         {/* Header */}
@@ -296,11 +302,11 @@ function Sidebar({ collapsed, setCollapsed }) {
 
               alignItems: "center",
 
-              gap: "16px",
+              gap: "10px",
 
-              marginBottom: "24px",
+              marginBottom: "16px",
 
-              paddingBottom: "24px",
+              paddingBottom: "16px",
 
               borderBottom:
                 "1px solid var(--glass-border)",
@@ -356,7 +362,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "8px",
+            gap: "4px",
           }}
         >
           {mainNavItems.map(
@@ -368,12 +374,12 @@ function Sidebar({ collapsed, setCollapsed }) {
 
         <div
           style={{
-            marginTop: "16px",
+            marginTop: "4px",
 
             display: "flex",
             flexDirection: "column",
 
-            gap: "8px",
+            gap: "4px",
           }}
         >
           {renderNavItem({
@@ -386,7 +392,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         <div
           style={{
             flex: 1,
-            minHeight: "24px",
+            minHeight: "18px",
           }}
         />
 
@@ -402,7 +408,7 @@ function Sidebar({ collapsed, setCollapsed }) {
             display: "flex",
             flexDirection: "column",
 
-            gap: "8px",
+            gap: "4px",
           }}
         >
           {accountNavItems.map(

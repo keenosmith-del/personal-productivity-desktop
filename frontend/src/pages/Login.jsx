@@ -1,16 +1,3 @@
-/**
- * Login Page
- *
- * Temporary version.
- *
- * Current state:
- * - User selection only
- *
- * Future:
- * - Password view
- * - Add user modal
- * - Authentication
- */
 
 import { useState } from "react";
 
