@@ -45,6 +45,7 @@ function Settings() {
         />
 
         <AccountSettings />
+        
       </div>
       {showWorkingHoursModal && (
         <WorkingHoursModal

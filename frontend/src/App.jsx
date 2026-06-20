@@ -1,3 +1,4 @@
+import ProtectedRoute from "./components/ProtectedRoute";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -13,6 +14,8 @@ import Reminders from "./pages/Reminders";
 import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
 import GlobalSearch from "./pages/GlobalSearch";
+import { Search } from "lucide-react";
+
 
 function App() {
   return (
@@ -22,62 +25,110 @@ function App() {
 
         <Route
           path="/analytics"
-          element={<Dashboard />}
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/tasks"
-          element={<Tasks />}
+          element={
+            <ProtectedRoute>
+              <Tasks />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/goals"
-          element={<Goals />}
+          element={
+            <ProtectedRoute>
+              <Goals />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/projects"
-          element={<Projects />}
+          element={
+            <ProtectedRoute>
+              <Projects />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/notes"
-          element={<Notes />}
+          element={
+            <ProtectedRoute>
+              <Notes />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/calendar"
-          element={<Calendar />}
+          element={
+            <ProtectedRoute>
+              <Calendar />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/reminders"
-          element={<Reminders />}
+          element={
+            <ProtectedRoute>
+              <Reminders />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/notifications"
-          element={<Notifications />}
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/search"
-          element={<GlobalSearch />}
+          element={
+            <ProtectedRoute>
+              <GlobalSearch />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/break"
-          element={<Break />}
+          element={
+            <ProtectedRoute>
+              <Break />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/profile"
-          element={<Profile />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/settings"
-          element={<Settings />}
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </BrowserRouter>

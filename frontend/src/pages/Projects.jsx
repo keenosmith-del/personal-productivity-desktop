@@ -7,8 +7,15 @@ import ViewProjectModal from "../components/Projects/ViewProjectModal";
 import CompletedProjectsCard from "../components/Projects/CompletedProjectsCard";
 import PinnedProjectsCard from "../components/Projects/PinnedProjectsCard";
 
-import { useState } from "react";
-import { initialProjects } from "../data/projects";
+import {
+    getProjects,
+    createProject,
+} from "../services/projectService";
+
+import {
+    useState,
+    useEffect,
+} from "react";
 
 import Toast from "../components/Toast";
 
@@ -18,7 +25,7 @@ function Projects() {
         useState(false);
 
     const [projects, setProjects] =
-        useState(initialProjects);
+        useState([]);
 
     const [selectedProjectId, setSelectedProjectId] =
         useState(null);
@@ -132,6 +139,21 @@ function Projects() {
         );
     };
 
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
+    const loadProjects = async () => {
+        try {
+            const data =
+                await getProjects();
+
+            setProjects(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <>
             <MainLayout>
@@ -206,7 +228,7 @@ function Projects() {
 
                                 handleDeleteProject(projectId);
 
-                                
+
                                 setToast("Project deleted");
 
                                 setTimeout(() => {
@@ -742,19 +764,32 @@ function Projects() {
                                 setToast("");
                             }, 3000);
                         } else {
-                            setProjects((prev) => [
-                                {
-                                    id: Date.now(),
-                                    ...projectData,
-                                },
-                                ...prev,
-                            ]);
+                            createProject(projectData)
+                                .then((newProject) => {
+                                    setProjects((prev) => [
+                                        newProject,
+                                        ...prev,
+                                    ]);
 
-                            setToast("Project created");
+                                    setToast(
+                                        "Project created"
+                                    );
 
-                            setTimeout(() => {
-                                setToast("");
-                            }, 3000);
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 3000);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+
+                                    setToast(
+                                        "Failed to create project"
+                                    );
+
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 3000);
+                                });
                         }
 
                         setShowProjectModal(false);

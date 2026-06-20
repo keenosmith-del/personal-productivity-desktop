@@ -9,10 +9,46 @@
  * - Database integration
  */
 
-import { useRef, useEffect } from "react";
+import {
+  useRef,
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  registerUser,
+  loginUser,
+} from "../../services/authService";
+
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function AddUserModal({ onClose }) {
+  const { login } = useAuth();
+
   const nameInputRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const [name, setName] =
+    useState("");
+
+  const [surname, setSurname] =
+    useState("");
+
+  const [title, setTitle] =
+    useState("");
+
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [
+    confirmPassword,
+    setConfirmPassword,
+  ] = useState("");
 
   useEffect(() => {
     nameInputRef.current?.focus();
@@ -152,41 +188,100 @@ function AddUserModal({ onClose }) {
           <input
             ref={nameInputRef}
             placeholder="Name"
+            value={name}
+            onChange={(e) =>
+              setName(e.target.value)
+            }
             style={inputStyle}
           />
 
           <input
             placeholder="Surname"
+            value={surname}
+            onChange={(e) =>
+              setSurname(e.target.value)
+            }
             style={inputStyle}
           />
         </div>
 
         <input
           placeholder="Title"
+          value={title}
+          onChange={(e) =>
+            setTitle(e.target.value)
+          }
           style={inputStyle}
         />
 
         <input
           placeholder="Email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
           style={inputStyle}
         />
 
         <input
           type="password"
           placeholder="Password"
+          value={password}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
           style={inputStyle}
         />
 
         <input
           type="password"
           placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) =>
+            setConfirmPassword(
+              e.target.value
+            )
+          }
           style={inputStyle}
         />
 
         <button
-          onClick={() =>
-            console.log("Create User")
-          }
+          onClick={async () => {
+            try {
+              if (
+                password !==
+                confirmPassword
+              ) {
+                alert(
+                  "Passwords do not match"
+                );
+
+                return;
+              }
+
+              await registerUser({
+                name: `${name} ${surname}`,
+                email,
+                password,
+                job: title,
+              });
+
+              const loginData =
+                await loginUser(
+                  email,
+                  password
+                );
+
+              login(
+                loginData.user,
+                loginData.token
+              );
+
+              navigate("/analytics");
+            } catch (error) {
+              alert(error.message);
+            }
+          }}
           style={{
             marginTop: "10px",
 

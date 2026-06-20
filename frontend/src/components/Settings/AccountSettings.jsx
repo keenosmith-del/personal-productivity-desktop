@@ -1,7 +1,14 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
 import GlassCard from "../GlassCard";
 import { ChevronRight } from "lucide-react";
 
 function AccountSettings() {
+  const navigate = useNavigate();
+
+  const { logout } =
+    useAuth();
   return (
     <GlassCard minHeight="180px">
       <h2
@@ -21,6 +28,11 @@ function AccountSettings() {
         }}
       >
         <div
+          onClick={() => {
+            logout();
+
+            navigate("/");
+          }}
           style={{
             display: "flex",
             justifyContent:

@@ -71,7 +71,7 @@ function UserSelection({
     >
       {users.map((user) => (
         <UserCard
-          key={user.id}
+          key={user._id}
           name={user.name}
           initials={user.initials}
           onClick={() => onUserSelect(user)}

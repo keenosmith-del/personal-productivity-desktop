@@ -9,8 +9,11 @@
  * - Error handling
  */
 
+import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { loginUser } from "../../services/authService";
 
 function PasswordView({
   user,
@@ -18,10 +21,33 @@ function PasswordView({
 }) {
   const [password, setPassword] = useState("");
 
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    navigate("/analytics");
+  const { login } = useAuth();
+
+  const handleSubmit = async () => {
+    try {
+      setError("");
+
+      const loginData =
+        await loginUser(
+          user.email,
+          password
+        );
+
+      login(
+        loginData.user,
+        loginData.token
+      );
+
+      navigate("/analytics");
+    } catch (error) {
+      setError(
+        "Incorrect password"
+      );
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -88,6 +114,16 @@ function PasswordView({
         >
           {user.name}
         </h2>
+        {error && (
+          <p
+            style={{
+              color: "#ff6b6b",
+              fontSize: "0.85rem",
+            }}
+          >
+            {error}
+          </p>
+        )}
 
         <div
           style={{
