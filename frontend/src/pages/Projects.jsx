@@ -10,6 +10,11 @@ import PinnedProjectsCard from "../components/Projects/PinnedProjectsCard";
 import {
     getProjects,
     createProject,
+    deleteProject,
+    updateProject,
+    clearAllProjects,
+    clearCompletedProjects,
+    unpinAllProjects,
 } from "../services/projectService";
 
 import {
@@ -37,11 +42,6 @@ function Projects() {
         useState("");
 
     const [
-        lastDeletedProject,
-        setLastDeletedProject,
-    ] = useState(null);
-
-    const [
         showClearProjects,
         setShowClearProjects,
     ] = useState(false);
@@ -59,29 +59,73 @@ function Projects() {
     const selectedProject =
         projects.find(
             (project) =>
-                project.id === selectedProjectId
+                project._id === selectedProjectId
         );
 
-    const handleTogglePin = (projectId) => {
-        setProjects((prev) =>
-            prev.map((project) =>
-                project.id === projectId
-                    ? {
-                        ...project,
-                        pinned: !project.pinned,
+    const handleTogglePin = async (
+        projectId
+    ) => {
+        try {
+            const project =
+                projects.find(
+                    (p) =>
+                        p._id === projectId
+                );
+
+            if (!project) return;
+
+            const updatedProject =
+                await updateProject(
+                    projectId,
+                    {
+                        pinned:
+                            !project.pinned,
                     }
-                    : project
-            )
-        );
+                );
+
+            setProjects((prev) =>
+                prev.map((project) =>
+                    project._id === projectId
+                        ? updatedProject
+                        : project
+                )
+            );
+        } catch (error) {
+            console.error(error);
+
+            setToast(
+                "Failed to update project"
+            );
+
+            setTimeout(() => {
+                setToast("");
+            }, 3000);
+        }
     };
 
-    const handleClearAllCompleted = () => {
-        setProjects((prev) =>
-            prev.filter(
-                (project) => !project.completed
-            )
-        );
-    };
+    const handleClearAllCompleted =
+        async () => {
+            try {
+                await clearCompletedProjects();
+
+                setProjects((prev) =>
+                    prev.filter(
+                        (project) =>
+                            !project.completed
+                    )
+                );
+            } catch (error) {
+                console.error(error);
+
+                setToast(
+                    "Failed to clear completed projects"
+                );
+
+                setTimeout(() => {
+                    setToast("");
+                }, 3000);
+            }
+        };
 
     const handleEditProject = (project) => {
         setEditingProject(project);
@@ -89,55 +133,121 @@ function Projects() {
         setShowProjectModal(true);
     };
 
-    const handleDeleteProject = (projectId) => {
-        setProjects((prev) =>
-            prev.filter(
-                (project) =>
-                    project.id !== projectId
-            )
-        );
-    };
+    const handleDeleteProject =
+        async (projectId) => {
+            try {
+                await deleteProject(
+                    projectId
+                );
 
-    const handleUnpinAllProjects = () => {
-        setProjects((prev) =>
-            prev.map((project) => ({
-                ...project,
-                pinned: false,
-            }))
-        );
-    };
+                setProjects((prev) =>
+                    prev.filter(
+                        (project) =>
+                            project._id !==
+                            projectId
+                    )
+                );
+            } catch (error) {
+                console.error(error);
 
-    const handleToggleComplete = (projectId) => {
-        setProjects((prev) =>
-            prev.map((project) =>
-                project.id === projectId
-                    ? {
+                setToast(
+                    "Failed to delete project"
+                );
+
+                setTimeout(() => {
+                    setToast("");
+                }, 3000);
+            }
+        };
+
+    const handleUnpinAllProjects =
+        async () => {
+            try {
+                await unpinAllProjects();
+
+                setProjects((prev) =>
+                    prev.map((project) => ({
                         ...project,
-                        completed: !project.completed,
+                        pinned: false,
+                    }))
+                );
+            } catch (error) {
+                console.error(error);
 
-                        completedDate: !project.completed
-                            ? new Date().toLocaleDateString(
-                                "en-GB",
-                                {
-                                    day: "numeric",
-                                    month: "short",
-                                    year: "numeric",
-                                }
-                            )
-                            : null,
+                setToast(
+                    "Failed to unpin projects"
+                );
 
-                        status: !project.completed
-                            ? "Completed"
-                            : "Active",
+                setTimeout(() => {
+                    setToast("");
+                }, 3000);
+            }
+        };
 
-                        progress: !project.completed
-                            ? 100
-                            : project.progress,
-                    }
-                    : project
-            )
-        );
-    };
+    const handleToggleComplete =
+        async (projectId) => {
+            try {
+                const project =
+                    projects.find(
+                        (p) =>
+                            p._id === projectId
+                    );
+
+                if (!project) return;
+
+                const completed =
+                    !project.completed;
+
+                const updatedProject =
+                    await updateProject(
+                        projectId,
+                        {
+                            completed,
+
+                            completedDate:
+                                completed
+                                    ? new Date().toLocaleDateString(
+                                        "en-GB",
+                                        {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric",
+                                        }
+                                    )
+                                    : null,
+
+                            status:
+                                completed
+                                    ? "Completed"
+                                    : "Active",
+
+                            progress:
+                                completed
+                                    ? 100
+                                    : project.progress,
+                        }
+                    );
+
+                setProjects((prev) =>
+                    prev.map((project) =>
+                        project._id ===
+                            projectId
+                            ? updatedProject
+                            : project
+                    )
+                );
+            } catch (error) {
+                console.error(error);
+
+                setToast(
+                    "Failed to update project"
+                );
+
+                setTimeout(() => {
+                    setToast("");
+                }, 3000);
+            }
+        };
 
     useEffect(() => {
         loadProjects();
@@ -179,9 +289,6 @@ function Projects() {
                         // onClearAll={handleClearAllProjects}
                         onViewProject={setSelectedProjectId}
                         setToast={setToast}
-                        setLastDeletedProject={
-                            setLastDeletedProject
-                        }
                         onClearAll={() =>
                             setShowClearProjects(true)
                         }
@@ -197,7 +304,6 @@ function Projects() {
                         onViewProject={setSelectedProjectId}
 
                         setToast={setToast}
-                        setLastDeletedProject={setLastDeletedProject}
                     />
 
                     <PinnedProjectsCard
@@ -215,19 +321,16 @@ function Projects() {
 
                     {projects.map((project) => (
                         <ProjectCard
-                            key={project.id}
+                            key={project._id}
                             project={project}
                             onView={() =>
-                                setSelectedProjectId(project.id)
+                                setSelectedProjectId(project._id)
                             }
                             onTogglePin={handleTogglePin}
                             onToggleComplete={handleToggleComplete}
                             onEditProject={handleEditProject}
                             onDeleteProject={(projectId) => {
-                                setLastDeletedProject(project);
-
                                 handleDeleteProject(projectId);
-
 
                                 setToast("Project deleted");
 
@@ -249,6 +352,15 @@ function Projects() {
                             onTogglePin={handleTogglePin}
                             onToggleComplete={handleToggleComplete}
                             onEditProject={handleEditProject}
+                            onDeleteProject={(projectId) => {
+                                handleDeleteProject(projectId);
+
+                                setToast("Project deleted");
+
+                                setTimeout(() => {
+                                    setToast("");
+                                }, 4000);
+                            }}
                         />
                     )}
                 </div>
@@ -353,18 +465,34 @@ function Projects() {
                                 </button>
 
                                 <button
-                                    onClick={() => {
-                                        setProjects([]);
+                                    onClick={async () => {
+                                        try {
+                                            await clearAllProjects();
 
-                                        setLastDeletedProject(null);
+                                            setProjects([]);
 
-                                        setToast("Projects cleared");
+                                            setToast(
+                                                "Projects cleared"
+                                            );
 
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 3000);
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
 
-                                        setShowClearProjects(false);
+                                            setShowClearProjects(
+                                                false
+                                            );
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            setToast(
+                                                "Failed to clear projects"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
 
                                     style={{
@@ -508,16 +636,20 @@ function Projects() {
                                 </button>
 
                                 <button
-                                    onClick={() => {
-                                        handleClearAllCompleted();
+                                    onClick={async () => {
+                                        await handleClearAllCompleted();
 
-                                        setToast("Completed projects cleared");
+                                        setToast(
+                                            "Completed projects cleared"
+                                        );
 
                                         setTimeout(() => {
                                             setToast("");
                                         }, 3000);
 
-                                        setShowClearCompletedProjects(false);
+                                        setShowClearCompletedProjects(
+                                            false
+                                        );
                                     }}
 
                                     style={{
@@ -657,16 +789,20 @@ function Projects() {
                                 </button>
 
                                 <button
-                                    onClick={() => {
-                                        handleUnpinAllProjects();
+                                    onClick={async () => {
+                                        await handleUnpinAllProjects();
 
-                                        setToast("Projects unpinned");
+                                        setToast(
+                                            "Projects unpinned"
+                                        );
 
                                         setTimeout(() => {
                                             setToast("");
                                         }, 3000);
 
-                                        setShowUnpinProjects(false);
+                                        setShowUnpinProjects(
+                                            false
+                                        );
                                     }}
 
                                     style={{
@@ -711,24 +847,6 @@ function Projects() {
                 )}
                 <Toast
                     message={toast}
-                    actionLabel={
-                        lastDeletedProject
-                            ? "Undo"
-                            : null
-                    }
-                    onAction={() => {
-                        if (!lastDeletedProject)
-                            return;
-
-                        setProjects((prev) => [
-                            lastDeletedProject,
-                            ...prev,
-                        ]);
-
-                        setLastDeletedProject(null);
-
-                        setToast("");
-                    }}
                 />
             </MainLayout>
             {showProjectModal && (
@@ -746,23 +864,39 @@ function Projects() {
                     }}
                     onSave={(projectData) => {
                         if (editingProject) {
-                            setProjects((prev) =>
-                                prev.map((project) =>
-                                    project.id ===
-                                        editingProject.id
-                                        ? {
-                                            ...project,
-                                            ...projectData,
-                                        }
-                                        : project
-                                )
-                            );
+                            updateProject(
+                                editingProject._id,
+                                projectData
+                            )
+                                .then((updatedProject) => {
+                                    setProjects((prev) =>
+                                        prev.map((project) =>
+                                            project._id ===
+                                                editingProject._id
+                                                ? updatedProject
+                                                : project
+                                        )
+                                    );
 
-                            setToast("Project updated");
+                                    setToast(
+                                        "Project updated"
+                                    );
 
-                            setTimeout(() => {
-                                setToast("");
-                            }, 3000);
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 3000);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+
+                                    setToast(
+                                        "Failed to update project"
+                                    );
+
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 3000);
+                                });
                         } else {
                             createProject(projectData)
                                 .then((newProject) => {

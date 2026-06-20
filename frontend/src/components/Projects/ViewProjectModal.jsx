@@ -8,6 +8,7 @@ function ViewProjectModal({
     onTogglePin,
     onToggleComplete,
     onEditProject,
+    onDeleteProject,
 }) {
     if (!project) return null;
 
@@ -99,7 +100,7 @@ function ViewProjectModal({
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                onTogglePin(project.id);
+                                onTogglePin(project._id);
                             }}
                         />
 
@@ -137,7 +138,7 @@ function ViewProjectModal({
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                onToggleComplete(project.id);
+                                onToggleComplete(project._id);
                             }}
                         >
                             {project.completed && "✓"}
@@ -254,7 +255,52 @@ function ViewProjectModal({
                             <span>{project.dueDate}</span>
 
                             {!project.completed && (
-                                <span>
+                                <span
+                                    style={{
+                                        padding: "4px 10px",
+                                        borderRadius: "999px",
+                                        fontSize: "0.72rem",
+
+                                        background:
+                                            project.status === "Active"
+                                                ? "#52677d33"
+                                                : project.status === "Completed"
+                                                    ? "#72715c33"
+                                                    : project.status === "Paused"
+                                                        ? "#83545c33"
+                                                        : project.status === "Archived"
+                                                            ? "#854c4933"
+                                                            : project.status === "In Progress"
+                                                                ? "#e9b95733"
+                                                                : "#ab313033",
+
+                                        border:
+                                            project.status === "Active"
+                                                ? "1px solid #52677d66"
+                                                : project.status === "Completed"
+                                                    ? "1px solid #72715c66"
+                                                    : project.status === "Paused"
+                                                        ? "1px solid #83545c66"
+                                                        : project.status === "Archived"
+                                                            ? "1px solid #854c4966"
+                                                            : project.status === "In Progress"
+                                                                ? "1px solid #e9b95766"
+                                                                : "1px solid #ab313066",
+
+                                        color:
+                                            project.status === "Active"
+                                                ? "#52677d"
+                                                : project.status === "Completed"
+                                                    ? "#72715c"
+                                                    : project.status === "Paused"
+                                                        ? "#83545c"
+                                                        : project.status === "Archived"
+                                                            ? "#854c49"
+                                                            : project.status === "In Progress"
+                                                                ? "#e9b957"
+                                                                : "#ab3130",
+                                    }}
+                                >
                                     {project.status}
                                 </span>
                             )}
@@ -432,6 +478,11 @@ function ViewProjectModal({
                     }}
                 >
                     <button
+                        onClick={() => {
+                            onDeleteProject(project._id);
+
+                            onClose();
+                        }}
                         style={{
                             background:
                                 "transparent",
@@ -472,7 +523,7 @@ function ViewProjectModal({
                     <button
                         onClick={() => {
                             if (project.completed) {
-                                onToggleComplete(project.id);
+                                onToggleComplete(project._id);
                             } else {
                                 onEditProject(project);
                             }

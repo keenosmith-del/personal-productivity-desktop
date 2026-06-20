@@ -17,7 +17,6 @@ function CompletedProjectsCard({
     onViewProject,
 
     setToast,
-    setLastDeletedProject,
 }) {
     const completedProjects =
         projects.filter(
@@ -163,8 +162,8 @@ function CompletedProjectsCard({
 
                             {completedProjects.map((project) => (
                                 <div
-                                    key={project.id}
-                                    onClick={() => onViewProject(project.id)}
+                                    key={project._id}
+                                    onClick={() => onViewProject(project._id)}
                                     style={{
                                         display: "flex",
 
@@ -203,10 +202,10 @@ function CompletedProjectsCard({
                                             onClick={(e) => {
                                                 e.stopPropagation();
 
-                                                onToggleComplete(project.id);
+                                                onToggleComplete(project._id);
                                             }}
                                             onMouseEnter={() =>
-                                                setHoveredProject(project.id)
+                                                setHoveredProject(project._id)
                                             }
                                             onMouseLeave={() =>
                                                 setHoveredProject(null)
@@ -220,12 +219,12 @@ function CompletedProjectsCard({
                                                 borderRadius: "50%",
 
                                                 background:
-                                                    hoveredProject === project.id
+                                                    hoveredProject === project._id
                                                         ? "rgba(245,245,245,0.75)"
                                                         : "rgba(245,245,245,0.45)",
 
                                                 border:
-                                                    hoveredProject === project.id
+                                                    hoveredProject === project._id
                                                         ? "1.5px solid rgba(245,245,245,0.75)"
                                                         : "1.5px solid rgba(245,245,245,0.45)",
 
@@ -243,7 +242,7 @@ function CompletedProjectsCard({
                                                 color: "#1a1d29",
                                             }}
                                         >
-                                            {hoveredProject === project.id ? (
+                                            {hoveredProject === project._id ? (
                                                 <RotateCcw
                                                     size={10}
                                                     strokeWidth={2}
@@ -317,9 +316,7 @@ function CompletedProjectsCard({
                                         onClick={(e) => {
                                             e.stopPropagation();
 
-                                            setLastDeletedProject(project);
-
-                                            onDeleteProject(project.id);
+                                            onDeleteProject(project._id);
 
                                             setToast("Project deleted");
 

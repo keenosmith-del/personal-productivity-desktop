@@ -44,6 +44,51 @@ const projectSchema =
                 default: 0,
             },
 
+            description: {
+                type: String,
+                default: "",
+            },
+
+            selectedTasks: {
+                type: [String],
+                default: [],
+            },
+
+            selectedGoals: {
+                type: [String],
+                default: [],
+            },
+
+            selectedNotes: {
+                type: [String],
+                default: [],
+            },
+
+            selectedReminders: {
+                type: [String],
+                default: [],
+            },
+
+            tasks: {
+                type: Number,
+                default: 0,
+            },
+
+            goals: {
+                type: Number,
+                default: 0,
+            },
+
+            notes: {
+                type: Number,
+                default: 0,
+            },
+
+            reminders: {
+                type: Number,
+                default: 0,
+            },
+
             pinned: {
                 type: Boolean,
                 default: false,

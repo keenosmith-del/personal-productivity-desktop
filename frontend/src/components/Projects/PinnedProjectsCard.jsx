@@ -141,8 +141,8 @@ function PinnedProjectsCard({
                             {/* ROWS */}
                             {pinnedProjects.map((project) => (
                                 <div
-                                    key={project.id}
-                                    onClick={() => onViewProject(project.id)}
+                                    key={project._id}
+                                    onClick={() => onViewProject(project._id)}
                                     style={{
                                         justifyContent: "space-between",
                                         alignItems: "center",
@@ -203,7 +203,7 @@ function PinnedProjectsCard({
                                                 onClick={(e) => {
                                                     e.stopPropagation();
 
-                                                    onTogglePin(project.id);
+                                                    onTogglePin(project._id);
                                                 }}
                                             />
 
@@ -212,7 +212,7 @@ function PinnedProjectsCard({
                                                 onClick={(e) => {
                                                     e.stopPropagation();
 
-                                                    onToggleComplete(project.id);
+                                                    onToggleComplete(project._id);
                                                 }}
                                                 style={{
                                                     cursor: "pointer",
@@ -317,7 +317,7 @@ function PinnedProjectsCard({
                                                 onClick={(e) => {
                                                     e.stopPropagation();
 
-                                                    onDeleteProject(project.id);
+                                                    onDeleteProject(project._id);
                                                 }}
                                             />
                                         </div>

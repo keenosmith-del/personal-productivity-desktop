@@ -85,6 +85,75 @@ router.put(
 );
 
 router.delete(
+    "/all",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Project.deleteMany({
+                user: req.user.id,
+            });
+
+            res.json({
+                message:
+                    "All projects deleted",
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.delete(
+    "/completed",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Project.deleteMany({
+                user: req.user.id,
+                completed: true,
+            });
+
+            res.json({
+                message:
+                    "Completed projects deleted",
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.put(
+    "/unpin-all",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Project.updateMany(
+                {
+                    user: req.user.id,
+                },
+                {
+                    pinned: false,
+                }
+            );
+
+            res.json({
+                message:
+                    "Projects unpinned",
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.delete(
     "/:id",
     authMiddleware,
     async (req, res) => {

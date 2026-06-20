@@ -91,7 +91,7 @@ function ProjectCard({
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                onTogglePin(project.id);
+                                onTogglePin(project._id);
                             }}
                         />
 
@@ -100,7 +100,7 @@ function ProjectCard({
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                onToggleComplete(project.id);
+                                onToggleComplete(project._id);
                             }}
                             style={{
                                 cursor: "pointer",
@@ -204,7 +204,7 @@ function ProjectCard({
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                onDeleteProject(project.id);
+                                onDeleteProject(project._id);
                             }}
                         />
                     </div>
