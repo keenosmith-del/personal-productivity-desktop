@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
+import reminderRoutes from "./routes/reminderRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,11 @@ app.use(
 app.use(
     "/api/goals",
     goalRoutes
+);
+
+app.use(
+    "/api/reminders",
+    reminderRoutes
 );
 
 app.get("/", (req, res) => {

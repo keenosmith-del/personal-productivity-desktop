@@ -20,15 +20,6 @@ function ReminderModal({
     const [category, setCategory] =
         useState("None");
 
-    const [priority, setPriority] =
-        useState("None");
-
-    const [linkedType, setLinkedType] =
-        useState("None");
-
-    const [linkedName, setLinkedName] =
-        useState("");
-
     const [showCalendar, setShowCalendar] =
         useState(false);
 
@@ -65,14 +56,13 @@ function ReminderModal({
 
         if (mode === "edit" && reminder) {
             setTitle(reminder.title || "");
-            setNotes(reminder.notes || "");
-            setCategory(reminder.category || "None");
-            setPriority(reminder.priority || "None");
-            setLinkedType(
-                reminder.linkedType || "None"
+            setNotes(
+                reminder.description || ""
             );
+            setCategory(reminder.category || "None");
             setSelectedDate(
-                reminder.date || "Choose a date"
+                reminder.reminderDate ||
+                "Choose a date"
             );
         }
     }, [mode, reminder]);
@@ -346,194 +336,6 @@ function ReminderModal({
                     </div>
                 </div>
 
-                <div>
-                    <p
-                        style={{
-                            marginBottom: "10px",
-                            color: "var(--text-secondary)",
-                            fontSize: "0.85rem",
-                            fontWeight: "400",
-                        }}
-                    >
-                        Priority
-                    </p>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {[
-                            {
-                                name: "None",
-                                color: "#588157",
-                            },
-                            {
-                                name: "Low",
-                                color: "#ffdb58",
-                            },
-                            {
-                                name: "Medium",
-                                color: "#62929e",
-                            },
-                            {
-                                name: "High",
-                                color: "#ab3130",
-                            },
-                        ].map((item) => (
-                            <button
-                                key={item.name}
-                                onClick={() =>
-                                    setPriority(item.name)
-                                }
-                                style={{
-                                    padding: "6px 12px",
-
-                                    borderRadius: "999px",
-
-                                    fontSize: "0.75rem",
-
-                                    cursor: "pointer",
-
-                                    transition:
-                                        "all 0.2s ease",
-
-                                    background:
-                                        priority === item.name
-                                            ? `${item.color}33`
-                                            : "transparent",
-
-                                    border:
-                                        priority === item.name
-                                            ? `1px solid ${item.color}66`
-                                            : "1px solid rgba(255,255,255,0.08)",
-
-                                    color:
-                                        priority === item.name
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (
-                                        priority !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (
-                                        priority !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "transparent";
-                                    }
-                                }}
-                            >
-                                {item.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <p
-                        style={{
-                            marginBottom: "10px",
-                            color: "var(--text-secondary)",
-                            fontSize: "0.85rem",
-                            fontWeight: "400",
-                        }}
-                    >
-                        Linked To
-                    </p>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {[
-                            {
-                                name: "None",
-                                color: "#588157",
-                            },
-                            {
-                                name: "Goal",
-                                color: "#c59c70",
-                            },
-                            {
-                                name: "Task",
-                                color: "#72715c",
-                            },
-                            {
-                                name: "Project",
-                                color: "#854c49",
-                            },
-                        ].map((item) => (
-                            <button
-                                key={item.name}
-                                onClick={() => {
-                                    setLinkedType(item.name);
-
-                                    if (item.name === "None") {
-                                        setLinkedName("");
-                                    }
-                                }}
-                                style={{
-                                    padding: "6px 12px",
-
-                                    borderRadius: "999px",
-
-                                    fontSize: "0.75rem",
-
-                                    cursor: "pointer",
-
-                                    transition:
-                                        "all 0.2s ease",
-
-                                    background:
-                                        linkedType === item.name
-                                            ? `${item.color}33`
-                                            : "transparent",
-
-                                    border:
-                                        linkedType === item.name
-                                            ? `1px solid ${item.color}66`
-                                            : "1px solid rgba(255,255,255,0.08)",
-
-                                    color:
-                                        linkedType === item.name
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (
-                                        linkedType !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (
-                                        linkedType !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "transparent";
-                                    }
-                                }}
-                            >
-                                {item.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 <div
                     onClick={() =>
                         setShowCalendar(
@@ -793,39 +595,30 @@ function ReminderModal({
                     <button
                         onClick={() => {
                             onSave({
-                                id:
-                                    mode === "edit"
-                                        ? reminder.id
-                                        : Date.now(),
-
                                 title,
-                                notes,
+
+                                description: notes,
 
                                 category:
                                     category === "None"
-                                        ? null
+                                        ? ""
                                         : category,
 
-                                priority:
-                                    priority === "None"
-                                        ? null
-                                        : priority,
-
-                                date:
+                                reminderDate:
                                     selectedDate ===
                                         "Choose a date"
-                                        ? null
+                                        ? new Date().toLocaleDateString()
                                         : selectedDate,
-
-                                linkedType:
-                                    linkedType === "None"
-                                        ? null
-                                        : linkedType,
 
                                 completed:
                                     mode === "edit"
                                         ? reminder.completed
                                         : false,
+
+                                completedDate:
+                                    mode === "edit"
+                                        ? reminder.completedDate
+                                        : null,
                             });
                         }}
                         style={{

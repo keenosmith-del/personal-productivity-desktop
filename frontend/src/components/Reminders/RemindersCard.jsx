@@ -1,9 +1,15 @@
 import { useState } from "react";
 import GlassCard from "../GlassCard";
+
 import {
     Pencil,
     Trash2,
 } from "lucide-react";
+
+import {
+    updateReminder,
+    deleteReminder,
+} from "../../services/reminderService";
 
 function RemindersCard({
     reminders,
@@ -14,9 +20,6 @@ function RemindersCard({
     onClearAll,
     toast,
     setToast,
-    setLastCompletedReminder,
-    setLastDeletedReminder,
-    completionTimeout,
     setCompletionTimeout,
 }) {
     return (
@@ -153,7 +156,7 @@ function RemindersCard({
 
                     return (
                         <div
-                            key={reminder.title}
+                            key={reminder._id}
                             onClick={() =>
                                 onViewReminder(reminder)
                             }
@@ -187,43 +190,49 @@ function RemindersCard({
                                 }}
                             >
                                 <div
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        setReminders((prev) =>
-                                            prev.map((r) =>
-                                                r.id === reminder.id
-                                                    ? {
-                                                        ...r,
-                                                        pendingCompletion: true,
+                                        try {
+                                            const updatedReminder =
+                                                await updateReminder(
+                                                    reminder._id,
+                                                    {
+                                                        completed:
+                                                            !reminder.completed,
                                                     }
-                                                    : r
-                                            )
-                                        );
+                                                );
 
-                                        setToast(
-                                            reminder.completed
-                                                ? "Reminder restored"
-                                                : "Reminder completed"
-                                        );
-
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 3000);
-
-                                        setTimeout(() => {
                                             setReminders((prev) =>
                                                 prev.map((r) =>
-                                                    r.id === reminder.id
-                                                        ? {
-                                                            ...r,
-                                                            completed: !r.completed,
-                                                            pendingCompletion: false,
-                                                        }
+                                                    r._id ===
+                                                        updatedReminder._id
+                                                        ? updatedReminder
                                                         : r
                                                 )
                                             );
-                                        }, 350);
+
+                                            setToast(
+                                                reminder.completed
+                                                    ? "Reminder restored"
+                                                    : "Reminder completed"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            setToast(
+                                                "Failed to update reminder"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
                                     style={{
                                         cursor: "pointer",
@@ -322,49 +331,7 @@ function RemindersCard({
                                             </span>
                                         )}
 
-                                        {reminder.priority && (
-                                            <span
-                                                style={{
-                                                    padding: "3px 8px",
-                                                    borderRadius: "999px",
-                                                    fontSize: "0.68rem",
-
-                                                    background:
-                                                        reminder.priority === "High"
-                                                            ? "#ab313033"
-                                                            : reminder.priority === "Medium"
-                                                                ? "#62929e33"
-                                                                : "#ffdb5833",
-
-                                                    border:
-                                                        reminder.priority === "High"
-                                                            ? "1px solid #ab313066"
-                                                            : reminder.priority === "Medium"
-                                                                ? "1px solid #62929e66"
-                                                                : "1px solid #ffdb5866",
-                                                }}
-                                            >
-                                                {reminder.priority}
-                                            </span>
-                                        )}
-                                        {reminder.linkedType && (
-                                            <span
-                                                style={{
-                                                    padding: "3px 8px",
-
-                                                    borderRadius: "999px",
-
-                                                    fontSize: "0.68rem",
-
-                                                    background: "#4d689333",
-
-                                                    border: "1px solid #4d689366",
-                                                }}
-                                            >
-                                                {reminder.linkedType}
-                                            </span>
-                                        )}
-                                        {reminder.date && (
+                                        {reminder.reminderDate && (
                                             <span
                                                 style={{
                                                     padding: "3px 8px",
@@ -379,9 +346,24 @@ function RemindersCard({
                                                         "1px solid #4d689366",
                                                 }}
                                             >
-                                                {reminder.date}
+                                                {reminder.reminderDate}
                                             </span>
                                         )}
+                                    </div>
+                                    
+                                    {/* created at date */}
+                                    <div
+                                        style={{
+                                            fontSize: "0.68rem",
+                                            color: "var(--text-secondary)",
+                                            marginTop: "6px",
+                                            opacity: 0.75,
+                                        }}
+                                    >
+                                        Created{" "}
+                                        {new Date(
+                                            reminder.createdAt
+                                        ).toLocaleDateString()}
                                     </div>
                                 </div>
 
@@ -442,22 +424,40 @@ function RemindersCard({
                                         e.currentTarget.style.transform =
                                             "scale(1)";
                                     }}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        setLastDeletedReminder(reminder);
+                                        try {
+                                            await deleteReminder(
+                                                reminder._id
+                                            );
 
-                                        setReminders((prev) =>
-                                            prev.filter(
-                                                (r) => r.id !== reminder.id
-                                            )
-                                        );
+                                            setReminders((prev) =>
+                                                prev.filter(
+                                                    (r) =>
+                                                        r._id !== reminder._id
+                                                )
+                                            );
 
-                                        setToast("Reminder deleted");
+                                            setToast(
+                                                "Reminder deleted"
+                                            );
 
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 4000);
+
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            setToast(
+                                                "Failed to delete reminder"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
                                 />
                             </div>

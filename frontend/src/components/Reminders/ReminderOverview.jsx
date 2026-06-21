@@ -235,7 +235,7 @@ function ReminderOverview({
                             recentReminders.map(
                                 (reminder) => (
                                     <div
-                                        key={reminder.id}
+                                        key={reminder._id}
                                     >
                                         <div
                                             style={{
@@ -247,22 +247,6 @@ function ReminderOverview({
                                                     "6px",
                                             }}
                                         >
-                                            <span
-                                                style={{
-                                                    padding:
-                                                        "3px 8px",
-                                                    borderRadius:
-                                                        "999px",
-                                                    fontSize:
-                                                        "0.68rem",
-                                                    background:
-                                                        "#83545c33",
-                                                    border:
-                                                        "1px solid #83545c66",
-                                                }}
-                                            >
-                                                Reminder
-                                            </span>
 
                                             {reminder.category && (
                                                 <span

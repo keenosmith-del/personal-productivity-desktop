@@ -108,22 +108,6 @@ function ReminderDetailsModal({
                                 flexWrap: "wrap",
                             }}
                         >
-                            <span
-                                style={{
-                                    padding: "4px 8px",
-
-                                    borderRadius: "999px",
-
-                                    fontSize: "0.68rem",
-
-                                    background: "#83545c33",
-
-                                    border:
-                                        "1px solid #83545c66",
-                                }}
-                            >
-                                Reminder
-                            </span>
 
                             {reminder.category &&
                                 reminder.category !== "None" && (
@@ -155,33 +139,6 @@ function ReminderDetailsModal({
                                         }}
                                     >
                                         {reminder.category}
-                                    </span>
-                                )}
-
-                            {reminder.priority &&
-                                reminder.priority !== "None" && (
-                                    <span
-                                        style={{
-                                            padding: "4px 8px",
-                                            borderRadius: "999px",
-                                            fontSize: "0.68rem",
-
-                                            background:
-                                                reminder.priority === "High"
-                                                    ? "#ab313033"
-                                                    : reminder.priority === "Medium"
-                                                        ? "#62929e33"
-                                                        : "#ffdb5833",
-
-                                            border:
-                                                reminder.priority === "High"
-                                                    ? "1px solid #ab313066"
-                                                    : reminder.priority === "Medium"
-                                                        ? "1px solid #62929e66"
-                                                        : "1px solid #ffdb5866",
-                                        }}
-                                    >
-                                        {reminder.priority}
                                     </span>
                                 )}
 
@@ -233,10 +190,10 @@ function ReminderDetailsModal({
                                 marginBottom: "6px",
                             }}
                         >
-                            Date
+                            Due
                         </p>
 
-                        <p>{reminder.date}</p>
+                        <p>{reminder.reminderDate}</p>
                     </div>
 
                     <div>
@@ -248,43 +205,10 @@ function ReminderDetailsModal({
                                 marginBottom: "6px",
                             }}
                         >
-                            Linked To
+                            Created
                         </p>
 
-                        {reminder.linkedType ? (
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "8px",
-                                    alignItems: "center",
-                                    flexWrap: "wrap",
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
-
-                                        borderRadius: "999px",
-
-                                        fontSize: "0.68rem",
-
-                                        background: "#4d689333",
-
-                                        border: "1px solid #4d689366",
-                                    }}
-                                >
-                                    {reminder.linkedType}
-                                </span>
-
-                                <span>
-                                    {reminder.linkedName}
-                                </span>
-                            </div>
-                        ) : (
-                            <p>
-                                Not linked to anything.
-                            </p>
-                        )}
+                        <p>{new Date(reminder.createdAt).toLocaleDateString()}</p>
                     </div>
                 </div>
             </div>

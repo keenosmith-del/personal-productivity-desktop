@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import MainLayout from "../layouts/MainLayout";
 
-import { initialReminders } from "../data/reminders";
+import {
+  getReminders,
+  createReminder,
+  updateReminder,
+  deleteReminder,
+  clearAllReminders,
+} from "../services/reminderService";
 
 import RemindersCard from "../components/Reminders/RemindersCard";
 import ReminderModal from "../components/Reminders/ReminderModal";
@@ -14,6 +20,9 @@ import Toast from "../components/Toast";
 
 function Reminders() {
   // COMPONENT STATES
+  const [reminders, setReminders] =
+    useState([]);
+
   const [showReminderModal,
     setShowReminderModal] =
     useState(false);
@@ -26,15 +35,8 @@ function Reminders() {
     setEditingReminder] =
     useState(null);
 
-  const [reminders, setReminders] =
-    useState(initialReminders);
-
   const [toast, setToast] =
     useState("");
-
-  const [lastDeletedReminder,
-    setLastDeletedReminder] =
-    useState(null);
 
   const [completionTimeout,
     setCompletionTimeout] =
@@ -45,6 +47,20 @@ function Reminders() {
     useState(false);
 
   // FUNCTIONS
+  const loadReminders = async () => {
+    try {
+      const data =
+        await getReminders();
+
+      setReminders(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadReminders();
+  }, []);
   return (
     <MainLayout>
       <div
@@ -79,9 +95,6 @@ function Reminders() {
             onEditReminder={
               setEditingReminder
             }
-            setLastDeletedReminder={
-              setLastDeletedReminder
-            }
 
             completionTimeout={completionTimeout}
             setCompletionTimeout={setCompletionTimeout}
@@ -101,19 +114,37 @@ function Reminders() {
           onClose={() =>
             setShowReminderModal(false)
           }
-          onSave={(newReminder) => {
-            setReminders((prev) => [
-              newReminder,
-              ...prev,
-            ]);
+          onSave={(reminderData) => {
+            createReminder(reminderData)
+              .then((newReminder) => {
+                setReminders((prev) => [
+                  newReminder,
+                  ...prev,
+                ]);
 
-            setToast("Reminder created");
+                setToast(
+                  "Reminder created"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setShowReminderModal(false);
+                setShowReminderModal(
+                  false
+                );
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to create reminder"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -132,24 +163,44 @@ function Reminders() {
           onClose={() =>
             setEditingReminder(null)
           }
-          onSave={(updatedReminder) => {
-            setReminders((prev) =>
-              prev.map((reminder) =>
-                reminder.id === updatedReminder.id
-                  ? updatedReminder
-                  : reminder
-              )
-            );
+          onSave={(reminderData) => {
+            updateReminder(
+              editingReminder._id,
+              reminderData
+            )
+              .then((updatedReminder) => {
+                setReminders((prev) =>
+                  prev.map((reminder) =>
+                    reminder._id ===
+                      updatedReminder._id
+                      ? updatedReminder
+                      : reminder
+                  )
+                );
 
-            setToast(
-              "Reminder updated"
-            );
+                setToast(
+                  "Reminder updated"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setEditingReminder(null);
+                setEditingReminder(
+                  null
+                );
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to update reminder"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -254,22 +305,32 @@ function Reminders() {
               </button>
 
               <button
-                onClick={() => {
-                  setReminders([]);
+                onClick={async () => {
+                  try {
+                    await clearAllReminders();
 
-                  setLastDeletedReminder(
-                    null
-                  );
+                    setReminders([]);
 
-                  setToast("Reminders cleared");
+                    setToast(
+                      "Reminders cleared"
+                    );
 
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
+                    setTimeout(() => {
+                      setToast("");
+                    }, 3000);
 
-                  setShowClear(
-                    false
-                  );
+                    setShowClear(false);
+                  } catch (error) {
+                    console.error(error);
+
+                    setToast(
+                      "Failed to clear reminders"
+                    );
+
+                    setTimeout(() => {
+                      setToast("");
+                    }, 3000);
+                  }
                 }}
 
                 style={{
@@ -314,24 +375,6 @@ function Reminders() {
       )}
       <Toast
         message={toast}
-        actionLabel={
-          lastDeletedReminder
-            ? "Undo"
-            : null
-        }
-        onAction={() => {
-          if (!lastDeletedReminder)
-            return;
-
-          setReminders((prev) => [
-            lastDeletedReminder,
-            ...prev,
-          ]);
-
-          setLastDeletedReminder(null);
-
-          setToast("");
-        }}
       />
     </MainLayout>
   );
