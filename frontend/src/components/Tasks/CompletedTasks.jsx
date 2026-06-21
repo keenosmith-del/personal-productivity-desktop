@@ -9,8 +9,8 @@ function CompletedTasks({
     setTasks,
     onClearAll,
     setToast,
-    setLastDeletedTask,
-    setLastCompletedTask,
+    onRestoreTask,
+    onDeleteTask,
 }) {
     const [hoveredTask,
         setHoveredTask] =
@@ -174,33 +174,16 @@ function CompletedTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        setLastCompletedTask(
-                                            null
-                                        );
+                                        onRestoreTask(task);
 
-                                        setTasks((prev) =>
-                                            prev.map((t) =>
-                                                t.id === task.id
-                                                    ? {
-                                                        ...t,
-                                                        completed: false,
-                                                        completedDate: null,
-                                                        status: "Active",
-                                                    }
-                                                    : t
-                                            )
-                                        );
-
-                                        setToast(
-                                            "Task restored"
-                                        );
+                                        setToast("Task restored");
 
                                         setTimeout(() => {
                                             setToast("");
                                         }, 3000);
                                     }}
                                     onMouseEnter={() =>
-                                        setHoveredTask(task.id)
+                                        setHoveredTask(task._id)
                                     }
                                     onMouseLeave={() =>
                                         setHoveredTask(null)
@@ -214,12 +197,12 @@ function CompletedTasks({
                                         borderRadius: "50%",
 
                                         background:
-                                            hoveredTask === task.id
+                                            hoveredTask === task._id
                                                 ? "rgba(245,245,245,0.75)"
                                                 : "rgba(245,245,245,0.45)",
 
                                         border:
-                                            hoveredTask === task.id
+                                            hoveredTask === task._id
                                                 ? "1.5px solid rgba(245,245,245,0.75)"
                                                 : "1.5px solid rgba(245,245,245,0.45)",
 
@@ -235,7 +218,7 @@ function CompletedTasks({
                                         color: "#1a1d29",
                                     }}
                                 >
-                                    {hoveredTask === task.id ? (
+                                    {hoveredTask === task._id ? (
                                         <RotateCcw
                                             size={10}
                                             strokeWidth={2}
@@ -330,16 +313,7 @@ function CompletedTasks({
                                 onClick={(e) => {
                                     e.stopPropagation();
 
-                                    setLastDeletedTask({
-                                        ...task,
-                                        restoreToCompleted: true,
-                                    });
-
-                                    setTasks((prev) =>
-                                        prev.filter(
-                                            (t) => t.id !== task.id
-                                        )
-                                    );
+                                    onDeleteTask(task._id);
 
                                     setToast(
                                         "Task deleted"

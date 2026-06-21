@@ -1,6 +1,9 @@
 import MainLayout from "../layouts/MainLayout";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 
 import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
 import GoalModal from "../components/Goals/GoalModal";
@@ -8,8 +11,11 @@ import GoalOverview from "../components/Goals/GoalOverview";
 import ActiveGoals from "../components/Goals/ActiveGoals";
 import CompletedGoals from "../components/Goals/CompletedGoals";
 
-import { initialGoals } from "../data/goals";
 import Toast from "../components/Toast";
+
+import {
+  getGoals,
+} from "../services/goalService";
 
 function Goals() {
   // COMPONENT STATES
@@ -23,7 +29,7 @@ function Goals() {
     useState(null);
 
   const [goals, setGoals] =
-    useState(initialGoals);
+    useState([]);
 
   const [toast, setToast] =
     useState("");
@@ -53,6 +59,21 @@ function Goals() {
     useState(false);
 
   // FUNCTIONS
+  const loadGoals = async () => {
+    try {
+      const data =
+        await getGoals();
+
+      setGoals(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadGoals();
+  }, []);
+  
   return (
     <MainLayout>
       <div

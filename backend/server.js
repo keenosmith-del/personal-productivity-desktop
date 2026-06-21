@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +25,16 @@ app.use(
 app.use(
     "/api/projects",
     projectRoutes
+);
+
+app.use(
+    "/api/tasks",
+    taskRoutes
+);
+
+app.use(
+    "/api/goals",
+    goalRoutes
 );
 
 app.get("/", (req, res) => {

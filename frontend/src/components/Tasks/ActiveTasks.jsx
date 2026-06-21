@@ -1,5 +1,4 @@
 import GlassCard from "../GlassCard";
-import TaskDetailsModal from "./TaskDetailsModal";
 
 import {
     Pencil,
@@ -17,10 +16,8 @@ function ActiveTasks({
     onClearAll,
     toast,
     setToast,
-    setLastCompletedTask,
-    setLastDeletedTask,
-    completionTimeout,
-    setCompletionTimeout,
+    onDeleteTask,
+    onCompleteTask,
 }) {
     // COMPONENT STATES
     const activeTasks =
@@ -105,7 +102,7 @@ function ActiveTasks({
                             border: "1px solid rgba(255,255,255,0.08)",
                             borderRadius: "999px",
                             padding: "8px 14px",
-                            
+
                             color:
                                 activeTasks.length === 0
                                     ? "rgba(255,255,255,0.25)"
@@ -224,48 +221,7 @@ function ActiveTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        if (task.pendingCompletion) {
-                                            return;
-                                        }
-
-                                        setLastCompletedTask(task);
-
-                                        setToast(
-                                            "Task completed"
-                                        );
-
-                                        setTasks((prev) =>
-                                            prev.map((t) =>
-                                                t.id === task.id
-                                                    ? {
-                                                        ...t,
-                                                        pendingCompletion: true,
-                                                    }
-                                                    : t
-                                            )
-                                        );
-
-                                        const timeout = setTimeout(() => {
-                                            setTasks((prev) =>
-                                                prev.map((t) =>
-                                                    t.id === task.id
-                                                        ? {
-                                                            ...t,
-                                                            completed: true,
-                                                            status: "Complete",
-                                                            pendingCompletion: false,
-                                                            completedDate: "Today",
-                                                        }
-                                                        : t
-                                                )
-                                            );
-                                        }, 4000);
-
-                                        setCompletionTimeout(timeout);
-
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
+                                        onCompleteTask(task);
                                     }}
                                     style={{
                                         cursor: "pointer",
@@ -498,13 +454,7 @@ function ActiveTasks({
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        setLastDeletedTask(task);
-
-                                        setTasks((prev) =>
-                                            prev.filter(
-                                                (t) => t.id !== task.id
-                                            )
-                                        );
+                                        onDeleteTask(task._id);
 
                                         setToast(
                                             "Task deleted"

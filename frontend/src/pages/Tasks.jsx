@@ -1,6 +1,9 @@
 import MainLayout from "../layouts/MainLayout";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 
 import TaskModal from "../components/Tasks/TaskModal";
 import CompletedTasks from "../components/Tasks/CompletedTasks";
@@ -11,9 +14,16 @@ import TaskActivity from "../components/Tasks/TaskActivity";
 
 import Toast from "../components/Toast";
 
-import { initialTasks } from "../data/tasks";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  clearCompletedTasks,
+} from "../services/taskService";
 
 function Tasks() {
+  //COMPONENT STATES
   const [showTaskModal, setShowTaskModal] =
     useState(false);
 
@@ -25,18 +35,10 @@ function Tasks() {
     useState(null);
 
   const [tasks, setTasks] =
-    useState(initialTasks);
+    useState([]);
 
   const [toast, setToast] =
     useState("");
-
-  const [lastCompletedTask,
-    setLastCompletedTask] =
-    useState(null);
-
-  const [lastDeletedTask,
-    setLastDeletedTask] =
-    useState(null);
 
   const [completionTimeout,
     setCompletionTimeout] =
@@ -49,6 +51,173 @@ function Tasks() {
   const [showClearActive,
     setShowClearActive] =
     useState(false);
+
+  // FUNCTIONS
+  const loadTasks = async () => {
+    try {
+      const data =
+        await getTasks();
+
+      setTasks(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  // HANDLERS
+  const handleDeleteTask =
+    async (taskId) => {
+      try {
+        await deleteTask(taskId);
+
+        setTasks((prev) =>
+          prev.filter(
+            (task) =>
+              task._id !== taskId
+          )
+        );
+
+        setToast(
+          "Task deleted"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to delete task"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleCompleteTask =
+    async (task) => {
+      try {
+        const updatedTask =
+          await updateTask(
+            task._id,
+            {
+              completed: true,
+              status: "Completed",
+              completedDate:
+                new Date().toLocaleDateString(),
+            }
+          );
+
+        setTasks((prev) =>
+          prev.map((t) =>
+            t._id === updatedTask._id
+              ? updatedTask
+              : t
+          )
+        );
+
+        setToast(
+          "Task completed"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to complete task"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleRestoreTask =
+    async (task) => {
+      try {
+        const updatedTask =
+          await updateTask(
+            task._id,
+            {
+              completed: false,
+              completedDate: null,
+              status: "Active",
+            }
+          );
+
+        setTasks((prev) =>
+          prev.map((t) =>
+            t._id === updatedTask._id
+              ? updatedTask
+              : t
+          )
+        );
+
+        setToast(
+          "Task restored"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to restore task"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleClearCompletedTasks =
+    async () => {
+      try {
+        await clearCompletedTasks();
+
+        setTasks((prev) =>
+          prev.filter(
+            (task) =>
+              !task.completed
+          )
+        );
+
+        setToast(
+          "Completed tasks cleared"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to clear completed tasks"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
 
   return (
     <MainLayout>
@@ -73,12 +242,6 @@ function Tasks() {
             setTasks={setTasks}
             toast={toast}
             setToast={setToast}
-            setLastCompletedTask={
-              setLastCompletedTask
-            }
-            setLastDeletedTask={
-              setLastDeletedTask
-            }
             onViewTask={setSelectedTask}
             onEditTask={setEditingTask}
             onNewTask={() =>
@@ -89,6 +252,12 @@ function Tasks() {
             onClearAll={() =>
               setShowClearActive(true)
             }
+            onDeleteTask={
+              handleDeleteTask
+            }
+            onCompleteTask={
+              handleCompleteTask
+            }
           />
 
           <CompletedTasks
@@ -98,11 +267,11 @@ function Tasks() {
               setShowClearCompleted(true)
             }
             setToast={setToast}
-            setLastDeletedTask={
-              setLastDeletedTask
+            onRestoreTask={
+              handleRestoreTask
             }
-            setLastCompletedTask={
-              setLastCompletedTask
+            onDeleteTask={
+              handleDeleteTask
             }
           />
 
@@ -116,19 +285,33 @@ function Tasks() {
           onClose={() =>
             setShowTaskModal(false)
           }
-          onSave={(newTask) => {
-            setTasks((prev) => [
-              newTask,
-              ...prev,
-            ]);
+          onSave={(taskData) => {
+            createTask(taskData)
+              .then((newTask) => {
+                setTasks((prev) => [
+                  newTask,
+                  ...prev,
+                ]);
 
-            setToast(
-              "Task created"
-            );
+                setToast(
+                  "Task created"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to create task"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -147,25 +330,42 @@ function Tasks() {
           onClose={() =>
             setEditingTask(null)
           }
-          onSave={(updatedTask) => {
-            setTasks((prev) =>
-              prev.map((task) =>
-                task.id ===
-                  updatedTask.id
-                  ? updatedTask
-                  : task
-              )
-            );
+          onSave={(taskData) => {
+            updateTask(
+              editingTask._id,
+              taskData
+            )
+              .then((updatedTask) => {
+                setTasks((prev) =>
+                  prev.map((task) =>
+                    task._id ===
+                      updatedTask._id
+                      ? updatedTask
+                      : task
+                  )
+                );
 
-            setToast(
-              "Task updated"
-            );
+                setToast(
+                  "Task updated"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setEditingTask(null);
+                setEditingTask(null);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to update task"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -273,29 +473,8 @@ function Tasks() {
               </button>
 
               <button
-                onClick={() => {
-                  setTasks((prev) =>
-                    prev.filter(
-                      (task) =>
-                        !task.completed
-                    )
-                  );
-
-                  setLastCompletedTask(
-                    null
-                  );
-
-                  setLastDeletedTask(
-                    null
-                  );
-
-                  setToast(
-                    "Completed tasks cleared"
-                  );
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
+                onClick={async () => {
+                  await handleClearCompletedTasks();
 
                   setShowClearCompleted(
                     false
@@ -452,14 +631,6 @@ function Tasks() {
                     )
                   );
 
-                  setLastCompletedTask(
-                    null
-                  );
-
-                  setLastDeletedTask(
-                    null
-                  );
-
                   setToast("Active tasks cleared");
 
                   setTimeout(() => {
@@ -513,69 +684,6 @@ function Tasks() {
       )}
       <Toast
         message={toast}
-        actionLabel={
-          lastCompletedTask ||
-            lastDeletedTask
-            ? "Undo"
-            : null
-        }
-        onAction={() => {
-          if (lastDeletedTask) {
-            const {
-              restoreToCompleted,
-              ...taskToRestore
-            } = lastDeletedTask;
-
-            setTasks((prev) => [
-              taskToRestore,
-              ...prev,
-            ]);
-
-            setLastDeletedTask(
-              null
-            );
-
-            setToast("");
-
-            return;
-          }
-
-          if (completionTimeout) {
-            clearTimeout(
-              completionTimeout
-            );
-
-            setCompletionTimeout(
-              null
-            );
-          }
-
-          if (!lastCompletedTask)
-            return;
-
-          setTasks((prev) =>
-            prev.map((task) =>
-              task.id ===
-                lastCompletedTask.id
-                ? {
-                  ...task,
-                  completed: false,
-                  pendingCompletion: false,
-                }
-                : task
-            )
-          );
-
-          setToast("");
-
-          setLastCompletedTask(
-            null
-          );
-
-          setLastDeletedTask(
-            null
-          );
-        }}
       />
     </MainLayout>
   );
