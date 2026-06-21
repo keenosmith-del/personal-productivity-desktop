@@ -7,23 +7,28 @@ import {
     Trash2,
 } from "lucide-react";
 
-const linkedToColors = {
-    Goal: {
+import {
+    updateNote,
+    deleteNote,
+} from "../../services/noteService";
+
+const categoryColors = {
+    Work: {
         background: "#ffefb333",
         border: "#ffefb366",
     },
 
-    Project: {
+    Study: {
         background: "#7a553a33",
         border: "#7a553a66",
     },
 
-    Task: {
+    Personal: {
         background: "#52677d33",
         border: "#52677d66",
     },
 
-    Reminder: {
+    Health: {
         background: "#b0896833",
         border: "#b0896866",
     },
@@ -32,9 +37,6 @@ const linkedToColors = {
 function RecentNotes({
     notes,
     setNotes,
-    pinnedNotes,
-    setPinnedNotes,
-    setLastDeletedNote,
     onNewNote,
     onEditNote,
     onPinNote,
@@ -195,7 +197,7 @@ function RecentNotes({
                             onClick={() =>
                                 onEditNote(note)
                             }
-                            key={note.title}
+                            key={note._id}
                             style={{
                                 padding: "10px 12px",
 
@@ -245,31 +247,45 @@ function RecentNotes({
                                             "scale(1)";
                                     }}
                                     fill={
-                                        pinnedNotes.some(
-                                            (n) =>
-                                                n.id === note.id
-                                        )
+                                        note.pinned
                                             ? "currentColor"
                                             : "none"
                                     }
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        setPinnedNotes((prev) =>
-                                            prev.some(
-                                                (n) => n.id === note.id
-                                            )
-                                                ? prev.filter(
-                                                    (n) =>
-                                                        n.id !== note.id
-                                                )
-                                                : [
-                                                    ...prev,
-                                                    note,
-                                                ]
-                                        );
+                                        try {
+                                            const updatedNote =
+                                                await updateNote(
+                                                    note._id,
+                                                    {
+                                                        pinned:
+                                                            !note.pinned,
+                                                    }
+                                                );
 
-                                        onPinNote();
+                                            setNotes((prev) =>
+                                                prev.map((n) =>
+                                                    n._id ===
+                                                        updatedNote._id
+                                                        ? updatedNote
+                                                        : n
+                                                )
+                                            );
+
+                                            setToast(
+                                                updatedNote.pinned
+                                                    ? "Note pinned"
+                                                    : "Note unpinned"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+
+                                        } catch (error) {
+                                            console.error(error);
+                                        }
                                     }}
                                 />
 
@@ -290,7 +306,7 @@ function RecentNotes({
                                     marginBottom: "10px",
                                 }}
                             >
-                                {note.linkedTo?.map((item) => (
+                                {note.categories?.map((item) => (
                                     <span
                                         key={item}
                                         style={{
@@ -301,11 +317,11 @@ function RecentNotes({
                                             fontSize: "0.7rem",
 
                                             background:
-                                                linkedToColors[item]
+                                                categoryColors[item]
                                                     ?.background,
 
                                             border:
-                                                `1px solid ${linkedToColors[item]
+                                                `1px solid ${categoryColors[item]
                                                     ?.border
                                                 }`,
 
@@ -352,7 +368,9 @@ function RecentNotes({
                                     opacity: 0.8,
                                 }}
                             >
-                                {note.date}
+                                {new Date(
+                                    note.createdAt
+                                ).toLocaleDateString()}
                             </p>
 
                             <div
@@ -415,36 +433,40 @@ function RecentNotes({
                                         e.currentTarget.style.transform =
                                             "scale(1)";
                                     }}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        const wasPinned =
-                                            pinnedNotes.some(
-                                                (n) => n.id === note.id
+                                        try {
+                                            await deleteNote(
+                                                note._id
                                             );
 
-                                        setLastDeletedNote({
-                                            ...note,
-                                            wasPinned,
-                                        });
+                                            setNotes((prev) =>
+                                                prev.filter(
+                                                    (n) =>
+                                                        n._id !== note._id
+                                                )
+                                            );
 
-                                        setNotes((prev) =>
-                                            prev.filter(
-                                                (n) => n.id !== note.id
-                                            )
-                                        );
+                                            setToast(
+                                                "Note deleted"
+                                            );
 
-                                        setPinnedNotes((prev) =>
-                                            prev.filter(
-                                                (n) => n.id !== note.id
-                                            )
-                                        );
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 4000);
 
-                                        setToast("Note deleted");
+                                        } catch (error) {
+                                            console.error(error);
 
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
+                                            setToast(
+                                                "Failed to delete note"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
                                 />
                             </div>

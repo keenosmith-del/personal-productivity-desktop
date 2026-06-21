@@ -20,7 +20,7 @@ function NoteModal({
     const [content, setContent] =
         useState("");
 
-    const [linkedTo, setLinkedTo] =
+    const [categories, setCategories] =
         useState([]);
 
     useEffect(() => {
@@ -33,8 +33,8 @@ function NoteModal({
                 note.content || ""
             );
 
-            setLinkedTo(
-                note?.linkedTo || []
+            setCategories(
+                note?.categories || []
             );
         }
     }, [mode, note]);
@@ -61,14 +61,14 @@ function NoteModal({
     };
 
     // helper function
-    const toggleLinkedTo = (type) => {
+    const toggleCategories = (type) => {
         if (type === "None") {
-            setLinkedTo([]);
+            setCategories([]);
 
             return;
         }
 
-        setLinkedTo((prev) =>
+        setCategories((prev) =>
             prev.includes(type)
                 ? prev.filter(
                     (item) =>
@@ -220,7 +220,7 @@ function NoteModal({
                             fontWeight: "300",
                         }}
                     >
-                        Linked To
+                        Categories
                     </p>
 
                     <div
@@ -236,26 +236,26 @@ function NoteModal({
                                 color: "#013e37",
                             },
                             {
-                                name: "Goal",
+                                name: "Work",
                                 color: "#ffefb3",
                             },
                             {
-                                name: "Project",
+                                name: "Study",
                                 color: "#7a553a",
                             },
                             {
-                                name: "Task",
+                                name: "Personal",
                                 color: "#52677d",
                             },
                             {
-                                name: "Reminder",
+                                name: "Health",
                                 color: "#b08968",
                             },
                         ].map((item) => {
                             const isSelected =
                                 item.name === "None"
-                                    ? linkedTo.length === 0
-                                    : linkedTo.includes(
+                                    ? categories.length === 0
+                                    : categories.includes(
                                         item.name
                                     );
 
@@ -264,7 +264,7 @@ function NoteModal({
                                     key={item.name}
                                     type="button"
                                     onClick={() =>
-                                        toggleLinkedTo(
+                                        toggleCategories(
                                             item.name
                                         )
                                     }
@@ -395,7 +395,7 @@ function NoteModal({
 
                                 content,
 
-                                linkedTo,
+                                categories,
                             });
                         }}
                         style={{

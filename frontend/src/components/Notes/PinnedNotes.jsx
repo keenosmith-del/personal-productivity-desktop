@@ -1,30 +1,33 @@
 import GlassCard from "../GlassCard";
 
-import { useState } from "react";
-
 import {
     Pin,
     Pencil,
     Trash2
 } from "lucide-react";
 
-const linkedToColors = {
-    Goal: {
+import {
+    updateNote,
+    deleteNote,
+} from "../../services/noteService";
+
+const categoryColors = {
+    Work: {
         background: "#ffefb333",
         border: "#ffefb366",
     },
 
-    Project: {
+    Study: {
         background: "#7a553a33",
         border: "#7a553a66",
     },
 
-    Task: {
+    Personal: {
         background: "#52677d33",
         border: "#52677d66",
     },
 
-    Reminder: {
+    Health: {
         background: "#b0896833",
         border: "#b0896866",
     },
@@ -33,14 +36,14 @@ const linkedToColors = {
 function PinnedNotes({
     notes,
     setNotes,
-    pinnedNotes,
-    setPinnedNotes,
-    setLastDeletedNote,
     setToast,
     onEditNote,
-    onUnpinNote,
     onClearAll,
 }) {
+    const pinnedNotes =
+        notes.filter(
+            (note) => note.pinned
+        );
     return (
         <GlassCard minHeight="520px">
             <div
@@ -143,7 +146,7 @@ function PinnedNotes({
                 ) : (
                     pinnedNotes.map((note) => (
                         <div
-                            key={note.id}
+                            key={note._id}
                             style={{
                                 padding: "10px 12px",
 
@@ -185,16 +188,46 @@ function PinnedNotes({
 
                                         flexShrink: 0,
                                     }}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        setPinnedNotes((prev) =>
-                                            prev.filter(
-                                                (n) => n.id !== note.id
-                                            )
-                                        );
+                                        try {
+                                            const updatedNote =
+                                                await updateNote(
+                                                    note._id,
+                                                    {
+                                                        pinned: false,
+                                                    }
+                                                );
 
-                                        onUnpinNote();
+                                            setNotes((prev) =>
+                                                prev.map((n) =>
+                                                    n._id ===
+                                                        updatedNote._id
+                                                        ? updatedNote
+                                                        : n
+                                                )
+                                            );
+
+                                            setToast(
+                                                "Note unpinned"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            setToast(
+                                                "Failed to unpin note"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.opacity =
@@ -225,7 +258,7 @@ function PinnedNotes({
                                     marginBottom: "12px",
                                 }}
                             >
-                                {note.linkedTo?.map((item) => (
+                                {note.categories?.map((item) => (
                                     <span
                                         key={item}
                                         style={{
@@ -236,11 +269,11 @@ function PinnedNotes({
                                             fontSize: "0.7rem",
 
                                             background:
-                                                linkedToColors[item]
+                                                categoryColors[item]
                                                     ?.background,
 
                                             border:
-                                                `1px solid ${linkedToColors[item]
+                                                `1px solid ${categoryColors[item]
                                                     ?.border
                                                 }`,
 
@@ -287,7 +320,9 @@ function PinnedNotes({
                                     opacity: 0.8,
                                 }}
                             >
-                                {note.date}
+                                {new Date(
+                                    note.createdAt
+                                ).toLocaleDateString()}
                             </p>
 
                             <div
@@ -349,31 +384,40 @@ function PinnedNotes({
                                         e.currentTarget.style.transform =
                                             "scale(1)";
                                     }}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
 
-                                        setLastDeletedNote({
-                                            ...note,
-                                            wasPinned: true,
-                                        });
+                                        try {
+                                            await deleteNote(
+                                                note._id
+                                            );
 
-                                        setNotes((prev) =>
-                                            prev.filter(
-                                                (n) => n.id !== note.id
-                                            )
-                                        );
+                                            setNotes((prev) =>
+                                                prev.filter(
+                                                    (n) =>
+                                                        n._id !== note._id
+                                                )
+                                            );
 
-                                        setPinnedNotes((prev) =>
-                                            prev.filter(
-                                                (n) => n.id !== note.id
-                                            )
-                                        );
+                                            setToast(
+                                                "Note deleted"
+                                            );
 
-                                        setToast("Note deleted");
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 4000);
 
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
+                                        } catch (error) {
+                                            console.error(error);
+
+                                            setToast(
+                                                "Failed to delete note"
+                                            );
+
+                                            setTimeout(() => {
+                                                setToast("");
+                                            }, 3000);
+                                        }
                                     }}
                                 />
                             </div>

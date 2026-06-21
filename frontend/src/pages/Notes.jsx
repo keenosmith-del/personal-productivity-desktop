@@ -1,12 +1,19 @@
 import MainLayout from "../layouts/MainLayout";
 
-import { useState } from "react";
-
 import NoteModal from "../components/Notes/NoteModal";
 import RecentNotes from "../components/Notes/RecentNotes";
 import PinnedNotes from "../components/Notes/PinnedNotes";
 
-import { initialNotes } from "../data/notes";
+import { useState, useEffect } from "react";
+
+import {
+  getNotes,
+  createNote,
+  updateNote,
+  clearAllNotes,
+  clearPinnedNotes,
+} from "../services/noteService";
+
 import Toast from "../components/Toast";
 
 function Notes() {
@@ -19,18 +26,11 @@ function Notes() {
     useState(null);
 
   const [notes, setNotes] =
-    useState(initialNotes);
-
-  const [pinnedNotes, setPinnedNotes] =
     useState([]);
 
   const [toast,
     setToast] =
     useState("");
-
-  const [lastDeletedNote,
-    setLastDeletedNote] =
-    useState(null);
 
   const [showClearNotes,
     setShowClearNotes] =
@@ -40,31 +40,76 @@ function Notes() {
     setShowClearPinnedNotes] =
     useState(false);
 
-  const handleClearAllNotes = () => {
-    setNotes([]);
+  const handleClearAllNotes = async () => {
+    try {
+      await clearAllNotes();
 
-    setPinnedNotes([]);
+      setNotes([]);
 
-    setLastDeletedNote(null);
+      setToast("Notes cleared");
 
-    setToast("Notes cleared");
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
 
-    setTimeout(() => {
-      setToast("");
-    }, 3000);
+    } catch (error) {
+      console.error(error);
+
+      setToast("Failed to clear notes");
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+    }
   };
 
-  const handleClearPinnedNotes = () => {
-    setPinnedNotes([]);
+  const handleClearPinnedNotes = async () => {
+    try {
+      await clearPinnedNotes();
 
-    setLastDeletedNote(null);
+      setNotes((prev) =>
+        prev.map((note) => ({
+          ...note,
+          pinned: false,
+        }))
+      );
 
-    setToast("Pinned notes cleared");
+      setToast("Pinned notes cleared");
 
-    setTimeout(() => {
-      setToast("");
-    }, 3000);
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+
+      setToast("Failed to clear pinned notes");
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+    }
   };
+
+  const loadNotes = async () => {
+    try {
+      const data = await getNotes();
+
+      setNotes(data);
+    } catch (error) {
+      console.error(error);
+
+      setToast("Failed to load notes");
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    loadNotes();
+  }, []);
 
   return (
     <MainLayout>
@@ -83,9 +128,6 @@ function Notes() {
         <RecentNotes
           notes={notes}
           setNotes={setNotes}
-          pinnedNotes={pinnedNotes}
-          setPinnedNotes={setPinnedNotes}
-          setLastDeletedNote={setLastDeletedNote}
           setToast={setToast}
           onClearAll={() =>
             setShowClearNotes(true)
@@ -96,21 +138,11 @@ function Notes() {
           onEditNote={
             setEditingNote
           }
-          onPinNote={() => {
-            setToast("Note pinned");
-
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
-          }}
         />
 
         <PinnedNotes
           notes={notes}
           setNotes={setNotes}
-          pinnedNotes={pinnedNotes}
-          setPinnedNotes={setPinnedNotes}
-          setLastDeletedNote={setLastDeletedNote}
           setToast={setToast}
           onClearAll={() =>
             setShowClearPinnedNotes(true)
@@ -118,15 +150,6 @@ function Notes() {
           onEditNote={
             setEditingNote
           }
-          onUnpinNote={() => {
-            setToast(
-              "Note unpinned"
-            );
-
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
-          }}
         />
       </div>
       {showNoteModal && (
@@ -134,32 +157,33 @@ function Notes() {
           onClose={() =>
             setShowNoteModal(false)
           }
-          onSave={(newNote) => {
-            setNotes((prev) => [
-              {
-                ...newNote,
-                id: Date.now(),
-                date: new Date()
-                  .toLocaleDateString(
-                    "en-GB",
-                    {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    }
-                  )
-                  .replace(",", ""),
-              },
-              ...prev,
-            ]);
+          onSave={(noteData) => {
+            createNote(noteData)
+              .then((newNote) => {
+                setNotes((prev) => [
+                  newNote,
+                  ...prev,
+                ]);
 
-            setToast("Note created");
+                setToast("Note created");
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setShowNoteModal(false);
+                setShowNoteModal(false);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to create note"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -170,30 +194,42 @@ function Notes() {
           onClose={() =>
             setEditingNote(null)
           }
-          onSave={(updatedNote) => {
-            setNotes((prev) =>
-              prev.map((note) =>
-                note.id === updatedNote.id
-                  ? updatedNote
-                  : note
-              )
-            );
+          onSave={(noteData) => {
+            updateNote(
+              editingNote._id,
+              noteData
+            )
+              .then((updatedNote) => {
+                setNotes((prev) =>
+                  prev.map((note) =>
+                    note._id ===
+                      updatedNote._id
+                      ? updatedNote
+                      : note
+                  )
+                );
 
-            setPinnedNotes((prev) =>
-              prev.map((note) =>
-                note.id === updatedNote.id
-                  ? updatedNote
-                  : note
-              )
-            );
+                setToast(
+                  "Note updated"
+                );
 
-            setToast("Note updated");
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setEditingNote(null);
+              })
+              .catch((error) => {
+                console.error(error);
 
-            setEditingNote(null);
+                setToast(
+                  "Failed to update note"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -483,41 +519,8 @@ function Notes() {
           </div>
         </div>
       )}
-      {/* REFACTOR <TOAST /> */}
       <Toast
         message={toast}
-        actionLabel={
-          lastDeletedNote
-            ? "Undo"
-            : null
-        }
-        onAction={() => {
-          if (!lastDeletedNote)
-            return;
-
-          const {
-            wasPinned,
-            ...noteToRestore
-          } = lastDeletedNote;
-
-          setNotes((prev) => [
-            noteToRestore,
-            ...prev,
-          ]);
-
-          if (wasPinned) {
-            setPinnedNotes((prev) => [
-              noteToRestore,
-              ...prev,
-            ]);
-          }
-
-          setLastDeletedNote(
-            null
-          );
-
-          setToast("");
-        }}
       />
     </MainLayout>
   );

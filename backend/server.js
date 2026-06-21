@@ -8,6 +8,7 @@ import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import reminderRoutes from "./routes/reminderRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js";
 
 dotenv.config();
 
@@ -41,6 +42,11 @@ app.use(
 app.use(
     "/api/reminders",
     reminderRoutes
+);
+
+app.use(
+    "/api/notes",
+    noteRoutes
 );
 
 app.get("/", (req, res) => {
