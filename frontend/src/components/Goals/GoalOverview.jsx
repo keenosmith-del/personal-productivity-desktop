@@ -2,7 +2,10 @@ import GlassCard from "../GlassCard";
 import GoalModal from "./GoalModal";
 import { Plus } from "lucide-react";
 
-function GoalOverview({ goals }) {
+function GoalOverview({
+    goals,
+    tasks,
+}) {
     const activeGoals = goals.filter(
         (goal) => !goal.completed
     );
@@ -11,9 +14,41 @@ function GoalOverview({ goals }) {
         (goal) => goal.completed
     );
 
-    const closestGoal = [...activeGoals].sort(
-        (a, b) => b.progress - a.progress
-    )[0];
+    const getGoalProgress = (
+        goal
+    ) => {
+        const linkedTasks =
+            tasks.filter((task) =>
+                goal.associatedTasks?.includes(
+                    task._id
+                )
+            );
+
+        if (
+            linkedTasks.length === 0
+        ) {
+            return 0;
+        }
+
+        const completedTasks =
+            linkedTasks.filter(
+                (task) => task.completed
+            ).length;
+
+        return Math.round(
+            (
+                completedTasks /
+                linkedTasks.length
+            ) * 100
+        );
+    };
+
+    const closestGoal =
+        [...activeGoals].sort(
+            (a, b) =>
+                getGoalProgress(b) -
+                getGoalProgress(a)
+        )[0];
 
     const recentlyCompleted =
         completedGoals[
@@ -25,7 +60,7 @@ function GoalOverview({ goals }) {
             ? Math.round(
                 activeGoals.reduce(
                     (total, goal) =>
-                        total + goal.progress,
+                        total + getGoalProgress(goal),
                     0
                 ) / activeGoals.length
             )

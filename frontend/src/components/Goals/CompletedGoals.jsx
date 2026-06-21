@@ -11,10 +11,10 @@ function CompletedGoals({
   goals,
   setGoals,
   setToast,
-  setLastCompletedGoal,
-  setLastDeletedGoal,
-  setLastAction,
   onClearAll,
+  onDeleteGoal,
+  updateGoal,
+  onRestoreGoal,
 }) {
   // COMPONENT STATES
   const completedGoals =
@@ -151,22 +151,7 @@ function CompletedGoals({
               >
                 <div
                   onClick={() => {
-                    setGoals((prev) =>
-                      prev.map((g) =>
-                        g.id === goal.id
-                          ? {
-                            ...g,
-                            completed: false,
-                            completedDate: null,
-                            status: "Active",
-                          }
-                          : g
-                      )
-                    );
-
-                    setLastCompletedGoal(null);
-                    setLastDeletedGoal(null);
-                    setLastAction(null);
+                    onRestoreGoal(goal._id);
 
                     setToast("Goal restored");
 
@@ -175,7 +160,7 @@ function CompletedGoals({
                     }, 3000);
                   }}
                   onMouseEnter={() =>
-                    setHoveredGoal(goal.id)
+                    setHoveredGoal(goal._id)
                   }
                   onMouseLeave={() =>
                     setHoveredGoal(null)
@@ -189,12 +174,12 @@ function CompletedGoals({
                     borderRadius: "50%",
 
                     background:
-                      hoveredGoal === goal.id
+                      hoveredGoal === goal._id
                         ? "rgba(245,245,245,0.75)"
                         : "rgba(245,245,245,0.45)",
 
                     border:
-                      hoveredGoal === goal.id
+                      hoveredGoal === goal._id
                         ? "1.5px solid rgba(245,245,245,0.75)"
                         : "1.5px solid rgba(245,245,245,0.45)",
 
@@ -209,7 +194,7 @@ function CompletedGoals({
                     color: "#1a1d29",
                   }}
                 >
-                  {hoveredGoal === goal.id ? (
+                  {hoveredGoal === goal._id ? (
                     <RotateCcw
                       size={10}
                       strokeWidth={2}
@@ -301,19 +286,7 @@ function CompletedGoals({
                 onClick={(e) => {
                   e.stopPropagation();
 
-                  setLastDeletedGoal(goal);
-
-                  setLastAction("delete");
-
-                  setGoals((prev) =>
-                    prev.filter((g) => g.id !== goal.id)
-                  );
-
-                  setToast("Goal deleted");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
+                  onDeleteGoal(goal._id);
                 }}
               />
             </div>

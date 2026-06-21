@@ -14,6 +14,7 @@ function GoalModal({
   onSave,
   mode = "create",
   goal = null,
+  tasks = [],
 }) {
   const goalInputRef = useRef(null);
 
@@ -86,26 +87,15 @@ function GoalModal({
     if (!title.trim()) return;
 
     const goalData = {
-      id: goal?.id || Date.now(),
-
       title,
-
       description,
-
       category,
-
       priority,
-
       status,
-
       targetDate: selectedDate,
-
       associatedTasks,
-
       progress: goal?.progress || 0,
-
       completed: goal?.completed || false,
-
       pendingCompletion: false,
     };
 
@@ -576,32 +566,30 @@ function GoalModal({
               flexWrap: "wrap",
             }}
           >
-            {[
-              "Frontend Portfolio",
-              "LinkedIn Refresh",
-              "Apply to Jobs",
-            ].map((associatedTask) => {
+            {tasks.filter(
+              (task) => !task.completed
+            ).map((task) => {
               const isSelected =
                 associatedTasks.includes(
-                  associatedTask
+                  task._id
                 );
 
               return (
                 <button
-                  key={associatedTask}
+                  key={task._id}
                   type="button"
                   onClick={() => {
                     setAssociatedTasks(
                       (prev) =>
                         isSelected
                           ? prev.filter(
-                            (task) =>
-                              task !==
-                              associatedTask
+                            (taskId) =>
+                              taskId !==
+                              task._id
                           )
                           : [
                             ...prev,
-                            associatedTask,
+                            task._id,
                           ]
                     );
                   }}
@@ -627,7 +615,7 @@ function GoalModal({
                       "all 0.2s ease",
                   }}
                 >
-                  {associatedTask}
+                  {task.title}
                 </button>
               );
             })}

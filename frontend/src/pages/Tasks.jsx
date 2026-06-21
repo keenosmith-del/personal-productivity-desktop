@@ -20,7 +20,13 @@ import {
   updateTask,
   deleteTask,
   clearCompletedTasks,
+  clearActiveTasks,
 } from "../services/taskService";
+
+import {
+  getGoals,
+  updateGoal,
+} from "../services/goalService";
 
 function Tasks() {
   //COMPONENT STATES
@@ -211,6 +217,39 @@ function Tasks() {
 
         setToast(
           "Failed to clear completed tasks"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleClearActiveTasks =
+    async () => {
+      try {
+        await clearActiveTasks();
+
+        setTasks((prev) =>
+          prev.filter(
+            (task) =>
+              task.completed
+          )
+        );
+
+        setToast(
+          "Active tasks cleared"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to clear active tasks"
         );
 
         setTimeout(() => {
@@ -541,9 +580,13 @@ function Tasks() {
           }}
         >
           <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={async () => {
+              await handleClearActiveTasks();
+
+              setShowClearActive(
+                false
+              );
+            }}
             style={{
               width: "400px",
               padding: "28px",

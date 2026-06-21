@@ -54,10 +54,13 @@ const goalSchema =
                 default: false,
             },
 
-            associatedTasks: {
-                type: [String],
-                default: [],
-            },
+            associatedTasks: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Task",
+                },
+            ],
         },
         {
             timestamps: true,

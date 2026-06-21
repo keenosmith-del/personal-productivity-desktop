@@ -148,3 +148,28 @@ export async function clearCompletedTasks() {
 
     return response.json();
 }
+
+export async function clearActiveTasks() {
+    const response = await fetch(
+        `${API_URL}/active`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to clear active tasks"
+        );
+    }
+
+    return data;
+}

@@ -15,7 +15,16 @@ import Toast from "../components/Toast";
 
 import {
   getGoals,
+  createGoal,
+  updateGoal,
+  deleteGoal,
+  clearCompletedGoals,
+  clearActiveGoals,
 } from "../services/goalService";
+
+import {
+  getTasks,
+} from "../services/taskService";
 
 function Goals() {
   // COMPONENT STATES
@@ -31,24 +40,11 @@ function Goals() {
   const [goals, setGoals] =
     useState([]);
 
+  const [tasks, setTasks] =
+    useState([]);
+
   const [toast, setToast] =
     useState("");
-
-  const [lastCompletedGoal,
-    setLastCompletedGoal] =
-    useState(null);
-
-  const [lastAction,
-    setLastAction] =
-    useState(null);
-
-  const [lastDeletedGoal,
-    setLastDeletedGoal] =
-    useState(null);
-
-  const [completionTimeout,
-    setCompletionTimeout] =
-    useState(null);
 
   const [showClearActiveGoals,
     setShowClearActiveGoals] =
@@ -70,10 +66,192 @@ function Goals() {
     }
   };
 
+  const loadTasks = async () => {
+    try {
+      const data =
+        await getTasks();
+
+      setTasks(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteGoal =
+    async (goalId) => {
+      try {
+        await deleteGoal(goalId);
+
+        setGoals((prev) =>
+          prev.filter(
+            (goal) =>
+              goal._id !== goalId
+          )
+        );
+
+        setToast(
+          "Goal deleted"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to delete goal"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleCompleteGoal =
+    async (goalId) => {
+      try {
+        const updatedGoal =
+          await updateGoal(
+            goalId,
+            {
+              completed: true,
+              status: "Complete",
+              completedDate:
+                new Date()
+                  .toISOString()
+                  .split("T")[0],
+            }
+          );
+
+        setGoals((prev) =>
+          prev.map((goal) =>
+            goal._id === goalId
+              ? updatedGoal
+              : goal
+          )
+        );
+
+        setToast(
+          "Goal completed"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to complete goal"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleRestoreGoal =
+    async (goalId) => {
+      try {
+        const updatedGoal =
+          await updateGoal(
+            goalId,
+            {
+              completed: false,
+              status: "Active",
+              completedDate: null,
+            }
+          );
+
+        setGoals((prev) =>
+          prev.map((goal) =>
+            goal._id === goalId
+              ? updatedGoal
+              : goal
+          )
+        );
+
+        setToast(
+          "Goal restored"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to restore goal"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
+
+  const handleClearActiveGoals =
+    async () => {
+      try {
+        await clearActiveGoals();
+
+        setGoals((prev) =>
+          prev.filter(
+            (goal) =>
+              goal.completed
+          )
+        );
+
+        setToast(
+          "Active goals cleared"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  const handleClearCompletedGoals =
+    async () => {
+      try {
+        await clearCompletedGoals();
+
+        setGoals((prev) =>
+          prev.filter(
+            (goal) =>
+              !goal.completed
+          )
+        );
+
+        setToast(
+          "Completed goals cleared"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   useEffect(() => {
     loadGoals();
+    loadTasks();
   }, []);
-  
+
   return (
     <MainLayout>
       <div
@@ -84,7 +262,10 @@ function Goals() {
         }}
       >
 
-        <GoalOverview goals={goals} />
+        <GoalOverview
+          goals={goals}
+          tasks={tasks}
+        />
 
         <div
           style={{
@@ -97,6 +278,7 @@ function Goals() {
         >
           <ActiveGoals
             goals={goals}
+            tasks={tasks}
             setGoals={setGoals}
             onViewGoal={setSelectedGoal}
             onEditGoal={setEditingGoal}
@@ -108,31 +290,27 @@ function Goals() {
             }
             toast={toast}
             setToast={setToast}
-            setLastCompletedGoal={
-              setLastCompletedGoal
-            }
-            completionTimeout={
-              completionTimeout
-            }
 
-            setCompletionTimeout={
-              setCompletionTimeout
+            onDeleteGoal={
+              handleDeleteGoal
             }
-            setLastDeletedGoal={
-              setLastDeletedGoal
+            onCompleteGoal={
+              handleCompleteGoal
             }
-            setLastAction={setLastAction}
           />
 
           <CompletedGoals
             goals={goals}
             setGoals={setGoals}
             setToast={setToast}
-            setLastCompletedGoal={setLastCompletedGoal}
-            setLastDeletedGoal={setLastDeletedGoal}
-            setLastAction={setLastAction}
             onClearAll={() =>
               setShowClearCompletedGoals(true)
+            }
+            onDeleteGoal={
+              handleDeleteGoal
+            }
+            onRestoreGoal={
+              handleRestoreGoal
             }
           />
 
@@ -148,24 +326,39 @@ function Goals() {
       )}
       {showGoalModal && (
         <GoalModal
+          tasks={tasks}
           onClose={() =>
             setShowGoalModal(false)
           }
-          onSave={(newGoal) => {
-            setGoals((prev) => [
-              newGoal,
-              ...prev,
-            ]);
+          onSave={(goalData) => {
+            createGoal(goalData)
+              .then((newGoal) => {
+                setGoals((prev) => [
+                  newGoal,
+                  ...prev,
+                ]);
 
-            setToast(
-              "Goal created"
-            );
+                setToast(
+                  "Goal created"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setShowGoalModal(false);
+                setShowGoalModal(false);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to create goal"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -173,28 +366,46 @@ function Goals() {
         <GoalModal
           mode="edit"
           goal={editingGoal}
+          tasks={tasks}
           onClose={() =>
             setEditingGoal(null)
           }
-          onSave={(updatedGoal) => {
-            setGoals((prev) =>
-              prev.map((goal) =>
-                goal.id ===
-                  updatedGoal.id
-                  ? updatedGoal
-                  : goal
-              )
-            );
+          onSave={(goalData) => {
+            updateGoal(
+              editingGoal._id,
+              goalData
+            )
+              .then((updatedGoal) => {
+                setGoals((prev) =>
+                  prev.map((goal) =>
+                    goal._id ===
+                      updatedGoal._id
+                      ? updatedGoal
+                      : goal
+                  )
+                );
 
-            setToast(
-              "Goal updated"
-            );
+                setToast(
+                  "Goal updated"
+                );
 
-            setTimeout(() => {
-              setToast("");
-            }, 3000);
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
 
-            setEditingGoal(null);
+                setEditingGoal(null);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to update goal"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
           }}
         />
       )}
@@ -279,25 +490,8 @@ function Goals() {
               </button>
 
               <button
-                onClick={() => {
-                  setGoals((prev) =>
-                    prev.filter(
-                      (goal) =>
-                        goal.completed
-                    )
-                  );
-
-                  setLastCompletedGoal(
-                    null
-                  );
-
-                  setToast(
-                    "Active goals cleared"
-                  );
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
+                onClick={async () => {
+                  await handleClearActiveGoals();
 
                   setShowClearActiveGoals(
                     false
@@ -402,25 +596,8 @@ function Goals() {
               </button>
 
               <button
-                onClick={() => {
-                  setGoals((prev) =>
-                    prev.filter(
-                      (goal) =>
-                        !goal.completed
-                    )
-                  );
-
-                  setLastCompletedGoal(
-                    null
-                  );
-
-                  setToast(
-                    "Completed goals cleared"
-                  );
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
+                onClick={async () => {
+                  await handleClearCompletedGoals();
 
                   setShowClearCompletedGoals(
                     false
@@ -444,72 +621,7 @@ function Goals() {
           </div>
         </div>
       )}
-      <Toast
-        message={toast}
-        actionLabel={
-          lastCompletedGoal ||
-            lastDeletedGoal
-            ? "Undo"
-            : null
-        }
-        onAction={() => {
-          if (completionTimeout) {
-            clearTimeout(
-              completionTimeout
-            );
-
-            setCompletionTimeout(
-              null
-            );
-          }
-
-          if (lastAction === "delete") {
-            setGoals((prev) => [
-              lastDeletedGoal,
-              ...prev,
-            ]);
-
-            setLastDeletedGoal(null);
-
-            setLastAction(null);
-
-            setToast("");
-
-            return;
-          }
-
-          if (lastAction !== "complete")
-            return;
-
-          setGoals((prev) =>
-            prev.map((goal) =>
-              goal.id ===
-                lastCompletedGoal.id
-                ? {
-                  ...goal,
-                  completed: false,
-                  pendingCompletion: false,
-                  status: "Active",
-                }
-                : goal
-            )
-          );
-
-          setToast("");
-
-          setLastCompletedGoal(
-            null
-          );
-
-          setLastDeletedGoal(
-            null
-          );
-
-          setLastAction(
-            null
-          );
-        }}
-      />
+      <Toast message={toast} />
     </MainLayout>
   );
 }

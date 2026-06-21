@@ -148,3 +148,18 @@ export async function clearCompletedGoals() {
 
     return response.json();
 }
+
+export async function clearActiveGoals() {
+    const response = await fetch(
+        `${API_URL}/active`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    return response.json();
+}

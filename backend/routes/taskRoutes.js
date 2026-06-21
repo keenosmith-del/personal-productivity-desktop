@@ -128,6 +128,28 @@ router.delete(
 );
 
 router.delete(
+    "/active",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Task.deleteMany({
+                user: req.user.id,
+                completed: false,
+            });
+
+            res.json({
+                message:
+                    "Active tasks deleted",
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.delete(
     "/:id",
     authMiddleware,
     async (req, res) => {
