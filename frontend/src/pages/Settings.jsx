@@ -8,7 +8,13 @@ import {
 import {
   getCurrentUser,
   updatePreferences,
+  clearAllData,
+  deleteAccount,
 } from "../services/authService";
+
+import EditProfileModal from "../components/Settings/EditProfileModal";
+import ChangePasswordModal from "../components/Settings/ChangePasswordModal";
+import ConfirmationModal from "../components/Settings/ConfirmationModal";
 
 import WorkingHoursModal from "../components/Settings/WorkingHoursModal";
 import DefaultReminderModal from "../components/Settings/DefaultReminderModal";
@@ -32,6 +38,21 @@ function Settings() {
   const [
     preferences,
     setPreferences,
+  ] = useState(null);
+
+  const [
+    showEditProfileModal,
+    setShowEditProfileModal,
+  ] = useState(false);
+
+  const [
+    showPasswordModal,
+    setShowPasswordModal,
+  ] = useState(false);
+
+  const [
+    confirmationConfig,
+    setConfirmationConfig,
   ] = useState(null);
 
   //FUNCTIONS
@@ -124,7 +145,35 @@ function Settings() {
           }
         />
 
-        <AccountSettings />
+        <AccountSettings
+          onEditProfile={() =>
+            setShowEditProfileModal(true)
+          }
+          onChangePassword={() =>
+            setShowPasswordModal(true)
+          }
+          onClearData={() =>
+            setConfirmationConfig({
+              title: "Clear All Data",
+              message:
+                "This will permanently remove all projects, tasks, goals, notes and reminders.",
+              confirmText:
+                "Clear Data",
+              action: "clear",
+            })
+          }
+          onDeleteAccount={() =>
+            setConfirmationConfig({
+              title:
+                "Delete Account",
+              message:
+                "This will permanently delete your account and all associated data.",
+              confirmText:
+                "Delete Account",
+              action: "delete",
+            })
+          }
+        />
 
       </div>
       {showWorkingHoursModal && (
@@ -154,8 +203,77 @@ function Settings() {
           }
         />
       )}
-    </MainLayout>
+      {showEditProfileModal && (
+        <EditProfileModal
+          user={preferences}
+          onClose={() =>
+            setShowEditProfileModal(false)
+          }
+          onSaved={loadPreferences}
+        />
+      )}
 
+      {showPasswordModal && (
+        <ChangePasswordModal
+          onClose={() =>
+            setShowPasswordModal(
+              false
+            )
+          }
+        />
+      )
+      }
+      {confirmationConfig && (
+        <ConfirmationModal
+          title={
+            confirmationConfig.title
+          }
+          message={
+            confirmationConfig.message
+          }
+          confirmText={
+            confirmationConfig.confirmText
+          }
+          onConfirm={async () => {
+            try {
+              if (
+                confirmationConfig.action ===
+                "clear"
+              ) {
+                await clearAllData();
+
+                await loadPreferences();
+              }
+
+              if (
+                confirmationConfig.action ===
+                "delete"
+              ) {
+                await deleteAccount();
+
+                localStorage.removeItem(
+                  "token"
+                );
+
+                window.location.href = "/";
+              }
+
+              setConfirmationConfig(
+                null
+              );
+
+            } catch (error) {
+              console.error(error);
+            }
+          }}
+          onClose={() =>
+            setConfirmationConfig(
+              null
+            )
+          }
+        />
+      )}
+    </MainLayout>
   );
 }
 

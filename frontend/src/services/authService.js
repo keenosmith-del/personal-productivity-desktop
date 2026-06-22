@@ -151,6 +151,190 @@ export async function updatePreferences(
     return data;
 }
 
+export async function updateProfile(
+    profileData
+) {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/profile`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                Authorization:
+                    `Bearer ${token}`,
+            },
+
+            body: JSON.stringify(
+                profileData
+            ),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update profile"
+        );
+    }
+
+    return data;
+}
+
+export async function updatePassword(
+    currentPassword,
+    newPassword
+) {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/password`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                Authorization:
+                    `Bearer ${token}`,
+            },
+
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+            }),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update password"
+        );
+    }
+
+    return data;
+}
+
+export async function changePassword(
+    passwordData
+) {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/change-password`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                Authorization:
+                    `Bearer ${token}`,
+            },
+
+            body: JSON.stringify(
+                passwordData
+            ),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to change password"
+        );
+    }
+
+    return data;
+}
+
+export async function clearAllData() {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/clear-data`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization:
+                    `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to clear data"
+        );
+    }
+
+    return data;
+}
+
+export async function deleteAccount() {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/delete-account`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization:
+                    `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to delete account"
+        );
+    }
+
+    return data;
+}
+
 
 
 

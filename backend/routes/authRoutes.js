@@ -6,6 +6,12 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+import Task from "../models/Task.js";
+import Project from "../models/Project.js";
+import Goal from "../models/Goal.js";
+import Note from "../models/Note.js";
+import Reminder from "../models/Reminder.js";
+
 router.post(
     "/register",
     async (req, res) => {
@@ -236,6 +242,303 @@ router.put(
             await user.save();
 
             res.json(user);
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.put(
+    "/profile",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            const {
+                name,
+                job,
+                avatar,
+            } = req.body;
+
+            if (name !== undefined) {
+                user.name = name;
+            }
+
+            if (job !== undefined) {
+                user.job = job;
+            }
+
+            if (avatar !== undefined) {
+                user.avatar = avatar;
+            }
+
+            await user.save();
+
+            const updatedUser =
+                await User.findById(
+                    user._id
+                ).select("-password");
+
+            res.json(
+                updatedUser
+            );
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.put(
+    "/password",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const {
+                currentPassword,
+                newPassword,
+            } = req.body;
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            const passwordMatch =
+                await bcrypt.compare(
+                    currentPassword,
+                    user.password
+                );
+
+            if (!passwordMatch) {
+                return res.status(400).json({
+                    message:
+                        "Current password is incorrect",
+                });
+            }
+
+            const salt =
+                await bcrypt.genSalt(10);
+
+            user.password =
+                await bcrypt.hash(
+                    newPassword,
+                    salt
+                );
+
+            await user.save();
+
+            res.json({
+                message:
+                    "Password updated successfully",
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.put(
+    "/profile",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const {
+                name,
+                job,
+            } = req.body;
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            if (name !== undefined) {
+                user.name = name;
+            }
+
+            if (job !== undefined) {
+                user.job = job;
+            }
+
+            await user.save();
+
+            res.json(user);
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.put(
+    "/change-password",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const {
+                currentPassword,
+                newPassword,
+            } = req.body;
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            const passwordMatch =
+                await bcrypt.compare(
+                    currentPassword,
+                    user.password
+                );
+
+            if (!passwordMatch) {
+                return res.status(400).json({
+                    message:
+                        "Current password is incorrect",
+                });
+            }
+
+            const salt =
+                await bcrypt.genSalt(10);
+
+            user.password =
+                await bcrypt.hash(
+                    newPassword,
+                    salt
+                );
+
+            await user.save();
+
+            res.json({
+                message:
+                    "Password updated successfully",
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.delete(
+    "/clear-data",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Promise.all([
+                Task.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Project.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Goal.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Note.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Reminder.deleteMany({
+                    user: req.user.id,
+                }),
+            ]);
+
+            res.json({
+                message:
+                    "All user data cleared",
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.delete(
+    "/delete-account",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Promise.all([
+                Task.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Project.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Goal.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Note.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Reminder.deleteMany({
+                    user: req.user.id,
+                }),
+            ]);
+
+            await User.findByIdAndDelete(
+                req.user.id
+            );
+
+            res.json({
+                message:
+                    "Account deleted successfully",
+            });
 
         } catch (error) {
             res.status(500).json({
