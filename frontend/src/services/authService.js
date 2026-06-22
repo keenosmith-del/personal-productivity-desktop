@@ -81,3 +81,34 @@ export async function getUsers() {
 
     return data;
 }
+
+export async function getCurrentUser() {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/me`,
+        {
+            headers: {
+                Authorization:
+                    `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to fetch user"
+        );
+    }
+
+    return data;
+}
+
+

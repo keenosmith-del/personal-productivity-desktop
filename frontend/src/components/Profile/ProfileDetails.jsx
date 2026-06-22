@@ -1,7 +1,10 @@
 import GlassCard from "../GlassCard";
 import { Pen } from "lucide-react";
 
-function ProfileDetails() {
+function ProfileDetails({
+  user,
+  counts,
+}) {
   return (
     <GlassCard minHeight="260px">
       <div
@@ -71,7 +74,14 @@ function ProfileDetails() {
                 "all 0.2s ease",
             }}
           >
-            KS
+            {user?.name
+              ?.split(" ")
+              .map(
+                (part) => part[0]
+              )
+              .join("")
+              .slice(0, 2)
+              .toUpperCase() || "U"}
           </div>
 
           <div
@@ -118,53 +128,8 @@ function ProfileDetails() {
               fontWeight: "400",
             }}
           >
-            Keeno Smith
+            {user?.name || "Loading..."}
           </h2>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "8px",
-              flexWrap: "wrap",
-              marginBottom: "12px",
-            }}
-          >
-            <span
-              style={{
-                padding: "4px 8px",
-                borderRadius: "999px",
-                fontSize: "0.68rem",
-                background: "#063f4733",
-                border: "1px solid #063f4766",
-              }}
-            >
-              Work
-            </span>
-
-            <span
-              style={{
-                padding: "4px 8px",
-                borderRadius: "999px",
-                fontSize: "0.68rem",
-                background: "#4d689333",
-                border: "1px solid #4d689366",
-              }}
-            >
-              Active
-            </span>
-
-            <span
-              style={{
-                padding: "4px 8px",
-                borderRadius: "999px",
-                fontSize: "0.68rem",
-                background: "#e9b95733",
-                border: "1px solid #e9b95766",
-              }}
-            >
-              14 Day Streak
-            </span>
-          </div>
 
           <p
             style={{
@@ -175,7 +140,7 @@ function ProfileDetails() {
               letterSpacing: "-0.01em",
             }}
           >
-            Software Engineer
+            {user?.job || "No Job Title"}
           </p>
 
           <p
@@ -187,7 +152,7 @@ function ProfileDetails() {
               letterSpacing: "-0.01em",
             }}
           >
-            keeno@example.com
+            {user?.email || ""}
           </p>
 
           <p
@@ -200,7 +165,18 @@ function ProfileDetails() {
               fontWeight: "300",
             }}
           >
-            Member since June 2026
+            Member since{" "}
+            {user?.createdAt
+              ? new Date(
+                user.createdAt
+              ).toLocaleDateString(
+                "default",
+                {
+                  month: "long",
+                  year: "numeric",
+                }
+              )
+              : ""}
           </p>
 
           <div
@@ -220,7 +196,7 @@ function ProfileDetails() {
                 border: "1px solid #72715c66",
               }}
             >
-              48 Tasks
+              {counts?.tasks || 0} Tasks
             </span>
 
             <span
@@ -232,7 +208,7 @@ function ProfileDetails() {
                 border: "1px solid #c59c7066",
               }}
             >
-              12 Goals
+              {counts?.goals || 0} Goals
             </span>
 
             <span
@@ -244,7 +220,7 @@ function ProfileDetails() {
                 border: "1px solid #854c4966",
               }}
             >
-              6 Projects
+              {counts?.projects || 0} Projects
             </span>
 
             <span
@@ -256,7 +232,7 @@ function ProfileDetails() {
                 border: "1px solid #52677d66",
               }}
             >
-              24 Notes
+              {counts?.notes || 0} Notes
             </span>
           </div>
         </div>
