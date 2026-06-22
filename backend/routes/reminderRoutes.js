@@ -2,6 +2,8 @@ import express from "express";
 import Reminder from "../models/Reminder.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+import createNotification from "../utils/createNotification.js";
+
 const router = express.Router();
 
 router.get(
@@ -36,6 +38,21 @@ router.post(
                     user: req.user.id,
                 });
 
+            await createNotification({
+                user: req.user.id,
+
+                title: "Reminder Created",
+
+                description:
+                    `"${reminder.title}" was created.`,
+
+                type: "reminder",
+
+                action: "created",
+
+                relatedId: reminder._id,
+            });
+
             res.status(201).json(
                 reminder
             );
@@ -65,6 +82,9 @@ router.put(
                 });
             }
 
+            const wasCompleted =
+                reminder.completed;
+
             const updatedReminder =
                 await Reminder.findByIdAndUpdate(
                     req.params.id,
@@ -73,6 +93,47 @@ router.put(
                         new: true,
                     }
                 );
+
+            if (
+                !wasCompleted &&
+                updatedReminder.completed
+            ) {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Reminder Completed",
+
+                    description:
+                        `"${updatedReminder.title}" was completed.`,
+
+                    type: "reminder",
+
+                    action:
+                        "completed",
+
+                    relatedId:
+                        updatedReminder._id,
+                });
+            } else {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Reminder Updated",
+
+                    description:
+                        `"${updatedReminder.title}" was updated.`,
+
+                    type: "reminder",
+
+                    action:
+                        "updated",
+
+                    relatedId:
+                        updatedReminder._id,
+                });
+            }
 
             res.json(
                 updatedReminder
@@ -124,7 +185,23 @@ router.delete(
                 });
             }
 
+            const reminderTitle =
+                reminder.title;
+
             await reminder.deleteOne();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Reminder Deleted",
+
+                description:
+                    `"${reminderTitle}" was deleted.`,
+
+                type: "reminder",
+
+                action: "deleted",
+            });
 
             res.json({
                 message:

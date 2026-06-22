@@ -2,6 +2,8 @@ import express from "express";
 import Goal from "../models/Goal.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+import createNotification from "../utils/createNotification.js";
+
 const router = express.Router();
 
 router.get(
@@ -36,6 +38,21 @@ router.post(
 
                     user: req.user.id,
                 });
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Goal Created",
+
+                description:
+                    `"${goal.title}" was created.`,
+
+                type: "goal",
+
+                action: "created",
+
+                relatedId: goal._id,
+            });
 
             res.status(201).json(
                 goal
@@ -87,6 +104,9 @@ router.put(
                 });
             }
 
+            const wasCompleted =
+                goal.completed;
+
             const updatedGoal =
                 await Goal.findByIdAndUpdate(
                     req.params.id,
@@ -95,6 +115,47 @@ router.put(
                         new: true,
                     }
                 );
+
+            if (
+                !wasCompleted &&
+                updatedGoal.completed
+            ) {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Goal Completed",
+
+                    description:
+                        `"${updatedGoal.title}" was completed.`,
+
+                    type: "goal",
+
+                    action:
+                        "completed",
+
+                    relatedId:
+                        updatedGoal._id,
+                });
+            } else {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Goal Updated",
+
+                    description:
+                        `"${updatedGoal.title}" was updated.`,
+
+                    type: "goal",
+
+                    action:
+                        "updated",
+
+                    relatedId:
+                        updatedGoal._id,
+                });
+            }
 
             res.json(updatedGoal);
         } catch (error) {
@@ -166,7 +227,23 @@ router.delete(
                 });
             }
 
+            const goalTitle =
+                goal.title;
+
             await goal.deleteOne();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Goal Deleted",
+
+                description:
+                    `"${goalTitle}" was deleted.`,
+
+                type: "goal",
+
+                action: "deleted",
+            });
 
             res.json({
                 message:

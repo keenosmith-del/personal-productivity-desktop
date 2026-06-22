@@ -4,6 +4,12 @@ function NotificationModal({
     notification,
     onClose,
 }) {
+    const formattedDate =
+        notification.createdAt
+            ? new Date(
+                notification.createdAt
+            ).toLocaleString()
+            : "";
     return (
         <div
             onClick={onClose}
@@ -175,7 +181,7 @@ function NotificationModal({
                     }}
                 >
                     {
-                        notification.time
+                        formattedDate
                     }
                 </small>
             </div>

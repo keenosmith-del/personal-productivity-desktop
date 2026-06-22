@@ -2,6 +2,8 @@ import express from "express";
 import Task from "../models/Task.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+import createNotification from "../utils/createNotification.js";
+
 const router = express.Router();
 
 router.get(
@@ -37,6 +39,21 @@ router.post(
                     user: req.user.id,
                 });
 
+            await createNotification({
+                user: req.user.id,
+
+                title: "Task Created",
+
+                description:
+                    `"${task.title}" was created.`,
+
+                type: "task",
+
+                action: "created",
+
+                relatedId: task._id,
+            });
+
             res.status(201).json(
                 task
             );
@@ -66,6 +83,9 @@ router.put(
                 });
             }
 
+            const wasCompleted =
+                task.completed;
+
             const updatedTask =
                 await Task.findByIdAndUpdate(
                     req.params.id,
@@ -75,10 +95,52 @@ router.put(
                     }
                 );
 
+            if (
+                !wasCompleted &&
+                updatedTask.completed
+            ) {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Task Completed",
+
+                    description:
+                        `"${updatedTask.title}" was completed.`,
+
+                    type: "task",
+
+                    action:
+                        "completed",
+
+                    relatedId:
+                        updatedTask._id,
+                });
+            } else {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Task Updated",
+
+                    description:
+                        `"${updatedTask.title}" was updated.`,
+
+                    type: "task",
+
+                    action:
+                        "updated",
+
+                    relatedId:
+                        updatedTask._id,
+                });
+            }
+
             res.json(updatedTask);
         } catch (error) {
             res.status(500).json({
-                message: "Server error",
+                message:
+                    "Server error",
             });
         }
     }
@@ -167,7 +229,23 @@ router.delete(
                 });
             }
 
+            const taskTitle =
+                task.title;
+
             await task.deleteOne();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Task Deleted",
+
+                description:
+                    `"${taskTitle}" was deleted.`,
+
+                type: "task",
+
+                action: "deleted",
+            });
 
             res.json({
                 message:

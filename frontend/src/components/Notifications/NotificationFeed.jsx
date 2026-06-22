@@ -8,25 +8,63 @@ import {
 import { useState } from "react";
 
 import NotificationModal from "./NotificationModal";
-import { initialNotifications } from "../../data/notifications";
+
+import {
+    toggleStarNotification,
+    deleteNotification,
+} from "../../services/notificationService";
 
 function NotificationFeed({
     notifications,
     setNotifications,
     toast,
     setToast,
-    lastDeletedNotification,
-    setLastDeletedNotification,
+    onClearAll,
 }) {
     const [
         selectedNotification,
         setSelectedNotification,
     ] = useState(null);
 
-    const [
-        favourites,
-        setFavourites,
-    ] = useState([]);
+    const getTimeAgo = (date) => {
+        const seconds = Math.floor(
+            (new Date() - new Date(date)) /
+            1000
+        );
+
+        const minutes = Math.floor(
+            seconds / 60
+        );
+
+        const hours = Math.floor(
+            minutes / 60
+        );
+
+        const days = Math.floor(
+            hours / 24
+        );
+
+        if (seconds < 60)
+            return "Just now";
+
+        if (minutes < 60)
+            return `${minutes} min${minutes !== 1 ? "s" : ""
+                } ago`;
+
+        if (hours < 24)
+            return `${hours} hour${hours !== 1 ? "s" : ""
+                } ago`;
+
+        if (days === 1)
+            return "Yesterday";
+
+        if (days < 7)
+            return `${days} days ago`;
+
+        return new Date(
+            date
+        ).toLocaleDateString();
+    };
 
     return (
         <>
@@ -60,9 +98,7 @@ function NotificationFeed({
 
                     <button
                         disabled={notifications.length === 0}
-                        onClick={() =>
-                            setNotifications([])
-                        }
+                        onClick={onClearAll}
                         style={{
                             background: "transparent",
 
@@ -144,7 +180,7 @@ function NotificationFeed({
                     ) : (
                         notifications.map((notification) => (
                             <div
-                                key={notification.id}
+                                key={notification._id}
                                 onClick={() =>
                                     setSelectedNotification(
                                         notification
@@ -199,9 +235,7 @@ function NotificationFeed({
                                             size={16}
                                             strokeWidth={1.5}
                                             fill={
-                                                favourites.includes(
-                                                    notification.id
-                                                )
+                                                notification.starred
                                                     ? "currentColor"
                                                     : "none"
                                             }
@@ -210,44 +244,42 @@ function NotificationFeed({
                                                 cursor: "pointer",
 
                                                 color:
-                                                    favourites.includes(
-                                                        notification.id
-                                                    )
+                                                    notification.starred
                                                         ? "#F5F5F5"
                                                         : "",
 
                                                 transition:
                                                     "all 0.2s ease",
                                             }}
-                                            onClick={(e) => {
+                                            onClick={async (e) => {
                                                 e.stopPropagation();
 
-                                                const isStarred =
-                                                    favourites.includes(
-                                                        notification.id
+                                                try {
+                                                    const updated =
+                                                        await toggleStarNotification(
+                                                            notification._id
+                                                        );
+
+                                                    setNotifications((prev) =>
+                                                        prev.map((item) =>
+                                                            item._id === updated._id
+                                                                ? updated
+                                                                : item
+                                                        )
                                                     );
 
-                                                setFavourites((prev) =>
-                                                    isStarred
-                                                        ? prev.filter(
-                                                            (item) =>
-                                                                item !== notification.id
-                                                        )
-                                                        : [
-                                                            ...prev,
-                                                            notification.id,
-                                                        ]
-                                                );
+                                                    setToast(
+                                                        updated.starred
+                                                            ? "Notification starred"
+                                                            : "Notification unstarred"
+                                                    );
+                                                } catch (error) {
+                                                    console.error(error);
 
-                                                setToast(
-                                                    isStarred
-                                                        ? "Notification unstarred"
-                                                        : "Notification starred"
-                                                );
-
-                                                setTimeout(() => {
-                                                    setToast("");
-                                                }, 3000);
+                                                    setToast(
+                                                        "Failed to update notification"
+                                                    );
+                                                }
                                             }}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.transform =
@@ -282,42 +314,32 @@ function NotificationFeed({
                                                 e.currentTarget.style.transform =
                                                     "scale(1)";
                                             }}
-                                            onClick={(e) => {
+                                            onClick={async (e) => {
                                                 e.stopPropagation();
 
-                                                setLastDeletedNotification({
-                                                    ...notification,
-                                                    wasStarred:
-                                                        favourites.includes(
-                                                            notification.id
-                                                        ),
-                                                });
-
-                                                setNotifications((prev) =>
-                                                    prev.filter(
-                                                        (item) =>
-                                                            item.id !== notification.id
-                                                    )
-                                                );
-
-                                                setFavourites((prev) =>
-                                                    prev.filter(
-                                                        (id) =>
-                                                            id !== notification.id
-                                                    )
-                                                );
-
-                                                setToast(
-                                                    "Notification deleted"
-                                                );
-
-                                                setTimeout(() => {
-                                                    setToast("");
-
-                                                    setLastDeletedNotification(
-                                                        null
+                                                try {
+                                                    await deleteNotification(
+                                                        notification._id
                                                     );
-                                                }, 4000);
+
+                                                    setNotifications((prev) =>
+                                                        prev.filter(
+                                                            (item) =>
+                                                                item._id !==
+                                                                notification._id
+                                                        )
+                                                    );
+
+                                                    setToast(
+                                                        "Notification deleted"
+                                                    );
+                                                } catch (error) {
+                                                    console.error(error);
+
+                                                    setToast(
+                                                        "Failed to delete notification"
+                                                    );
+                                                }
                                             }}
                                         />
                                     </div>
@@ -402,7 +424,9 @@ function NotificationFeed({
                                     }}
                                 >
                                     {
-                                        notification.time
+                                        getTimeAgo(
+                                            notification.createdAt
+                                        )
                                     }
                                 </small>
                             </div>

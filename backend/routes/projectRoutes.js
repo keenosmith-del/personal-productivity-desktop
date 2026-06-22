@@ -2,6 +2,8 @@ import express from "express";
 import Project from "../models/Project.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+import createNotification from "../utils/createNotification.js";
+
 const router = express.Router();
 
 router.get(
@@ -37,6 +39,21 @@ router.post(
                     user: req.user.id,
                 });
 
+            await createNotification({
+                user: req.user.id,
+
+                title: "Project Created",
+
+                description:
+                    `"${project.title}" was created.`,
+
+                type: "project",
+
+                action: "created",
+
+                relatedId: project._id,
+            });
+
             res.status(201).json(
                 project
             );
@@ -66,6 +83,9 @@ router.put(
                 });
             }
 
+            const wasCompleted =
+                project.completed;
+
             const updatedProject =
                 await Project.findByIdAndUpdate(
                     req.params.id,
@@ -74,6 +94,47 @@ router.put(
                         new: true,
                     }
                 );
+
+            if (
+                !wasCompleted &&
+                updatedProject.completed
+            ) {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Project Completed",
+
+                    description:
+                        `"${updatedProject.title}" was completed.`,
+
+                    type: "project",
+
+                    action:
+                        "completed",
+
+                    relatedId:
+                        updatedProject._id,
+                });
+            } else {
+                await createNotification({
+                    user: req.user.id,
+
+                    title:
+                        "Project Updated",
+
+                    description:
+                        `"${updatedProject.title}" was updated.`,
+
+                    type: "project",
+
+                    action:
+                        "updated",
+
+                    relatedId:
+                        updatedProject._id,
+                });
+            }
 
             res.json(updatedProject);
         } catch (error) {
@@ -171,7 +232,23 @@ router.delete(
                 });
             }
 
+            const projectTitle =
+                project.title;
+
             await project.deleteOne();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Project Deleted",
+
+                description:
+                    `"${projectTitle}" was deleted.`,
+
+                type: "project",
+
+                action: "deleted",
+            });
 
             res.json({
                 message:

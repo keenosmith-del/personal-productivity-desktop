@@ -2,6 +2,8 @@ import express from "express";
 import Note from "../models/Note.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+import createNotification from "../utils/createNotification.js";
+
 const router = express.Router();
 
 router.get(
@@ -36,6 +38,21 @@ router.post(
 
                     user: req.user.id,
                 });
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Note Created",
+
+                description:
+                    `"${note.title}" was created.`,
+
+                type: "note",
+
+                action: "created",
+
+                relatedId: note._id,
+            });
 
             res.status(201).json(
                 note
@@ -74,6 +91,24 @@ router.put(
                         new: true,
                     }
                 );
+
+            await createNotification({
+                user: req.user.id,
+
+                title:
+                    "Note Updated",
+
+                description:
+                    `"${updatedNote.title}" was updated.`,
+
+                type: "note",
+
+                action:
+                    "updated",
+
+                relatedId:
+                    updatedNote._id,
+            });
 
             res.json(updatedNote);
         } catch (error) {
@@ -150,7 +185,23 @@ router.delete(
                 });
             }
 
+            const noteTitle =
+                note.title;
+
             await note.deleteOne();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Note Deleted",
+
+                description:
+                    `"${noteTitle}" was deleted.`,
+
+                type: "note",
+
+                action: "deleted",
+            });
 
             res.json({
                 message:
