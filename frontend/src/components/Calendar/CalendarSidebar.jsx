@@ -1,7 +1,7 @@
 import GlassCard from "../GlassCard";
 
 function CalendarSidebar({
-  selectedDay,
+  selectedDate,
   events,
 }) {
   // COMPONENT STATES
@@ -30,6 +30,30 @@ function CalendarSidebar({
         event.type ===
         "project"
     );
+
+  const visibleTasks =
+    tasks.slice(0, 2);
+
+  const visibleGoals =
+    goals.slice(0, 2);
+
+  const visibleReminders =
+    reminders.slice(0, 2);
+
+  const visibleProjects =
+    projects.slice(0, 2);
+
+  const remainingTasks =
+    tasks.length - 2;
+
+  const remainingGoals =
+    goals.length - 2;
+
+  const remainingReminders =
+    reminders.length - 2;
+
+  const remainingProjects =
+    projects.length - 2;
 
   const MetaChip = ({
     label,
@@ -62,24 +86,38 @@ function CalendarSidebar({
     </span>
   );
 
-  const dayNames = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+  const selectedDateObject =
+    new Date(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day
+    );
 
   const dayName =
-    dayNames[
-    (selectedDay - 1) % 7
-    ];
+    selectedDateObject.toLocaleDateString(
+      "default",
+      {
+        weekday: "long",
+      }
+    );
+
+  const monthName =
+    selectedDateObject.toLocaleDateString(
+      "default",
+      {
+        month: "long",
+      }
+    );
 
   // FUNCTIONS
   return (
-    <GlassCard minHeight="100%">
+    <GlassCard
+      minHeight="850px"
+      style={{
+        height: "100%",
+        overflowY: "auto",
+      }}
+    >
       <h2
         style={{
           marginBottom: "24px",
@@ -102,7 +140,7 @@ function CalendarSidebar({
             marginLeft: "8px",
           }}
         >
-          {selectedDay} June
+          {selectedDate.day} {monthName}
         </span>
       </h2>
 
@@ -114,13 +152,13 @@ function CalendarSidebar({
         <h3
           style={{
             marginBottom: "12px",
-            fontWeight: "400",
+            fontWeight: "300",
           }}
         >
-          Tasks
+          Tasks ({tasks.length})
         </h3>
         {tasks.length > 0 ? (
-          tasks.map((task) => (
+          visibleTasks.map((task) => (
             <p
               key={task.title}
               style={{
@@ -150,6 +188,19 @@ function CalendarSidebar({
             No tasks.
           </p>
         )}
+        {remainingTasks > 0 && (
+          <p
+            style={{
+              fontSize: "0.72rem",
+              opacity: 0.7,
+              color:
+                "var(--text-secondary)",
+              marginTop: "8px",
+            }}
+          >
+            +{remainingTasks} more
+          </p>
+        )}
       </div>
 
       <div
@@ -160,14 +211,14 @@ function CalendarSidebar({
         <h3
           style={{
             marginBottom: "12px",
-            fontWeight: "400",
+            fontWeight: "300",
           }}
         >
-          Goals
+          Goals ({goals.length})
         </h3>
 
         {goals.length > 0 ? (
-          goals.map((goal) => (
+          visibleGoals.map((goal) => (
             <p
               key={goal.title}
               style={{
@@ -199,6 +250,19 @@ function CalendarSidebar({
             No goals.
           </p>
         )}
+        {remainingGoals > 0 && (
+          <p
+            style={{
+              fontSize: "0.72rem",
+              opacity: 0.7,
+              color:
+                "var(--text-secondary)",
+              marginTop: "8px",
+            }}
+          >
+            +{remainingGoals} more
+          </p>
+        )}
       </div>
 
       <div
@@ -209,13 +273,13 @@ function CalendarSidebar({
         <h3
           style={{
             marginBottom: "12px",
-            fontWeight: "400",
+            fontWeight: "300",
           }}
         >
-          Reminders
+          Reminders ({reminders.length})
         </h3>
         {reminders.length > 0 ? (
-          reminders.map(
+          visibleReminders.map(
             (reminder) => (
               <p
                 key={
@@ -249,6 +313,19 @@ function CalendarSidebar({
             No reminders.
           </p>
         )}
+        {remainingReminders > 0 && (
+          <p
+            style={{
+              fontSize: "0.72rem",
+              opacity: 0.7,
+              color:
+                "var(--text-secondary)",
+              marginTop: "8px",
+            }}
+          >
+            +{remainingReminders} more
+          </p>
+        )}
       </div>
 
       <div
@@ -259,14 +336,14 @@ function CalendarSidebar({
         <h3
           style={{
             marginBottom: "12px",
-            fontWeight: "400",
+            fontWeight: "300",
           }}
         >
-          Projects
+          Projects ({projects.length})
         </h3>
 
         {projects.length > 0 ? (
-          projects.map(
+          visibleProjects.map(
             (project) => (
               <p
                 key={project.title}
@@ -298,26 +375,19 @@ function CalendarSidebar({
             No projects.
           </p>
         )}
-      </div>
-
-      <div>
-        <h3
-          style={{
-            marginBottom: "12px",
-            fontWeight: "400",
-          }}
-        >
-          Notes
-        </h3>
-
-        <p
-          style={{
-            color:
-              "var(--text-secondary)",
-          }}
-        >
-          Calendar events and notes will appear here.
-        </p>
+        {remainingProjects > 0 && (
+          <p
+            style={{
+              fontSize: "0.72rem",
+              opacity: 0.7,
+              color:
+                "var(--text-secondary)",
+              marginTop: "8px",
+            }}
+          >
+            +{remainingProjects} more
+          </p>
+        )}
       </div>
     </GlassCard >
   );

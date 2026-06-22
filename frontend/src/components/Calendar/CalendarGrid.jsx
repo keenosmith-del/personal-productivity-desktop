@@ -1,8 +1,17 @@
+import {
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
 function CalendarGrid({
-  selectedDay,
-  setSelectedDay,
+  selectedDate,
+  setSelectedDate,
+  calendarEvents,
+  displayDate,
+  setDisplayDate,
 }) {
-  const currentDay = 8;
+  const currentDay =
+    new Date().getDate();
 
   const weekDays = [
     "Mon",
@@ -14,76 +23,71 @@ function CalendarGrid({
     "Sun",
   ];
 
+  const today = new Date();
+
+  const currentMonth =
+    displayDate.getMonth();
+
+  const currentYear =
+    displayDate.getFullYear();
+
+  const daysInMonth =
+    new Date(
+      currentYear,
+      currentMonth + 1,
+      0
+    ).getDate();
+
   const days = Array.from(
-    { length: 30 },
+    { length: daysInMonth },
     (_, index) => index + 1
   );
 
-  const calendarEvents = {
-    3: [
-      {
-        title: "Gym",
-        type: "goal",
-      },
-    ],
+  const previousMonth =
+    () => {
+      setDisplayDate(
+        new Date(
+          currentYear,
+          currentMonth - 1,
+          1
+        )
+      );
+    };
 
-    5: [
-      {
-        title: "Dashboard",
-        type: "task",
-      },
-    ],
+  const nextMonth =
+    () => {
+      setDisplayDate(
+        new Date(
+          currentYear,
+          currentMonth + 1,
+          1
+        )
+      );
+    };
 
-    8: [
-      {
-        title: "Portfolio",
-        type: "goal",
-      },
+  const goToToday =
+    () => {
+      setDisplayDate(
+        new Date()
+      );
 
-      {
-        title: "Review",
-        type: "reminder",
-      },
-
-      {
-        title: "Desktop",
-        type: "project",
-      },
-
-      {
-        title: "Jobs",
-        type: "task",
-      },
-    ],
-
-    14: [
-      {
-        title: "Checkup",
-        type: "reminder",
-      },
-    ],
-
-    21: [
-      {
-        title: "Submission",
-        type: "project",
-      },
-    ],
-  };
+      setSelectedDate({
+        day: new Date().getDate(),
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+      });
+    };
 
   return (
     <div
       style={{
         flex: "1",
 
-        background:
-          "var(--glass-bg)",
+        background: "var(--glass-bg)",
 
-        border:
-          "1px solid var(--glass-border)",
+        border: "1px solid var(--glass-border)",
 
-        borderRadius:
-          "var(--radius-large)",
+        borderRadius: "var(--radius-large)",
 
         padding: "24px",
 
@@ -99,31 +103,99 @@ function CalendarGrid({
           marginBottom: "24px",
         }}
       >
-        <h1
+        <div
           style={{
-            fontSize: "1.8rem",
-            letterSpacing: "-0.02em",
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems:
+              "center",
           }}
         >
-          <span
+          <div
             style={{
-              fontWeight: "600",
+              display: "flex",
+              alignItems:
+                "center",
+              gap: "12px",
             }}
           >
-            June
-          </span>
+            <ChevronLeft
+              size={18}
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={
+                previousMonth
+              }
+            />
 
-          <span
+            <h1
+              style={{
+                fontSize:
+                  "1.8rem",
+                letterSpacing:
+                  "-0.02em",
+              }}
+            >
+              <span
+                style={{
+                  fontWeight:
+                    "600",
+                }}
+              >
+                {displayDate.toLocaleString(
+                  "default",
+                  {
+                    month:
+                      "long",
+                  }
+                )}
+              </span>
+
+              <span
+                style={{
+                  fontWeight:
+                    "400",
+                  color:
+                    "var(--text-secondary)",
+                  marginLeft:
+                    "8px",
+                }}
+              >
+                {currentYear}
+              </span>
+            </h1>
+
+            <ChevronRight
+              size={18}
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={nextMonth}
+            />
+          </div>
+
+          <button
+            onClick={goToToday}
             style={{
-              fontWeight: "400",
+              background:
+                "rgba(255,255,255,0.05)",
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+              borderRadius:
+                "999px",
+              padding:
+                "6px 12px",
               color:
-                "var(--text-secondary)",
-              marginLeft: "8px",
+                "var(--text-primary)",
+              cursor:
+                "pointer",
             }}
           >
-            2026
-          </span>
-        </h1>
+            Today
+          </button>
+        </div>
       </div>
 
       <div
@@ -167,8 +239,28 @@ function CalendarGrid({
         }}
       >
         {days.map((day) => {
+          const eventKey =
+            `${currentYear}-${currentMonth}-${day}`;
+
           const events =
-            calendarEvents[day] || [];
+            calendarEvents[
+            eventKey
+            ] || [];
+
+          const isToday =
+            day ===
+            today.getDate() &&
+            currentMonth ===
+            today.getMonth() &&
+            currentYear ===
+            today.getFullYear();
+
+          const isSelected =
+            selectedDate?.day === day &&
+            selectedDate?.month ===
+            currentMonth &&
+            selectedDate?.year ===
+            currentYear;
 
           const visibleEvents =
             events.slice(0, 2);
@@ -179,17 +271,21 @@ function CalendarGrid({
           return (
             <div
               onClick={() =>
-                setSelectedDay(day)
+                setSelectedDate({
+                  day,
+                  month: currentMonth,
+                  year: currentYear,
+                })
               }
               key={day}
               onMouseEnter={(e) => {
-                if (day !== selectedDay) {
+                if (!isSelected) {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (day !== selectedDay) {
+                if (!isSelected) {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.02)";
                 }
@@ -205,7 +301,7 @@ function CalendarGrid({
                 padding: "12px",
 
                 background:
-                  day === selectedDay
+                  isSelected
                     ? "rgba(255,255,255,0.08)"
                     : "rgba(255,255,255,0.02)",
 
@@ -229,12 +325,12 @@ function CalendarGrid({
                   justifyContent: "center",
 
                   background:
-                    day === currentDay
+                    isToday
                       ? "#52677d"
                       : "transparent",
 
                   color:
-                    day === currentDay
+                    isToday
                       ? "#ffffff"
                       : "var(--text-primary)",
 
@@ -248,8 +344,10 @@ function CalendarGrid({
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "6px",
-                  marginTop: "10px",
+                  gap: "4px",
+                  marginTop: "8px",
+                  height: "52px",
+                  overflow: "hidden",
                 }}
               >
                 {visibleEvents.map(
@@ -257,20 +355,20 @@ function CalendarGrid({
                     <div
                       key={event.title}
                       style={{
-                        height: "22px",
+                        height: "18px",
 
                         display: "flex",
                         alignItems:
                           "center",
 
                         padding:
-                          "0 8px",
+                          "0 6px",
 
                         borderRadius:
                           "8px",
 
                         fontSize:
-                          "0.72rem",
+                          "0.65rem",
 
                         overflow:
                           "hidden",
@@ -280,6 +378,10 @@ function CalendarGrid({
 
                         textOverflow:
                           "ellipsis",
+
+                        minWidth: 0,
+
+                        flexShrink: 1,
 
                         background:
                           event.type ===
@@ -304,14 +406,13 @@ function CalendarGrid({
                 {remainingCount > 0 && (
                   <div
                     style={{
-                      fontSize:
-                        "0.72rem",
+                      fontSize: "0.6rem",
 
-                      color:
-                        "var(--text-secondary)",
+                      color: "var(--text-secondary)",
 
-                      paddingLeft:
-                        "4px",
+                      paddingLeft: "4px",
+
+                      opacity: 0.7,
                     }}
                   >
                     +{remainingCount} more

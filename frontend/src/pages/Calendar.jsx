@@ -1,84 +1,178 @@
 import MainLayout from "../layouts/MainLayout";
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 
 import CalendarGrid from "../components/Calendar/CalendarGrid";
 import CalendarSidebar from "../components/Calendar/CalendarSidebar";
 
+import {
+  getProjects,
+} from "../services/projectService";
+
+import {
+  getTasks,
+} from "../services/taskService";
+
+import {
+  getGoals,
+} from "../services/goalService";
+
+import {
+  getReminders,
+} from "../services/reminderService";
+
 function Calendar() {
-  // COMPONENT STATES
-const currentDay = 8; // gets replaced with new Date().getDate()
+  const currentDay =
+    new Date().getDate();
 
-const [
-  selectedDay,
-  setSelectedDay,
-] = useState(currentDay);
+  const [
+    displayDate,
+    setDisplayDate,
+  ] = useState(
+    new Date()
+  );
 
-  const calendarEvents = {
-    3: [
-      {
-        title: "Gym Session",
-        type: "goal",
-        category: "Health",
-      },
-    ],
+  const [
+    selectedDate,
+    setSelectedDate,
+  ] = useState({
+    day: currentDay,
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+  });
 
-    5: [
-      {
-        title: "Dashboard UI",
-        type: "task",
-        priority: "Medium",
-      },
-    ],
+  const [
+    calendarEvents,
+    setCalendarEvents,
+  ] = useState({});
 
-    8: [
-      {
-        title:
-          "Portfolio Website",
-        type: "goal",
-        category: "Personal",
-      },
+  const loadCalendarData =
+    async () => {
+      try {
+        const [
+          projects,
+          tasks,
+          goals,
+          reminders,
+        ] = await Promise.all([
+          getProjects(),
+          getTasks(),
+          getGoals(),
+          getReminders(),
+        ]);
 
-      {
-        title:
-          "Portfolio Review",
-        type: "reminder",
-        category: "Work",
-      },
+        const events = {};
 
-      {
-        title:
-          "Desktop App",
-        type: "project",
-        category: "Study",
-      },
+        const addEvent = (
+          dateString,
+          event
+        ) => {
+          if (!dateString) return;
 
-      {
-        title:
-          "Apply for Jobs",
-        type: "task",
-        priority: "High",
-      },
-    ],
+          const date =
+            new Date(dateString);
 
-    14: [
-      {
-        title: "Checkup",
-        type: "reminder",
-        category: "Health",
-      },
-    ],
+          if (
+            Number.isNaN(
+              date.getTime()
+            )
+          ) {
+            return;
+          }
 
-    21: [
-      {
-        title:
-          "Submission",
-        type: "project",
-        category: "Study",
-      },
-    ],
-  };
+          const eventKey =
+            `${date.getFullYear()}-${date.getMonth()
+            }-${date.getDate()}`;
 
-  //FUNCTIONS
+          if (!events[eventKey]) {
+            events[eventKey] = [];
+          }
+
+          events[eventKey].push(
+            event
+          );
+        };
+
+        projects.forEach(
+          (project) => {
+            addEvent(
+              project.dueDate,
+              {
+                title:
+                  project.title,
+                type:
+                  "project",
+                category:
+                  project.category,
+              }
+            );
+          }
+        );
+
+        tasks.forEach(
+          (task) => {
+            addEvent(
+              task.dueDate,
+              {
+                title:
+                  task.title,
+                type: "task",
+                priority:
+                  task.priority,
+              }
+            );
+          }
+        );
+
+        goals.forEach(
+          (goal) => {
+            addEvent(
+              goal.targetDate,
+              {
+                title:
+                  goal.title,
+                type: "goal",
+                category:
+                  goal.category,
+              }
+            );
+          }
+        );
+
+        reminders.forEach(
+          (reminder) => {
+            addEvent(
+              reminder.reminderDate,
+              {
+                title:
+                  reminder.title,
+                type:
+                  "reminder",
+                category:
+                  reminder.category,
+              }
+            );
+          }
+        );
+
+        setCalendarEvents(
+          events
+        );
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  useEffect(() => {
+    loadCalendarData();
+  }, []);
+
+  const selectedEventKey =
+    `${selectedDate.year}-${selectedDate.month}-${selectedDate.day}`;
+
   return (
     <MainLayout>
       <div
@@ -91,20 +185,36 @@ const [
         }}
       >
         <CalendarGrid
-          selectedDay={selectedDay}
-          setSelectedDay={setSelectedDay}
+          selectedDate={
+            selectedDate
+          }
+          setSelectedDate={
+            setSelectedDate
+          }
+          calendarEvents={
+            calendarEvents
+          }
+          displayDate={
+            displayDate
+          }
+          setDisplayDate={
+            setDisplayDate
+          }
         />
 
         <div
           style={{
             width: "320px",
+            height: "100%",
           }}
         >
           <CalendarSidebar
-            selectedDay={selectedDay}
+            selectedDate={
+              selectedDate
+            }
             events={
               calendarEvents[
-              selectedDay
+              selectedEventKey
               ] || []
             }
           />
