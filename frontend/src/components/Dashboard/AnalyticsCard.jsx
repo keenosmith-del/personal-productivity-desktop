@@ -11,6 +11,9 @@ function AnalyticsCard({
   clickable = false,
   onClick,
 }) {
+  const hasData =
+    chips.length > 0 ||
+    activityLines.length > 0;
   return (
     <GlassCard
       minHeight={
@@ -41,19 +44,23 @@ function AnalyticsCard({
             clickable
               ? "pointer"
               : "default",
+
+          background: "transparent",
+
+          borderRadius: "24px",
         }}
         onMouseEnter={(e) => {
           if (!clickable) return;
 
-          e.currentTarget.parentElement.style.background =
-            "rgba(14,17,22,0.75)";
+          e.currentTarget.style.background =
+            "rgba(255,255,255,0.04)";
         }}
 
         onMouseLeave={(e) => {
           if (!clickable) return;
 
-          e.currentTarget.parentElement.style.background =
-            "var(--glass-bg)";
+          e.currentTarget.style.background =
+            "transparent";
         }}
       >
         <p
