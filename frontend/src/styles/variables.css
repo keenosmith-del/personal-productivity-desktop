@@ -64,3 +64,27 @@
    --transition:
       all 0.2s ease;
 }
+[data-theme="light"] {
+   /* =========
+      TEXT
+      ========= */
+
+   --text-primary: #171718;
+   --text-secondary: rgba(23, 23, 24, 0.65);
+
+   /* =========
+      GLASS
+      ========= */
+
+   --glass-bg: rgba(0, 0, 0, 0.03);
+   --glass-hover: rgba(0, 0, 0, 0.06);
+
+   --glass-border: rgba(0, 0, 0, 0.08);
+
+   /* =========
+      SHADOWS
+      ========= */
+
+   --shadow-glass:
+      0px 8px 32px rgba(0, 0, 0, 0.08);
+}

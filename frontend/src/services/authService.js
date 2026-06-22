@@ -111,4 +111,46 @@ export async function getCurrentUser() {
     return data;
 }
 
+export async function updatePreferences(
+    preferences
+) {
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/preferences`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                Authorization:
+                    `Bearer ${token}`,
+            },
+
+            body: JSON.stringify(
+                preferences
+            ),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update preferences"
+        );
+    }
+
+    return data;
+}
+
+
+
 

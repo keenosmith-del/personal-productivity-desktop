@@ -1,20 +1,21 @@
 import GlassCard from "../GlassCard";
 import Toggle from "../Toggle";
 
-import { useState } from "react";
+function NotificationSettings({
+  preferences,
+  savePreferences,
+}) {
+  const dailySummary =
+    preferences?.dailySummary ??
+    true;
 
-function NotificationSettings() {
-  // COMPONENT STATES
-  const [dailySummary, setDailySummary] =
-    useState(true);
+  const reminders =
+    preferences?.reminderNotifications ??
+    true;
 
-  const [reminders, setReminders] =
-    useState(true);
-
-  const [goalUpdates, setGoalUpdates] =
-    useState(false);
-
-  // FUNCTIONS
+  const goalUpdates =
+    preferences?.goalUpdates ??
+    false;
   return (
     <GlassCard minHeight="180px">
       <h2
@@ -64,9 +65,10 @@ function NotificationSettings() {
           <Toggle
             checked={dailySummary}
             onChange={() =>
-              setDailySummary(
-                !dailySummary
-              )
+              savePreferences({
+                dailySummary:
+                  !dailySummary,
+              })
             }
           />
         </div>
@@ -102,9 +104,10 @@ function NotificationSettings() {
           <Toggle
             checked={reminders}
             onChange={() =>
-              setReminders(
-                !reminders
-              )
+              savePreferences({
+                reminderNotifications:
+                  !reminders,
+              })
             }
           />
         </div>
@@ -140,9 +143,10 @@ function NotificationSettings() {
           <Toggle
             checked={goalUpdates}
             onChange={() =>
-              setGoalUpdates(
-                !goalUpdates
-              )
+              savePreferences({
+                goalUpdates:
+                  !goalUpdates,
+              })
             }
           />
         </div>

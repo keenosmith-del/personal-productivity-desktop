@@ -2,17 +2,24 @@ import GlassCard from "../GlassCard";
 import Toggle from "../Toggle";
 
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
 
 function ProductivityPreferences({
+  preferences,
+  savePreferences,
   onWorkingHoursClick,
   onReminderClick,
 }) {
-  // COMPONENT STATES
-    const [focusSessions, setFocusSessions] =
-      useState(true);
+  const focusSessions =
+    preferences?.focusSessions ??
+    true;
 
-  // FUNCTIONS
+  const workingHours =
+    preferences?.workingHours ||
+    "09:00 - 17:00";
+
+  const defaultReminder =
+    preferences?.defaultReminder ||
+    "15 mins";
   return (
     <GlassCard minHeight="220px">
       <h2
@@ -61,7 +68,12 @@ function ProductivityPreferences({
 
           <Toggle
             checked={focusSessions}
-            onChange={() => setFocusSessions(!focusSessions)}
+            onChange={() =>
+              savePreferences({
+                focusSessions:
+                  !focusSessions,
+              })
+            }
           />
         </div>
 
@@ -117,7 +129,7 @@ function ProductivityPreferences({
                 fontWeight: "300",
               }}
             >
-              09:00 - 17:00
+              {workingHours}
             </span>
 
             <ChevronRight
@@ -179,7 +191,7 @@ function ProductivityPreferences({
                 fontWeight: "300",
               }}
             >
-              15 min
+              {defaultReminder}
             </span>
 
             <ChevronRight

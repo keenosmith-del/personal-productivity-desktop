@@ -6,14 +6,16 @@ import {
 
 function DefaultReminderModal({
     onClose,
+    preferences,
+    savePreferences,
 }) {
-    // COMPONENT STATES
     const [
         selectedReminder,
         setSelectedReminder,
-    ] = useState("15 mins");
-
-    // FUNCTIONS
+    ] = useState(
+        preferences?.defaultReminder ||
+        "15 mins"
+    );
     return (
         <div
             onClick={onClose}
@@ -219,7 +221,19 @@ function DefaultReminderModal({
                     </button>
 
                     <button
-                        onClick={onClose}
+                        onClick={async () => {
+                            try {
+                                await savePreferences({
+                                    defaultReminder:
+                                        selectedReminder,
+                                });
+
+                                onClose();
+
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }}
                         style={{
                             background: "transparent",
 

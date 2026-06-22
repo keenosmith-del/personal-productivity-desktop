@@ -166,4 +166,84 @@ router.get(
     }
 );
 
+router.put(
+    "/preferences",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            const {
+                theme,
+                dailySummary,
+                goalNotifications,
+                reminderNotifications,
+                compactView,
+                showCompletedItems,
+            } = req.body;
+
+            if (theme !== undefined) {
+                user.theme = theme;
+            }
+
+            if (
+                dailySummary !== undefined
+            ) {
+                user.dailySummary =
+                    dailySummary;
+            }
+
+            if (
+                goalNotifications !== undefined
+            ) {
+                user.goalNotifications =
+                    goalNotifications;
+            }
+
+            if (
+                reminderNotifications !==
+                undefined
+            ) {
+                user.reminderNotifications =
+                    reminderNotifications;
+            }
+
+            if (
+                compactView !== undefined
+            ) {
+                user.compactView =
+                    compactView;
+            }
+
+            if (
+                showCompletedItems !==
+                undefined
+            ) {
+                user.showCompletedItems =
+                    showCompletedItems;
+            }
+
+            await user.save();
+
+            res.json(user);
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
 export default router;

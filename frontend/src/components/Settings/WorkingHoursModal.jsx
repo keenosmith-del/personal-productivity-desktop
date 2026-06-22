@@ -2,10 +2,15 @@ import {
     X,
 } from "lucide-react";
 
+import {
+    useState,
+} from "react";
+
 function WorkingHoursModal({
     onClose,
+    preferences,
+    savePreferences,
 }) {
-
     const inputStyle = {
         width: "100%",
 
@@ -26,6 +31,24 @@ function WorkingHoursModal({
 
         outline: "none",
     };
+
+    const [
+        startTime,
+        setStartTime,
+    ] = useState(
+        preferences?.workingHours
+            ?.split(" - ")[0] ||
+        "09:00"
+    );
+
+    const [
+        endTime,
+        setEndTime,
+    ] = useState(
+        preferences?.workingHours
+            ?.split(" - ")[1] ||
+        "17:00"
+    );
 
     return (
         <div
@@ -144,6 +167,12 @@ function WorkingHoursModal({
 
                         <input
                             type="time"
+                            value={startTime}
+                            onChange={(e) =>
+                                setStartTime(
+                                    e.target.value
+                                )
+                            }
                             defaultValue="09:00"
                             style={{
                                 ...inputStyle,
@@ -173,6 +202,12 @@ function WorkingHoursModal({
 
                         <input
                             type="time"
+                            value={endTime}
+                            onChange={(e) =>
+                                setEndTime(
+                                    e.target.value
+                                )
+                            }
                             defaultValue="17:00"
                             style={{
                                 ...inputStyle,
@@ -236,7 +271,19 @@ function WorkingHoursModal({
                     </button>
 
                     <button
-                        onClick={onClose}
+                        onClick={async () => {
+                            try {
+                                await savePreferences({
+                                    workingHours:
+                                        `${startTime} - ${endTime}`,
+                                });
+
+                                onClose();
+
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }}
                         style={{
                             background: "transparent",
 

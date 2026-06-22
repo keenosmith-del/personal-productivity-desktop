@@ -1,12 +1,13 @@
 import GlassCard from "../GlassCard";
 import SegmentedControl from "../SegmentedControl";
 
-import { useState } from "react";
-
-function AppearanceSettings() {
-  const [theme, setTheme] =
-    useState("Dark");
-
+function AppearanceSettings({
+  preferences,
+  savePreferences,
+}) {
+  const currentTheme =
+    preferences?.theme ||
+    "Dark";
   return (
     <GlassCard minHeight="180px">
       <h2
@@ -39,8 +40,12 @@ function AppearanceSettings() {
           "System",
           "Light",
         ]}
-        selected={theme}
-        onSelect={setTheme}
+        selected={currentTheme}
+        onSelect={(value) =>
+          savePreferences({
+            theme: value,
+          })
+        }
       />
     </GlassCard>
   );
