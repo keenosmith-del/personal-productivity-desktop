@@ -2,39 +2,250 @@ import MainLayout from "../layouts/MainLayout";
 import GlassCard from "../components/GlassCard";
 import { Search } from "lucide-react";
 
-import { useState } from "react";
+import {
+    useState,
+    useEffect,
+} from "react";
+
+import {
+    getProjects,
+} from "../services/projectService";
+
+import {
+    getTasks,
+} from "../services/taskService";
+
+import {
+    getGoals,
+} from "../services/goalService";
+
+import {
+    getNotes,
+} from "../services/noteService";
+
+import {
+    getReminders,
+} from "../services/reminderService";
 
 function GlobalSearch() {
+    const [
+        selectedFilter,
+        setSelectedFilter,
+    ] = useState("All");
+
+    const [
+        searchTerm,
+        setSearchTerm,
+    ] = useState("");
+
+    const [
+        searchResults,
+        setSearchResults,
+    ] = useState([]);
+
+    //FUNCTIONS
+    const loadSearchData =
+        async () => {
+            try {
+                const [
+                    projects,
+                    tasks,
+                    goals,
+                    notes,
+                    reminders,
+                ] = await Promise.all([
+                    getProjects(),
+                    getTasks(),
+                    getGoals(),
+                    getNotes(),
+                    getReminders(),
+                ]);
+
+                const combinedData = [
+                    ...projects.map(
+                        (project) => ({
+                            _id:
+                                project._id,
+
+                            title:
+                                project.title,
+
+                            type:
+                                "Project",
+
+                            subtitle:
+                                project.status ||
+                                "Project",
+                        })
+                    ),
+
+                    ...tasks.map(
+                        (task) => ({
+                            _id:
+                                task._id,
+
+                            title:
+                                task.title,
+
+                            type:
+                                "Task",
+
+                            subtitle:
+                                task.priority ||
+                                "Task",
+                        })
+                    ),
+
+                    ...goals.map(
+                        (goal) => ({
+                            _id:
+                                goal._id,
+
+                            title:
+                                goal.title,
+
+                            type:
+                                "Goal",
+
+                            subtitle:
+                                `${goal.progress || 0}% Complete`,
+                        })
+                    ),
+
+                    ...notes.map(
+                        (note) => ({
+                            _id:
+                                note._id,
+
+                            title:
+                                note.title,
+
+                            type:
+                                "Note",
+
+                            subtitle:
+                                "Note",
+                        })
+                    ),
+
+                    ...reminders.map(
+                        (reminder) => ({
+                            _id:
+                                reminder._id,
+
+                            title:
+                                reminder.title,
+
+                            type:
+                                "Reminder",
+
+                            subtitle:
+                                reminder.category ||
+                                "Reminder",
+                        })
+                    ),
+                ];
+
+                setSearchResults(
+                    combinedData
+                );
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    useEffect(() => {
+        loadSearchData();
+    }, []);
+
+    const projectCount =
+        searchResults.filter(
+            (item) =>
+                item.type === "Project"
+        ).length;
+
+    const taskCount =
+        searchResults.filter(
+            (item) =>
+                item.type === "Task"
+        ).length;
+
+    const goalCount =
+        searchResults.filter(
+            (item) =>
+                item.type === "Goal"
+        ).length;
+
+    const noteCount =
+        searchResults.filter(
+            (item) =>
+                item.type === "Note"
+        ).length;
+
+    const reminderCount =
+        searchResults.filter(
+            (item) =>
+                item.type === "Reminder"
+        ).length;
+
     const filterChips = [
         {
-            label: "Projects",
+            label: `Projects (${projectCount})`,
+            value: "Projects",
             bg: "#063f4733",
             border: "#063f4766",
         },
         {
-            label: "Tasks",
+            label: `Tasks (${taskCount})`,
+            value: "Tasks",
             bg: "#72715c33",
             border: "#72715c66",
         },
         {
-            label: "Goals",
+            label: `Goals (${goalCount})`,
+            value: "Goals",
             bg: "#c59c7033",
             border: "#c59c7066",
         },
         {
-            label: "Notes",
+            label: `Notes (${noteCount})`,
+            value: "Notes",
             bg: "#52677d33",
             border: "#52677d66",
         },
         {
-            label: "Reminders",
+            label: `Reminders (${reminderCount})`,
+            value: "Reminders",
             bg: "#83545c33",
             border: "#83545c66",
         },
     ];
 
-    const [selectedFilter, setSelectedFilter] =
-        useState("All");
+    const filteredResults =
+        searchResults.filter(
+            (item) => {
+                const matchesSearch =
+                    item.title
+                        .toLowerCase()
+                        .includes(
+                            searchTerm.toLowerCase()
+                        );
+
+                const matchesFilter =
+                    selectedFilter === "All" ||
+                    item.type ===
+                    selectedFilter.replace(
+                        /s$/,
+                        ""
+                    );
+
+                return (
+                    matchesSearch &&
+                    matchesFilter
+                );
+            }
+        );
     return (
         <MainLayout>
             <GlassCard minHeight="700px">
@@ -84,6 +295,12 @@ function GlobalSearch() {
                             />
 
                             <input
+                                value={searchTerm}
+                                onChange={(e) =>
+                                    setSearchTerm(
+                                        e.target.value
+                                    )
+                                }
                                 placeholder="Search everything..."
                                 style={{
                                     flex: 1,
@@ -131,7 +348,9 @@ function GlobalSearch() {
                         <button
                             key={chip.label}
                             onClick={() =>
-                                setSelectedFilter(chip.label)
+                                setSelectedFilter(
+                                    chip.value || "All"
+                                )
                             }
                             style={{
                                 padding: "6px 12px",
@@ -143,17 +362,17 @@ function GlobalSearch() {
                                     "1px solid rgba(255,255,255,0.08)",
 
                                 background:
-                                    selectedFilter === chip.label
+                                    selectedFilter === (chip.value || "All")
                                         ? chip.bg
                                         : "transparent",
 
                                 border:
-                                    selectedFilter === chip.label
+                                    selectedFilter === (chip.value || "All")
                                         ? `1px solid ${chip.border}`
                                         : "1px solid rgba(255,255,255,0.08)",
 
                                 color:
-                                    selectedFilter === chip.label
+                                    selectedFilter === (chip.value || "All")
                                         ? "var(--text-primary)"
                                         : "var(--text-secondary)",
 
@@ -181,7 +400,7 @@ function GlobalSearch() {
                         marginBottom: "16px",
                     }}
                 >
-                    5 Results Found
+                    {filteredResults.length} Results Found
                 </p>
 
                 {/* RESULTS */}
@@ -192,49 +411,35 @@ function GlobalSearch() {
                         gap: "10px",
                     }}
                 >
-                    {[
-                        {
-                            title:
-                                "Portfolio Website",
-                            type: "Project",
-                            subtitle:
-                                "Due 20 June 2026",
-                        },
-
-                        {
-                            title:
-                                "Update CV",
-                            type: "Task",
-                            subtitle:
-                                "Active",
-                        },
-
-                        {
-                            title:
-                                "Find Internship",
-                            type: "Goal",
-                            subtitle:
-                                "68% Complete",
-                        },
-
-                        {
-                            title:
-                                "MongoDB Notes",
-                            type: "Note",
-                            subtitle:
-                                "Updated Today",
-                        },
-
-                        {
-                            title:
-                                "Follow Up Recruiter",
-                            type: "Reminder",
-                            subtitle:
-                                "Tomorrow",
-                        },
-                    ].map((item) => (
+                    {filteredResults.length === 0 && (
                         <div
-                            key={item.title}
+                            style={{
+                                textAlign: "center",
+                                padding: "80px 20px",
+                                color: "var(--text-secondary)",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "0.95rem",
+                                    marginBottom: "8px",
+                                }}
+                            >
+                                No results found
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: "0.8rem",
+                                }}
+                            >
+                                Try another search term
+                            </p>
+                        </div>
+                    )}
+                    {filteredResults.length > 0 && filteredResults.map((item) => (
+                        <div
+                            key={item._id}
                             style={{
                                 borderRadius: "12px",
                                 padding: "18px",
@@ -278,6 +483,13 @@ function GlobalSearch() {
                                     style={{
                                         fontWeight: "300",
                                         fontSize: "0.95rem",
+
+                                        overflow: "hidden",
+                                        whiteSpace: "nowrap",
+                                        textOverflow: "ellipsis",
+
+                                        flex: 1,
+                                        marginRight: "12px",
                                     }}
                                 >
                                     {item.title}
