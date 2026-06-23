@@ -1,18 +1,3 @@
-/**
- * UserCard Component
- *
- * Used on Login page.
- *
- * Supports:
- * - Normal users
- * - Add User card
- *
- * Future:
- * - Profile images
- * - User status
- * - Online indicators
- */
-
 function UserCard({
   name,
   initials,
@@ -27,13 +12,7 @@ function UserCard({
         flexDirection: "column",
         alignItems: "center",
         cursor: "pointer",
-        transition: "transform 0.25s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "scale(1.08)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "scale(1)";
+        transition: "all 0.25s ease",
       }}
     >
       <div
@@ -47,22 +26,42 @@ function UserCard({
           alignItems: "center",
           justifyContent: "center",
 
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
-          border:
-            "1px solid rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.12)",
 
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
 
-          boxShadow:
-            "0 8px 32px rgba(0,0,0,0.35)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
 
-          fontSize: "2rem",
-          fontWeight: "400",
+          fontSize: "1.8rem",
+          fontWeight: isAddUser ? "200" : "300",
 
           color: "var(--text-primary)",
+
+          transition: "all 0.25s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform =
+            "translateY(-2px) scale(1.02)";
+
+          e.currentTarget.style.border =
+            "1px solid rgba(255,255,255,0.20)";
+
+          e.currentTarget.style.boxShadow =
+            "0 10px 30px rgba(255,255,255,0.08)";
+        }}
+
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform =
+            "translateY(0) scale(1)";
+
+          e.currentTarget.style.border =
+            "1px solid rgba(255,255,255,0.12)";
+
+          e.currentTarget.style.boxShadow =
+            "0 16px 40px rgba(0,0,0,0.45)";
         }}
       >
         {isAddUser ? "+" : initials}
@@ -72,8 +71,9 @@ function UserCard({
         style={{
           marginTop: "14px",
           color: "var(--text-primary)",
-          fontSize: "0.9rem",
-          fontWeight: "400",
+          fontSize: "1rem",
+          fontWeight: "300",
+          // opacity: 0.85,
         }}
       >
         {isAddUser ? "Add User" : name}

@@ -1,17 +1,8 @@
-/**
- * Password entry screen.
- *
- * Temporary implementation.
- *
- * Later:
- * - Real authentication
- * - Password validation
- * - Error handling
- */
-
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
+import { useState, useRef, } from "react";
 import { useNavigate } from "react-router-dom";
+import ResetPasswordModal from "./ResetPasswordModal";
+import DeleteUserModal from "./DeleteUserModal";
 
 import { loginUser } from "../../services/authService";
 
@@ -26,6 +17,25 @@ function PasswordView({
   const navigate = useNavigate();
 
   const { login } = useAuth();
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [isFocused, setIsFocused] =
+    useState(false);
+
+  const errorTimeoutRef =
+    useRef(null);
+
+  const [
+    showResetModal,
+    setShowResetModal,
+  ] = useState(false);
+
+  const [
+    showDeleteModal,
+    setShowDeleteModal,
+  ] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -47,6 +57,15 @@ function PasswordView({
       setError(
         "Incorrect password"
       );
+
+      clearTimeout(
+        errorTimeoutRef.current
+      );
+
+      errorTimeoutRef.current =
+        setTimeout(() => {
+          setError("");
+        }, 3000);
     }
   };
 
@@ -58,7 +77,7 @@ function PasswordView({
 
   return (
     <div
-      onClick={onBack}
+      onClick={() => onBack()}
       style={{
         minHeight: "100vh",
 
@@ -95,8 +114,8 @@ function PasswordView({
 
             backdropFilter: "blur(20px)",
 
-            fontSize: "2.2rem",
-            fontWeight: "400",
+            fontSize: "2rem",
+            fontWeight: "300",
           }}
         >
           {user.initials}
@@ -104,12 +123,12 @@ function PasswordView({
 
         <h2
           style={{
-            fontSize: "1.1rem",
+            fontSize: "1.15rem",
 
-            fontWeight: "400",
+            fontWeight: "300",
 
             color:
-              "var(--text-secondary)",
+              "var(--text-primary)",
           }}
         >
           {user.name}
@@ -117,8 +136,13 @@ function PasswordView({
         {error && (
           <p
             style={{
-              color: "#ff6b6b",
-              fontSize: "0.85rem",
+              color: "#ff6b6b", // danger red
+
+              fontSize: "0.8rem",
+
+              fontWeight: "300",
+
+              opacity: "0.65",
             }}
           >
             {error}
@@ -132,19 +156,28 @@ function PasswordView({
 
             width: "320px",
 
-            background:
-              "rgba(255,255,255,0.06)",
+            background: isFocused
+              ? "rgba(255,255,255,0.06)"
+              : "rgba(255,255,255,0.04)",
 
-            border:
-              "1px solid rgba(255,255,255,0.12)",
+            border: isFocused
+              ? "1px solid rgba(255,255,255,0.18)"
+              : "1px solid rgba(255,255,255,0.06)",
 
-            borderRadius: "18px",
+            borderRadius: "999px",
 
-            padding: "6px 12px",
+            transition:
+              "all 0.2s ease",
+
+            padding: "12px 16px",
           }}
         >
           <input
-            type="password"
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
             placeholder="Password"
             value={password}
             onChange={(event) =>
@@ -159,10 +192,47 @@ function PasswordView({
               border: "none",
               outline: "none",
 
-              color: "white",
-              fontSize: "1rem",
+              color: "var(--text-primary)",
+              fontSize: "0.9rem",
+              fontWeight: "300",
+
+              transition: "all 0.2s ease",
+
+
             }}
+            onFocus={() =>
+              setIsFocused(true)
+            }
+
+            onBlur={() =>
+              setIsFocused(false)
+            }
           />
+
+          <button
+            onClick={() =>
+              setShowPassword(
+                !showPassword
+              )
+            }
+            style={{
+              background: "none",
+              border: "none",
+
+              color:
+                "var(--text-secondary)",
+
+              cursor: "pointer",
+
+              fontSize: "0.9rem",
+
+              opacity: 0.7,
+
+              marginRight: "8px",
+            }}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
 
           <button
             onClick={handleSubmit}
@@ -170,16 +240,139 @@ function PasswordView({
               background: "none",
               border: "none",
 
-              color: "white",
+              color:
+                "var(--text-primary)",
 
               cursor: "pointer",
 
-              fontSize: "1.2rem",
+              fontSize: "1rem",
+
+              opacity: 0.8,
             }}
           >
             →
           </button>
         </div>
+
+        <button
+          onClick={() => setShowResetModal(true)}
+          style={{
+            background: "none",
+
+            border: "none",
+
+            color:
+              "var(--text-secondary)",
+
+            fontSize: "0.85rem",
+
+            fontWeight: "300",
+
+            cursor: "pointer",
+
+            opacity: 0.65,
+
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity =
+              "1";
+
+            e.currentTarget.style.color =
+              "var(--text-primary)";
+
+            e.currentTarget.style.transform =
+              "translateY(-1px)";
+          }}
+
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity =
+              "0.65";
+
+            e.currentTarget.style.color =
+              "var(--text-secondary)";
+
+            e.currentTarget.style.transform =
+              "translateY(0)";
+          }}
+        >
+          Forgot password?
+        </button>
+
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          style={{
+            background: "none",
+
+            border: "none",
+
+            color: "#ff6b6b",
+
+            fontSize: "0.85rem",
+
+            fontWeight: "300",
+
+            cursor: "pointer",
+
+            opacity: 0.65,
+
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity =
+              "1";
+
+            e.currentTarget.style.color =
+              "#ff6b6b";
+
+            e.currentTarget.style.transform =
+              "translateY(-1px)";
+          }}
+
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity =
+              "0.65";
+
+            e.currentTarget.style.color =
+              "#ff6b6b";
+
+            e.currentTarget.style.transform =
+              "translateY(0)";
+          }}
+        >
+          Delete user
+        </button>
+        {showResetModal && (
+          <ResetPasswordModal
+            user={user}
+            onClose={(message) => {
+              setShowResetModal(false);
+
+              if (
+                message ===
+                "Password updated successfully"
+              ) {
+                onBack(message);
+              }
+            }}
+          />
+        )}
+
+        {
+          showDeleteModal && (
+            <DeleteUserModal
+              user={user}
+              onClose={() =>
+                setShowDeleteModal(false)
+              }
+              onDeleted={(message) => {
+                setShowDeleteModal(false);
+
+                onBack(message);
+              }}
+            />
+          )
+        }
       </div>
     </div>
   );

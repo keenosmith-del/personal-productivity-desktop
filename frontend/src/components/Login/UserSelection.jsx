@@ -3,7 +3,7 @@
  *
  * Displays:
  * - Existing users
- * - Add User button
+ * - Add User button (which opened up current AddUserModal)
  */
 
 import UserCard from "./UserCard";
@@ -19,34 +19,34 @@ function UserSelection({
   const [loading, setLoading] =
     useState(true);
 
+  const fetchUsers = async () => {
+    try {
+      const data =
+        await getUsers();
+
+      const formattedUsers =
+        data.map((user) => ({
+          ...user,
+
+          initials: user.name
+            .split(" ")
+            .map((word) => word[0])
+            .join("")
+            .toUpperCase(),
+        }));
+
+      setUsers(formattedUsers);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data =
-          await getUsers();
-
-        const formattedUsers =
-          data.map((user) => ({
-            ...user,
-
-            initials: user.name
-              .split(" ")
-              .map((word) => word[0])
-              .join("")
-              .toUpperCase(),
-          }));
-
-        setUsers(formattedUsers);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
-  
+
   if (loading) {
     return (
       <p

@@ -549,4 +549,102 @@ router.delete(
     }
 );
 
+router.put(
+    "/reset-password",
+    async (req, res) => {
+        try {
+            const {
+                email,
+                newPassword,
+            } = req.body;
+
+            const user =
+                await User.findOne({
+                    email,
+                });
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            const salt =
+                await bcrypt.genSalt(10);
+
+            user.password =
+                await bcrypt.hash(
+                    newPassword,
+                    salt
+                );
+
+            await user.save();
+
+            res.json({
+                message:
+                    "Password reset successfully",
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
+router.delete(
+    "/delete-user",
+    async (req, res) => {
+        try {
+            const {
+                email,
+                password,
+            } = req.body;
+
+            const user =
+                await User.findOne({
+                    email,
+                });
+
+            if (!user) {
+                return res.status(404).json({
+                    message:
+                        "User not found",
+                });
+            }
+
+            const validPassword =
+                await bcrypt.compare(
+                    password,
+                    user.password
+                );
+
+            if (!validPassword) {
+                return res.status(401).json({
+                    message:
+                        "Incorrect password",
+                });
+            }
+
+            await User.findByIdAndDelete(
+                user._id
+            );
+
+            res.json({
+                message:
+                    "User deleted successfully",
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
 export default router;

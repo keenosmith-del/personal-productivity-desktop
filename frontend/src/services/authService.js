@@ -335,6 +335,74 @@ export async function deleteAccount() {
     return data;
 }
 
+export async function resetPassword(
+    email,
+    newPassword
+) {
+    const response = await fetch(
+        `${API_URL}/reset-password`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+            },
+
+            body: JSON.stringify({
+                email,
+                newPassword,
+            }),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to reset password"
+        );
+    }
+
+    return data;
+}
+
+export async function deleteUser(
+    email,
+    password
+) {
+    const response = await fetch(
+        `${API_URL}/delete-user`,
+        {
+            method: "DELETE",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+            },
+
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to delete user"
+        );
+    }
+
+    return data;
+}
+
 
 
 
