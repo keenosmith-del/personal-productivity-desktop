@@ -5,8 +5,39 @@ function TaskDetailsModal({
     onClose,
     onEditTask,
     onDeleteTask,
+    onCompleteTask,
+    onRestoreTask,
     setToast,
 }) {
+    const formattedCreatedDate =
+        task?.createdAt
+            ? new Date(
+                task.createdAt
+            ).toLocaleDateString(
+                "en-US",
+                {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                }
+            )
+            : null;
+
+    const formattedCompletedDate =
+        task?.comple
+            ? new Date(
+                task.createdAt
+            ).toLocaleDateString(
+                "en-US",
+                {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                }
+            )
+            : null;
+
+
     return (
         <div
             onClick={onClose}
@@ -14,11 +45,9 @@ function TaskDetailsModal({
                 position: "fixed",
                 inset: 0,
 
-                background:
-                    "rgba(0,0,0,0.35)",
+                background: "rgba(0,0,0,0.35)",
 
-                backdropFilter:
-                    "blur(20px)",
+                backdropFilter: "blur(20px)",
 
                 display: "flex",
                 justifyContent: "center",
@@ -166,6 +195,47 @@ function TaskDetailsModal({
                         </div>
                     </div>
 
+                    {formattedCreatedDate && (
+                        <p
+                            style={{
+                                marginTop: "12px",
+
+                                marginBottom: "5px",
+
+                                textAlign: "center",
+
+                                fontSize: "0.72rem",
+
+                                fontWeight: "300",
+
+                                opacity: 0.4,
+                            }}
+                        >
+                            Created on {formattedCreatedDate}
+                        </p>
+                    )}
+
+                    {task.completedDate && (
+                        <p
+                            style={{
+                                marginTop: "2px",
+
+                                marginBottom: "12px",
+
+                                textAlign: "center",
+
+                                fontSize: "0.72rem",
+
+                                fontWeight: "300",
+
+                                opacity: 0.4,
+                            }}
+                        >
+                            Completed on{" "}
+                            {task.completedDate}
+                        </p>
+                    )}
+
                     {/* Title */}
                     <h3
                         style={{
@@ -203,7 +273,9 @@ function TaskDetailsModal({
                     >
                         <span
                             style={{
-                                padding: "4px 8px",
+                                padding: "6px 12px",
+                                minWidth: "78px",
+                                textAlign: "center",
 
                                 borderRadius: "999px",
 
@@ -233,7 +305,9 @@ function TaskDetailsModal({
 
                         <span
                             style={{
-                                padding: "4px 8px",
+                                padding: "6px 12px",
+                                minWidth: "78px",
+                                textAlign: "center",
 
                                 borderRadius: "999px",
 
@@ -260,7 +334,9 @@ function TaskDetailsModal({
                         {!task.completed && (
                             <span
                                 style={{
-                                    padding: "4px 8px",
+                                    padding: "6px 12px",
+                                    minWidth: "78px",
+                                    textAlign: "center",
 
                                     borderRadius: "999px",
 
@@ -286,8 +362,7 @@ function TaskDetailsModal({
                         )}
                     </div>
 
-                    {/* Divider */}
-
+                    {/* DIVIDER */}
                     <div
                         style={{
                             height: "1px",
@@ -299,96 +374,79 @@ function TaskDetailsModal({
                         }}
                     />
 
-                    {/* Completion Area */}
+                    {/* Completion */}
 
-                    {!task.completed ? (
-                        <button
-                            style={{
-                                alignSelf: "center",
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
 
-                                padding: "10px 18px",
-
-                                borderRadius: "999px",
-
-                                background:
-                                    "rgba(114,138,110,0.12)",
-
-                                border:
-                                    "1px solid rgba(114,138,110,0.25)",
-
-                                color: "#9bc091",
-
-                                fontSize: "0.8rem",
-
-                                fontWeight: "300",
-
-                                cursor: "pointer",
-
-                                marginBottom: "20px",
-                            }}
-                        >
-                            Mark Complete
-                        </button>
-                    ) : (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px",
-
-                                marginBottom: "20px",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    textAlign: "center",
-
-                                    padding: "12px",
-
-                                    borderRadius: "14px",
-
-                                    background:
-                                        "rgba(114,138,110,0.10)",
-
-                                    border:
-                                        "1px solid rgba(114,138,110,0.18)",
-
-                                    fontSize: "0.8rem",
-
-                                    fontWeight: "300",
-                                }}
-                            >
-                                ✓ Completed
-                            </div>
-
+                            marginBottom: "24px",
+                        }}
+                    >
+                        {!task.completed ? (
                             <button
+                                onClick={() =>
+                                    onCompleteTask(task)
+                                }
                                 style={{
-                                    alignSelf: "center",
-
                                     padding: "10px 18px",
 
                                     borderRadius: "999px",
 
                                     background:
-                                        "rgba(255,255,255,0.08)",
+                                        "rgba(114,138,110,0.12)",
 
                                     border:
-                                        "1px solid rgba(255,255,255,0.10)",
+                                        "1px solid rgba(114,138,110,0.25)",
 
-                                    color:
-                                        "var(--text-primary)",
+                                    color: "#9bc091",
 
                                     fontSize: "0.8rem",
 
                                     fontWeight: "300",
 
                                     cursor: "pointer",
+
+                                    transition:
+                                        "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                Restore Task
+                                Mark Complete
                             </button>
-                        </div>
-                    )}
+                        ) : (
+                            <button
+                                style={{
+                                    padding: "10px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background: "rgba(114,138,110,0.12)",
+
+                                    border:
+                                        "1px solid rgba(114,138,110,0.25)",
+
+                                    color: "#9bc091",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                            >
+                                ✓ Completed
+                            </button>
+                        )}
+                    </div>
 
                     {/* DIVIDER */}
                     <div
@@ -465,7 +523,18 @@ function TaskDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {task.dueDate}
+                            {task.dueDate
+                                ? new Date(
+                                    task.dueDate
+                                ).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        month: "long",
+                                        day: "numeric",
+                                        year: "numeric",
+                                    }
+                                )
+                                : "No due date"}
                         </p>
                     </div>
                 </div>
@@ -533,57 +602,108 @@ function TaskDetailsModal({
                         Delete
                     </button>
 
-                    <button
-                        onClick={() => {
-                            onEditTask(task);
+                    {!task.completed ? (
+                        <button
+                            onClick={() => {
+                                onEditTask(task);
+                                onClose();
+                            }}
+                            style={{
+                                padding: "11px 18px",
 
-                            onClose();
-                        }}
-                        style={{
-                            padding: "11px 18px",
+                                borderRadius: "999px",
 
-                            borderRadius: "999px",
+                                background:
+                                    "rgba(255,255,255,0.08)",
 
-                            background:
-                                "rgba(255,255,255,0.08)",
+                                border:
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.10)",
+                                color:
+                                    "var(--text-primary)",
 
-                            color:
-                                "var(--text-primary)",
+                                fontSize: "0.8rem",
 
-                            fontSize: "0.8rem",
+                                fontWeight: "300",
 
-                            fontWeight: "300",
+                                cursor: "pointer",
 
-                            cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.14)";
 
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.14)";
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
 
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.18)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.08)";
 
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.18)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.08)";
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
 
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.10)";
+                            }}
+                        >
+                            Edit
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                onRestoreTask(task);
+                            }}
+                            style={{
+                                padding: "11px 18px",
 
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.10)";
-                        }}
-                    >
-                        Edit
-                    </button>
+                                borderRadius: "999px",
+
+                                background:
+                                    "rgba(255,255,255,0.08)",
+
+                                border:
+                                    "1px solid rgba(255,255,255,0.10)",
+
+                                color:
+                                    "var(--text-primary)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.14)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.18)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.08)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.10)";
+                            }}
+                        >
+                            Restore
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

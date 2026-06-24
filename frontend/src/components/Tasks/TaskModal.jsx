@@ -16,8 +16,15 @@ function TaskModal({
   mode = "create",
   task = null,
   onSave,
+  onCompleteTask,
 }) {
   const taskInputRef = useRef(null);
+
+  const categoryRef = useRef(null);
+
+  const priorityRef = useRef(null);
+
+  const statusRef = useRef(null);
 
   const [taskName,
     setTaskName] =
@@ -55,6 +62,14 @@ function TaskModal({
   const [showCalendarModal, setShowCalendarModal] =
     useState(false);
 
+  const [titleFocused,
+    setTitleFocused] =
+    useState(false);
+
+  const [descriptionFocused,
+    setDescriptionFocused] =
+    useState(false);
+
   const [selectedDate, setSelectedDate] =
     useState(
       task?.dueDate || null
@@ -63,6 +78,81 @@ function TaskModal({
   useEffect(() => {
     taskInputRef.current?.focus();
   }, []);
+
+  {/* outside-click of chip dropdown */ }
+  useEffect(() => {
+    const handleClickOutside = (
+      event
+    ) => {
+      if (
+        categoryRef.current &&
+        categoryRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      if (
+        priorityRef.current &&
+        priorityRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      if (
+        statusRef.current &&
+        statusRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      setActiveSelector(null);
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
+
+  const formattedCreatedDate =
+    task?.createdAt
+      ? new Date(
+        task.createdAt
+      ).toLocaleDateString(
+        "en-US",
+        {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }
+      )
+      : null;
+
+  const formattedCompletedDate =
+    task?.completedDate
+      ? new Date(task.completedDate)
+        .toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }
+        )
+      : null;
 
   const handleSave = () => {
     if (!taskName.trim())
@@ -146,19 +236,16 @@ function TaskModal({
         style={{
           width: "500px",
 
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
 
-          border:
-            "1px solid rgba(255,255,255,0.10)",
+          border: "1px solid rgba(255,255,255,0.10)",
 
-          borderRadius: "32px",
+          borderRadius: "36px",
 
-          backdropFilter:
-            "blur(30px)",
+          backdropFilter: "blur(30px)",
 
           boxShadow:
-            "0 20px 60px rgba(0,0,0,0.35)",
+            "0 30px 80px rgba(0,0,0,0.45)",
 
           padding: "36px",
 
@@ -166,7 +253,7 @@ function TaskModal({
 
           flexDirection: "column",
 
-          gap: "20px",
+          // gap: "10px",
         }}
       >
         <div
@@ -174,7 +261,7 @@ function TaskModal({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            marginBottom: "8px",
+            marginBottom: "24px",
           }}
         >
           <div>
@@ -247,534 +334,636 @@ function TaskModal({
           </button>
         </div>
 
-        {/* AVATAR */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            marginBottom: "12px",
           }}
         >
+
+          {/* AVATAR */}
           <div
             style={{
-              width: "88px",
-              height: "88px",
-
-              borderRadius: "50%",
-
-              background:
-                "rgba(255,255,255,0.05)",
-
-              border:
-                "1px solid rgba(255,255,255,0.08)",
-
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
-
-              fontSize: "1.4rem",
-              fontWeight: "300",
+              marginBottom: "18px",
             }}
           >
-            ✓
+            {/* AVATAR CIRCLE */}
+            <div
+              style={{
+                width: "88px",
+                height: "88px",
+
+                borderRadius: "50%",
+
+                background:
+                  "rgba(255,255,255,0.05)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
+
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+
+                fontSize: "1.4rem",
+                fontWeight: "300",
+              }}
+            >
+              ✓
+            </div>
           </div>
-        </div>
 
-        {/* CHIPS */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "8px",
-            flexWrap: "wrap",
-            marginBottom: "22px",
-            position: "relative",
-            fontWeight: "300",
-          }}
-        >
-          <button
-            onClick={() =>
-              setActiveSelector(
-                activeSelector === "category"
-                  ? null
-                  : "category"
-              )
-            }
-            style={{
-              padding: "4px 8px",
-              borderRadius: "999px",
-              fontSize: "0.7rem",
-              cursor: "pointer",
-
-              background:
-                category === "Work"
-                  ? "#063f4733"
-                  : category === "Study"
-                    ? "#29737633"
-                    : category === "Personal"
-                      ? "#5c939633"
-                      : "#10343933",
-
-              border:
-                category === "Work"
-                  ? "1px solid #063f4766"
-                  : category === "Study"
-                    ? "1px solid #29737666"
-                    : category === "Personal"
-                      ? "1px solid #5c939666"
-                      : "1px solid #10343966",
-
-              color: "var(--text-primary)",
-            }}
-          >
-            {category}
-          </button>
-
-          {activeSelector === "category" && (
-            <div
-              style={{
-                position: "absolute",
-                top: "34px",
-
-                background:
-                  "rgba(20,20,20,0.95)",
-
-                backdropFilter: "blur(20px)",
-
-                border:
-                  "1px solid rgba(255,255,255,0.08)",
-
-                borderRadius: "16px",
-
-                padding: "8px",
-
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px",
-
-                zIndex: 20,
-              }}
-            >
-              {[
-                "Work",
-                "Study",
-                "Personal",
-                "Health",
-              ].map((option) => (
-                <button
-                  key={option}
-                  onClick={() => {
-                    setCategory(option);
-                    setActiveSelector(null);
-                  }}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-
-                    color:
-                      "var(--text-primary)",
-
-                    padding: "8px 12px",
-
-                    borderRadius: "10px",
-
-                    cursor: "pointer",
-
-                    textAlign: "left",
-
-                    fontSize: "0.8rem",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "transparent";
-                  }}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <button
-            onClick={() =>
-              setActiveSelector(
-                activeSelector === "priority"
-                  ? null
-                  : "priority"
-              )
-            }
-            style={{
-              padding: "4px 8px",
-              borderRadius: "999px",
-              fontSize: "0.7rem",
-              cursor: "pointer",
-
-              background:
-                priority === "High"
-                  ? "#ab313033"
-                  : priority === "Medium"
-                    ? "#62929e33"
-                    : "#ffdb5833",
-
-              border:
-                priority === "High"
-                  ? "1px solid #ab313066"
-                  : priority === "Medium"
-                    ? "1px solid #62929e66"
-                    : "1px solid #ffdb5866",
-
-              color: "var(--text-primary)",
-            }}
-          >
-            {priority}
-          </button>
-
-          {activeSelector === "priority" && (
-            <div
-              style={{
-                position: "absolute",
-
-                top: "34px",
-
-                background:
-                  "rgba(20,20,20,0.95)",
-
-                backdropFilter: "blur(20px)",
-
-                border:
-                  "1px solid rgba(255,255,255,0.08)",
-
-                borderRadius: "16px",
-
-                padding: "8px",
-
-                display: "flex",
-                flexDirection: "column",
-
-                gap: "4px",
-
-                zIndex: 20,
-              }}
-            >
-              {[
-                "Low",
-                "Medium",
-                "High",
-              ].map((option) => (
-                <button
-                  key={option}
-                  onClick={() => {
-                    setPriority(option);
-                    setActiveSelector(null);
-                  }}
-                  style={{
-                    background: "transparent",
-
-                    border: "none",
-
-                    color:
-                      "var(--text-primary)",
-
-                    padding: "8px 12px",
-
-                    borderRadius: "10px",
-
-                    cursor: "pointer",
-
-                    textAlign: "left",
-
-                    fontSize: "0.8rem",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "transparent";
-                  }}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <button
-            onClick={() =>
-              setActiveSelector(
-                activeSelector === "status"
-                  ? null
-                  : "status"
-              )
-            }
-            style={{
-              padding: "4px 8px",
-              borderRadius: "999px",
-              fontSize: "0.7rem",
-              cursor: "pointer",
-
-              background:
-                status === "In Progress"
-                  ? "#e9b95733"
-                  : "#4d689333",
-
-              border:
-                status === "In Progress"
-                  ? "1px solid #e9b95766"
-                  : "1px solid #4d689366",
-
-              color: "var(--text-primary)",
-            }}
-          >
-            {status}
-          </button>
-
-          {activeSelector === "status" && (
-            <div
-              style={{
-                position: "absolute",
-
-                top: "34px",
-
-                background: "rgba(20,20,20,0.95)",
-
-                backdropFilter: "blur(20px)",
-
-                border:
-                  "1px solid rgba(255,255,255,0.08)",
-
-                borderRadius: "16px",
-
-                padding: "8px",
-
-                display: "flex",
-                flexDirection: "column",
-
-                gap: "4px",
-
-                zIndex: 20,
-              }}
-            >
-              {[
-                "Active",
-                "In Progress",
-              ].map((option) => (
-                <button
-                  key={option}
-                  onClick={() => {
-                    setStatus(option);
-                    setActiveSelector(null);
-                  }}
-                  style={{
-                    background: "transparent",
-
-                    border: "none",
-
-                    color:
-                      "var(--text-primary)",
-
-                    padding: "8px 12px",
-
-                    borderRadius: "10px",
-
-                    cursor: "pointer",
-
-                    textAlign: "left",
-
-                    fontSize: "0.8rem",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "transparent";
-                  }}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* MARK COMPLETE PILL */}
-        {mode === "edit" && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "20px",
-            }}
-          >
-            {!task.completed ? (
-              <button
+          {mode === "edit" &&
+            formattedCreatedDate && (
+              <p
                 style={{
-                  alignSelf: "center",
+                  marginTop: "12px",
 
-                  padding: "10px 18px",
+                  marginBottom: "10px",
 
-                  borderRadius: "999px",
+                  textAlign: "center",
 
-                  background:
-                    "rgba(114,138,110,0.12)",
-
-                  border:
-                    "1px solid rgba(114,138,110,0.25)",
-
-                  color: "#9bc091",
-
-                  fontSize: "0.8rem",
+                  fontSize: "0.72rem",
 
                   fontWeight: "300",
 
+                  opacity: 0.4,
+                }}
+              >
+                Created on {formattedCreatedDate}
+              </p>
+            )}
+
+          {formattedCompletedDate && (
+            <p
+              style={{
+                marginTop: 0,
+
+                marginBottom: "20px",
+
+                textAlign: "center",
+
+                fontSize: "0.72rem",
+
+                fontWeight: "300",
+
+                opacity: 0.4,
+              }}
+            >
+              Completed on{formattedCompletedDate}
+            </p>
+          )}
+
+          {/* CHIPS */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+              marginBottom: "22px",
+              fontWeight: "300",
+            }}
+          >
+
+            {/* Start wrapper category dropdown and button */}
+            <div
+              ref={categoryRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "category"
+                      ? null
+                      : "category"
+                  )
+                }
+                style={{
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontWeight: "300",
+                  fontSize: "0.75rem",
+
+                  borderRadius: "999px",
                   cursor: "pointer",
 
-                  marginBottom: "20px",
-                }}
-              >
-                Mark Complete
-              </button>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
+                  background:
+                    category === "Work"
+                      ? "#063f4733"
+                      : category === "Study"
+                        ? "#29737633"
+                        : category === "Personal"
+                          ? "#5c939633"
+                          : "#10343933",
 
-                  marginBottom: "20px",
+                  border:
+                    category === "Work"
+                      ? "1px solid #063f4766"
+                      : category === "Study"
+                        ? "1px solid #29737666"
+                        : category === "Personal"
+                          ? "1px solid #5c939666"
+                          : "1px solid #10343966",
+
+                  color: "var(--text-primary)",
                 }}
               >
+                {category}
+              </button>
+
+              {activeSelector === "category" && (
                 <div
                   style={{
-                    textAlign: "center",
+                    width: "110px",
 
-                    padding: "12px",
-
-                    borderRadius: "14px",
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
 
                     background:
-                      "rgba(114,138,110,0.10)",
+                      "rgba(20,20,20,0.92)",
+
+                    backdropFilter:
+                      "blur(24px)",
 
                     border:
-                      "1px solid rgba(114,138,110,0.18)",
+                      "1px solid rgba(255,255,255,0.10)",
 
-                    fontSize: "0.8rem",
+                    boxShadow:
+                      "0 20px 50px rgba(0,0,0,0.35)",
 
-                    fontWeight: "300",
+                    borderRadius: "16px",
+
+                    padding: "8px",
+
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+
+                    zIndex: 20,
                   }}
                 >
-                  ✓ Completed
+                  {[
+                    "Work",
+                    "Study",
+                    "Personal",
+                    "Health",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setCategory(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === category
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
+
+                        border: "none",
+
+                        color:
+                          "var(--text-primary)",
+
+                        padding: "8px 12px",
+
+                        borderRadius: "10px",
+
+                        cursor: "pointer",
+
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
+                        e.currentTarget.style.background =
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
+              )}
+            </div>
+            {/* end category button and dropdown wrapper */}
 
-                <button
+            {/* start wrapper priority button and dropdown */}
+            <div
+              ref={priorityRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "priority"
+                      ? null
+                      : "priority"
+                  )
+                }
+                style={{
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontSize: "0.75rem",
+                  fontWeight: "300",
+
+                  borderRadius: "999px",
+                  cursor: "pointer",
+
+                  background:
+                    priority === "High"
+                      ? "#ab313033"
+                      : priority === "Medium"
+                        ? "#62929e33"
+                        : "#ffdb5833",
+
+                  border:
+                    priority === "High"
+                      ? "1px solid #ab313066"
+                      : priority === "Medium"
+                        ? "1px solid #62929e66"
+                        : "1px solid #ffdb5866",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                {priority}
+              </button>
+
+              {activeSelector === "priority" && (
+                <div
                   style={{
-                    alignSelf: "center",
+                    width: "110px",
 
+                    position: "absolute",
+
+                    top: "calc(100% + 8px)",
+
+                    left: 0,
+
+                    background:
+                      "rgba(20,20,20,0.92)",
+
+                    backdropFilter:
+                      "blur(24px)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
+
+                    boxShadow:
+                      "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "16px",
+
+                    padding: "8px",
+
+                    display: "flex",
+                    flexDirection: "column",
+
+                    gap: "4px",
+
+                    zIndex: 20,
+                  }}
+                >
+                  {[
+                    "Low",
+                    "Medium",
+                    "High",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setPriority(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === priority
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
+
+                        border: "none",
+
+                        color:
+                          "var(--text-primary)",
+
+                        padding: "8px 12px",
+
+                        borderRadius: "10px",
+
+                        cursor: "pointer",
+
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
+                        e.currentTarget.style.background =
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* end priority button and dropdown */}
+
+            {/* start status button and dropdown wrapper */}
+            <div
+              ref={statusRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "status"
+                      ? null
+                      : "status"
+                  )
+                }
+                style={{
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontSize: "0.75rem",
+                  fontWeight: "300",
+
+                  borderRadius: "999px",
+                  cursor: "pointer",
+
+                  background:
+                    status === "In Progress"
+                      ? "#e9b95733"
+                      : "#4d689333",
+
+                  border:
+                    status === "In Progress"
+                      ? "1px solid #e9b95766"
+                      : "1px solid #4d689366",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                {status}
+              </button>
+
+              {activeSelector === "status" && (
+                <div
+                  style={{
+                    width: "110px",
+
+                    position: "absolute",
+
+                    top: "calc(100% + 8px)",
+
+                    left: 0,
+
+                    background:
+                      "rgba(20,20,20,0.92)",
+
+                    backdropFilter:
+                      "blur(24px)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
+
+                    boxShadow:
+                      "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "16px",
+
+                    padding: "8px",
+
+                    display: "flex",
+                    flexDirection: "column",
+
+                    gap: "4px",
+
+                    zIndex: 20,
+                  }}
+                >
+                  {[
+                    "Active",
+                    "In Progress",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setStatus(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === status
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
+
+                        border: "none",
+
+                        color:
+                          "var(--text-primary)",
+
+                        padding: "8px 12px",
+
+                        borderRadius: "10px",
+
+                        cursor: "pointer",
+
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
+                        e.currentTarget.style.background =
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* end wrapper status and dropdown */}
+          </div>
+
+          {/* MARK COMPLETE PILL */}
+          {/* COMPLETION */}
+
+          {mode === "edit" && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "24px",
+              }}
+            >
+              {!task?.completed ? (
+                <button
+                  onClick={() =>
+                    onCompleteTask?.(task)
+                  }
+                  style={{
                     padding: "10px 18px",
 
                     borderRadius: "999px",
 
                     background:
-                      "rgba(255,255,255,0.08)",
+                      "rgba(114,138,110,0.12)",
 
                     border:
-                      "1px solid rgba(255,255,255,0.10)",
+                      "1px solid rgba(114,138,110,0.25)",
 
-                    color:
-                      "var(--text-primary)",
+                    color: "#9bc091",
 
                     fontSize: "0.8rem",
 
                     fontWeight: "300",
 
                     cursor: "pointer",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(0)";
                   }}
                 >
-                  Restore Task
+                  Mark Complete
                 </button>
-              </div>
-            )}
-          </div>
-        )
-        }
+              ) : (
+                <button
+                  style={{
+                    padding: "10px 18px",
 
-        {/* TASK NAME */}
-        <input
-          value={taskName}
+                    borderRadius: "999px",
 
-          onChange={(e) =>
-            setTaskName(
-              e.target.value
-            )
-          }
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSave();
-            }
-          }}
-          ref={taskInputRef}
-          placeholder="Task name"
-          style={{
-            width: "100%",
+                    background: "rgba(114,138,110,0.12)",
 
-            background: "transparent",
+                    border:
+                      "1px solid rgba(114,138,110,0.25)",
 
-            border: "none",
+                    color: "#9bc091",
 
-            outline: "none",
+                    fontSize: "0.8rem",
 
-            color: "var(--text-primary)",
+                    fontWeight: "300",
 
-            fontSize: "1.05rem",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  ✓ Completed
+                </button>
+              )}
+            </div>
+          )}
 
-            fontWeight: "300",
 
-            letterSpacing: "-0.02em",
-
-            padding: "0 0 12px 0",
-
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-          }}
-        />
-
-        {/* DESCRIPTION */}
-        <div
-          style={{
-            marginBottom: "20px",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "0.8rem",
-
-              opacity: 0.45,
-
-              fontWeight: "300",
-
-              marginBottom: "8px",
-            }}
-          >
-            Notes
-          </p>
-
-          <textarea
-            value={description}
+          {/* TASK NAME */}
+          <input
+            value={taskName}
 
             onChange={(e) =>
-              setDescription(
+              setTaskName(
                 e.target.value
               )
             }
-            rows={3}
-            placeholder="Write any additional details..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSave();
+              }
+            }}
+            onFocus={() =>
+              setTitleFocused(true)
+            }
+
+            onBlur={() =>
+              setTitleFocused(false)
+            }
+            ref={taskInputRef}
+            placeholder="Task name"
             style={{
               width: "100%",
 
@@ -784,101 +973,181 @@ function TaskModal({
 
               outline: "none",
 
-              resize: "none",
-
               color: "var(--text-primary)",
 
-              fontFamily: "inherit",
-
-              fontSize: "0.9rem",
+              fontSize: "1.05rem",
 
               fontWeight: "300",
-            }}
-          />
-        </div>
 
-        {/* DIVIDER */}
-        <div
-          style={{
-            height: "1px",
-            background: "rgba(255,255,255,0.06)",
-          }}
-        />
+              letterSpacing: "-0.02em",
 
-        {/* DATE */}
-        <div
-          style={{
-            marginBottom: "8px",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "0.8rem",
-              opacity: 0.45,
-              fontWeight: "300",
-              marginBottom: "8px",
-            }}
-          >
-            Due Date
-          </p>
+              padding: "0 0 14px 0",
 
-          <div
-            onClick={() =>
-              setShowCalendarModal(true)
-            }
-            style={{
-              display: "flex",
-
-              justifyContent:
-                "space-between",
-
-              alignItems: "center",
-
-              cursor: "pointer",
-
-              padding: "8px 0",
+              borderBottom:
+                titleFocused
+                  ? "1px solid rgba(255,255,255,0.18)"
+                  : "1px solid rgba(255,255,255,0.06)",
 
               transition:
                 "all 0.2s ease",
+
+              marginBottom: "20px",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity =
-                "0.75";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity =
-                "1";
+          />
+
+          {/* DESCRIPTION */}
+          <div
+            style={{
+              marginBottom: "20px",
             }}
           >
-            <span
+            <p
               style={{
-                fontSize: "0.85rem",
+                fontSize: "0.8rem",
+
+                opacity: 0.45,
+
                 fontWeight: "300",
 
-                color:
-                  !selectedDate
-                    ? "var(--text-secondary)"
-                    : "var(--text-primary)",
+                marginBottom: "8px",
               }}
             >
-              {selectedDate
-                ? new Date(
-                  selectedDate
-                ).toLocaleDateString(
-                  "en-US",
-                  {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  }
-                )
-                : "Choose a date"}
-            </span>
+              Notes
+            </p>
 
-            <Calendar
-              size={16}
-              strokeWidth={1.5}
+            <textarea
+              value={description}
+
+              onChange={(e) =>
+                setDescription(
+                  e.target.value
+                )
+              }
+              rows={3}
+              placeholder="Write any additional details..."
+              style={{
+                width: "100%",
+
+                background:
+                  descriptionFocused
+                    ? "rgba(255,255,255,0.02)"
+                    : "transparent",
+
+                borderRadius: "12px",
+
+                padding: "10px 12px",
+
+                transition:
+                  "all 0.2s ease",
+
+                border: "none",
+
+                outline: "none",
+
+                resize: "none",
+
+                color: "var(--text-primary)",
+
+                fontFamily: "inherit",
+
+                fontSize: "0.9rem",
+
+                fontWeight: "300",
+              }}
+              onFocus={() =>
+                setDescriptionFocused(true)
+              }
+
+              onBlur={() =>
+                setDescriptionFocused(false)
+              }
             />
+          </div>
+
+          {/* DIVIDER */}
+          <div
+            style={{
+              height: "1px",
+              background: "rgba(255,255,255,0.06)",
+              marginBottom: "20px",
+            }}
+          />
+
+          {/* DATE */}
+          <div
+            style={{
+              marginBottom: 0,
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.45,
+                fontWeight: "300",
+                marginBottom: "8px",
+              }}
+            >
+              Due Date
+            </p>
+
+            <div
+              onClick={() =>
+                setShowCalendarModal(true)
+              }
+              style={{
+                display: "flex",
+
+                justifyContent:
+                  "space-between",
+
+                alignItems: "center",
+
+                cursor: "pointer",
+
+                padding: "8px 0",
+
+                transition:
+                  "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity =
+                  "0.75";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity =
+                  "1";
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: "300",
+
+                  color:
+                    !selectedDate
+                      ? "var(--text-secondary)"
+                      : "var(--text-primary)",
+                }}
+              >
+                {selectedDate
+                  ? new Date(
+                    selectedDate
+                  ).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  )
+                  : "Choose a date"}
+              </span>
+
+              <Calendar
+                size={16}
+                strokeWidth={1.5}
+              />
+            </div>
           </div>
         </div>
 
@@ -982,17 +1251,18 @@ function TaskModal({
           </button>
         </div>
       </div>
-      {showCalendarModal && (
-        <MiniCalendarModal
-          selectedDate={selectedDate}
-          onSelectDate={(date) =>
-            setSelectedDate(date)
-          }
-          onClose={() =>
-            setShowCalendarModal(false)
-          }
-        />
-      )
+      {
+        showCalendarModal && (
+          <MiniCalendarModal
+            selectedDate={selectedDate}
+            onSelectDate={(date) =>
+              setSelectedDate(date)
+            }
+            onClose={() =>
+              setShowCalendarModal(false)
+            }
+          />
+        )
       }
     </div >
   );

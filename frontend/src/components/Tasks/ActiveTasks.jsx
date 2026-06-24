@@ -20,11 +20,7 @@ function ActiveTasks({
     onCompleteTask,
 }) {
     // COMPONENT STATES
-    const activeTasks =
-        tasks.filter(
-            (task) =>
-                !task.completed
-        );
+    const activeTasks = tasks;
 
     return (
         <GlassCard

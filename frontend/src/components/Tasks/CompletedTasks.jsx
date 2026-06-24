@@ -16,11 +16,7 @@ function CompletedTasks({
         setHoveredTask] =
         useState(null);
 
-    const completedTasks =
-        tasks.filter(
-            (task) =>
-                task.completed
-        );
+    const completedTasks = [];
     return (
         <GlassCard
             style={{

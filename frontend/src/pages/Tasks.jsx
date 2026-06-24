@@ -129,13 +129,17 @@ function Tasks() {
           )
         );
 
-        setToast(
-          "Task completed"
+        setSelectedTask((prev) =>
+          prev?._id === updatedTask._id
+            ? updatedTask
+            : prev
         );
 
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
+        setEditingTask((prev) =>
+          prev?._id === updatedTask._id
+            ? updatedTask
+            : prev
+        );
 
       } catch (error) {
         console.error(error);
@@ -171,13 +175,17 @@ function Tasks() {
           )
         );
 
-        setToast(
-          "Task restored"
+        setSelectedTask((prev) =>
+          prev?._id === updatedTask._id
+            ? updatedTask
+            : prev
         );
 
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
+        setEditingTask((prev) =>
+          prev?._id === updatedTask._id
+            ? updatedTask
+            : prev
+        );
 
       } catch (error) {
         console.error(error);
@@ -363,12 +371,21 @@ function Tasks() {
           onDeleteTask={handleDeleteTask}
           setToast={setToast}
           onEditTask={setEditingTask}
+          onCompleteTask={
+            handleCompleteTask
+          }
+          onRestoreTask={
+            handleRestoreTask
+          }
         />
       )}
       {editingTask && (
         <TaskModal
           mode="edit"
           task={editingTask}
+          onCompleteTask={
+            handleCompleteTask
+          }
           onClose={() =>
             setEditingTask(null)
           }
