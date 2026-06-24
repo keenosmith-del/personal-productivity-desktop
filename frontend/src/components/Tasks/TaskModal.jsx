@@ -751,7 +751,7 @@ function TaskModal({
                   textAlign: "center",
 
                   fontSize: "0.75rem",
-                  fontWeight: "300",
+                  fontWeight: "300", 
 
                   borderRadius: "999px",
                   cursor: "pointer",
