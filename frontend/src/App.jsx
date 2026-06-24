@@ -14,8 +14,9 @@ import Reminders from "./pages/Reminders";
 import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
 import GlobalSearch from "./pages/GlobalSearch";
-import { Search } from "lucide-react";
+// import QuickAdd from "./pages/QuickAdd";
 
+import { Search } from "lucide-react";
 
 function App() {
   return (
@@ -103,6 +104,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* <Route
+          path="/quickadd"
+          element={
+            <ProtectedRoute>
+              <QuickAdd />
+            </ProtectedRoute>
+          }
+        /> */}
 
         <Route
           path="/break"

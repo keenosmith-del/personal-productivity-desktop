@@ -1,5 +1,8 @@
 import { NavLink } from "react-router-dom";
 
+import { useEffect, useState } from "react";
+import { getCurrentUser } from "../services/authService";
+
 import {
   BarChart3,
   CheckSquare,
@@ -13,9 +16,38 @@ import {
   NotebookPen,
   Folder,
   Search,
+  Plus,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const currentUser =
+          await getCurrentUser();
+
+        setUser(currentUser);
+
+      } catch (error) {
+        console.error(
+          "Failed to load user",
+          error
+        );
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  const initials =
+    user?.name
+      ?.split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "?";
+
   const mainNavItems = [
     {
       label: "Dashboard",
@@ -164,8 +196,9 @@ function Sidebar({ collapsed, setCollapsed }) {
         {!collapsed && (
           <span
             style={{
-              fontSize: "0.85rem",
+              fontSize: "0.82rem",
               fontWeight: "300",
+              letterSpacing: "-0.01em",
             }}
           >
             {item.label}
@@ -213,10 +246,6 @@ function Sidebar({ collapsed, setCollapsed }) {
 
           borderRadius:
             "var(--radius-large)",
-
-          //backdropFilter: "blur(20px)",
-
-          //WebkitBackdropFilter: "blur(20px)",
 
           display: "flex",
           flexDirection: "column",
@@ -326,10 +355,11 @@ function Sidebar({ collapsed, setCollapsed }) {
                 alignItems: "center",
                 justifyContent: "center",
 
-                fontWeight: "600",
+                fontWeight: "400",
+                fontSize: "1rem",
               }}
             >
-              KS
+              {initials}
             </div>
 
             {!collapsed && (
@@ -337,19 +367,18 @@ function Sidebar({ collapsed, setCollapsed }) {
                 <p
                   style={{
                     fontSize: "0.85rem",
-                    color:
-                      "var(--text-secondary)",
+                    color: "var(--text-secondary)",
                   }}
                 >
-                  Welcome back,
+                  Hi,
                 </p>
 
                 <p
                   style={{
-                    fontWeight: "600",
+                    fontWeight: "400",
                   }}
                 >
-                  Keeno
+                  {user?.name || "Loading..."}
                 </p>
               </div>
             )}

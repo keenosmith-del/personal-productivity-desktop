@@ -14,7 +14,11 @@ import ClockWidget from "../components/Dashboard/ClockWidget";
 import DashboardModal from "../components/Dashboard/DashboardModal";
 import GlassCard from "../components/GlassCard";
 
+import { useNavigate } from "react-router-dom";
+
 function Dashboard() {
+  const navigate = useNavigate();
+
   const [modalData, setModalData] =
     useState(null);
 
@@ -674,6 +678,10 @@ function Dashboard() {
           onClose={() =>
             setModalData(null)
           }
+          onNavigate={(path) => {
+            setModalData(null);
+            navigate(path);
+          }}
         />
       )}
     </MainLayout>

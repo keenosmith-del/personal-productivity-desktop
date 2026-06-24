@@ -360,6 +360,9 @@ function Tasks() {
           onClose={() =>
             setSelectedTask(null)
           }
+          onDeleteTask={handleDeleteTask}
+          setToast={setToast}
+          onEditTask={setEditingTask}
         />
       )}
       {editingTask && (

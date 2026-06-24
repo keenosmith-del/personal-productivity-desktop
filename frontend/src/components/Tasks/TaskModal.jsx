@@ -9,6 +9,8 @@ import {
   Calendar,
 } from "lucide-react";
 
+import MiniCalendarModal from "../MiniCalendarModal";
+
 function TaskModal({
   onClose,
   mode = "create",
@@ -47,14 +49,15 @@ function TaskModal({
       "Active"
     );
 
-  const [showCalendar, setShowCalendar] =
+  const [activeSelector, setActiveSelector] =
+    useState(null);
+
+  const [showCalendarModal, setShowCalendarModal] =
     useState(false);
 
-  const [selectedDate,
-    setSelectedDate] =
+  const [selectedDate, setSelectedDate] =
     useState(
-      task?.dueDate ||
-      "Choose a date"
+      task?.dueDate || null
     );
 
   useEffect(() => {
@@ -80,11 +83,7 @@ function TaskModal({
 
       status,
 
-      dueDate:
-        selectedDate ===
-          "Choose a date"
-          ? "Today"
-          : selectedDate,
+      dueDate: selectedDate,
 
       completed:
         task?.completed ||
@@ -107,10 +106,10 @@ function TaskModal({
     padding: "14px 18px",
 
     background:
-      "rgba(255,255,255,0.05)",
+      "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
     border:
-      "1px solid rgba(255,255,255,0.08)",
+      "1px solid rgba(255,255,255,0.12)",
 
     borderRadius: "16px",
 
@@ -129,16 +128,12 @@ function TaskModal({
         position: "fixed",
         inset: 0,
 
-        background:
-          "rgba(0,0,0,0.55)",
+        background: "rgba(0,0,0,0.35)",
 
-        backdropFilter:
-          "blur(12px)",
+        backdropFilter: "blur(20px)",
 
         display: "flex",
-
         justifyContent: "center",
-
         alignItems: "center",
 
         zIndex: 1000,
@@ -177,44 +172,541 @@ function TaskModal({
         <div
           style={{
             display: "flex",
-
             justifyContent: "space-between",
-
-            alignItems: "center",
+            alignItems: "flex-start",
+            marginBottom: "8px",
           }}
         >
-          <h2
-            style={{
-              fontWeight: "400",
-              fontSize: "1.4rem",
-            }}
-          >
-            {mode === "edit"
-              ? "Edit Task"
-              : "New Task"}
-          </h2>
+          <div>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "0.95rem",
+                fontWeight: "400",
+              }}
+            >
+              {mode === "edit"
+                ? "Edit Task"
+                : "New Task"}
+            </h2>
 
-          <X
-            size={18}
-            strokeWidth={1.5}
+            <p
+              style={{
+                marginTop: "4px",
+                marginBottom: 0,
+                fontSize: "0.8rem",
+                fontWeight: "300",
+                opacity: 0.55,
+              }}
+            >
+              {mode === "edit"
+                ? "Update task information"
+                : "Create a new task"}
+            </p>
+          </div>
+
+          <button
+            onClick={onClose}
             style={{
+              width: "32px",
+              height: "32px",
+
+              borderRadius: "999px",
+
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+
+              background:
+                "rgba(255,255,255,0.04)",
+
+              color:
+                "var(--text-secondary)",
+
               cursor: "pointer",
 
-              transition:
-                "all 0.2s ease",
+              fontSize: "0.85rem",
+
+              transition: "all 0.2s ease",
             }}
-            onClick={onClose}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity =
-                "0.7";
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.10)";
+
+              e.currentTarget.style.transform =
+                "scale(1.05)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity =
-                "1";
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.04)";
+
+              e.currentTarget.style.transform =
+                "scale(1)";
             }}
-          />
+          >
+            x
+          </button>
         </div>
 
+        {/* AVATAR */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginBottom: "12px",
+          }}
+        >
+          <div
+            style={{
+              width: "88px",
+              height: "88px",
+
+              borderRadius: "50%",
+
+              background:
+                "rgba(255,255,255,0.05)",
+
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+
+              fontSize: "1.4rem",
+              fontWeight: "300",
+            }}
+          >
+            ✓
+          </div>
+        </div>
+
+        {/* CHIPS */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "8px",
+            flexWrap: "wrap",
+            marginBottom: "22px",
+            position: "relative",
+            fontWeight: "300",
+          }}
+        >
+          <button
+            onClick={() =>
+              setActiveSelector(
+                activeSelector === "category"
+                  ? null
+                  : "category"
+              )
+            }
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              fontSize: "0.7rem",
+              cursor: "pointer",
+
+              background:
+                category === "Work"
+                  ? "#063f4733"
+                  : category === "Study"
+                    ? "#29737633"
+                    : category === "Personal"
+                      ? "#5c939633"
+                      : "#10343933",
+
+              border:
+                category === "Work"
+                  ? "1px solid #063f4766"
+                  : category === "Study"
+                    ? "1px solid #29737666"
+                    : category === "Personal"
+                      ? "1px solid #5c939666"
+                      : "1px solid #10343966",
+
+              color: "var(--text-primary)",
+            }}
+          >
+            {category}
+          </button>
+
+          {activeSelector === "category" && (
+            <div
+              style={{
+                position: "absolute",
+                top: "34px",
+
+                background:
+                  "rgba(20,20,20,0.95)",
+
+                backdropFilter: "blur(20px)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
+
+                borderRadius: "16px",
+
+                padding: "8px",
+
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+
+                zIndex: 20,
+              }}
+            >
+              {[
+                "Work",
+                "Study",
+                "Personal",
+                "Health",
+              ].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    setCategory(option);
+                    setActiveSelector(null);
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+
+                    color:
+                      "var(--text-primary)",
+
+                    padding: "8px 12px",
+
+                    borderRadius: "10px",
+
+                    cursor: "pointer",
+
+                    textAlign: "left",
+
+                    fontSize: "0.8rem",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "transparent";
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={() =>
+              setActiveSelector(
+                activeSelector === "priority"
+                  ? null
+                  : "priority"
+              )
+            }
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              fontSize: "0.7rem",
+              cursor: "pointer",
+
+              background:
+                priority === "High"
+                  ? "#ab313033"
+                  : priority === "Medium"
+                    ? "#62929e33"
+                    : "#ffdb5833",
+
+              border:
+                priority === "High"
+                  ? "1px solid #ab313066"
+                  : priority === "Medium"
+                    ? "1px solid #62929e66"
+                    : "1px solid #ffdb5866",
+
+              color: "var(--text-primary)",
+            }}
+          >
+            {priority}
+          </button>
+
+          {activeSelector === "priority" && (
+            <div
+              style={{
+                position: "absolute",
+
+                top: "34px",
+
+                background:
+                  "rgba(20,20,20,0.95)",
+
+                backdropFilter: "blur(20px)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
+
+                borderRadius: "16px",
+
+                padding: "8px",
+
+                display: "flex",
+                flexDirection: "column",
+
+                gap: "4px",
+
+                zIndex: 20,
+              }}
+            >
+              {[
+                "Low",
+                "Medium",
+                "High",
+              ].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    setPriority(option);
+                    setActiveSelector(null);
+                  }}
+                  style={{
+                    background: "transparent",
+
+                    border: "none",
+
+                    color:
+                      "var(--text-primary)",
+
+                    padding: "8px 12px",
+
+                    borderRadius: "10px",
+
+                    cursor: "pointer",
+
+                    textAlign: "left",
+
+                    fontSize: "0.8rem",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "transparent";
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={() =>
+              setActiveSelector(
+                activeSelector === "status"
+                  ? null
+                  : "status"
+              )
+            }
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              fontSize: "0.7rem",
+              cursor: "pointer",
+
+              background:
+                status === "In Progress"
+                  ? "#e9b95733"
+                  : "#4d689333",
+
+              border:
+                status === "In Progress"
+                  ? "1px solid #e9b95766"
+                  : "1px solid #4d689366",
+
+              color: "var(--text-primary)",
+            }}
+          >
+            {status}
+          </button>
+
+          {activeSelector === "status" && (
+            <div
+              style={{
+                position: "absolute",
+
+                top: "34px",
+
+                background: "rgba(20,20,20,0.95)",
+
+                backdropFilter: "blur(20px)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
+
+                borderRadius: "16px",
+
+                padding: "8px",
+
+                display: "flex",
+                flexDirection: "column",
+
+                gap: "4px",
+
+                zIndex: 20,
+              }}
+            >
+              {[
+                "Active",
+                "In Progress",
+              ].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    setStatus(option);
+                    setActiveSelector(null);
+                  }}
+                  style={{
+                    background: "transparent",
+
+                    border: "none",
+
+                    color:
+                      "var(--text-primary)",
+
+                    padding: "8px 12px",
+
+                    borderRadius: "10px",
+
+                    cursor: "pointer",
+
+                    textAlign: "left",
+
+                    fontSize: "0.8rem",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "transparent";
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* MARK COMPLETE PILL */}
+        {mode === "edit" && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "20px",
+            }}
+          >
+            {!task.completed ? (
+              <button
+                style={{
+                  alignSelf: "center",
+
+                  padding: "10px 18px",
+
+                  borderRadius: "999px",
+
+                  background:
+                    "rgba(114,138,110,0.12)",
+
+                  border:
+                    "1px solid rgba(114,138,110,0.25)",
+
+                  color: "#9bc091",
+
+                  fontSize: "0.8rem",
+
+                  fontWeight: "300",
+
+                  cursor: "pointer",
+
+                  marginBottom: "20px",
+                }}
+              >
+                Mark Complete
+              </button>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+
+                  marginBottom: "20px",
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: "center",
+
+                    padding: "12px",
+
+                    borderRadius: "14px",
+
+                    background:
+                      "rgba(114,138,110,0.10)",
+
+                    border:
+                      "1px solid rgba(114,138,110,0.18)",
+
+                    fontSize: "0.8rem",
+
+                    fontWeight: "300",
+                  }}
+                >
+                  ✓ Completed
+                </div>
+
+                <button
+                  style={{
+                    alignSelf: "center",
+
+                    padding: "10px 18px",
+
+                    borderRadius: "999px",
+
+                    background:
+                      "rgba(255,255,255,0.08)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
+
+                    color:
+                      "var(--text-primary)",
+
+                    fontSize: "0.8rem",
+
+                    fontWeight: "300",
+
+                    cursor: "pointer",
+                  }}
+                >
+                  Restore Task
+                </button>
+              </div>
+            )}
+          </div>
+        )
+        }
+
+        {/* TASK NAME */}
         <input
           value={taskName}
 
@@ -239,38 +731,35 @@ function TaskModal({
 
             outline: "none",
 
-            color:
-              "var(--text-primary)",
+            color: "var(--text-primary)",
 
-            fontSize: "1.2rem",
+            fontSize: "1.05rem",
 
             fontWeight: "300",
 
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.02em",
 
             padding: "0 0 12px 0",
 
-            borderBottom:
-              "1px solid rgba(255,255,255,0.06)",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
           }}
         />
 
+        {/* DESCRIPTION */}
         <div
           style={{
-            padding: "18px 0",
-
-            borderBottom:
-              "1px solid rgba(255,255,255,0.06)",
+            marginBottom: "20px",
           }}
         >
           <p
             style={{
-              marginBottom: "12px",
+              fontSize: "0.8rem",
 
-              fontSize: "0.85rem",
+              opacity: 0.45,
 
-              color:
-                "var(--text-secondary)",
+              fontWeight: "300",
+
+              marginBottom: "8px",
             }}
           >
             Notes
@@ -289,8 +778,7 @@ function TaskModal({
             style={{
               width: "100%",
 
-              background:
-                "transparent",
+              background: "transparent",
 
               border: "none",
 
@@ -298,563 +786,215 @@ function TaskModal({
 
               resize: "none",
 
-              color:
-                "var(--text-primary)",
+              color: "var(--text-primary)",
 
-              fontFamily:
-                "inherit",
+              fontFamily: "inherit",
 
-              fontSize: "0.95rem",
-            }}
-          />
-        </div>
-
-        {/* CHIPS */}
-        <div>
-          <p
-            style={{
-              marginBottom: "10px",
-
-              color: "var(--text-secondary)",
-
-              fontSize: "0.85rem",
+              fontSize: "0.9rem",
 
               fontWeight: "300",
             }}
-          >
-            Category
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
-            {[
-              {
-                name: "Work",
-                bg: "#063f4733",
-                border: "#063f4766",
-              },
-              {
-                name: "Study",
-                bg: "#29737633",
-                border: "#29737666",
-              },
-              {
-                name: "Personal",
-                bg: "#5c939633",
-                border: "#5c939666",
-              },
-              {
-                name: "Health",
-                bg: "#10343933",
-                border: "#10343966",
-              },
-            ].map((item) => (
-              <button
-                key={item.name}
-                onClick={() =>
-                  setCategory(item.name)
-                }
-                style={{
-                  padding: "6px 12px",
-
-                  borderRadius: "999px",
-
-                  fontSize: "0.75rem",
-
-                  cursor: "pointer",
-
-                  transition:
-                    "all 0.2s ease",
-
-                  background:
-                    category === item.name
-                      ? item.bg
-                      : "transparent",
-
-                  border:
-                    category === item.name
-                      ? `1px solid ${item.border}`
-                      : "1px solid rgba(255,255,255,0.08)",
-
-                  color:
-                    category === item.name
-                      ? "var(--text-primary)"
-                      : "var(--text-secondary)",
-                }}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p
-            style={{
-              marginBottom: "10px",
-
-              color:
-                "var(--text-secondary)",
-
-              fontSize: "0.85rem",
-
-              fontWeight: "400",
-            }}
-          >
-            Priority
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
-            {[
-              {
-                name: "Low",
-                color: "#ffdb58",
-              },
-              {
-                name: "Medium",
-                color: "#62929e",
-              },
-              {
-                name: "High",
-                color: "#ab3130",
-              },
-            ].map((item) => (
-              <button
-                key={item.name}
-                onClick={() =>
-                  setPriority(item.name)
-                }
-                style={{
-                  padding: "6px 12px",
-
-                  borderRadius: "999px",
-
-                  fontSize: "0.75rem",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-
-                  background:
-                    priority === item.name
-                      ? `${item.color}33`
-                      : "transparent",
-
-                  border:
-                    priority === item.name
-                      ? `1px solid ${item.color}66`
-                      : "1px solid rgba(255,255,255,0.08)",
-
-                  color:
-                    priority === item.name
-                      ? "var(--text-primary)"
-                      : "var(--text-secondary)",
-                }}
-                onMouseEnter={(e) => {
-                  if (
-                    priority !== item.name
-                  ) {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.04)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (
-                    priority !== item.name
-                  ) {
-                    e.currentTarget.style.background =
-                      "transparent";
-                  }
-                }}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <p
-            style={{
-              marginBottom: "10px",
-
-              color:
-                "var(--text-secondary)",
-
-              fontSize: "0.85rem",
-
-              fontWeight: "400",
-            }}
-          >
-            Status
-          </p>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
-            {[
-              {
-                name: "Active",
-                color: "#4d6893",
-              },
-              {
-                name: "In Progress",
-                color: "#e9b957",
-              },
-            ].map((item) => (
-              <button
-                key={item.name}
-                onClick={() =>
-                  setStatus(item.name)
-                }
-                style={{
-                  padding: "6px 12px",
-
-                  borderRadius: "999px",
-
-                  fontSize: "0.75rem",
-
-                  cursor: "pointer",
-
-                  transition:
-                    "all 0.2s ease",
-
-                  background:
-                    status === item.name
-                      ? `${item.color}33`
-                      : "transparent",
-
-                  border:
-                    status === item.name
-                      ? `1px solid ${item.color}66`
-                      : "1px solid rgba(255,255,255,0.08)",
-
-                  color:
-                    status === item.name
-                      ? "var(--text-primary)"
-                      : "var(--text-secondary)",
-                }}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div
-          onClick={() =>
-            setShowCalendar(
-              !showCalendar
-            )
-          }
-          style={{
-            display: "flex",
-
-            justifyContent:
-              "space-between",
-
-            alignItems: "center",
-
-            borderRadius: "12px",
-
-            padding: "18px 12px",
-
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-
-            cursor: "pointer",
-
-            transition:
-              "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              "rgba(255,255,255,0.03)";
-          }}
-
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background =
-              "transparent";
-          }}
-        >
-          <span
-            style={{
-              fontSize: "0.8rem",
-
-              color:
-                selectedDate ===
-                  "Choose a date"
-                  ? "var(--text-secondary)"
-                  : "var(--text-primary)",
-            }}
-          >
-            {selectedDate}
-          </span>
-
-          <Calendar
-            size={16}
-            strokeWidth={1.5}
           />
         </div>
-        {showCalendar && (
-          <div
+
+        {/* DIVIDER */}
+        <div
+          style={{
+            height: "1px",
+            background: "rgba(255,255,255,0.06)",
+          }}
+        />
+
+        {/* DATE */}
+        <div
+          style={{
+            marginBottom: "8px",
+          }}
+        >
+          <p
             style={{
-              background: "rgba(255,255,255,0.04)",
-
-              border: "1px solid rgba(255,255,255,0.08)",
-
-              borderRadius: "20px",
-
-              padding: "20px",
-
-              marginTop: "-8px",
+              fontSize: "0.8rem",
+              opacity: 0.45,
+              fontWeight: "300",
+              marginBottom: "8px",
             }}
           >
-            <div
-              style={{
-                marginBottom: "20px",
+            Due Date
+          </p>
 
-                textAlign: "center",
+          <div
+            onClick={() =>
+              setShowCalendarModal(true)
+            }
+            style={{
+              display: "flex",
+
+              justifyContent:
+                "space-between",
+
+              alignItems: "center",
+
+              cursor: "pointer",
+
+              padding: "8px 0",
+
+              transition:
+                "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity =
+                "0.75";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity =
+                "1";
+            }}
+          >
+            <span
+              style={{
+                fontSize: "0.85rem",
+                fontWeight: "300",
+
+                color:
+                  !selectedDate
+                    ? "var(--text-secondary)"
+                    : "var(--text-primary)",
               }}
             >
-              <span
-                style={{
-                  fontWeight: "500",
-                }}
-              >
-                June
-              </span>
-
-              <span
-                style={{
-                  color:
-                    "var(--text-secondary)",
-
-                  marginLeft: "6px",
-                }}
-              >
-                2026
-              </span>
-            </div>
-            <div
-              style={{
-                display: "grid",
-
-                gridTemplateColumns:
-                  "repeat(7, 1fr)",
-
-                marginBottom: "12px",
-
-                gap: "6px",
-              }}
-            >
-              {[
-                "M",
-                "T",
-                "W",
-                "T",
-                "F",
-                "S",
-                "S",
-              ].map((day) => (
-                <div
-                  key={day}
-                  style={{
-                    textAlign: "center",
-
-                    fontSize: "0.75rem",
-
-                    color:
-                      "var(--text-secondary)",
-                  }}
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-
-                gridTemplateColumns: "repeat(7, 1fr)",
-
-                gap: "8px",
-              }}
-            >
-              {[9, 10, 11, 12, 13, 14, 15].map(
-                (day) => (
-                  <button
-                    key={day}
-                    onClick={() => {
-                      setSelectedDate(
-                        `June ${day}, 2026`
-                      );
-
-                      setShowCalendar(
-                        false
-                      );
-                    }}
-                    style={{
-                      width: "34px",
-
-                      height: "34px",
-
-                      borderRadius: "50%",
-
-                      background:
-                        selectedDate ===
-                          `June ${day}, 2026`
-                          ? "#52677d"
-                          : "transparent",
-
-                      border: "none",
-
-                      color:
-                        selectedDate ===
-                          `June ${day}, 2026`
-                          ? "#fff"
-                          : "var(--text-primary)",
-
-                      cursor: "pointer",
-
-                      margin: "0 auto",
-
-                      transition:
-                        "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (
-                        selectedDate !==
-                        `June ${day}, 2026`
-                      ) {
-                        e.currentTarget.style.background =
-                          "rgba(255,255,255,0.05)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (
-                        selectedDate !==
-                        `June ${day}, 2026`
-                      ) {
-                        e.currentTarget.style.background =
-                          "transparent";
-                      }
-                    }}
-                  >
-                    {day}
-                  </button>
+              {selectedDate
+                ? new Date(
+                  selectedDate
+                ).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  }
                 )
-              )}
-            </div>
+                : "Choose a date"}
+            </span>
+
+            <Calendar
+              size={16}
+              strokeWidth={1.5}
+            />
           </div>
-        )}
+        </div>
 
         <div
           style={{
             display: "flex",
             justifyContent: "flex-end",
-            gap: "12px",
-            marginTop: "8px",
+            gap: "10px",
+            marginTop: "24px",
           }}
         >
           <button
             onClick={onClose}
             style={{
-              background: "transparent",
-
-              border: "1px solid rgba(255,255,255,0.08)",
+              padding: "11px 18px",
 
               borderRadius: "999px",
 
-              padding: "8px 14px",
+              background:
+                "rgba(255,77,77,0.12)",
 
-              color: "#ff6b6b",
+              border:
+                "1px solid rgba(255,77,77,0.25)",
 
-              fontSize: "0.85rem",
+              color: "var(--danger)",
 
-              fontWeight: "400",
+              fontSize: "0.8rem",
+
+              fontWeight: "300",
 
               cursor: "pointer",
 
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color =
-                "#ff6b6b";
-
               e.currentTarget.style.background =
-                "rgba(255,255,255,0.04)";
+                "rgba(255,77,77,0.20)";
+
+              e.currentTarget.style.transform =
+                "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color =
-                "#ff6b6b";
-
               e.currentTarget.style.background =
-                "transparent";
+                "rgba(255,77,77,0.12)";
+
+              e.currentTarget.style.transform =
+                "translateY(0)";
             }}
           >
             Cancel
           </button>
 
           <button
-            // might revert
             onClick={handleSave}
             style={{
-              background: "transparent",
-
-              border: "1px solid rgba(255,255,255,0.08)",
+              padding: "11px 18px",
 
               borderRadius: "999px",
 
-              padding: "8px 14px",
+              background:
+                "rgba(255,255,255,0.08)",
 
-              color: "var(--text-secondary)",
+              border:
+                "1px solid rgba(255,255,255,0.10)",
 
-              fontSize: "0.85rem",
+              color:
+                "var(--text-primary)",
 
-              fontWeight: "400",
+              fontSize: "0.8rem",
+
+              fontWeight: "300",
 
               cursor: "pointer",
 
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color =
-                "var(--text-primary)";
-
               e.currentTarget.style.background =
-                "rgba(255,255,255,0.04)";
+                "rgba(255,255,255,0.14)";
+
+              e.currentTarget.style.transform =
+                "translateY(-1px)";
+
+              e.currentTarget.style.border =
+                "1px solid rgba(255,255,255,0.18)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color =
-                "var(--text-secondary)";
-
               e.currentTarget.style.background =
-                "transparent";
+                "rgba(255,255,255,0.08)";
+
+              e.currentTarget.style.transform =
+                "translateY(0)";
+
+              e.currentTarget.style.border =
+                "1px solid rgba(255,255,255,0.10)";
             }}
           >
             {mode === "edit"
-              ? "Save Changes"
-              : "Create Task"}
+              ? "Save"
+              : "Create"}
           </button>
         </div>
       </div>
-    </div>
+      {showCalendarModal && (
+        <MiniCalendarModal
+          selectedDate={selectedDate}
+          onSelectDate={(date) =>
+            setSelectedDate(date)
+          }
+          onClose={() =>
+            setShowCalendarModal(false)
+          }
+        />
+      )
+      }
+    </div >
   );
 }
 

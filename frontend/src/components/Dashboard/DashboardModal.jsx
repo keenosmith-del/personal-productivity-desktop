@@ -4,6 +4,7 @@ function DashboardModal({
     title,
     items,
     onClose,
+    onNavigate,
 }) {
     return (
         <div
@@ -28,13 +29,13 @@ function DashboardModal({
                     e.stopPropagation()
                 }
                 style={{
-                    width: "500px",
+                    width: "560px",
 
                     background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
 
                     border: "1px solid rgba(255,255,255,0.10)",
 
-                    borderRadius: "32px",
+                    borderRadius: "36px",
 
                     backdropFilter: "blur(30px)",
 
@@ -47,42 +48,87 @@ function DashboardModal({
                     style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        alignItems: "flex-start",
                         marginBottom: "24px",
                     }}
                 >
-                    <h2
-                        style={{
-                            fontWeight: "400",
-                        }}
-                    >
-                        {title}
-                    </h2>
+                    <div>
+                        <h2
+                            style={{
+                                margin: 0,
+                                fontSize: "0.95rem",
+                                fontWeight: "400",
+                            }}
+                        >
+                            {title}
+                        </h2>
 
-                    <X
-                        size={18}
-                        strokeWidth={1.5}
+                        <p
+                            style={{
+                                marginTop: "4px",
+                                marginBottom: 0,
+                                fontSize: "0.8rem",
+                                fontWeight: "300",
+                                opacity: 0.55,
+                            }}
+                        >
+                            View matching items
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={onClose}
                         style={{
+                            width: "32px",
+                            height: "32px",
+
+                            borderRadius: "999px",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
+
+                            background:
+                                "rgba(255,255,255,0.04)",
+
+                            color:
+                                "var(--text-secondary)",
+
                             cursor: "pointer",
+
+                            fontSize: "0.85rem",
+
                             transition: "all 0.2s ease",
                         }}
-                        onClick={onClose}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.opacity =
-                                "0.7";
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.10)";
+
+                            e.currentTarget.style.transform =
+                                "scale(1.05)";
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.opacity =
-                                "1";
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.04)";
+
+                            e.currentTarget.style.transform =
+                                "scale(1)";
                         }}
-                    />
+                    >
+                        x
+                    </button>
                 </div>
 
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: "12px",
+                        gap: "6px",
+
+                        maxHeight: "45vh",
+
+                        overflowY: "auto",
+
+                        paddingRight: "4px",
                     }}
                 >
                     {items.length === 0 ? (
@@ -101,15 +147,27 @@ function DashboardModal({
                             <div
                                 key={item.title}
                                 style={{
-                                    padding: "14px",
+                                    padding: "10px 12px",
+                                    borderRadius: "14px",
 
-                                    borderRadius: "12px",
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
 
                                     display: "flex",
 
                                     justifyContent: "space-between",
 
                                     alignItems: "flex-start",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+                                }}
+
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "transparent";
                                 }}
                             >
                                 <div>
@@ -219,7 +277,8 @@ function DashboardModal({
                                     <span
                                         style={{
                                             fontWeight: "300",
-                                            letterSpacing: "-0.01em",
+                                            fontSize: "0.85rem",
+                                            letterSpacing: "-0.015em",
                                         }}
                                     >
                                         {item.title}
@@ -238,7 +297,7 @@ function DashboardModal({
                                             "#ff6b6b";
 
                                         e.currentTarget.style.transform =
-                                            "scale(1.1)";
+                                            "translateY(-1px)";
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.color =
@@ -251,6 +310,122 @@ function DashboardModal({
                             </div>
                         ))
                     )}
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+
+                        justifyContent: "flex-end",
+
+                        gap: "10px",
+
+                        marginTop: "20px",
+                    }}
+                >
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: "11px 18px",
+
+                            borderRadius: "999px",
+
+                            background:
+                                "rgba(255,77,77,0.12)",
+
+                            border:
+                                "1px solid rgba(255,77,77,0.25)",
+
+                            color: "var(--danger)",
+
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,77,77,0.20)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,77,77,0.12)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
+                        }}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            if (
+                                title === "Projects"
+                            ) {
+                                onNavigate("/projects");
+                            } else if (
+                                title === "Goals"
+                            ) {
+                                onNavigate("/goals");
+                            } else {
+                                onNavigate("/tasks");
+                            }
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.14)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.18)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.08)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.10)";
+                        }}
+                        style={{
+                            padding: "11px 18px",
+
+                            borderRadius: "999px",
+
+                            background:
+                                "rgba(255,255,255,0.08)",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.10)",
+
+                            color:
+                                "var(--text-primary)",
+
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        {title === "Projects"
+                            ? "Go To Projects"
+                            : title === "Goals"
+                                ? "Go To Goals"
+                                : "Go To Tasks"}
+                    </button>
                 </div>
             </div>
         </div>
