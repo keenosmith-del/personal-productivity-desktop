@@ -72,7 +72,7 @@ function TaskModal({
 
   const [selectedDate, setSelectedDate] =
     useState(
-      task?.dueDate || null
+      task?.dueDate || new Date().toISOString()
     );
 
   useEffect(() => {
@@ -154,6 +154,14 @@ function TaskModal({
         )
       : null;
 
+  const handleModalOverlayClick = () => {
+    if (showCalendarModal) {
+      return;
+    }
+
+    onClose();
+  };
+
   const handleSave = () => {
     if (!taskName.trim())
       return;
@@ -213,7 +221,7 @@ function TaskModal({
 
   return (
     <div
-      onClick={onClose}
+      onClick={handleModalOverlayClick}
       style={{
         position: "fixed",
         inset: 0,
@@ -456,21 +464,21 @@ function TaskModal({
 
                   background:
                     category === "Work"
-                      ? "#063f4733"
+                      ? "#466a6d33"
                       : category === "Study"
-                        ? "#29737633"
+                        ? "#536b8333"
                         : category === "Personal"
-                          ? "#5c939633"
-                          : "#10343933",
+                          ? "#6f5f7a33"
+                          : "#57707a33",
 
                   border:
                     category === "Work"
-                      ? "1px solid #063f4766"
+                      ? "1px solid #466a6d66"
                       : category === "Study"
-                        ? "1px solid #29737666"
+                        ? "1px solid #536b8366"
                         : category === "Personal"
-                          ? "1px solid #5c939666"
-                          : "1px solid #10343966",
+                          ? "1px solid #6f5f7a66"
+                          : "1px solid #57707a66",
 
                   color: "var(--text-primary)",
                 }}
@@ -603,18 +611,18 @@ function TaskModal({
                   cursor: "pointer",
 
                   background:
-                    priority === "High"
-                      ? "#ab313033"
+                    priority === "Low"
+                      ? "#273c4133"
                       : priority === "Medium"
-                        ? "#62929e33"
-                        : "#ffdb5833",
+                        ? "#5e687433"
+                        : "#6b544733",
 
                   border:
-                    priority === "High"
-                      ? "1px solid #ab313066"
+                    priority === "Low"
+                      ? "1px solid #273c4166"
                       : priority === "Medium"
-                        ? "1px solid #62929e66"
-                        : "1px solid #ffdb5866",
+                        ? "1px solid #5e687466"
+                        : "1px solid #6b544766",
 
                   color: "var(--text-primary)",
                 }}
@@ -749,14 +757,18 @@ function TaskModal({
                   cursor: "pointer",
 
                   background:
-                    status === "In Progress"
-                      ? "#e9b95733"
-                      : "#4d689333",
+                    status === "Active"
+                      ? "#4d689333"
+                      : status === "Paused"
+                        ? "#45575b33"
+                        : "#728a6e33",
 
                   border:
-                    status === "In Progress"
-                      ? "1px solid #e9b95766"
-                      : "1px solid #4d689366",
+                    status === "Active"
+                      ? "1px solid #4d689366"
+                      : status === "Paused"
+                        ? "1px solid #45575b66"
+                        : "1px solid #728a6e66",
 
                   color: "var(--text-primary)",
                 }}
@@ -802,6 +814,7 @@ function TaskModal({
                   {[
                     "Active",
                     "In Progress",
+                    "Paused",
                   ].map((option) => (
                     <button
                       key={option}

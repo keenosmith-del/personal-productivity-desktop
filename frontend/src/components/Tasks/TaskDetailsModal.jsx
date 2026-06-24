@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useState } from "react";
 
 function TaskDetailsModal({
     task,
@@ -37,6 +38,9 @@ function TaskDetailsModal({
             )
             : null;
 
+    const [showDeleteConfirm,
+        setShowDeleteConfirm] =
+        useState(false);
 
     return (
         <div
@@ -283,21 +287,21 @@ function TaskDetailsModal({
 
                                 background:
                                     task.category === "Work"
-                                        ? "#063f4733"
+                                        ? "#466a6d33"
                                         : task.category === "Study"
-                                            ? "#29737633"
+                                            ? "#536b8333"
                                             : task.category === "Personal"
-                                                ? "#5c939633"
-                                                : "#10343933",
+                                                ? "#6f5f7a33"
+                                                : "#57707a33",
 
                                 border:
                                     task.category === "Work"
-                                        ? "1px solid #063f4766"
+                                        ? "1px solid #466a6d66"
                                         : task.category === "Study"
-                                            ? "1px solid #29737666"
+                                            ? "1px solid #536b8366"
                                             : task.category === "Personal"
-                                                ? "1px solid #5c939666"
-                                                : "1px solid #10343966",
+                                                ? "1px solid #6f5f7a66"
+                                                : "1px solid #57707a66",
                             }}
                         >
                             {task.category}
@@ -314,18 +318,18 @@ function TaskDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    task.priority === "High"
-                                        ? "#ab313033"
+                                    task.priority === "Low"
+                                        ? "#273c4133"
                                         : task.priority === "Medium"
-                                            ? "#62929e33"
-                                            : "#ffdb5833",
+                                            ? "#5e687433"
+                                            : "#6b544733",
 
                                 border:
-                                    task.priority === "High"
-                                        ? "1px solid #ab313066"
+                                    task.priority === "Low"
+                                        ? "1px solid #273c4166"
                                         : task.priority === "Medium"
-                                            ? "1px solid #62929e66"
-                                            : "1px solid #ffdb5866",
+                                            ? "1px solid #5e687466"
+                                            : "1px solid #6b544766",
                             }}
                         >
                             {task.priority}
@@ -343,18 +347,18 @@ function TaskDetailsModal({
                                     fontSize: "0.7rem",
 
                                     background:
-                                        task.status === "In Progress"
-                                            ? "#e9b95733"
-                                            : task.status === "Overdue"
-                                                ? "#85222f33"
-                                                : "#4d689333",
+                                        task.status === "Active"
+                                            ? "#4d689333"
+                                            : task.status === "Paused"
+                                                ? "#45575b33"
+                                                : "#728a6e33",
 
                                     border:
-                                        task.status === "In Progress"
-                                            ? "1px solid #e9b95766"
-                                            : task.status === "Overdue"
-                                                ? "1px solid #85222f66"
-                                                : "1px solid #4d689366",
+                                        task.status === "Active"
+                                            ? "1px solid #4d689366"
+                                            : task.status === "Paused"
+                                                ? "1px solid #45575b66"
+                                                : "1px solid #728a6e66",
                                 }}
                             >
                                 {task.status}
@@ -552,17 +556,9 @@ function TaskDetailsModal({
                     }}
                 >
                     <button
-                        onClick={() => {
-                            onDeleteTask(task._id);
-
-                            setToast("Task deleted");
-
-                            setTimeout(() => {
-                                setToast("");
-                            }, 4000);
-
-                            onClose();
-                        }}
+                        onClick={() =>
+                            setShowDeleteConfirm(true)
+                        }
                         style={{
                             padding: "11px 18px",
 
@@ -706,6 +702,196 @@ function TaskDetailsModal({
                     )}
                 </div>
             </div>
+            {
+                showDeleteConfirm && (
+                    <div
+                        onClick={() =>
+                            setShowDeleteConfirm(false)
+                        }
+                        style={{
+                            position: "fixed",
+                            inset: 0,
+
+                            background:
+                                "rgba(0,0,0,0.8)",
+
+                            backdropFilter:
+                                "blur(20px)",
+
+                            display: "flex",
+
+                            justifyContent:
+                                "center",
+
+                            alignItems:
+                                "center",
+
+                            zIndex: 3000,
+                        }}
+                    >
+                        <div
+                            onClick={(e) =>
+                                e.stopPropagation()
+                            }
+                            style={{
+                                width: "400px",
+
+                                padding: "28px",
+
+                                borderRadius: "24px",
+
+                                background:
+                                    "rgba(20,20,20,0.90)",
+
+                                border:
+                                    "1px solid rgba(255,255,255,0.08)",
+                            }}
+                        >
+                            <h3
+                                style={{
+                                    marginBottom: "12px",
+                                    fontWeight: "400",
+                                    fontSize: "0.95rem",
+                                }}
+                            >
+                                Delete task?
+                            </h3>
+
+                            <p
+                                style={{
+                                    color: "var(--text-secondary)",
+
+                                    marginBottom: "24px",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    opacity: 0.55,
+                                }}
+                            >
+                                This action cannot be undone.
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+
+                                    justifyContent:
+                                        "flex-end",
+
+                                    gap: "12px",
+                                }}
+                            >
+                                <button
+                                    onClick={() =>
+                                        setShowDeleteConfirm(false)
+                                    }
+                                    style={{
+                                        padding: "11px 18px",
+
+                                        borderRadius: "999px",
+
+                                        background:
+                                            "rgba(255,255,255,0.08)",
+
+                                        border:
+                                            "1px solid rgba(255,255,255,0.10)",
+
+                                        color:
+                                            "var(--text-primary)",
+
+                                        fontSize: "0.8rem",
+
+                                        fontWeight: "300",
+
+                                        cursor: "pointer",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.14)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+
+                                        e.currentTarget.style.border =
+                                            "1px solid rgba(255,255,255,0.18)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.08)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+
+                                        e.currentTarget.style.border =
+                                            "1px solid rgba(255,255,255,0.10)";
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        onDeleteTask(task._id);
+
+                                        setToast(
+                                            "Task deleted"
+                                        );
+
+                                        setTimeout(() => {
+                                            setToast("");
+                                        }, 4000);
+
+                                        setShowDeleteConfirm(false);
+
+                                        onClose();
+                                    }}
+                                    style={{
+                                        padding: "11px 18px",
+
+                                        borderRadius: "999px",
+
+                                        background:
+                                            "rgba(255,77,77,0.12)",
+
+                                        border:
+                                            "1px solid rgba(255,77,77,0.25)",
+
+                                        color: "var(--danger)",
+
+                                        fontSize: "0.8rem",
+
+                                        fontWeight: "300",
+
+                                        cursor: "pointer",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,77,77,0.20)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,77,77,0.12)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div>
     );
 }
