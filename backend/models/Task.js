@@ -50,6 +50,21 @@ const taskSchema =
                 default: false,
             },
 
+            flagged: {
+                type: Boolean,
+                default: false,
+            },
+
+            liked: {
+                type: Boolean,
+                default: false,
+            },
+
+            commentCount: {
+                type: Number,
+                default: 0,
+            },
+
             linkedProjects: [
                 {
                     type:

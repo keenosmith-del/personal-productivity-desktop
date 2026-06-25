@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout";
 import {
   useState,
   useEffect,
+  useRef,
 } from "react";
 
 import TaskModal from "../components/Tasks/TaskModal";
@@ -32,6 +33,10 @@ import {
 
 function Tasks() {
   //COMPONENT STATES
+  const sortRef = useRef(null);
+
+  const filterRef = useRef(null);
+
   const [showTaskModal, setShowTaskModal] =
     useState(false);
 
@@ -63,28 +68,223 @@ function Tasks() {
     setShowClearActive] =
     useState(false);
 
-  const activeTasks = tasks.filter(
-    (task) =>
-      !task.completed &&
-      task.status === "Active"
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [sortBy, setSortBy] =
+    useState("newest");
+
+  const [showSortMenu, setShowSortMenu] =
+    useState(false);
+
+  const [showFilterMenu, setShowFilterMenu] =
+    useState(false);
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("All");
+
+  const [selectedPriority, setSelectedPriority] =
+    useState("All");
+
+  const matchesFilters = (task) => {
+    const categoryMatch =
+      selectedCategory === "All" ||
+      task.category ===
+      selectedCategory;
+
+    const priorityMatch =
+      selectedPriority === "All" ||
+      task.priority ===
+      selectedPriority;
+
+    return (
+      categoryMatch &&
+      priorityMatch
+    );
+  };
+
+  const matchesSearch = (task) =>
+    task.title
+      .toLowerCase()
+      .includes(
+        searchTerm.toLowerCase()
+      ) ||
+
+    (task.description || "")
+      .toLowerCase()
+      .includes(
+        searchTerm.toLowerCase());
+
+  const sortTasks = (tasksToSort) => {
+    return [...tasksToSort].sort(
+      (a, b) => {
+        switch (sortBy) {
+          case "oldest":
+            return (
+              new Date(a.createdAt) -
+              new Date(b.createdAt)
+            );
+
+          case "priority": {
+            const order = {
+              High: 0,
+              Medium: 1,
+              Low: 2,
+            };
+
+            return (
+              order[a.priority] -
+              order[b.priority]
+            );
+          }
+
+          case "dueDate":
+            return (
+              new Date(a.dueDate || 0) -
+              new Date(b.dueDate || 0)
+            );
+
+          case "alphabetical":
+            return a.title.localeCompare(
+              b.title
+            );
+
+          case "newest":
+          default:
+            return (
+              new Date(b.createdAt) -
+              new Date(a.createdAt)
+            );
+        }
+      }
+    );
+  };
+
+
+  {/* BEGIN TASK SORT VARIABLES */ }
+  {/* OVERVIEW TAB TASK SORT */ }
+  const activeTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        !task.completed &&
+        task.status === "Active" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
   );
 
-  const inProgressTasks = tasks.filter(
-    (task) =>
-      !task.completed &&
-      task.status === "In Progress"
+  const inProgressTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        !task.completed &&
+        task.status ===
+        "In Progress" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
   );
 
-  const pausedTasks = tasks.filter(
-    (task) =>
-      !task.completed &&
-      task.status === "Paused"
+  const pausedTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        !task.completed &&
+        task.status === "Paused" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
   );
 
-  const completedTasks = tasks.filter(
-    (task) =>
-      task.status === "Completed"
+  const completedTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.status ===
+        "Completed" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
   );
+
+  {/* FOCUS TAB TASK SORT */ }
+  const urgentTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.priority === "High" && // leave out !task.completed? can be high priority and completed?
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  const flaggedTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.flagged &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  const likedTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.liked &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  const discussionTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.commentCount > 0 &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  )
+
+  {/* CATEGORIES TAB*/ }
+  {/* WORK */ }
+  const workTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.category === "Work" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  {/* STUDY */ }
+  const studyTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.category === "Study" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  {/* PERSONAL */ }
+  const personalTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.category === "Personal" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  {/* HEALTH */ }
+  const healthTasks = sortTasks(
+    tasks.filter(
+      (task) =>
+        task.category === "Health" &&
+        matchesSearch(task) &&
+        matchesFilters(task)
+    )
+  );
+
+  const hasFilters =
+    selectedCategory !== "All" ||
+    selectedPriority !== "All";
 
   const totalTasks =
     tasks.length;
@@ -106,6 +306,41 @@ function Tasks() {
 
   useEffect(() => {
     loadTasks();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (
+      event
+    ) => {
+      if (
+        sortRef.current &&
+        !sortRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowSortMenu(false);
+      }
+
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowFilterMenu(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   // HANDLERS
@@ -267,6 +502,52 @@ function Tasks() {
       }
     };
 
+  const handleToggleFlag =
+    async (task) => {
+      await updateTask(
+        task._id,
+        {
+          ...task,
+
+          flagged:
+            !task.flagged,
+        }
+      );
+
+      loadTasks();
+    };
+
+  const handleToggleLike =
+    async (task) => {
+      await updateTask(
+        task._id,
+        {
+          ...task,
+
+          liked:
+            !task.liked,
+        }
+      );
+
+      loadTasks();
+    };
+
+  const handleAddComment =
+    async (task) => {
+      await updateTask(
+        task._id,
+        {
+          ...task,
+
+          commentCount:
+            (task.commentCount || 0) +
+            1,
+        }
+      );
+
+      loadTasks();
+    };
+
   const handleClearActiveTasks =
     async () => {
       try {
@@ -299,6 +580,30 @@ function Tasks() {
         }, 3000);
       }
     };
+
+  const dropdownItemStyle = {
+    width: "100%",
+
+    padding: "10px 12px",
+
+    background: "transparent",
+
+    border: "none",
+
+    borderRadius: "10px",
+
+    color: "var(--text-primary)",
+
+    textAlign: "left",
+
+    fontSize: "0.8rem",
+
+    fontWeight: "300",
+
+    cursor: "pointer",
+
+    transition: "all 0.2s ease",
+  };
 
   return (
     <MainLayout>
@@ -351,8 +656,504 @@ function Tasks() {
                 </p>
               </div>
 
-              <div>
-                Search / Sort / Filter
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                {/* SEARCH */}
+                <input
+                  value={searchTerm}
+                  onChange={(e) =>
+                    setSearchTerm(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Search tasks..."
+                  style={{
+                    width: "240px",
+
+                    padding: "12px 18px",
+
+                    borderRadius: "999px",
+
+                    border:
+                      searchTerm
+                        ? "1px solid rgba(87,112,122,0.55)"
+                        : "1px solid rgba(255,255,255,0.08)",
+
+                    background:
+                      searchTerm
+                        ? "rgba(87,112,122,0.14)"
+                        : "rgba(255,255,255,0.03)",
+
+                    boxShadow:
+                      searchTerm
+                        ? "0 0 0 1px rgba(87,112,122,0.15)"
+                        : "none",
+
+                    color:
+                      "var(--text-primary)",
+
+                    fontSize: "0.82rem",
+
+                    fontWeight: "300",
+
+                    outline: "none",
+
+                    backdropFilter:
+                      "blur(20px)",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                />
+
+                {/* SORT */}
+                <div
+                  ref={sortRef}
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      setShowFilterMenu(false);
+
+                      setShowSortMenu(
+                        !showSortMenu
+                      );
+                    }}
+                    style={{
+                      padding: "12px 18px",
+
+                      borderRadius: "999px",
+
+                      border:
+                        "1px solid rgba(255,255,255,0.08)",
+
+                      background:
+                        showSortMenu ||
+                          sortBy !== "newest"
+                          ? "rgba(87,112,122,0.10)"
+                          : "rgba(255,255,255,0.03)",
+
+                      color:
+                        showSortMenu ||
+                          sortBy !== "newest"
+                          ? "var(--text-primary)"
+                          : "var(--text-secondary)",
+
+                      fontSize: "0.82rem",
+
+                      fontWeight: "300",
+
+                      cursor: "pointer",
+
+                      transition:
+                        "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.06)";
+
+                      e.currentTarget.style.color =
+                        "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        showSortMenu ||
+                          sortBy !== "newest"
+                          ? "rgba(87,112,122,0.10)"
+                          : "rgba(255,255,255,0.03)";
+
+                      e.currentTarget.style.color =
+                        showSortMenu ||
+                          sortBy !== "newest"
+                          ? "var(--text-primary)"
+                          : "var(--text-secondary)";
+                    }}
+                  >
+                    {/* {
+                      sortBy === "newest"
+                        ? "Sort"
+                        : `Sort • ${sortBy === "dueDate"
+                          ? "Due"
+                          : sortBy ===
+                            "alphabetical"
+                            ? "A-Z"
+                            : sortBy.charAt(0)
+                              .toUpperCase() +
+                            sortBy.slice(1)
+                        }`
+                    } */}
+                    Sort
+                  </button>
+
+                  {showSortMenu && (
+                    <div
+                      style={{
+                        position: "absolute",
+
+                        top: "52px",
+                        right: 0,
+
+                        background:
+                          "rgba(20,20,20,0.95)",
+
+                        backdropFilter:
+                          "blur(20px)",
+
+                        border:
+                          "1px solid rgba(255,255,255,0.08)",
+
+                        minWidth: "140px",
+
+                        borderRadius: "16px",
+
+                        overflow: "hidden",
+
+                        zIndex: 100,
+                      }}
+                    >
+                      {[
+                        "newest",
+                        "oldest",
+                        "priority",
+                        "dueDate",
+                        "alphabetical",
+                      ].map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setSortBy(option);
+                            setShowSortMenu(false);
+                          }}
+                          style={{
+                            ...dropdownItemStyle,
+
+                            background:
+                              sortBy === option
+                                ? "rgba(255,255,255,0.04)"
+                                : "transparent",
+
+                            color:
+                              sortBy === option
+                                ? "#F5F5F5"
+                                : "var(--text-primary)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                              "rgba(255,255,255,0.04)";
+
+                            e.currentTarget.style.color =
+                              "#F5F5F5";
+                          }}
+
+                          onMouseLeave={(e) => {
+                            if (sortBy !== option) {
+                              e.currentTarget.style.background =
+                                "transparent";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }
+                          }}
+                        >
+                          {option === "dueDate"
+                            ? "Due Date"
+                            : option ===
+                              "alphabetical"
+                              ? "A → Z"
+                              : option.charAt(0).toUpperCase() +
+                              option.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* FILTER */}
+                <div
+                  ref={filterRef}
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      setShowSortMenu(false);
+
+                      setShowFilterMenu(
+                        !showFilterMenu
+                      );
+                    }}
+                    style={{
+                      padding: "12px 18px",
+
+                      borderRadius: "999px",
+
+                      border:
+                        showFilterMenu ||
+                          hasFilters
+                          ? "1px solid rgba(87,112,122,0.45)"
+                          : "1px solid rgba(255,255,255,0.08)",
+
+                      background:
+                        showFilterMenu ||
+                          hasFilters
+                          ? "rgba(87,112,122,0.16)"
+                          : "rgba(255,255,255,0.03)",
+
+                      color:
+                        showFilterMenu ||
+                          hasFilters
+                          ? "var(--text-primary)"
+                          : "var(--text-secondary)",
+
+                      fontSize: "0.82rem",
+
+                      fontWeight: "300",
+
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.06)";
+
+                      e.currentTarget.style.color =
+                        "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        showFilterMenu ||
+                          hasFilters
+                          ? "rgba(87,112,122,0.10)"
+                          : "rgba(255,255,255,0.03)";
+
+                      e.currentTarget.style.color =
+                        showFilterMenu ||
+                          hasFilters
+                          ? "var(--text-primary)"
+                          : "var(--text-secondary)";
+                    }}
+                  >
+                    Filter
+                  </button>
+
+                  {showFilterMenu && (
+                    <div
+                      style={{
+                        position: "absolute",
+
+                        top: "52px",
+                        right: 0,
+
+                        width: "220px",
+
+                        background:
+                          "rgba(20,20,20,0.95)",
+
+                        backdropFilter:
+                          "blur(20px)",
+
+                        border:
+                          "1px solid rgba(255,255,255,0.08)",
+
+                        borderRadius: "16px",
+
+                        padding: "12px",
+
+                        zIndex: 100,
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "0.75rem",
+                          opacity: 0.5,
+                          marginBottom: "10px",
+                        }}
+                      >
+                        Category
+                      </p>
+
+                      {/* CATEGORY OPTIONS */}
+                      {[
+                        "All",
+                        "Work",
+                        "Study",
+                        "Personal",
+                        "Health",
+                      ].map((category) => (
+                        <button
+                          key={category}
+                          onClick={() =>
+                            setSelectedCategory(category)
+                          }
+                          style={{
+                            ...dropdownItemStyle,
+
+                            background:
+                              selectedCategory === category
+                                ? "rgba(255,255,255,0.04)"
+                                : "transparent",
+
+                            color:
+                              selectedCategory === category
+                                ? "#F5F5F5"
+                                : "var(--text-primary)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                              "rgba(255,255,255,0.04)";
+
+                            e.currentTarget.style.color =
+                              "#F5F5F5";
+                          }}
+
+                          onMouseLeave={(e) => {
+                            if (
+                              selectedCategory !== category
+                            ) {
+                              e.currentTarget.style.background =
+                                "transparent";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }
+                          }}
+                        >
+                          {category}
+                        </button>
+                      ))}
+
+                      <div
+                        style={{
+                          height: "1px",
+                          background:
+                            "rgba(255,255,255,0.06)",
+                          margin: "14px 0",
+                        }}
+                      />
+
+                      <p
+                        style={{
+                          fontSize: "0.75rem",
+                          opacity: 0.5,
+                          marginBottom: "10px",
+                        }}
+                      >
+                        Priority
+                      </p>
+
+                      {[
+                        "All",
+                        "High",
+                        "Medium",
+                        "Low",
+                      ].map((priority) => (
+                        <button
+                          key={priority}
+                          onClick={() =>
+                            setSelectedPriority(
+                              priority
+                            )
+                          }
+                          style={{
+                            ...dropdownItemStyle,
+
+                            background:
+                              selectedPriority === priority
+                                ? "rgba(255,255,255,0.04)"
+                                : "transparent",
+
+                            color:
+                              selectedPriority === priority
+                                ? "#F5F5F5"
+                                : "var(--text-primary)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                              "rgba(255,255,255,0.04)";
+
+                            e.currentTarget.style.color =
+                              "#F5F5F5";
+                          }}
+
+                          onMouseLeave={(e) => {
+                            if (
+                              selectedPriority !== priority
+                            ) {
+                              e.currentTarget.style.background =
+                                "transparent";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }
+                          }}
+                        >
+                          {priority}
+                        </button>
+                      ))}
+                      <div
+                        style={{
+                          height: "1px",
+                          background:
+                            "rgba(255,255,255,0.06)",
+
+                          margin: "14px 0",
+                        }}
+                      />
+
+                      <button
+                        onClick={() => {
+                          setSelectedCategory(
+                            "All"
+                          );
+
+                          setSelectedPriority(
+                            "All"
+                          );
+
+                          setShowFilterMenu(false);
+                        }}
+                        style={{
+                          width: "100%",
+
+                          background: "none",
+
+                          border: "none",
+
+                          color:
+                            "var(--text-secondary)",
+
+                          fontSize: "0.8rem",
+
+                          fontWeight: "300",
+
+                          cursor: "pointer",
+
+                          paddingTop: "6px",
+
+                          transition:
+                            "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color =
+                            "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color =
+                            "var(--text-secondary)";
+                        }}
+                      >
+                        Clear Filters
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -378,8 +1179,8 @@ function Tasks() {
           <div
             style={{
               display: "flex",
-              justifyContent:
-                "center",
+              justifyContent: "center",
+
             }}
           >
             <div
@@ -394,21 +1195,38 @@ function Tasks() {
                 alignItems: "center",
 
                 background:
-                  "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+                  `
+                  radial-gradient(
+                    circle at top left,
+                    rgba(87,112,122,0.35),
+                    rgba(39,60,65,0.15) 60%
+                  ),
+                  linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.08),
+                    rgba(255,255,255,0.02)
+                  )
+                `,
 
                 border:
-                  "1px solid rgba(255,255,255,0.12)",
+                  "1px solid rgba(255,255,255,0.10)",
+
+
+                backdropFilter:
+                  "blur(30px)",
 
                 fontSize: "2rem",
 
                 fontWeight: "300",
+
+                opacity: 0.9,
               }}
             >
               ✓
             </div>
           </div>
 
-          {/* TABS */}
+          {/* TABS SECTION */}
           <div
             style={{
               display: "flex",
@@ -476,7 +1294,7 @@ function Tasks() {
             <button
               onClick={() =>
                 setActiveTab(
-                  "completed"
+                  "focus"
                 )
               }
               style={{
@@ -485,7 +1303,7 @@ function Tasks() {
                 border: "none",
 
                 color:
-                  activeTab === "completed"
+                  activeTab === "focus"
                     ? "var(--text-primary)"
                     : "var(--text-secondary)",
 
@@ -498,7 +1316,7 @@ function Tasks() {
                 paddingBottom: "12px",
 
                 borderBottom:
-                  activeTab === "completed"
+                  activeTab === "focus"
                     ? "1px none rgba(255,255,255,0.25)"
                     : "1px none transparent",
 
@@ -508,7 +1326,7 @@ function Tasks() {
               onMouseEnter={(e) => {
                 if (
                   activeTab !==
-                  "completed"
+                  "focus"
                 ) {
                   e.currentTarget.style.color =
                     "var(--text-primary)";
@@ -518,14 +1336,14 @@ function Tasks() {
               onMouseLeave={(e) => {
                 if (
                   activeTab !==
-                  "completed"
+                  "focus"
                 ) {
                   e.currentTarget.style.color =
                     "var(--text-secondary)";
                 }
               }}
             >
-              Completed
+              Focus
             </button>
 
             <button
@@ -593,7 +1411,7 @@ function Tasks() {
             }}
           />
 
-          {/* CONTENT */}
+          {/* OVERVIEW TAB */}
           {activeTab === "overview" && (
             <div
               style={{
@@ -603,7 +1421,7 @@ function Tasks() {
                 gap: "24px",
               }}
             >
-              {/* COLUMN START */}
+              {/* COLUMN ACTIVE */}
               <div
                 style={{
                   background: "var(--glass-bg)",
@@ -668,14 +1486,7 @@ function Tasks() {
                         marginTop: "4px",
                       }}
                     >
-                      {
-                        tasks.filter(
-                          (task) =>
-                            !task.completed &&
-                            task.status ===
-                            "Active"
-                        ).length
-                      }{" "}
+                      {activeTasks.length}{" "}
                       {activeTasks.length === 1 ? ("Task") : ("Tasks")}
                     </div>
                   </div>
@@ -701,10 +1512,24 @@ function Tasks() {
 
                       cursor: "pointer",
 
-                      fontSize: "1rem",
+                      fontSize: "0.85rem",
 
                       transition:
                         "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.10)";
+
+                      e.currentTarget.style.transform =
+                        "scale(1.05)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.04)";
+
+                      e.currentTarget.style.transform =
+                        "scale(1)";
                     }}
                   >
                     +
@@ -781,6 +1606,18 @@ function Tasks() {
 
                         onComplete={handleCompleteTask}
                         onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
                       />
                     ))
                   )}
@@ -853,14 +1690,7 @@ function Tasks() {
                         marginTop: "4px",
                       }}
                     >
-                      {
-                        tasks.filter(
-                          (task) =>
-                            !task.completed &&
-                            task.status ===
-                            "In Progress"
-                        ).length
-                      }{" "}
+                      {inProgressTasks.length}{" "}
                       {inProgressTasks.length === 1 ? ("Task") : ("Tasks")}
                     </div>
                   </div>
@@ -935,6 +1765,18 @@ function Tasks() {
                         onDelete={handleDeleteTask}
                         onComplete={handleCompleteTask}
                         onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
                       />
                     ))
                   )}
@@ -1007,14 +1849,7 @@ function Tasks() {
                         marginTop: "4px",
                       }}
                     >
-                      {
-                        tasks.filter(
-                          (task) =>
-                            !task.completed &&
-                            task.status ===
-                            "Paused"
-                        ).length
-                      }{" "}
+                      {pausedTasks.length}{" "}
                       {pausedTasks.length === 1 ? ("Task") : ("Tasks")}
                     </div>
                   </div>
@@ -1089,6 +1924,18 @@ function Tasks() {
                         onDelete={handleDeleteTask}
                         onComplete={handleCompleteTask}
                         onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
                       />
                     ))
                   )}
@@ -1161,13 +2008,7 @@ function Tasks() {
                         marginTop: "4px",
                       }}
                     >
-                      {
-                        tasks.filter(
-                          (task) =>
-                            task.status ===
-                            "Completed"
-                        ).length
-                      }{" "}
+                      {completedTasks.length}{" "}
                       {completedTasks.length === 1 ? ("Task") : ("Tasks")}
                     </div>
                   </div>
@@ -1242,6 +2083,18 @@ function Tasks() {
                         onDelete={handleDeleteTask}
                         onComplete={handleCompleteTask}
                         onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
                       />
                     ))
                   )}
@@ -1251,60 +2104,1348 @@ function Tasks() {
             </div>
           )}
 
-          {activeTab === "completed" && (
-            <div>
-              Completed Content
+          {/* FOCUS TAB */}
+          {activeTab === "focus" && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(4, minmax(0, 1fr))",
+                gap: "24px",
+              }}
+            >
+              {/* COLUMN URGENT */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Urgent
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {urgentTasks.length}{" "}
+                      {urgentTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      setShowTaskModal(true)
+                    }
+                    style={{
+                      width: "32px",
+                      height: "32px",
+
+                      borderRadius: "999px",
+
+                      border:
+                        "1px solid rgba(255,255,255,0.08)",
+
+                      background:
+                        "rgba(255,255,255,0.04)",
+
+                      color:
+                        "var(--text-primary)",
+
+                      cursor: "pointer",
+
+                      fontSize: "0.85rem",
+
+                      transition:
+                        "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.10)";
+
+                      e.currentTarget.style.transform =
+                        "scale(1.05)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.04)";
+
+                      e.currentTarget.style.transform =
+                        "scale(1)";
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL URGENT TASK CARDS */}
+                  {urgentTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Urgent tasks will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    urgentTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN FLAGGED */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Flagged
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {flaggedTasks.length}{" "}
+                      {flaggedTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL FLAGGED TASK CARDS */}
+                  {flaggedTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Flagged tasks will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    flaggedTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN FAVOURITES */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Favourites
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {likedTasks.length}{" "}
+                      {likedTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL FAVOURITED TASK CARDS */}
+                  {likedTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks that have be favourited will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    likedTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN DISCUSSIONS */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Discussions
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {discussionTasks.length}{" "}
+                      {discussionTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL DISCUSSION TASK CARDS */}
+                  {discussionTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks that have been commented on appear here
+                      </p>
+                    </div>
+                  ) : (
+                    discussionTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
             </div>
           )}
 
+
+          {/* CATEGORIES TAB */}
           {activeTab === "categories" && (
-            <div>
-              Categories Content
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(4, minmax(0, 1fr))",
+                gap: "24px",
+              }}
+            >
+              {/* COLUMN WORK */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Work
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {workTasks.length}{" "}
+                      {workTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL ACTIVE TASK CARDS */}
+                  {workTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks in the Work category will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    workTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN STUDY */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Study
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {studyTasks.length}{" "}
+                      {studyTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL IN PROGRESS TASK CARDS */}
+                  {studyTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks in the Study category will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    studyTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN PERSONAL */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Personal
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {personalTasks.length}{" "}
+                      {personalTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL PAUSED TASK CARDS */}
+                  {personalTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks in the Personal categoy will appear here.
+                      </p>
+                    </div>
+                  ) : (
+                    personalTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
+
+              {/* COLUMN HEALTH */}
+              <div
+                style={{
+                  background: "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "600px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+
+                {/* STICKY HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+
+                    flexShrink: 0,
+                  }}
+                >
+
+                  {/* TITLE */}
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      Health
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {healthTasks.length}{" "}
+                      {healthTasks.length === 1 ? ("Task") : ("Tasks")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA UNDER HEADER */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+
+                  {/* INDIVIDUAL COMPLETED TASK CARDS */}
+                  {healthTasks.length === 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+
+                        height: "100%",
+
+                        textAlign: "center",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.45,
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        Nothing here
+                      </p>
+
+                      <p
+                        style={{
+                          marginTop: "6px",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tasks in the Health category will appear here
+                      </p>
+                    </div>
+                  ) : (
+                    healthTasks.map((task) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onClick={setSelectedTask}
+
+                        openTaskMenu={openTaskMenu}
+                        setOpenTaskMenu={setOpenTaskMenu}
+
+                        onView={setSelectedTask}
+                        onEdit={setEditingTask}
+
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onRestore={handleRestoreTask}
+
+                        onToggleFlag={
+                          handleToggleFlag
+                        }
+
+                        onToggleLike={
+                          handleToggleLike
+                        }
+
+                        onAddComment={
+                          handleAddComment
+                        }
+                      />
+                    ))
+                  )}
+
+                </div>
+              </div>
             </div>
           )}
-
-
-
-          {/* DEPRECATED */}
-          {/*
-          <ActiveTasks
-            tasks={tasks}
-            setTasks={setTasks}
-            toast={toast}
-            setToast={setToast}
-            onViewTask={setSelectedTask}
-            onEditTask={setEditingTask}
-            onNewTask={() =>
-              setShowTaskModal(true)
-            }
-            completionTimeout={completionTimeout}
-            setCompletionTimeout={setCompletionTimeout}
-            onClearAll={() =>
-              setShowClearActive(true)
-            }
-            onDeleteTask={
-              handleDeleteTask
-            }
-            onCompleteTask={
-              handleCompleteTask
-            }
-          />
-
-          <CompletedTasks
-            tasks={tasks}
-            setTasks={setTasks}
-            onClearAll={() =>
-              setShowClearCompleted(true)
-            }
-            setToast={setToast}
-            onRestoreTask={
-              handleRestoreTask
-            }
-            onDeleteTask={
-              handleDeleteTask
-            }
-          />
-          */}
 
         </div>
       </div>
@@ -1343,6 +3484,7 @@ function Tasks() {
           }}
         />
       )}
+
       {selectedTask && (
         <TaskDetailsModal
           task={selectedTask}
@@ -1409,6 +3551,7 @@ function Tasks() {
           }}
         />
       )}
+
       {showClearCompleted && (
         <div
           onClick={() =>

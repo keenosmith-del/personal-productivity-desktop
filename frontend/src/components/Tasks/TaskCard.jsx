@@ -5,6 +5,11 @@ import {
     MessageCircle,
 } from "lucide-react";
 
+import {
+    useEffect,
+    useRef,
+} from "react";
+
 function TaskCard({
     task,
     onClick,
@@ -19,6 +24,10 @@ function TaskCard({
 
     onComplete,
     onRestore,
+
+    onToggleFlag,
+    onToggleLike,
+    onAddComment,
 }) {
     const menuItemStyle = {
         width: "100%",
@@ -43,6 +52,63 @@ function TaskCard({
 
         transition: "all 0.2s ease",
     };
+
+    const linkedItemStyle = {
+        width: "35px",
+        height: "35px",
+
+        borderRadius: "50%",
+
+        background:
+            "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
+        border:
+            "1px solid rgba(255,255,255,0.06)",
+
+        backdropFilter: "blur(20px)",
+
+        display: "flex",
+
+        alignItems: "center",
+
+        justifyContent: "center",
+
+        fontSize: "0.68rem",
+
+        color: "var(--text-secondary)",
+
+        transition: "all 0.2s ease",
+
+        cursor: "default",
+    };
+
+    const menuRef = useRef(null);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(
+                    event.target
+                )
+            ) {
+                setOpenTaskMenu(null);
+            }
+        };
+
+        document.addEventListener(
+            "mousedown",
+            handleOutsideClick
+        );
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleOutsideClick
+            );
+        };
+    }, [setOpenTaskMenu]);
+    
     return (
         <div
             onClick={() =>
@@ -128,6 +194,7 @@ function TaskCard({
 
                 {/* MEATBALL DROPDOWN */}
                 <div
+                ref={menuRef}
                     style={{
                         position: "relative",
                     }}
@@ -495,38 +562,40 @@ function TaskCard({
             >
                 <div
                     style={{
-                        width: "35px",
-                        height: "35px",
-
-                        borderRadius:
-                            "50%",
-
-                        background:
-                            "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
-
-                        border:
-                            "1px solid rgba(255,255,255,0.06)",
-
-                        backdropFilter:
-                            "blur(20px)",
-
-                        opacity: 0.9,
-
-                        display:
-                            "flex",
-
-                        alignItems:
-                            "center",
-
-                        justifyContent: "center",
-
-                        fontSize: "0.68rem",
+                        ...linkedItemStyle,
 
                         marginRight: "-6px",
 
                         zIndex: 1,
 
-                        color: "var(--text-secondary)",
+                        opacity: 0.9,
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(-1px) scale(1.08)";
+
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                            "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                            "none";
+
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
                     }}
                 >
                     G
@@ -534,36 +603,38 @@ function TaskCard({
 
                 <div
                     style={{
-                        width: "35px",
-                        height: "35px",
+                        ...linkedItemStyle,
 
-                        borderRadius: "50%",
-
-                        background:
-                            "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
-
-                        border:
-                            "1px solid rgba(255,255,255,0.06)",
-
-                        backdropFilter:
-                            "blur(20px)",
-
-                        display: "flex",
-
-                        alignItems:
-                            "center",
-
-                        justifyContent:
-                            "center",
-
-                        fontSize:
-                            "0.68rem",
-
-                        marginRight:
-                            "-6px",
+                        marginRight: "-6px",
 
                         zIndex: 2,
-                        color: "var(--text-secondary)",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(-1px) scale(1.08)";
+
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                            "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                            "none";
+
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
                     }}
                 >
                     P
@@ -571,35 +642,42 @@ function TaskCard({
 
                 <div
                     style={{
-                        width: "35px",
-                        height: "35px",
-
-                        borderRadius: "50%",
+                        ...linkedItemStyle,
 
                         background:
-                            "rgba(189, 162, 162, 0.04)",
+                            "rgba(255,255,255,0.03)",
 
                         border:
                             "1px solid rgba(255,255,255,0.08)",
 
-                        backdropFilter:
-                            "blur(16px)",
-
-                        display:
-                            "flex",
-
-                        alignItems:
-                            "center",
-
-                        justifyContent:
-                            "center",
-
-                        fontSize:
-                            "0.68rem",
-
                         zIndex: 3,
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(-1px) scale(1.08)";
 
-                        color: "var(--text-secondary)",
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                            "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                            "var(--text-primary)";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                            "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                            "none";
+
+                        e.currentTarget.style.color =
+                            "var(--text-secondary)";
                     }}
                 >
                     +2
@@ -647,23 +725,47 @@ function TaskCard({
                 }}
             >
                 <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+
+                        onToggleFlag(task);
+                    }}
                     style={{
                         cursor: "pointer",
+
+                        color: task.flagged
+                            ? "#a45d44"
+                            : "var(--text-secondary)",
+
                         transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.color =
-                            "white";
+                        e.currentTarget.style.transform =
+                            "translateY(-1px) scale(1.08)";
+
+                        if (!task.flagged) {
+                            e.currentTarget.style.color =
+                                "white";
+                        }
                     }}
 
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
+                        e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+
+                        if (!task.flagged) {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                        }
                     }}
                 >
                     <Flag
                         size={18}
-                        opacity={0.85}
+                        fill={
+                            task.flagged
+                                ? "currentColor"
+                                : "none"
+                        }
                     />
                 </div>
 
@@ -678,22 +780,36 @@ function TaskCard({
                     }}
                 >
                     <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            onAddComment(task);
+                        }}
                         style={{
                             display: "flex",
 
                             alignItems: "center",
 
                             gap: "4px",
+
+                            cursor: "pointer",
+
                             transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color =
                                 "white";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.05)";
                         }}
 
                         onMouseLeave={(e) => {
                             e.currentTarget.style.color =
                                 "var(--text-secondary)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
                         }}
                     >
                         <MessageCircle
@@ -710,28 +826,52 @@ function TaskCard({
                                     0.55,
                             }}
                         >
-                            +2
+                            {task.commentCount}
                         </span>
                     </div>
 
                     <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            onToggleLike(task);
+                        }}
                         style={{
                             cursor: "pointer",
+
+                            color: task.liked
+                                ? "#ff6b6b"
+                                : "var(--text-secondary)",
+
                             transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "#ff6b6b";
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            if (!task.liked) {
+                                e.currentTarget.style.color =
+                                    "#ff6b6b";
+                            }
                         }}
 
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "";
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            if (!task.liked) {
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }
                         }}
                     >
                         <Heart
                             size={18.5}
-                            opacity={0.66}
+                            fill={
+                                task.liked
+                                    ? "currentColor"
+                                    : "none"
+                            }
                         />
                     </div>
                 </div>
