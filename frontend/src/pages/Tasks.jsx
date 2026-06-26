@@ -6,7 +6,7 @@ import {
   useRef,
 } from "react";
 
-import TaskModal from "../components/Tasks/TaskModal";
+
 import CompletedTasks from "../components/Tasks/CompletedTasks";
 import ActiveTasks from "../components/Tasks/ActiveTasks";
 import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
@@ -14,6 +14,7 @@ import TaskStats from "../components/Tasks/TaskStats";
 import TaskActivity from "../components/Tasks/TaskActivity";
 
 import TaskCard from "../components/Tasks/TaskCard";
+import TaskModal from "../components/Tasks/TaskModal";
 
 import Toast from "../components/Toast";
 
