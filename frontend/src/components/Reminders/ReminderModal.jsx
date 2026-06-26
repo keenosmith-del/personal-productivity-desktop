@@ -1,668 +1,1284 @@
 import {
-    useState,
-    useRef,
-    useEffect
+  useState,
+  useRef,
+  useEffect
 } from "react";
 
 import {
-    X,
-    Calendar,
+  X,
+  Calendar,
 } from "lucide-react";
 
+import MiniCalendarModal from "../MiniCalendarModal";
+
 function ReminderModal({
-    onClose,
-    onSave,
-    mode = "create",
-    reminder = null,
+  onClose,
+  mode = "create",
+  reminder = null,
+  onSave,
+  onCompleteReminder,
 }) {
-    const reminderInputRef = useRef(null);
+  const reminderInputRef = useRef(null);
 
-    const [category, setCategory] =
-        useState("None");
+  const categoryRef = useRef(null);
 
-    const [showCalendar, setShowCalendar] =
-        useState(false);
+  const priorityRef = useRef(null);
 
-    const [selectedDate, setSelectedDate] =
-        useState("Choose a date");
+  const statusRef = useRef(null);
 
-    const [title, setTitle] =
-        useState("");
+  const [reminderName,
+    setReminderName] =
+    useState(
+      reminder?.title || ""
+    );
 
-    const [notes, setNotes] =
-        useState("");
+  const [description,
+    setDescription] =
+    useState(
+      reminder?.description || ""
+    );
 
-    const inputStyle = {
-        width: "100%",
+  const [priority, setPriority] =
+    useState(
+      reminder?.priority ||
+      "Medium"
+    );
 
-        padding: "14px 18px",
+  const [category, setCategory] =
+    useState(
+      reminder?.category ||
+      "Personal"
+    );
 
-        background: "rgba(255,255,255,0.05)",
+  const [status, setStatus] =
+    useState(
+      reminder?.status ||
+      "Active"
+    );
 
-        border: "1px solid rgba(255,255,255,0.08)",
+  const [activeSelector, setActiveSelector] =
+    useState(null);
 
-        borderRadius: "16px",
+  const [showCalendarModal, setShowCalendarModal] =
+    useState(false);
 
-        color: "var(--text-primary)",
+  const [titleFocused,
+    setTitleFocused] =
+    useState(false);
 
-        fontSize: "0.95rem",
+  const [descriptionFocused,
+    setDescriptionFocused] =
+    useState(false);
 
-        outline: "none",
+  const [selectedDate, setSelectedDate] =
+    useState(
+      reminder?.dueDate || new Date().toISOString()
+    );
+
+  useEffect(() => {
+    reminderInputRef.current?.focus();
+  }, []);
+
+  {/* outside-click of chip dropdown */ }
+  useEffect(() => {
+    const handleClickOutside = (
+      event
+    ) => {
+      if (
+        categoryRef.current &&
+        categoryRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      if (
+        priorityRef.current &&
+        priorityRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      if (
+        statusRef.current &&
+        statusRef.current.contains(
+          event.target
+        )
+      ) {
+        return;
+      }
+
+      setActiveSelector(null);
     };
 
-    // FUNCTIONS
-    useEffect(() => {
-        reminderInputRef.current?.focus();
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
 
-        if (mode === "edit" && reminder) {
-            setTitle(reminder.title || "");
-            setNotes(
-                reminder.description || ""
-            );
-            setCategory(reminder.category || "None");
-            setSelectedDate(
-                reminder.reminderDate ||
-                "Choose a date"
-            );
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
+
+  const formattedCreatedDate =
+    reminder?.createdAt
+      ? new Date(
+        reminder.createdAt
+      ).toLocaleDateString(
+        "en-US",
+        {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
         }
-    }, [mode, reminder]);
+      )
+      : null;
 
-    return (
+  const formattedCompletedDate =
+    reminder?.completedDate
+      ? new Date(reminder.completedDate)
+        .toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }
+        )
+      : null;
+
+  const handleModalOverlayClick = () => {
+    if (showCalendarModal) {
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleSave = () => {
+    if (!reminderName.trim())
+      return;
+
+    onSave({
+      id:
+        reminder?.id ||
+        Date.now(),
+
+      title: reminderName,
+
+      description,
+
+      priority,
+
+      category,
+
+      status,
+
+      dueDate: selectedDate,
+
+      completed:
+        reminder?.completed ||
+        false,
+
+      pendingCompletion:
+        false,
+
+      completedDate:
+        reminder?.completedDate ||
+        null,
+    });
+
+    onClose();
+  };
+
+  const inputStyle = {
+    width: "100%",
+
+    padding: "14px 18px",
+
+    background:
+      "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+
+    border:
+      "1px solid rgba(255,255,255,0.12)",
+
+    borderRadius: "16px",
+
+    color:
+      "var(--text-primary)",
+
+    fontSize: "0.95rem",
+
+    outline: "none",
+  };
+
+  return (
+    <div
+      onClick={handleModalOverlayClick}
+      style={{
+        position: "fixed",
+        inset: 0,
+
+        background: "rgba(0,0,0,0.35)",
+
+        backdropFilter: "blur(20px)",
+
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+
+        zIndex: 1000,
+      }}
+    >
+      <div
+        onClick={(e) =>
+          e.stopPropagation()
+        }
+        style={{
+          width: "500px",
+
+          background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+
+          border: "1px solid rgba(255,255,255,0.10)",
+
+          borderRadius: "36px",
+
+          backdropFilter: "blur(30px)",
+
+          boxShadow:
+            "0 30px 80px rgba(0,0,0,0.45)",
+
+          padding: "36px",
+
+          display: "flex",
+
+          flexDirection: "column",
+
+          // gap: "10px",
+        }}
+      >
         <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "24px",
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "0.95rem",
+                fontWeight: "400",
+              }}
+            >
+              {mode === "edit"
+                ? "Edit Reminder"
+                : "New Reminder"}
+            </h2>
+
+            <p
+              style={{
+                marginTop: "4px",
+                marginBottom: 0,
+                fontSize: "0.8rem",
+                fontWeight: "300",
+                opacity: 0.55,
+              }}
+            >
+              {mode === "edit"
+                ? "Update reminder information"
+                : "Create a new reminder"}
+            </p>
+          </div>
+
+          <button
             onClick={onClose}
             style={{
-                position: "fixed",
-                inset: 0,
+              width: "32px",
+              height: "32px",
 
-                background: "rgba(0,0,0,0.55)",
+              borderRadius: "999px",
 
-                backdropFilter: "blur(12px)",
+              border:
+                "1px solid rgba(255,255,255,0.08)",
+
+              background:
+                "rgba(255,255,255,0.04)",
+
+              color:
+                "var(--text-secondary)",
+
+              cursor: "pointer",
+
+              fontSize: "0.85rem",
+
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.10)";
+
+              e.currentTarget.style.transform =
+                "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.04)";
+
+              e.currentTarget.style.transform =
+                "scale(1)";
+            }}
+          >
+            x
+          </button>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+
+          {/* AVATAR */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "18px",
+            }}
+          >
+            {/* AVATAR CIRCLE */}
+            <div
+              style={{
+                width: "88px",
+                height: "88px",
+
+                borderRadius: "50%",
+
+                background:
+                  "rgba(255,255,255,0.05)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
 
                 display: "flex",
-
+                alignItems: "center",
                 justifyContent: "center",
 
-                alignItems: "center",
+                fontSize: "1.4rem",
+                fontWeight: "300",
+              }}
+            >
+              ✓
+            </div>
+          </div>
 
-                zIndex: 1000,
+          {mode === "edit" &&
+            formattedCreatedDate && (
+              <p
+                style={{
+                  marginTop: "12px",
+
+                  marginBottom: "10px",
+
+                  textAlign: "center",
+
+                  fontSize: "0.72rem",
+
+                  fontWeight: "300",
+
+                  opacity: 0.4,
+                }}
+              >
+                Created on {formattedCreatedDate}
+              </p>
+            )}
+
+          {formattedCompletedDate && (
+            <p
+              style={{
+                marginTop: 0,
+
+                marginBottom: "20px",
+
+                textAlign: "center",
+
+                fontSize: "0.72rem",
+
+                fontWeight: "300",
+
+                opacity: 0.4,
+              }}
+            >
+              Completed on{formattedCompletedDate}
+            </p>
+          )}
+
+          {/* CHIPS */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+              marginBottom: "22px",
+              fontWeight: "300",
             }}
-        >
+          >
+
+            {/* Start wrapper category dropdown and button */}
             <div
-                onClick={(e) =>
-                    e.stopPropagation()
+              ref={categoryRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "category"
+                      ? null
+                      : "category"
+                  )
                 }
                 style={{
-                    width: "500px",
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontWeight: "300",
+                  fontSize: "0.75rem",
+
+                  borderRadius: "999px",
+                  cursor: "pointer",
+
+                  background:
+                    category === "Work"
+                      ? "#466a6d33"
+                      : category === "Study"
+                        ? "#536b8333"
+                        : category === "Personal"
+                          ? "#6f5f7a33"
+                          : "#57707a33",
+
+                  border:
+                    category === "Work"
+                      ? "1px solid #466a6d66"
+                      : category === "Study"
+                        ? "1px solid #536b8366"
+                        : category === "Personal"
+                          ? "1px solid #6f5f7a66"
+                          : "1px solid #57707a66",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                {category}
+              </button>
+
+              {activeSelector === "category" && (
+                <div
+                  style={{
+                    width: "110px",
+
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "32px",
+                      "rgba(20,20,20,0.92)",
 
                     backdropFilter:
-                        "blur(30px)",
+                      "blur(24px)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
 
                     boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.35)",
+                      "0 20px 50px rgba(0,0,0,0.35)",
 
-                    padding: "36px",
+                    borderRadius: "16px",
+
+                    padding: "8px",
 
                     display: "flex",
-
                     flexDirection: "column",
+                    gap: "4px",
 
-                    gap: "20px",
-                }}
-            >
-                <div
-                    style={{
-                        display: "flex",
-
-                        justifyContent: "space-between",
-
-                        alignItems: "center",
-                    }}
+                    zIndex: 20,
+                  }}
                 >
-                    <h2
-                        style={{
-                            fontWeight: "400",
-                            fontSize: "1.4rem",
-                        }}
-                    >
-                        {mode === "edit"
-                            ? "Edit Reminder"
-                            : "New Reminder"}
-                    </h2>
-
-                    <X
-                        size={18}
-                        strokeWidth={1.5}
-                        style={{
-                            cursor: "pointer",
-
-                            transition:
-                                "all 0.2s ease",
-                        }}
-                        onClick={onClose}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.opacity =
-                                "0.7";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.opacity =
-                                "1";
-                        }}
-                    />
-                </div>
-
-                <input
-                    ref={reminderInputRef}
-                    value={title}
-                    onChange={(e) =>
-                        setTitle(e.target.value)
-                    }
-                    placeholder="Reminder name"
-                    style={{
-                        width: "100%",
-
-                        background: "transparent",
+                  {[
+                    "Work",
+                    "Study",
+                    "Personal",
+                    "Health",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setCategory(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === category
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
 
                         border: "none",
 
-                        outline: "none",
-
                         color:
-                            "var(--text-primary)",
+                          "var(--text-primary)",
 
-                        fontSize: "1.2rem",
+                        padding: "8px 12px",
 
-                        fontWeight: "300",
-
-                        letterSpacing: "-0.03em",
-
-                        padding: "0 0 12px 0",
-
-                        borderBottom: "1px solid rgba(255,255,255,0.06)",
-                    }}
-                />
-
-                <div
-                    style={{
-                        padding: "18px 0",
-
-                        borderBottom:
-                            "1px solid rgba(255,255,255,0.06)",
-                    }}
-                >
-                    <p
-                        style={{
-                            marginBottom: "12px",
-
-                            fontSize: "0.85rem",
-
-                            color:
-                                "var(--text-secondary)",
-                        }}
-                    >
-                        Notes
-                    </p>
-
-                    <textarea
-                        value={notes}
-                        onChange={(e) =>
-                            setNotes(e.target.value)
-                        }
-                        rows={3}
-                        placeholder="Write any additional details..."
-                        style={{
-                            width: "100%",
-
-                            background: "transparent",
-
-                            border: "none",
-
-                            outline: "none",
-
-                            resize: "none",
-
-                            color: "var(--text-primary)",
-
-                            fontFamily: "inherit",
-
-                            fontSize: "0.95rem",
-                        }}
-                    />
-                </div>
-
-
-                {/* CHIPS */}
-                <div>
-                    <p
-                        style={{
-                            marginBottom: "10px",
-
-                            color: "var(--text-secondary)",
-
-                            fontSize: "0.85rem",
-
-                            fontWeight: "400",
-                        }}
-                    >
-                        Category
-                    </p>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {[
-                            {
-                                name: "None",
-                                color: "#588157",
-                            },
-                            {
-                                name: "Work",
-                                color: "#063f47",
-                            },
-                            {
-                                name: "Study",
-                                color: "#297376",
-                            },
-                            {
-                                name: "Personal",
-                                color: "#5c9396",
-                            },
-                            {
-                                name: "Health",
-                                color: "#103439",
-                            },
-                        ].map((item) => (
-                            <button
-                                key={item.name}
-                                onClick={() =>
-                                    setCategory(item.name)
-                                }
-                                style={{
-                                    padding: "6px 12px",
-
-                                    borderRadius: "999px",
-
-                                    fontSize: "0.75rem",
-
-                                    cursor: "pointer",
-
-                                    transition: "all 0.2s ease",
-
-                                    background:
-                                        category === item.name
-                                            ? `${item.color}33`
-                                            : "transparent",
-
-                                    border:
-                                        category === item.name
-                                            ? `1px solid ${item.color}66`
-                                            : "1px solid rgba(255,255,255,0.08)",
-
-                                    color:
-                                        category === item.name
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (
-                                        category !== item.name
-                                    ) {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (
-                                        category !== item.name
-                                    ) {
-                                        e.currentTarget.style.background = "transparent";
-                                    }
-                                }}
-                            >
-                                {item.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div
-                    onClick={() =>
-                        setShowCalendar(
-                            !showCalendar
-                        )
-                    }
-                    style={{
-                        display: "flex",
-
-                        justifyContent: "space-between",
-
-                        alignItems: "center",
-
-                        borderRadius: "12px",
-
-                        padding: "18px 12px",
-
-                        borderBottom:
-                            "1px solid rgba(255,255,255,0.06)",
+                        borderRadius: "10px",
 
                         cursor: "pointer",
 
-                        transition:
-                            "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
                         e.currentTarget.style.background =
-                            "rgba(255,255,255,0.03)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                            "transparent";
-                    }}
-                >
-                    <span
-                        style={{
-                            fontSize: "0.8rem",
-
-                            color:
-                                selectedDate ===
-                                    "Choose a date"
-                                    ? "var(--text-secondary)"
-                                    : "var(--text-primary)",
-                        }}
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
                     >
-                        {selectedDate}
-                    </span>
-
-                    <Calendar
-                        size={16}
-                        strokeWidth={1.5}
-                    />
-                </div>
-
-                {showCalendar && (
-                    <div
-                        style={{
-                            background: "rgba(255,255,255,0.04)",
-
-                            border: "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius: "20px",
-
-                            padding: "20px",
-
-                            marginTop: "-8px",
-                        }}
-                    >
-                        <div
-                            style={{
-                                marginBottom: "20px",
-
-                                textAlign: "center",
-                            }}
-                        >
-                            <span
-                                style={{
-                                    fontWeight: "500",
-                                }}
-                            >
-                                June
-                            </span>
-
-                            <span
-                                style={{
-                                    color:
-                                        "var(--text-secondary)",
-
-                                    marginLeft: "6px",
-                                }}
-                            >
-                                2026
-                            </span>
-                        </div>
-                        <div
-                            style={{
-                                display: "grid",
-
-                                gridTemplateColumns:
-                                    "repeat(7, 1fr)",
-
-                                marginBottom: "12px",
-
-                                gap: "6px",
-                            }}
-                        >
-                            {[
-                                "M",
-                                "T",
-                                "W",
-                                "T",
-                                "F",
-                                "S",
-                                "S",
-                            ].map((day) => (
-                                <div
-                                    key={day}
-                                    style={{
-                                        textAlign: "center",
-
-                                        fontSize: "0.75rem",
-
-                                        color:
-                                            "var(--text-secondary)",
-                                    }}
-                                >
-                                    {day}
-                                </div>
-                            ))}
-                        </div>
-
-                        <div
-                            style={{
-                                display: "grid",
-
-                                gridTemplateColumns: "repeat(7, 1fr)",
-
-                                gap: "8px",
-                            }}
-                        >
-                            {[9, 10, 11, 12, 13, 14, 15].map(
-                                (day) => (
-                                    <button
-                                        key={day}
-                                        onClick={() => {
-                                            setSelectedDate(
-                                                `June ${day}, 2026`
-                                            );
-
-                                            setShowCalendar(
-                                                false
-                                            );
-                                        }}
-                                        style={{
-                                            width: "34px",
-
-                                            height: "34px",
-
-                                            borderRadius: "50%",
-
-                                            background:
-                                                selectedDate ===
-                                                    `June ${day}, 2026`
-                                                    ? "#52677d"
-                                                    : "transparent",
-
-                                            border: "none",
-
-                                            color:
-                                                selectedDate ===
-                                                    `June ${day}, 2026`
-                                                    ? "#fff"
-                                                    : "var(--text-primary)",
-
-                                            cursor: "pointer",
-
-                                            margin: "0 auto",
-
-                                            transition:
-                                                "all 0.2s ease",
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            if (
-                                                selectedDate !==
-                                                `June ${day}, 2026`
-                                            ) {
-                                                e.currentTarget.style.background =
-                                                    "rgba(255,255,255,0.05)";
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (
-                                                selectedDate !==
-                                                `June ${day}, 2026`
-                                            ) {
-                                                e.currentTarget.style.background =
-                                                    "transparent";
-                                            }
-                                        }}
-                                    >
-                                        {day}
-                                    </button>
-                                )
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "12px",
-                        marginTop: "8px",
-                    }}
-                >
-                    <button
-                        onClick={onClose}
-                        style={{
-                            background: "transparent",
-
-                            border: "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius: "999px",
-
-                            padding: "8px 14px",
-
-                            color: "#ff6b6b",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "#ff6b6b";
-
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "#ff6b6b";
-
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                    >
-                        Cancel
+                      {option}
                     </button>
-
-                    <button
-                        onClick={() => {
-                            onSave({
-                                title,
-
-                                description: notes,
-
-                                category:
-                                    category === "None"
-                                        ? ""
-                                        : category,
-
-                                reminderDate:
-                                    selectedDate ===
-                                        "Choose a date"
-                                        ? new Date().toLocaleDateString()
-                                        : selectedDate,
-
-                                completed:
-                                    mode === "edit"
-                                        ? reminder.completed
-                                        : false,
-
-                                completedDate:
-                                    mode === "edit"
-                                        ? reminder.completedDate
-                                        : null,
-                            });
-                        }}
-                        style={{
-                            background: "transparent",
-
-                            border: "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius: "999px",
-
-                            padding: "8px 14px",
-
-                            color: "var(--text-secondary)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color =
-                                "var(--text-primary)";
-
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color =
-                                "var(--text-secondary)";
-
-                            e.currentTarget.style.background =
-                                "transparent";
-                        }}
-                    >
-                        {mode === "edit"
-                            ? "Save Changes"
-                            : "Create Reminder"}
-                    </button>
+                  ))}
                 </div>
+              )}
             </div>
+            {/* end category button and dropdown wrapper */}
+
+            {/* start wrapper priority button and dropdown */}
+            <div
+              ref={priorityRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "priority"
+                      ? null
+                      : "priority"
+                  )
+                }
+                style={{
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontSize: "0.75rem",
+                  fontWeight: "300",
+
+                  borderRadius: "999px",
+                  cursor: "pointer",
+
+                  background:
+                    priority === "Low"
+                      ? "#273c4133"
+                      : priority === "Medium"
+                        ? "#5e687433"
+                        : "#6b544733",
+
+                  border:
+                    priority === "Low"
+                      ? "1px solid #273c4166"
+                      : priority === "Medium"
+                        ? "1px solid #5e687466"
+                        : "1px solid #6b544766",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                {priority}
+              </button>
+
+              {activeSelector === "priority" && (
+                <div
+                  style={{
+                    width: "110px",
+
+                    position: "absolute",
+
+                    top: "calc(100% + 8px)",
+
+                    left: 0,
+
+                    background:
+                      "rgba(20,20,20,0.92)",
+
+                    backdropFilter:
+                      "blur(24px)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
+
+                    boxShadow:
+                      "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "16px",
+
+                    padding: "8px",
+
+                    display: "flex",
+                    flexDirection: "column",
+
+                    gap: "4px",
+
+                    zIndex: 20,
+                  }}
+                >
+                  {[
+                    "Low",
+                    "Medium",
+                    "High",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setPriority(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === priority
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
+
+                        border: "none",
+
+                        color:
+                          "var(--text-primary)",
+
+                        padding: "8px 12px",
+
+                        borderRadius: "10px",
+
+                        cursor: "pointer",
+
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
+                        e.currentTarget.style.background =
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* end priority button and dropdown */}
+
+            {/* start status button and dropdown wrapper */}
+            <div
+              ref={statusRef}
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setActiveSelector(
+                    activeSelector === "status"
+                      ? null
+                      : "status"
+                  )
+                }
+                style={{
+                  padding: "6px 12px",
+                  minWidth: "78px",
+                  textAlign: "center",
+
+                  fontSize: "0.75rem",
+                  fontWeight: "300", 
+
+                  borderRadius: "999px",
+                  cursor: "pointer",
+
+                  background:
+                    status === "Active"
+                      ? "#4d689333"
+                      : status === "Paused"
+                        ? "#45575b33"
+                        : "#728a6e33",
+
+                  border:
+                    status === "Active"
+                      ? "1px solid #4d689366"
+                      : status === "Paused"
+                        ? "1px solid #45575b66"
+                        : "1px solid #728a6e66",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                {status}
+              </button>
+
+              {activeSelector === "status" && (
+                <div
+                  style={{
+                    width: "110px",
+
+                    position: "absolute",
+
+                    top: "calc(100% + 8px)",
+
+                    left: 0,
+
+                    background:
+                      "rgba(20,20,20,0.92)",
+
+                    backdropFilter:
+                      "blur(24px)",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.10)",
+
+                    boxShadow:
+                      "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "16px",
+
+                    padding: "8px",
+
+                    display: "flex",
+                    flexDirection: "column",
+
+                    gap: "4px",
+
+                    zIndex: 20,
+                  }}
+                >
+                  {[
+                    "Active",
+                    "In Progress",
+                    "Paused",
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setStatus(option);
+                        setActiveSelector(null);
+                      }}
+                      style={{
+                        background:
+                          option === status
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent",
+
+                        border: "none",
+
+                        color:
+                          "var(--text-primary)",
+
+                        padding: "8px 12px",
+
+                        borderRadius: "10px",
+
+                        cursor: "pointer",
+
+                        textAlign: "left",
+
+                        fontSize: "0.75rem",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (
+                          (activeSelector === "category" &&
+                            option !== category) ||
+                          (activeSelector === "priority" &&
+                            option !== priority) ||
+                          (activeSelector === "status" &&
+                            option !== status)
+                        ) {
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        const isSelected =
+                          option === category ||
+                          option === priority ||
+                          option === status;
+
+                        e.currentTarget.style.background =
+                          isSelected
+                            ? "rgba(255,255,255,0.08)"
+                            : "transparent";
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* end wrapper status and dropdown */}
+          </div>
+
+          {/* MARK COMPLETE PILL */}
+          {/* COMPLETION */}
+
+          {mode === "edit" && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "24px",
+              }}
+            >
+              {!reminder?.completed ? (
+                <button
+                  onClick={() =>
+                    onCompleteReminder?.(reminder)
+                  }
+                  style={{
+                    padding: "10px 18px",
+
+                    borderRadius: "999px",
+
+                    background:
+                      "rgba(114,138,110,0.12)",
+
+                    border:
+                      "1px solid rgba(114,138,110,0.25)",
+
+                    color: "#9bc091",
+
+                    fontSize: "0.8rem",
+
+                    fontWeight: "300",
+
+                    cursor: "pointer",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(0)";
+                  }}
+                >
+                  Mark Complete
+                </button>
+              ) : (
+                <button
+                  style={{
+                    padding: "10px 18px",
+
+                    borderRadius: "999px",
+
+                    background: "rgba(114,138,110,0.12)",
+
+                    border:
+                      "1px solid rgba(114,138,110,0.25)",
+
+                    color: "#9bc091",
+
+                    fontSize: "0.8rem",
+
+                    fontWeight: "300",
+
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  ✓ Completed
+                </button>
+              )}
+            </div>
+          )}
+
+
+          {/* Reminder NAME */}
+          <input
+            value={reminderName}
+
+            onChange={(e) =>
+              setReminderName(
+                e.target.value
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSave();
+              }
+            }}
+            onFocus={() =>
+              setTitleFocused(true)
+            }
+
+            onBlur={() =>
+              setTitleFocused(false)
+            }
+            ref={reminderInputRef}
+            placeholder="Reminder name"
+            style={{
+              width: "100%",
+
+              background: "transparent",
+
+              border: "none",
+
+              outline: "none",
+
+              color: "var(--text-primary)",
+
+              fontSize: "1.05rem",
+
+              fontWeight: "300",
+
+              letterSpacing: "-0.02em",
+
+              padding: "0 0 14px 0",
+
+              borderBottom:
+                titleFocused
+                  ? "1px solid rgba(255,255,255,0.18)"
+                  : "1px solid rgba(255,255,255,0.06)",
+
+              transition:
+                "all 0.2s ease",
+
+              marginBottom: "20px",
+            }}
+          />
+
+          {/* DESCRIPTION */}
+          <div
+            style={{
+              marginBottom: "20px",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.8rem",
+
+                opacity: 0.45,
+
+                fontWeight: "300",
+
+                marginBottom: "8px",
+              }}
+            >
+              Notes
+            </p>
+
+            <textarea
+              value={description}
+
+              onChange={(e) =>
+                setDescription(
+                  e.target.value
+                )
+              }
+              rows={3}
+              placeholder="Write any additional details..."
+              style={{
+                width: "100%",
+
+                background:
+                  descriptionFocused
+                    ? "rgba(255,255,255,0.02)"
+                    : "transparent",
+
+                borderRadius: "12px",
+
+                padding: "10px 12px",
+
+                transition:
+                  "all 0.2s ease",
+
+                border: "none",
+
+                outline: "none",
+
+                resize: "none",
+
+                color: "var(--text-primary)",
+
+                fontFamily: "inherit",
+
+                fontSize: "0.9rem",
+
+                fontWeight: "300",
+              }}
+              onFocus={() =>
+                setDescriptionFocused(true)
+              }
+
+              onBlur={() =>
+                setDescriptionFocused(false)
+              }
+            />
+          </div>
+
+          {/* DIVIDER */}
+          <div
+            style={{
+              height: "1px",
+              background: "rgba(255,255,255,0.06)",
+              marginBottom: "20px",
+            }}
+          />
+
+          {/* DATE */}
+          <div
+            style={{
+              marginBottom: 0,
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.45,
+                fontWeight: "300",
+                marginBottom: "8px",
+              }}
+            >
+              Due Date
+            </p>
+
+            <div
+              onClick={() =>
+                setShowCalendarModal(true)
+              }
+              style={{
+                display: "flex",
+
+                justifyContent:
+                  "space-between",
+
+                alignItems: "center",
+
+                cursor: "pointer",
+
+                padding: "8px 0",
+
+                transition:
+                  "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity =
+                  "0.75";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity =
+                  "1";
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.85rem",
+                  fontWeight: "300",
+
+                  color:
+                    !selectedDate
+                      ? "var(--text-secondary)"
+                      : "var(--text-primary)",
+                }}
+              >
+                {selectedDate
+                  ? new Date(
+                    selectedDate
+                  ).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  )
+                  : "Choose a date"}
+              </span>
+
+              <Calendar
+                size={16}
+                strokeWidth={1.5}
+              />
+            </div>
+          </div>
         </div>
-    );
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "10px",
+            marginTop: "24px",
+          }}
+        >
+          <button
+            onClick={onClose}
+            style={{
+              padding: "11px 18px",
+
+              borderRadius: "999px",
+
+              background:
+                "rgba(255,77,77,0.12)",
+
+              border:
+                "1px solid rgba(255,77,77,0.25)",
+
+              color: "var(--danger)",
+
+              fontSize: "0.8rem",
+
+              fontWeight: "300",
+
+              cursor: "pointer",
+
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,77,77,0.20)";
+
+              e.currentTarget.style.transform =
+                "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,77,77,0.12)";
+
+              e.currentTarget.style.transform =
+                "translateY(0)";
+            }}
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleSave}
+            style={{
+              padding: "11px 18px",
+
+              borderRadius: "999px",
+
+              background:
+                "rgba(255,255,255,0.08)",
+
+              border:
+                "1px solid rgba(255,255,255,0.10)",
+
+              color:
+                "var(--text-primary)",
+
+              fontSize: "0.8rem",
+
+              fontWeight: "300",
+
+              cursor: "pointer",
+
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.14)";
+
+              e.currentTarget.style.transform =
+                "translateY(-1px)";
+
+              e.currentTarget.style.border =
+                "1px solid rgba(255,255,255,0.18)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background =
+                "rgba(255,255,255,0.08)";
+
+              e.currentTarget.style.transform =
+                "translateY(0)";
+
+              e.currentTarget.style.border =
+                "1px solid rgba(255,255,255,0.10)";
+            }}
+          >
+            {mode === "edit"
+              ? "Save"
+              : "Create"}
+          </button>
+        </div>
+      </div>
+      {
+        showCalendarModal && (
+          <MiniCalendarModal
+            selectedDate={selectedDate}
+            onSelectDate={(date) =>
+              setSelectedDate(date)
+            }
+            onClose={() =>
+              setShowCalendarModal(false)
+            }
+          />
+        )
+      }
+    </div >
+  );
 }
 
 export default ReminderModal;

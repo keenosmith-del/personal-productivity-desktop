@@ -12,6 +12,7 @@ const reminderSchema =
             title: {
                 type: String,
                 required: true,
+                trim: true,
             },
 
             description: {
@@ -19,9 +20,14 @@ const reminderSchema =
                 default: "",
             },
 
-            reminderDate: {
+            dueDate: {
                 type: String,
                 default: "",
+            },
+
+            completedDate: {
+                type: String,
+                default: null,
             },
 
             category: {
@@ -34,14 +40,62 @@ const reminderSchema =
                 default: "Medium",
             },
 
+            status: {
+                type: String,
+                default: "Active",
+            },
+
             completed: {
                 type: Boolean,
                 default: false,
             },
-            completedDate: {
-                type: String,
-                default: null,
+
+            flagged: {
+                type: Boolean,
+                default: false,
             },
+
+            liked: {
+                type: Boolean,
+                default: false,
+            },
+
+            commentCount: {
+                type: Number,
+                default: 0,
+            },
+
+            linkedProjects: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Project",
+                },
+            ],
+
+            linkedGoals: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Goal",
+                },
+            ],
+
+            linkedNotes: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Note",
+                },
+            ],
+
+            linkedReminders: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Reminder",
+                },
+            ],
         },
         {
             timestamps: true,
