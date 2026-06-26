@@ -14,6 +14,11 @@ const projectSchema =
                 required: true,
             },
 
+            description: {
+                type: String,
+                default: "",
+            },
+
             dueDate: {
                 type: String,
                 default: "",
@@ -39,14 +44,29 @@ const projectSchema =
                 default: "Active",
             },
 
-            progress: {
+            completed: {
+                type: Boolean,
+                default: false,
+            },
+
+            flagged: {
+                type: Boolean,
+                default: false,
+            },
+
+            liked: {
+                type: Boolean,
+                default: false,
+            },
+
+            commentCount: {
                 type: Number,
                 default: 0,
             },
 
-            description: {
-                type: String,
-                default: "",
+            progress: {
+                type: Number,
+                default: 0,
             },
 
             selectedTasks: {
@@ -90,11 +110,6 @@ const projectSchema =
             },
 
             pinned: {
-                type: Boolean,
-                default: false,
-            },
-
-            completed: {
                 type: Boolean,
                 default: false,
             },
