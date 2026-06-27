@@ -10,7 +10,16 @@ import {
   clearAllNotifications,
 } from "../services/notificationService";
 
+import NotificationCard from "../components/Notifications/NotificationCard";
+
 function Notifications() {
+  // STATES
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [sortBy, setSortBy] =
+    useState("newest");
+
   const [toast, setToast] =
     useState("");
 
@@ -43,6 +52,98 @@ function Notifications() {
     }
   }
 
+  const matchesSearch = (notification) =>
+    notification.title
+      ?.toLowerCase()
+      .includes(
+        searchTerm.toLowerCase()
+      ) ||
+
+    notification.description
+      ?.toLowerCase()
+      .includes(
+        searchTerm.toLowerCase()
+      );
+
+  const sortNotifications = (items) =>
+    [...items].sort((a, b) => {
+      switch (sortBy) {
+        case "oldest":
+          return (
+            new Date(a.createdAt) -
+            new Date(b.createdAt)
+          );
+
+        case "alphabetical":
+          return a.title.localeCompare(
+            b.title
+          );
+
+        case "newest":
+        default:
+          return (
+            new Date(b.createdAt) -
+            new Date(a.createdAt)
+          );
+      }
+    });
+
+  const allNotifications =
+    sortNotifications(
+      notifications.filter(
+        matchesSearch
+      )
+    );
+
+  const starredNotifications =
+    sortNotifications(
+      notifications.filter(
+        (n) =>
+          n.starred &&
+          matchesSearch(n)
+      )
+    );
+
+  const unreadNotifications =
+    sortNotifications(
+      notifications.filter(
+        (n) =>
+          !n.read &&
+          matchesSearch(n)
+      )
+    );
+
+  const archivedNotifications =
+    sortNotifications(
+      notifications.filter(
+        (n) =>
+          n.archived &&
+          matchesSearch(n)
+      )
+    );
+
+  const notificationColumns = [
+    {
+      title: "All",
+      data: allNotifications,
+    },
+
+    {
+      title: "Starred",
+      data: starredNotifications,
+    },
+
+    {
+      title: "Unread",
+      data: unreadNotifications,
+    },
+
+    {
+      title: "Archived",
+      data: archivedNotifications,
+    },
+  ];
+
   const handleClearAllNotifications =
     async () => {
       try {
@@ -72,124 +173,316 @@ function Notifications() {
 
   return (
     <MainLayout>
-      <NotificationFeed
-        notifications={notifications}
-        setNotifications={setNotifications}
-        toast={toast}
-        setToast={setToast}
-        onClearAll={() =>
-          setShowClearAll(true)
-        }
-      />
-
-      <Toast message={toast} />
-      {showClearAll && (
-        <div
-          onClick={() =>
-            setShowClearAll(false)
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(0,0,0,0.45)",
-            backdropFilter:
-              "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px",
+        }}
+      >
+        <div>
           <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
             style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background:
-                "rgba(20,20,20,0.85)",
-              border:
-                "1px solid rgba(255,255,255,0.08)",
+              display: "flex",
+              justifyContent:
+                "space-between",
+
+              alignItems: "center",
             }}
           >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear all notifications?
-            </h3>
+            <div>
+              <h1
+                style={{
+                  margin: 0,
+                  fontWeight: "400",
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Notifications
+              </h1>
 
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
+              <p
+                style={{
+                  marginTop: "8px",
+                  color:
+                    "var(--text-secondary)",
+                  fontWeight: "300",
+                }}
+              >
+                Manage activity across your workspace.
+              </p>
+            </div>
 
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "flex-end",
                 gap: "12px",
               }}
             >
+              <input
+                value={searchTerm}
+                onChange={(e) =>
+                  setSearchTerm(
+                    e.target.value
+                  )
+                }
+                placeholder="Search notifications..."
+                style={{
+                  width: "240px",
+
+                  padding: "12px 18px",
+
+                  borderRadius: "999px",
+
+                  border: searchTerm
+                    ? "1px solid rgba(87,112,122,0.55)"
+                    : "1px solid rgba(255,255,255,0.08)",
+
+                  background: searchTerm
+                    ? "rgba(87,112,122,0.14)"
+                    : "rgba(255,255,255,0.03)",
+
+                  boxShadow: searchTerm
+                    ? "0 0 0 1px rgba(87,112,122,0.15)"
+                    : "none",
+
+                  color:
+                    "var(--text-primary)",
+
+                  fontSize: "0.82rem",
+
+                  fontWeight: "300",
+
+                  outline: "none",
+
+                  transition:
+                    "all 0.2s ease",
+                }}
+              />
+
               <button
                 onClick={() =>
-                  setShowClearAll(false)
+                  setSortBy(
+                    sortBy === "newest"
+                      ? "oldest"
+                      : "newest"
+                  )
                 }
                 style={{
-                  background:
-                    "transparent",
+                  padding: "12px 18px",
+
+                  borderRadius: "999px",
+
                   border:
                     "1px solid rgba(255,255,255,0.08)",
-                  borderRadius:
-                    "999px",
-                  padding: "8px 14px",
-                  color: "#ff6b6b",
-                  fontSize: "0.85rem",
-                  fontWeight: "400",
+
+                  background:
+                    "rgba(255,255,255,0.03)",
+
+                  color:
+                    "var(--text-secondary)",
+
                   cursor: "pointer",
+
+                  fontWeight: "300",
                 }}
               >
-                Cancel
+                Sort
               </button>
 
               <button
-                onClick={async () => {
-                  await handleClearAllNotifications();
-
-                  setShowClearAll(false);
-                }}
+                onClick={() =>
+                  setSortBy(
+                    sortBy === "newest"
+                      ? "oldest"
+                      : "newest"
+                  )
+                }
                 style={{
-                  background:
-                    "transparent",
+                  padding: "12px 18px",
+
+                  borderRadius: "999px",
+
                   border:
                     "1px solid rgba(255,255,255,0.08)",
-                  borderRadius:
-                    "999px",
-                  padding: "8px 14px",
+
+                  background:
+                    "rgba(255,255,255,0.03)",
+
                   color:
                     "var(--text-secondary)",
-                  fontSize: "0.85rem",
-                  fontWeight: "400",
+
                   cursor: "pointer",
+
+                  fontWeight: "300",
                 }}
               >
-                Clear
+                Filter
               </button>
             </div>
           </div>
+
+
+          <p
+            style={{
+              marginTop: "6px",
+
+              fontSize: "0.8rem",
+
+              color: "var(--text-secondary)",
+
+              opacity: 0.65,
+            }}
+          >
+            {allNotifications.length} notifications
+          </p>
         </div>
-      )}
+
+        {/* DIVIDER */}
+        <div
+          style={{
+            height: "1px",
+            background:
+              "rgba(255,255,255,0.06)",
+          }}
+        />
+
+        {/* GRID */}
+        <div
+          style={{
+            display: "grid",
+
+            gridTemplateColumns:
+              "repeat(4, minmax(0, 1fr))",
+
+            gap: "24px",
+          }}
+        >
+          {notificationColumns.map(
+            (column) => (
+              <div
+                key={column.title}
+                style={{
+                  background:
+                    "var(--glass-bg)",
+
+                  border:
+                    "1px solid var(--glass-border)",
+
+                  borderRadius:
+                    "var(--radius-large)",
+
+                  backdropFilter:
+                    "blur(20px)",
+
+                  WebkitBackdropFilter:
+                    "blur(20px)",
+
+                  height: "700px",
+
+                  display: "flex",
+
+                  flexDirection: "column",
+
+                  overflow: "hidden",
+                }}
+              >
+                {/* HEADER */}
+                <div
+                  style={{
+                    padding: "20px 24px",
+
+                    borderBottom:
+                      "1px solid rgba(255,255,255,0.06)",
+
+                    display: "flex",
+
+                    justifyContent:
+                      "space-between",
+
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        fontWeight: "400",
+                      }}
+                    >
+                      {column.title}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+
+                        opacity: 0.45,
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {column.data.length} notifications
+                    </div>
+                  </div>
+                </div>
+
+                {/* SCROLL AREA */}
+                <div
+                  style={{
+                    flex: 1,
+
+                    overflowY: "auto",
+
+                    padding: "16px",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    gap: "12px",
+                  }}
+                >
+                  {column.data.length === 0 ? (
+                    <div
+                      style={{
+                        flex: 1,
+
+                        display: "flex",
+
+                        justifyContent: "center",
+
+                        alignItems: "center",
+
+                        color:
+                          "var(--text-secondary)",
+
+                        opacity: 0.45,
+
+                        textAlign: "center",
+
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      No notifications
+                    </div>
+                  ) : (
+                    column.data.map(
+                      (notification) => (
+                        <NotificationCard
+                          key={notification._id}
+                          notification={notification}
+                        />
+                      )
+                    )
+                  )}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
     </MainLayout>
   );
 }
