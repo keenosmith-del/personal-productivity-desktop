@@ -6,6 +6,7 @@ import {
 function CalendarGrid({
   selectedDate,
   setSelectedDate,
+  setShowCalendarModal,
   calendarEvents,
   displayDate,
   setDisplayDate,
@@ -78,6 +79,33 @@ function CalendarGrid({
       });
     };
 
+  const eventStyles = {
+    task: {
+      bg: "#4d689333",
+      border: "#4d689366",
+    },
+
+    project: {
+      bg: "#5f5b8733",
+      border: "#5f5b8766",
+    },
+
+    goal: {
+      bg: "#5d766233",
+      border: "#5d766266",
+    },
+
+    reminder: {
+      bg: "#7a685533",
+      border: "#7a685566",
+    },
+
+    note: {
+      bg: "#6d5d7333",
+      border: "#6d5d7366",
+    },
+  };
+
   return (
     <div
       style={{
@@ -89,13 +117,19 @@ function CalendarGrid({
 
         borderRadius: "var(--radius-large)",
 
-        padding: "24px",
+        padding: "20px",
+        height: "calc(100vh - 100px)",
+        minHeight: "800px",
+
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+
+        overflowY: "auto",
+        overflowX: "hidden",
 
         display: "flex",
 
         flexDirection: "column",
-
-        minHeight: "850px",
       }}
     >
       <div
@@ -132,16 +166,21 @@ function CalendarGrid({
 
             <h1
               style={{
-                fontSize:
-                  "1.8rem",
-                letterSpacing:
-                  "-0.02em",
+                margin: 0,
+
+                fontSize: "1.35rem",
+
+                letterSpacing: "-0.03em",
+
+                display: "flex",
+
+                alignItems: "center",
               }}
             >
               <span
                 style={{
                   fontWeight:
-                    "400",
+                    "350",
                 }}
               >
                 {displayDate.toLocaleString(
@@ -219,7 +258,11 @@ function CalendarGrid({
               color:
                 "var(--text-secondary)",
 
-              fontSize: "0.9rem",
+              fontSize: "0.75rem",
+              fontWeight: "300",
+              opacity: 0.55,
+              letterSpacing: "0.02em",
+              textTransform: "uppercase",
             }}
           >
             {day}
@@ -234,8 +277,9 @@ function CalendarGrid({
           gridTemplateColumns:
             "repeat(7, 1fr)",
 
-          gap: "12px",
+          gap: "8px",
 
+          alignContent: "start",
         }}
       >
         {days.map((day) => {
@@ -270,13 +314,15 @@ function CalendarGrid({
 
           return (
             <div
-              onClick={() =>
+              onClick={() => {
                 setSelectedDate({
                   day,
                   month: currentMonth,
                   year: currentYear,
-                })
-              }
+                });
+
+                setShowCalendarModal(true);
+              }}
               key={day}
               onMouseEnter={(e) => {
                 if (!isSelected) {
@@ -291,19 +337,21 @@ function CalendarGrid({
                 }
               }}
               style={{
-                height: "130px",
+                height: "120px",
 
-                border:
-                  "1px solid rgba(255,255,255,0.04)",
+                borderRadius: "18px",
 
-                borderRadius: "12px",
-
-                padding: "12px",
+                padding: "10px",
 
                 background:
                   isSelected
-                    ? "rgba(255,255,255,0.08)"
+                    ? "rgba(255,255,255,0.06)"
                     : "rgba(255,255,255,0.02)",
+
+                border:
+                  isSelected
+                    ? "1px solid rgba(255,255,255,0.10)"
+                    : "1px solid rgba(255,255,255,0.04)",
 
                 cursor: "pointer",
 
@@ -315,8 +363,22 @@ function CalendarGrid({
             >
               <div
                 style={{
-                  width: "28px",
-                  height: "28px",
+                  width: "24px",
+                  height: "24px",
+
+                  fontSize: "0.78rem",
+
+                  fontWeight: "300",
+
+                  opacity: isToday ? 1 : 0.85,
+
+                  background: isToday
+                    ? "rgba(77,104,147,0.12)"
+                    : "transparent",
+
+                  border: isToday
+                    ? "1px solid rgba(77,104,147,0.25)"
+                    : "none",
 
                   borderRadius: "50%",
 
@@ -330,8 +392,6 @@ function CalendarGrid({
                       ? "#4d6893cc"
                       : "var(--text-primary)",
 
-                  fontSize: "0.9rem",
-                  fontWeight: "400",
                 }}
               >
                 {day}
@@ -342,73 +402,69 @@ function CalendarGrid({
                   flexDirection: "column",
                   gap: "4px",
                   marginTop: "8px",
-                  height: "52px",
+                  height: "60px",
                   overflow: "hidden",
                 }}
               >
-                {visibleEvents.map(
-                  (event) => (
+                {visibleEvents.map((event) => {
+                  const eventStyle =
+                    eventStyles[event.type] ||
+                    eventStyles.task;
+
+                  return (
                     <div
                       key={event.title}
                       style={{
-                        height: "18px",
+                        height: "16px",
+
+                        padding: "0 5px",
+
+                        fontSize: "0.58rem",
+
+                        fontWeight: "300",
+
+                        borderRadius: "6px",
+
+                        background: eventStyle.bg,
+
+                        border: `1px solid ${eventStyle.border}`,
+
+                        color: "var(--text-primary)",
 
                         display: "flex",
-                        alignItems:
-                          "center",
 
-                        padding:
-                          "0 6px",
+                        alignItems: "center",
 
-                        borderRadius:
-                          "8px",
+                        overflow: "hidden",
 
-                        fontSize:
-                          "0.65rem",
+                        whiteSpace: "nowrap",
 
-                        overflow:
-                          "hidden",
-
-                        whiteSpace:
-                          "nowrap",
-
-                        textOverflow:
-                          "ellipsis",
+                        textOverflow: "ellipsis",
 
                         minWidth: 0,
 
                         flexShrink: 1,
-
-                        background:
-                          event.type ===
-                            "goal"
-                            ? "#c59c70"
-                            : event.type ===
-                              "task"
-                              ? "#72715c"
-                              : event.type ===
-                                "reminder"
-                                ? "#83545c"
-                                : "#854c49",
-
-                        color: "#fff",
                       }}
                     >
                       {event.title}
                     </div>
-                  )
-                )}
+                  );
+                })}
 
                 {remainingCount > 0 && (
                   <div
                     style={{
-                      fontSize: "0.6rem",
+                      fontSize: "0.58rem",
+
+                      fontWeight: "300",
+
+                      opacity: 0.45,
+
+                      letterSpacing: "0.01em",
 
                       color: "var(--text-secondary)",
 
                       paddingLeft: "4px",
-
-                      opacity: 0.7,
                     }}
                   >
                     +{remainingCount} more

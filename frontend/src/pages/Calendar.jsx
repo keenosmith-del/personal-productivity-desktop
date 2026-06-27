@@ -5,7 +5,8 @@ import {
 } from "react";
 
 import CalendarGrid from "../components/Calendar/CalendarGrid";
-import CalendarSidebar from "../components/Calendar/CalendarSidebar";
+
+import CalendarModal from "../components/Calendar/CalendarModal";
 
 import {
   getProjects,
@@ -42,6 +43,11 @@ function Calendar() {
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
   });
+
+  const [
+    showCalendarModal,
+    setShowCalendarModal,
+  ] = useState(false);
 
   const [
     calendarEvents,
@@ -173,6 +179,11 @@ function Calendar() {
   const selectedEventKey =
     `${selectedDate.year}-${selectedDate.month}-${selectedDate.day}`;
 
+  const selectedEvents =
+    calendarEvents[
+    selectedEventKey
+    ] || [];
+
   return (
     <MainLayout>
       <div
@@ -191,6 +202,9 @@ function Calendar() {
           setSelectedDate={
             setSelectedDate
           }
+          setShowCalendarModal={
+            setShowCalendarModal
+          }
           calendarEvents={
             calendarEvents
           }
@@ -202,6 +216,17 @@ function Calendar() {
           }
         />
       </div>
+      {showCalendarModal && (
+        <CalendarModal
+          selectedDate={
+            selectedDate
+          }
+          events={selectedEvents}
+          onClose={() =>
+            setShowCalendarModal(false)
+          }
+        />
+      )}
     </MainLayout>
   );
 }
