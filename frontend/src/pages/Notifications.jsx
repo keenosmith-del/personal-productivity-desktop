@@ -1,6 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
 
-import NotificationFeed from "../components/Notifications/NotificationFeed";
 import Toast from "../components/Toast";
 
 import { useEffect, useState } from "react";
@@ -8,6 +7,10 @@ import { useEffect, useState } from "react";
 import {
   getNotifications,
   clearAllNotifications,
+  deleteNotification,
+  toggleStarNotification,
+  toggleReadNotification,
+  toggleArchiveNotification,
 } from "../services/notificationService";
 
 import NotificationCard from "../components/Notifications/NotificationCard";
@@ -19,6 +22,11 @@ function Notifications() {
 
   const [sortBy, setSortBy] =
     useState("newest");
+
+  const [
+    openNotificationMenu,
+    setOpenNotificationMenu,
+  ] = useState(null);
 
   const [toast, setToast] =
     useState("");
@@ -104,11 +112,11 @@ function Notifications() {
       )
     );
 
-  const unreadNotifications =
+  const readNotifications =
     sortNotifications(
       notifications.filter(
         (n) =>
-          !n.read &&
+          n.read &&
           matchesSearch(n)
       )
     );
@@ -134,8 +142,8 @@ function Notifications() {
     },
 
     {
-      title: "Unread",
-      data: unreadNotifications,
+      title: "Read",
+      data: readNotifications,
     },
 
     {
@@ -143,6 +151,135 @@ function Notifications() {
       data: archivedNotifications,
     },
   ];
+
+  // HANDLERS
+  async function handleToggleStar(
+    notification
+  ) {
+    try {
+      const updated =
+        await toggleStarNotification(
+          notification._id
+        );
+
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item._id === updated._id
+            ? updated
+            : item
+        )
+      );
+
+      setToast(
+        updated.starred
+          ? "Notification starred"
+          : "Removed star"
+      );
+
+      setTimeout(
+        () => setToast(""),
+        3000
+      );
+    } catch (error) {
+      console.error(error);
+
+      setToast(
+        "Failed to update notification"
+      );
+    }
+  }
+
+  async function handleToggleArchive(
+    notification
+  ) {
+    try {
+      const updated =
+        await toggleArchiveNotification(
+          notification._id
+        );
+
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item._id === updated._id
+            ? updated
+            : item
+        )
+      );
+
+      setToast(
+        updated.archived
+          ? "Notification archived"
+          : "Removed from archive"
+      );
+
+      setTimeout(
+        () => setToast(""),
+        3000
+      );
+    } catch (error) {
+      console.error(error);
+
+      setToast(
+        "Failed to update notification"
+      );
+    }
+  }
+
+  async function handleToggleRead(
+    notification
+  ) {
+    try {
+      const updated =
+        await toggleReadNotification(
+          notification._id
+        );
+
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item._id === updated._id
+            ? updated
+            : item
+        )
+      );
+
+      setToast(
+        updated.read
+          ? "Marked read"
+          : "Marked unread"
+      );
+
+      setTimeout(
+        () => setToast(""),
+        3000
+      );
+    } catch (error) {
+      console.error(error);
+
+      setToast(
+        "Failed to update notification"
+      );
+    }
+  }
+
+  function handleDeleteNotification(
+    id
+  ) {
+    setNotifications((prev) =>
+      prev.filter(
+        (item) =>
+          item._id !== id
+      )
+    );
+
+    setToast(
+      "Notification deleted"
+    );
+
+    setTimeout(
+      () => setToast(""),
+      3000
+    );
+  }
 
   const handleClearAllNotifications =
     async () => {
@@ -170,6 +307,8 @@ function Notifications() {
         }, 3000);
       }
     };
+
+
 
   return (
     <MainLayout>
@@ -472,6 +611,29 @@ function Notifications() {
                         <NotificationCard
                           key={notification._id}
                           notification={notification}
+                          openNotificationMenu={
+                            openNotificationMenu
+                          }
+
+                          setOpenNotificationMenu={
+                            setOpenNotificationMenu
+                          }
+
+                          onDelete={
+                            handleDeleteNotification
+                          }
+
+                          onToggleArchive={
+                            handleToggleArchive
+                          }
+
+                          onToggleStar={
+                            handleToggleStar
+                          }
+
+                          onToggleRead={
+                            handleToggleRead
+                          }
                         />
                       )
                     )
@@ -482,6 +644,7 @@ function Notifications() {
           )}
         </div>
       </div>
+      <Toast message={toast} />
 
     </MainLayout>
   );

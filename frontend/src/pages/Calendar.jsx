@@ -201,24 +201,6 @@ function Calendar() {
             setDisplayDate
           }
         />
-
-        <div
-          style={{
-            width: "320px",
-            height: "100%",
-          }}
-        >
-          <CalendarSidebar
-            selectedDate={
-              selectedDate
-            }
-            events={
-              calendarEvents[
-              selectedEventKey
-              ] || []
-            }
-          />
-        </div>
       </div>
     </MainLayout>
   );

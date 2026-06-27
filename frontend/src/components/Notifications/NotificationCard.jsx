@@ -1,11 +1,21 @@
 import {
     Archive,
-    BellDot,
+    Bell,
+    Ellipsis,
     Star,
 } from "lucide-react";
 
 function NotificationCard({
     notification,
+
+    openNotificationMenu,
+    setOpenNotificationMenu,
+
+    onDelete,
+
+    onToggleArchive,
+    onToggleStar,
+    onToggleRead,
 }) {
     const typeStyles = {
         task: {
@@ -37,6 +47,30 @@ function NotificationCard({
             bg: "#45575b33",
             border: "#45575b66",
         },
+    };
+
+    const menuItemStyle = {
+        width: "100%",
+
+        padding: "10px 12px",
+
+        background: "transparent",
+
+        border: "none",
+
+        borderRadius: "10px",
+
+        color: "var(--text-primary)",
+
+        textAlign: "left",
+
+        fontSize: "0.8rem",
+
+        fontWeight: "300",
+
+        cursor: "pointer",
+
+        transition: "all 0.2s ease",
     };
 
     const style =
@@ -78,13 +112,14 @@ function NotificationCard({
     return (
         <div
             style={{
-                height: "350px",
+                height: "250px",
+                maxWidth: "320px",
 
-                background:
-                    "rgba(255,255,255,0.025)",
+                flexShrink: 0,
 
-                border:
-                    "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(255, 255, 255, 0.025)",
+
+                border: "1px solid rgba(255,255,255,0.06)",
 
                 borderRadius: "24px",
 
@@ -95,8 +130,7 @@ function NotificationCard({
 
                 cursor: "pointer",
 
-                transition:
-                    "all 0.2s ease",
+                transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform =
@@ -110,12 +144,19 @@ function NotificationCard({
                     "translateY(0)";
 
                 e.currentTarget.style.background =
-                    "rgba(255,255,255,0.025)";
+                    "rgba(255, 255, 255, 0.025)";
             }}
         >
+
             {/* TYPE CHIP */}
             <div
                 style={{
+                    display: "flex",
+                    justifyContent:
+                        "space-between",
+
+                    alignItems: "center",
+
                     marginBottom: "16px",
                 }}
             >
@@ -132,8 +173,108 @@ function NotificationCard({
                         border: `1px solid ${style.border}`,
                     }}
                 >
-                    {notification.type}
+                    {notification.type.charAt(0).toUpperCase() +
+                        notification.type.slice(1)}
                 </span>
+
+                <div
+                    style={{
+                        position: "relative",
+                    }}
+                >
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            setOpenNotificationMenu(
+                                openNotificationMenu ===
+                                    notification._id
+                                    ? null
+                                    : notification._id
+                            );
+                        }}
+                        style={{
+                            background: "none",
+
+                            border: "none",
+
+                            color:
+                                "var(--text-secondary)",
+
+                            cursor: "pointer",
+
+                            padding: 0,
+
+                            display: "flex",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                        }}
+                    >
+                        <Ellipsis size={18} />
+                    </button>
+
+                    {openNotificationMenu ===
+                        notification._id && (
+                            <div
+                                style={{
+                                    position: "absolute",
+
+                                    top: "24px",
+                                    right: 0,
+
+                                    minWidth: "140px",
+
+                                    background:
+                                        "rgba(20,20,20,0.95)",
+
+                                    backdropFilter:
+                                        "blur(20px)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.08)",
+
+                                    borderRadius: "16px",
+
+                                    overflow: "hidden",
+
+                                    zIndex: 100,
+                                }}
+                            >
+                                <button
+                                    onClick={() => {
+                                        onDelete(
+                                            notification._id
+                                        );
+
+                                        setOpenNotificationMenu(
+                                            null
+                                        );
+                                    }}
+                                    style={{
+                                        ...menuItemStyle,
+
+                                        color: "#ff6b6b",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                </div>
             </div>
 
             {/* TITLE */}
@@ -166,10 +307,9 @@ function NotificationCard({
 
                     display: "-webkit-box",
 
-                    WebkitLineClamp: 3,
+                    WebkitLineClamp: 2,
 
-                    WebkitBoxOrient:
-                        "vertical",
+                    WebkitBoxOrient: "vertical",
 
                     overflow: "hidden",
                 }}
@@ -196,53 +336,7 @@ function NotificationCard({
             />
 
             {/* AVATARS */}
-            <div
-                style={{
-                    display: "flex",
 
-                    marginBottom: "20px",
-                }}
-            >
-                <div
-                    style={{
-                        ...linkedItemStyle,
-
-                        marginRight: "-6px",
-
-                        zIndex: 1,
-                    }}
-                >
-                    T
-                </div>
-
-                <div
-                    style={{
-                        ...linkedItemStyle,
-
-                        marginRight: "-6px",
-
-                        zIndex: 2,
-                    }}
-                >
-                    P
-                </div>
-
-                <div
-                    style={{
-                        ...linkedItemStyle,
-
-                        background:
-                            "rgba(255,255,255,0.03)",
-
-                        border:
-                            "1px solid rgba(255,255,255,0.08)",
-
-                        zIndex: 3,
-                    }}
-                >
-                    +2
-                </div>
-            </div>
 
             {/* DATE */}
             <div
@@ -280,15 +374,46 @@ function NotificationCard({
                 }}
             >
                 <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+
+                        onToggleArchive(
+                            notification
+                        );
+                    }}
                     style={{
                         color:
                             notification.archived
-                                ? "#a45d44"
+                                ? "white"
                                 : "var(--text-secondary)",
+
+                        transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(-1px) scale(1.08)";
+
+                        e.currentTarget.style.color =
+                            "white";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+
+                        e.currentTarget.style.color =
+                            notification.archived
+                                ? "white"
+                                : "var(--text-secondary)";
                     }}
                 >
                     <Archive
                         size={18}
+                        fill={
+                            notification.archived
+                                ? "currentColor"
+                                : "none"
+                        }
                     />
                 </div>
 
@@ -302,24 +427,86 @@ function NotificationCard({
                     }}
                 >
                     <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            onToggleRead(
+                                notification
+                            );
+                        }}
                         style={{
                             color:
-                                notification.unread
-                                    ? "#728a6e"
+                                notification.read
+                                    ? "white"
                                     : "var(--text-secondary)",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.color =
+                                "white";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.color =
+                                notification.read
+                                    ? "white"
+                                    : "var(--text-secondary)";
                         }}
                     >
-                        <BellDot
+                        <Bell
                             size={18}
+                            fill={
+                                notification.read
+                                    ? "currentColor"
+                                    : "none"
+                            }
+                            strokeWidth={
+                                notification.read
+                                    ? 1.75
+                                    : 2
+                            }
                         />
                     </div>
 
                     <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            onToggleStar(
+                                notification
+                            );
+                        }}
                         style={{
                             color:
                                 notification.starred
                                     ? "#d2b48c"
                                     : "var(--text-secondary)",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.color =
+                                "white";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.color =
+                                notification.starred
+                                    ? "#d2b48c"
+                                    : "var(--text-secondary)";
                         }}
                     >
                         <Star

@@ -95,3 +95,59 @@ export async function clearAllNotifications() {
 
     return response.json();
 }
+
+export async function toggleReadNotification(
+    notificationId
+) {
+    const response = await fetch(
+        `${API_URL}/${notificationId}/read`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization:
+                    `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update notification"
+        );
+    }
+
+    return data;
+}
+
+export async function toggleArchiveNotification(
+    notificationId
+) {
+    const response = await fetch(
+        `${API_URL}/${notificationId}/archive`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization:
+                    `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update notification"
+        );
+    }
+
+    return data;
+}

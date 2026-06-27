@@ -141,7 +141,7 @@ function CalendarGrid({
               <span
                 style={{
                   fontWeight:
-                    "600",
+                    "400",
                 }}
               >
                 {displayDate.toLocaleString(
@@ -156,7 +156,7 @@ function CalendarGrid({
               <span
                 style={{
                   fontWeight:
-                    "400",
+                    "300",
                   color:
                     "var(--text-secondary)",
                   marginLeft:
@@ -324,14 +324,10 @@ function CalendarGrid({
                   alignItems: "center",
                   justifyContent: "center",
 
-                  background:
-                    isToday
-                      ? "#52677d"
-                      : "transparent",
 
                   color:
                     isToday
-                      ? "#ffffff"
+                      ? "#4d6893cc"
                       : "var(--text-primary)",
 
                   fontSize: "0.9rem",
