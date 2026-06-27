@@ -696,7 +696,7 @@ function GlobalSearch() {
                                 alignContent: "start",
                             }}
                         >
-                            {!searchTerm ? (
+                            {filteredResults.length === 0 ? (
                                 <div
                                     style={{
                                         gridColumn: "1 / -1",
@@ -711,8 +711,7 @@ function GlobalSearch() {
 
                                         textAlign: "center",
 
-                                        color:
-                                            "var(--text-secondary)",
+                                        color: "var(--text-secondary)",
 
                                         opacity: 0.45,
                                     }}
@@ -723,7 +722,7 @@ function GlobalSearch() {
                                             fontSize: "0.9rem",
                                         }}
                                     >
-                                        Enter a keyword to search
+                                        No results found
                                     </p>
 
                                     <p
@@ -732,8 +731,7 @@ function GlobalSearch() {
                                             fontSize: "0.75rem",
                                         }}
                                     >
-                                        Search tasks, projects,
-                                        goals, reminders and notes.
+                                        Try another keyword or filter.
                                     </p>
                                 </div>
                             ) : (
