@@ -16,6 +16,8 @@ import Break from "./pages/Break";
 import GlobalSearch from "./pages/GlobalSearch";
 // import QuickAdd from "./pages/QuickAdd";
 
+import Account from "./pages/Account";
+
 import { Search } from "lucide-react";
 
 function App() {
@@ -137,6 +139,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Account />
             </ProtectedRoute>
           }
         />

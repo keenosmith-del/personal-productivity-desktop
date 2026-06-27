@@ -5,39 +5,63 @@ import {
     useEffect,
 } from "react";
 
-const AuthContext =
-    createContext();
+import { getCurrentUser } from "../services/authService";
+
+const AuthContext = createContext();
 
 export function AuthProvider({
     children,
 }) {
-    const [user, setUser] =
-        useState(null);
+    const [user, setUser] = useState(null);
 
     const [loading, setLoading] =
         useState(true);
 
     useEffect(() => {
-        const token =
-            localStorage.getItem(
-                "token"
-            );
+        async function loadUser() {
+            const token =
+                localStorage.getItem(
+                    "token"
+                );
 
-        const savedUser =
-            localStorage.getItem(
-                "user"
-            );
+            if (!token) {
+                setLoading(false);
 
-        if (
-            token &&
-            savedUser
-        ) {
-            setUser(
-                JSON.parse(savedUser)
-            );
+                return;
+            }
+
+            try {
+                const currentUser =
+                    await getCurrentUser();
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(
+                        currentUser
+                    )
+                );
+
+                setUser(
+                    currentUser
+                );
+
+            } catch (error) {
+                localStorage.removeItem(
+                    "token"
+                );
+
+                localStorage.removeItem(
+                    "user"
+                );
+
+                setUser(null);
+            }
+
+            setLoading(false);
         }
 
-        setLoading(false);
+        loadUser();
+
     }, []);
 
     const login = (
