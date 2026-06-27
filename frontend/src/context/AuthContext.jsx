@@ -93,6 +93,25 @@ export function AuthProvider({
         setUser(null);
     };
 
+    const refreshUser = async () => {
+        try {
+            const currentUser =
+                await getCurrentUser();
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(
+                    currentUser
+                )
+            );
+
+            setUser(currentUser);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -100,6 +119,7 @@ export function AuthProvider({
                 login,
                 logout,
                 loading,
+                refreshUser,
             }}
         >
             {children}

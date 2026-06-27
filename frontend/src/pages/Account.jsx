@@ -1,5 +1,13 @@
 import MainLayout from "../layouts/MainLayout";
+
+import EditUserModal from "../components/Account/EditUserModal";
+import Toast from "../components/Toast";
+import ChangePasswordModal from "../components/Account/ChangePasswordModal";
+import DeleteUserModal from "../components/Account/DeleteUserModal";
+import ClearWorkspaceModal from "../components/Account/ClearWorkspaceModal";
+
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import {
     Palette,
@@ -15,10 +23,21 @@ import { useState, useEffect } from "react";
 
 import {
     updatePreferences,
+    exportData,
 } from "../services/authService";
 
 function Account() {
-    const { user } = useAuth();
+    const {
+        user,
+        refreshUser,
+        logout,
+    } = useAuth();
+
+    const [showEditUser, setShowEditUser] =
+        useState(false);
+
+    const [toast, setToast] =
+        useState("");
 
     const [settings, setSettings] =
         useState({
@@ -30,6 +49,23 @@ function Account() {
 
             reminderNotifications: true,
         });
+
+    const [
+        showChangePassword,
+        setShowChangePassword,
+    ] = useState(false);
+
+    const [
+        showClearWorkspace,
+        setShowClearWorkspace,
+    ] = useState(false);
+
+    const [
+        showDeleteAccount,
+        setShowDeleteAccount,
+    ] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) return;
@@ -184,6 +220,8 @@ function Account() {
 
                         justifyContent:
                             "space-between",
+
+                        height: "800px",
                     }}
                 >
                     <div>
@@ -478,6 +516,11 @@ function Account() {
                         </div>
 
                         <button
+                            onClick={() => {
+                                logout();
+
+                                navigate("/");
+                            }}
                             style={{
                                 width: "100%",
 
@@ -532,6 +575,9 @@ function Account() {
                         </button>
 
                         <button
+                            onClick={() =>
+                                setShowEditUser(true)
+                            }
                             style={{
                                 width: "100%",
 
@@ -662,13 +708,13 @@ function Account() {
 
                         <div
                             style={{
+                                position: "relative",
+
                                 display: "flex",
 
-                                gap: "8px",
+                                width: "220px",
 
                                 padding: "6px",
-
-                                width: "fit-content",
 
                                 background:
                                     "rgba(255,255,255,0.03)",
@@ -677,8 +723,42 @@ function Account() {
                                     "1px solid rgba(255,255,255,0.06)",
 
                                 borderRadius: "999px",
+
+                                overflow: "hidden",
+
+                                backdropFilter: "blur(20px)",
                             }}
                         >
+                            <div
+                                style={{
+                                    position: "absolute",
+
+                                    top: "6px",
+
+                                    left:
+                                        settings.theme === "Light"
+                                            ? "6px"
+                                            : "108px",
+
+                                    width: "106px",
+
+                                    height: "40px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.08)",
+
+                                    backdropFilter: "blur(30px)",
+
+                                    transition:
+                                        "all 0.3s cubic-bezier(0.22,1,0.36,1)",
+                                }}
+                            />
+
                             <button
                                 onClick={() =>
                                     updateSetting(
@@ -687,22 +767,21 @@ function Account() {
                                     )
                                 }
                                 style={{
+                                    flex: 1,
+
+                                    height: "40px",
+
                                     display: "flex",
 
                                     alignItems: "center",
 
+                                    justifyContent: "center",
+
                                     gap: "8px",
 
-                                    padding: "10px 16px",
+                                    background: "transparent",
 
                                     border: "none",
-
-                                    borderRadius: "999px",
-
-                                    background:
-                                        settings.theme === "Light"
-                                            ? "rgba(255,255,255,0.08)"
-                                            : "transparent",
 
                                     color:
                                         settings.theme === "Light"
@@ -711,14 +790,14 @@ function Account() {
 
                                     cursor: "pointer",
 
-                                    transition:
-                                        "all 0.25s ease",
+                                    zIndex: 1,
 
                                     fontWeight: "300",
+
+                                    transition: "all 0.2s ease",
                                 }}
                             >
                                 <Sun size={14} />
-
                                 Light
                             </button>
 
@@ -730,22 +809,21 @@ function Account() {
                                     )
                                 }
                                 style={{
+                                    flex: 1,
+
+                                    height: "40px",
+
                                     display: "flex",
 
                                     alignItems: "center",
 
+                                    justifyContent: "center",
+
                                     gap: "8px",
 
-                                    padding: "10px 16px",
+                                    background: "transparent",
 
                                     border: "none",
-
-                                    borderRadius: "999px",
-
-                                    background:
-                                        settings.theme === "Dark"
-                                            ? "rgba(255,255,255,0.08)"
-                                            : "transparent",
 
                                     color:
                                         settings.theme === "Dark"
@@ -754,14 +832,14 @@ function Account() {
 
                                     cursor: "pointer",
 
-                                    transition:
-                                        "all 0.25s ease",
+                                    zIndex: 1,
 
                                     fontWeight: "300",
+
+                                    transition: "all 0.2s ease",
                                 }}
                             >
                                 <Moon size={14} />
-
                                 Dark
                             </button>
                         </div>
@@ -963,14 +1041,90 @@ function Account() {
                         </div>
 
                         {[
-                            "Change Password",
-                            "Export Data",
-                            "Clear Workspace",
-                            "Delete Account",
+                            {
+                                label: "Change Password",
+                                action: () =>
+                                    setShowChangePassword(
+                                        true
+                                    ),
+                            },
+
+                            {
+                                label: "Export Data",
+
+                                action: async () => {
+
+                                    const data =
+                                        await exportData();
+
+                                    const blob =
+                                        new Blob(
+                                            [
+                                                JSON.stringify(
+                                                    data,
+                                                    null,
+                                                    2
+                                                ),
+                                            ],
+                                            {
+                                                type:
+                                                    "application/json",
+                                            }
+                                        );
+
+                                    const url =
+                                        URL.createObjectURL(
+                                            blob
+                                        );
+
+                                    const link =
+                                        document.createElement(
+                                            "a"
+                                        );
+
+                                    link.href = url;
+
+                                    link.download =
+                                        `workspace-export-${new Date()
+                                            .toISOString()
+                                            .slice(0, 10)}.json`;
+
+                                    link.click();
+
+                                    URL.revokeObjectURL(
+                                        url
+                                    );
+
+                                    setToast(
+                                        "Workspace exported"
+                                    );
+
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 3000);
+                                },
+                            },
+
+                            {
+                                label: "Clear Workspace",
+                                action: () =>
+                                    setShowClearWorkspace(
+                                        true
+                                    ),
+                            },
+
+                            {
+                                label: "Delete Account",
+                                action: () =>
+                                    setShowDeleteAccount(
+                                        true
+                                    ),
+                            },
                         ].map(
                             (item) => (
                                 <div
-                                    key={item}
+                                    onClick={item.action}
+                                    key={item.label}
                                     style={{
                                         ...rowStyle,
 
@@ -979,13 +1133,13 @@ function Account() {
                                         transition: "all 0.2s ease",
 
                                         color:
-                                            item ===
+                                            item.label ===
                                                 "Delete Account"
                                                 ? "#ff6b6b"
                                                 : "inherit",
 
                                         borderBottom:
-                                            item ===
+                                            item.label ===
                                                 "Delete Account"
                                                 ? "none"
                                                 : rowStyle.borderBottom,
@@ -996,7 +1150,7 @@ function Account() {
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.background =
-                                            item === "Delete Account"
+                                            item.label === "Delete Account"
                                                 ? "rgba(255,107,107,0.08)"
                                                 : "rgba(255,255,255,0.04)";
                                     }}
@@ -1007,7 +1161,7 @@ function Account() {
                                     }}
                                 >
                                     <span>
-                                        {item}
+                                        {item.label}
                                     </span>
 
                                     <ChevronRight
@@ -1019,6 +1173,98 @@ function Account() {
                     </div>
                 </div>
             </div>
+            {showEditUser && (
+                <EditUserModal
+                    user={user}
+                    refreshUser={refreshUser}
+                    onClose={(success = false) => {
+                        setShowEditUser(false);
+
+                        if (success) {
+                            setToast(
+                                "Profile updated"
+                            );
+
+                            setTimeout(() => {
+                                setToast("");
+                            }, 3000);
+                        }
+                    }}
+                />
+            )}
+            {showChangePassword && (
+                <ChangePasswordModal
+                    user={user}
+                    onClose={(success = false) => {
+
+                        setShowChangePassword(
+                            false
+                        );
+
+                        if (success) {
+
+                            setToast(
+                                "Password updated"
+                            );
+
+                            setTimeout(() => {
+                                setToast("");
+                            }, 3000);
+                        }
+                    }}
+                />
+            )}
+            {showClearWorkspace && (
+                <ClearWorkspaceModal
+                    user={user}
+                    onClose={(success = false) => {
+
+                        setShowClearWorkspace(
+                            false
+                        );
+
+                        if (success) {
+
+                            setToast(
+                                "Workspace cleared"
+                            );
+
+                            setTimeout(() => {
+                                setToast("");
+                            }, 3000);
+                        }
+                    }}
+                />
+            )}
+            {showDeleteAccount && (
+                <DeleteUserModal
+                    user={user}
+                    onClose={(success = false) => {
+
+                        setShowDeleteAccount(
+                            false
+                        );
+
+                        if (success) {
+
+                            setToast(
+                                "Account deleted"
+                            );
+
+                            setTimeout(() => {
+                                setToast("");
+                            }, 3000);
+
+                            logout();
+
+                            navigate("/");
+                        }
+                    }}
+                />
+            )}
+            <Toast
+                message={toast}
+            />
         </MainLayout>
     );
 }

@@ -98,13 +98,8 @@ function Sidebar({ collapsed, setCollapsed }) {
 
   const accountNavItems = [
     {
-      label: "Profile",
-      path: "/profile",
-      icon: User,
-    },
-    {
-      label: "Settings",
-      path: "/settings",
+      label: "Account",
+      path: "/account",
       icon: Settings,
     },
   ];

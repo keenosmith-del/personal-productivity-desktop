@@ -271,12 +271,32 @@ router.put(
 
             const {
                 name,
+                email,
                 job,
                 avatar,
             } = req.body;
 
             if (name !== undefined) {
                 user.name = name;
+            }
+
+            if (email !== undefined) {
+
+                const existingUser =
+                    await User.findOne({
+                        email,
+                        _id: { $ne: user._id },
+                    });
+
+                if (existingUser) {
+                    return res.status(400).json({
+                        message:
+                            "Email already in use",
+                    });
+                }
+
+                user.email =
+                    email.toLowerCase();
             }
 
             if (job !== undefined) {
@@ -361,49 +381,6 @@ router.put(
 );
 
 router.put(
-    "/profile",
-    authMiddleware,
-    async (req, res) => {
-        try {
-            const {
-                name,
-                job,
-            } = req.body;
-
-            const user =
-                await User.findById(
-                    req.user.id
-                );
-
-            if (!user) {
-                return res.status(404).json({
-                    message:
-                        "User not found",
-                });
-            }
-
-            if (name !== undefined) {
-                user.name = name;
-            }
-
-            if (job !== undefined) {
-                user.job = job;
-            }
-
-            await user.save();
-
-            res.json(user);
-
-        } catch (error) {
-            res.status(500).json({
-                message:
-                    error.message,
-            });
-        }
-    }
-);
-
-router.put(
     "/change-password",
     authMiddleware,
     async (req, res) => {
@@ -463,11 +440,95 @@ router.put(
     }
 );
 
+router.get(
+    "/export-data",
+    authMiddleware,
+    async (req, res) => {
+        try {
+
+            const user =
+                await User.findById(
+                    req.user.id
+                ).select("-password");
+
+            const [
+                tasks,
+                projects,
+                goals,
+                notes,
+                reminders,
+            ] = await Promise.all([
+                Task.find({
+                    user: req.user.id,
+                }),
+
+                Project.find({
+                    user: req.user.id,
+                }),
+
+                Goal.find({
+                    user: req.user.id,
+                }),
+
+                Note.find({
+                    user: req.user.id,
+                }),
+
+                Reminder.find({
+                    user: req.user.id,
+                }),
+            ]);
+
+            res.json({
+                exportedAt:
+                    new Date(),
+
+                profile: user,
+
+                tasks,
+                projects,
+                goals,
+                notes,
+                reminders,
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                message:
+                    error.message,
+            });
+        }
+    }
+);
+
 router.delete(
     "/clear-data",
     authMiddleware,
     async (req, res) => {
         try {
+
+            const { password } =
+                req.body;
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            const validPassword =
+                await bcrypt.compare(
+                    password,
+                    user.password
+                );
+
+            if (!validPassword) {
+                return res.status(401).json({
+                    message:
+                        "Incorrect password",
+                });
+            }
+
             await Promise.all([
                 Task.deleteMany({
                     user: req.user.id,
@@ -509,6 +570,28 @@ router.delete(
     authMiddleware,
     async (req, res) => {
         try {
+
+            const { password } =
+                req.body;
+
+            const user =
+                await User.findById(
+                    req.user.id
+                );
+
+            const validPassword =
+                await bcrypt.compare(
+                    password,
+                    user.password
+                );
+
+            if (!validPassword) {
+                return res.status(401).json({
+                    message:
+                        "Incorrect password",
+                });
+            }
+
             await Promise.all([
                 Task.deleteMany({
                     user: req.user.id,

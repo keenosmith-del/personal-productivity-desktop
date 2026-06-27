@@ -134,7 +134,7 @@ function App() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/settings"
           element={
             <ProtectedRoute>
@@ -142,6 +142,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
+       */}
 
         <Route
           path="/account"

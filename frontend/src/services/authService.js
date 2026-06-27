@@ -273,7 +273,9 @@ export async function changePassword(
     return data;
 }
 
-export async function clearAllData() {
+export async function clearAllData(
+    password
+) {
     const token =
         localStorage.getItem(
             "token"
@@ -285,9 +287,16 @@ export async function clearAllData() {
             method: "DELETE",
 
             headers: {
+                "Content-Type":
+                    "application/json",
+
                 Authorization:
                     `Bearer ${token}`,
             },
+
+            body: JSON.stringify({
+                password,
+            }),
         }
     );
 
@@ -304,7 +313,9 @@ export async function clearAllData() {
     return data;
 }
 
-export async function deleteAccount() {
+export async function deleteAccount(
+    password
+) {
     const token =
         localStorage.getItem(
             "token"
@@ -316,9 +327,16 @@ export async function deleteAccount() {
             method: "DELETE",
 
             headers: {
+                "Content-Type":
+                    "application/json",
+
                 Authorization:
                     `Bearer ${token}`,
             },
+
+            body: JSON.stringify({
+                password,
+            }),
         }
     );
 
@@ -329,6 +347,37 @@ export async function deleteAccount() {
         throw new Error(
             data.message ||
             "Failed to delete account"
+        );
+    }
+
+    return data;
+}
+
+export async function exportData() {
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const response = await fetch(
+        `${API_URL}/export-data`,
+        {
+            headers: {
+                Authorization:
+                    `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Failed to export data"
         );
     }
 
