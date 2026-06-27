@@ -209,7 +209,7 @@ function Tasks() {
   const urgentTasks = sortTasks(
     tasks.filter(
       (task) =>
-        task.priority === "High" && // leave out !task.completed? can be high priority and completed?
+        task.priority === "High" && 
         matchesSearch(task) &&
         matchesFilters(task)
     )
@@ -777,19 +777,6 @@ function Tasks() {
                           : "var(--text-secondary)";
                     }}
                   >
-                    {/* {
-                      sortBy === "newest"
-                        ? "Sort"
-                        : `Sort • ${sortBy === "dueDate"
-                          ? "Due"
-                          : sortBy ===
-                            "alphabetical"
-                            ? "A-Z"
-                            : sortBy.charAt(0)
-                              .toUpperCase() +
-                            sortBy.slice(1)
-                        }`
-                    } */}
                     Sort
                   </button>
 
@@ -1177,6 +1164,7 @@ function Tasks() {
           </div>
 
           {/* AVATAR */}
+          {/*
           <div
             style={{
               display: "flex",
@@ -1226,6 +1214,7 @@ function Tasks() {
               ✓
             </div>
           </div>
+          */}
 
           {/* TABS SECTION */}
           <div

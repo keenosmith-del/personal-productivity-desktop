@@ -2,6 +2,8 @@ import MainLayout from "../layouts/MainLayout";
 import GlassCard from "../components/GlassCard";
 import { Search } from "lucide-react";
 
+import SearchResultCard from "../components/Search/SearchResultCard";
+
 import {
     useState,
     useEffect,
@@ -27,23 +29,204 @@ import {
     getReminders,
 } from "../services/reminderService";
 
+import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
+import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
+import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
+import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
+import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
+
+const typeStyles = {
+    All: {
+        bg: "rgba(255,255,255,0.05)",
+        border:
+            "rgba(255,255,255,0.12)",
+    },
+
+    Task: {
+        bg: "#4d689333",
+        border: "#4d689366",
+    },
+
+    Project: {
+        bg: "#5f5b8733",
+        border: "#5f5b8766",
+    },
+
+    Goal: {
+        bg: "#5d766233",
+        border: "#5d766266",
+    },
+
+    Reminder: {
+        bg: "#7a685533",
+        border: "#7a685566",
+    },
+
+    Note: {
+        bg: "#6d5d7333",
+        border: "#6d5d7366",
+    },
+};
+
 function GlobalSearch() {
-    const [
-        selectedFilter,
-        setSelectedFilter,
-    ] = useState("All");
+    // STATES
+    const [searchTerm, setSearchTerm] =
+        useState("");
 
-    const [
-        searchTerm,
-        setSearchTerm,
-    ] = useState("");
+    const [selectedType, setSelectedType] =
+        useState("All");
 
-    const [
-        searchResults,
-        setSearchResults,
-    ] = useState([]);
+    const [tasks, setTasks] =
+        useState([]);
 
-    //FUNCTIONS
+    const [projects, setProjects] =
+        useState([]);
+
+    const [goals, setGoals] =
+        useState([]);
+
+    const [notes, setNotes] =
+        useState([]);
+
+    const [reminders, setReminders] =
+        useState([]);
+
+    const [selectedTask, setSelectedTask] =
+        useState(null);
+
+    const [selectedProject, setSelectedProject] =
+        useState(null);
+
+    const [selectedGoal, setSelectedGoal] =
+        useState(null);
+
+    const [selectedReminder, setSelectedReminder] =
+        useState(null);
+
+    const [selectedNote, setSelectedNote] =
+        useState(null);
+
+    const [sortBy, setSortBy] =
+        useState("newest");
+
+    const [showSortMenu, setShowSortMenu] =
+        useState(false);
+
+    //LOADERS
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const [
+                    taskData,
+                    projectData,
+                    goalData,
+                    noteData,
+                    reminderData,
+                ] = await Promise.all([
+                    getTasks(),
+                    getProjects(),
+                    getGoals(),
+                    getNotes(),
+                    getReminders(),
+                ]);
+
+                setTasks(taskData);
+                setProjects(projectData);
+                setGoals(goalData);
+                setNotes(noteData);
+                setReminders(reminderData);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    // ARRAY
+    const searchData = [
+        ...tasks.map((item) => ({
+            ...item,
+            type: "Task",
+        })),
+
+        ...projects.map((item) => ({
+            ...item,
+            type: "Project",
+        })),
+
+        ...goals.map((item) => ({
+            ...item,
+            type: "Goal",
+        })),
+
+        ...notes.map((item) => ({
+            ...item,
+            type: "Note",
+        })),
+
+        ...reminders.map((item) => ({
+            ...item,
+            type: "Reminder",
+        })),
+    ];
+
+    // FILTERING
+    const filteredResults =
+        searchData.filter((item) => {
+            const query =
+                searchTerm.toLowerCase();
+
+            const matchesSearch =
+                item.title
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                item.description
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                item.category
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                item.priority
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                item.status
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                item.type
+                    ?.toLowerCase()
+                    .includes(query) ||
+
+                (query === "completed" &&
+                    item.completed) ||
+
+                (query === "flagged" &&
+                    item.flagged) ||
+
+                (query === "liked" &&
+                    item.liked) ||
+
+                (query === "pinned" &&
+                    item.pinned);
+
+            const matchesType =
+                selectedType === "All" ||
+                item.type === selectedType;
+
+            return (
+                matchesSearch &&
+                matchesType
+            );
+        });
+
+    //FUNCTIONS 
+    {/* DEPRECATED */ }
+    {/*
     const loadSearchData =
         async () => {
             try {
@@ -221,328 +404,420 @@ function GlobalSearch() {
             border: "#83545c66",
         },
     ];
-
-    const filteredResults =
-        searchResults.filter(
-            (item) => {
-                const matchesSearch =
-                    item.title
-                        .toLowerCase()
-                        .includes(
-                            searchTerm.toLowerCase()
-                        );
-
-                const matchesFilter =
-                    selectedFilter === "All" ||
-                    item.type ===
-                    selectedFilter.replace(
-                        /s$/,
-                        ""
-                    );
-
-                return (
-                    matchesSearch &&
-                    matchesFilter
-                );
-            }
-        );
+    */}
     return (
         <MainLayout>
-            <GlassCard minHeight="700px">
-                {/* HEADER */}
-                <div
-                    style={{
-                        marginBottom: "32px",
-                    }}
-                >
-                    {/* SEARCH BAR */}
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            marginBottom: "32px",
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: "100%",
-                                maxWidth: "700px",
-
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "12px",
-
-                                padding: "18px 22px",
-
-                                borderRadius: "999px",
-
-                                background:
-                                    "rgba(255,255,255,0.04)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
-
-                                backdropFilter: "blur(20px)",
-
-                                boxShadow:
-                                    "0 8px 32px rgba(0,0,0,0.18)",
-                            }}
-                        >
-                            <Search
-                                size={18}
-                                strokeWidth={1.5}
-                                color="rgba(255,255,255,0.5)"
-                            />
-
-                            <input
-                                value={searchTerm}
-                                onChange={(e) =>
-                                    setSearchTerm(
-                                        e.target.value
-                                    )
-                                }
-                                placeholder="Search everything..."
-                                style={{
-                                    flex: 1,
-
-                                    background:
-                                        "transparent",
-
-                                    border: "none",
-
-                                    outline: "none",
-
-                                    color:
-                                        "var(--text-primary)",
-
-                                    fontSize: "0.95rem",
-
-                                    fontWeight: "300",
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* FILTER CHIPS */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-
-                        gap: "8px",
-
-                        flexWrap: "wrap",
-
-                        marginBottom: "32px",
-                    }}
-                >
-                    {[
-                        {
-                            label: "All",
-                            bg: "rgba(255,255,255,0.08)",
-                            border: "rgba(255,255,255,0.08)",
-                        },
-                        ...filterChips,
-                    ].map((chip) => (
-                        <button
-                            key={chip.label}
-                            onClick={() =>
-                                setSelectedFilter(
-                                    chip.value || "All"
-                                )
-                            }
-                            style={{
-                                padding: "6px 12px",
-
-                                borderRadius:
-                                    "999px",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
-
-                                background:
-                                    selectedFilter === (chip.value || "All")
-                                        ? chip.bg
-                                        : "transparent",
-
-                                border:
-                                    selectedFilter === (chip.value || "All")
-                                        ? `1px solid ${chip.border}`
-                                        : "1px solid rgba(255,255,255,0.08)",
-
-                                color:
-                                    selectedFilter === (chip.value || "All")
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                cursor:
-                                    "pointer",
-
-                                fontSize:
-                                    "0.8rem",
-
-                                fontWeight:
-                                    "300",
-                            }}
-                        >
-                            {chip.label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* RESULTS COUNT */}
-                <p
-                    style={{
-                        fontSize: "0.8rem",
-                        fontWeight: "300",
-                        color: "var(--text-secondary)",
-                        marginBottom: "16px",
-                    }}
-                >
-                    {filteredResults.length} Results Found
-                </p>
-
-                {/* RESULTS */}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "24px",
+                }}
+            >
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: "10px",
+                        gap: "24px",
                     }}
                 >
-                    {filteredResults.length === 0 && (
+                    {/* HEADER */}
+                    <div>
                         <div
                             style={{
-                                textAlign: "center",
-                                padding: "80px 20px",
-                                color: "var(--text-secondary)",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
                             }}
                         >
-                            <p
-                                style={{
-                                    fontSize: "0.95rem",
-                                    marginBottom: "8px",
-                                }}
-                            >
-                                No results found
-                            </p>
+                            <div>
+                                <h1
+                                    style={{
+                                        margin: 0,
+                                        fontWeight: "400",
+                                        letterSpacing: "-0.03em",
+                                    }}
+                                >
+                                    Search
+                                </h1>
 
-                            <p
-                                style={{
-                                    fontSize: "0.8rem",
-                                }}
-                            >
-                                Try another search term
-                            </p>
-                        </div>
-                    )}
-                    {filteredResults.length > 0 && filteredResults.map((item) => (
-                        <div
-                            key={item._id}
-                            style={{
-                                borderRadius: "12px",
-                                padding: "18px",
+                                <p
+                                    style={{
+                                        marginTop: "8px",
+                                        color: "var(--text-secondary)",
+                                        fontWeight: "300",
+                                    }}
+                                >
+                                    Search across your entire workspace.
+                                </p>
+                            </div>
 
-                                background: "transparent",
-
-                                border: "none",
-
-                                cursor:
-                                    "pointer",
-
-                                transition:
-                                    "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.05)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(-1px)";
-                            }}
-
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                    "transparent";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-                            }}
-                        >
+                            {/* SEARCH INPUT ONLY */}
                             <div
                                 style={{
                                     display: "flex",
-                                    justifyContent: "space-between",
                                     alignItems: "center",
-
-                                    marginBottom: "6px",
+                                    gap: "12px",
                                 }}
                             >
-                                <div
+                                <input
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    placeholder="Search everything..."
                                     style={{
-                                        fontWeight: "300",
-                                        fontSize: "0.95rem",
+                                        width: "300px",
 
-                                        overflow: "hidden",
-                                        whiteSpace: "nowrap",
-                                        textOverflow: "ellipsis",
+                                        padding: "12px 18px",
 
-                                        flex: 1,
-                                        marginRight: "12px",
-                                    }}
-                                >
-                                    {item.title}
-                                </div>
-
-                                <span
-                                    style={{
-                                        padding: "4px 8px",
                                         borderRadius: "999px",
-                                        fontSize: "0.68rem",
 
-                                        background:
-                                            item.type === "Project"
-                                                ? "#063f4733"
-                                                : item.type === "Task"
-                                                    ? "#72715c33"
-                                                    : item.type === "Goal"
-                                                        ? "#c59c7033"
-                                                        : item.type === "Note"
-                                                            ? "#52677d33"
-                                                            : "#83545c33",
+                                        border: searchTerm
+                                            ? "1px solid rgba(87,112,122,0.55)"
+                                            : "1px solid rgba(255,255,255,0.08)",
+
+                                        background: searchTerm
+                                            ? "rgba(87,112,122,0.14)"
+                                            : "rgba(255,255,255,0.03)",
+
+                                        boxShadow: searchTerm
+                                            ? "0 0 0 1px rgba(87,112,122,0.15)"
+                                            : "none",
+
+                                        color: "var(--text-primary)",
+
+                                        fontSize: "0.82rem",
+
+                                        fontWeight: "300",
+
+                                        outline: "none",
+
+                                        backdropFilter: "blur(20px)",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                />
+
+                                <button
+                                    onClick={() =>
+                                        setShowSortMenu(
+                                            !showSortMenu
+                                        )
+                                    }
+                                    style={{
+                                        padding: "12px 18px",
+
+                                        borderRadius: "999px",
 
                                         border:
-                                            item.type === "Project"
-                                                ? "1px solid #063f4766"
-                                                : item.type === "Task"
-                                                    ? "1px solid #72715c66"
-                                                    : item.type === "Goal"
-                                                        ? "1px solid #c59c7066"
-                                                        : item.type === "Note"
-                                                            ? "1px solid #52677d66"
-                                                            : "1px solid #83545c66",
+                                            "1px solid rgba(255,255,255,0.08)",
+
+                                        background:
+                                            "rgba(255,255,255,0.03)",
+
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        fontSize: "0.82rem",
+
+                                        fontWeight: "300",
+
+                                        cursor: "pointer",
                                     }}
                                 >
-                                    {item.type}
-                                </span>
-                            </div>
-
-                            <div
-                                style={{
-                                    fontSize:
-                                        "0.8rem",
-
-                                    color:
-                                        "var(--text-secondary)",
-                                }}
-                            >
-                                {item.subtitle}
+                                    Sort
+                                </button>
                             </div>
                         </div>
-                    ))}
+
+                        <p
+                            style={{
+                                marginTop: "6px",
+                                marginBottom: 0,
+
+                                fontSize: "0.8rem",
+
+                                color: "var(--text-secondary)",
+
+                                opacity: 0.65,
+
+                                fontWeight: "300",
+                            }}
+                        >
+                            {filteredResults.length} results
+                        </p>
+                    </div>
+
+                    {/* DIVIDER */}
+                    <div
+                        style={{
+                            height: "1px",
+                            background: "rgba(255,255,255,0.06)",
+                        }}
+                    />
+
+                    {/* TYPE CHIPS */}
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        {[
+                            "All",
+                            "Task",
+                            "Project",
+                            "Goal",
+                            "Note",
+                            "Reminder",
+                        ].map((type) => (
+                            <button
+                                key={type}
+                                onClick={() =>
+                                    setSelectedType(type)
+                                }
+                                style={{
+                                    padding: "8px 14px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        selectedType === type
+                                            ? typeStyles[type].bg
+                                            : "rgba(255,255,255,0.03)",
+
+                                    border:
+                                        selectedType === type
+                                            ? `1px solid ${typeStyles[type].border}`
+                                            : "1px solid rgba(255,255,255,0.06)",
+
+                                    color:
+                                        selectedType === type
+                                            ? "var(--text-primary)"
+                                            : "var(--text-secondary)",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                            >
+                                {type}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* GIANT CARD */}
+                    <div
+                        style={{
+                            background: "var(--glass-bg)",
+
+                            border:
+                                "1px solid var(--glass-border)",
+
+                            borderRadius:
+                                "var(--radius-large)",
+
+                            backdropFilter: "blur(20px)",
+
+                            WebkitBackdropFilter:
+                                "blur(20px)",
+
+                            height: "700px",
+
+                            display: "flex",
+
+                            flexDirection: "column",
+
+                            overflow: "hidden",
+                        }}
+                    >
+                        {/* HEADER */}
+                        <div
+                            style={{
+                                padding: "20px 24px",
+
+                                borderBottom:
+                                    "1px solid rgba(255,255,255,0.06)",
+
+                                display: "flex",
+
+                                justifyContent:
+                                    "space-between",
+
+                                alignItems: "center",
+                            }}
+                        >
+                            <div>
+                                <div
+                                    style={{
+                                        fontSize: "1rem",
+                                        fontWeight: "400",
+                                    }}
+                                >
+                                    Search Results
+                                </div>
+
+                                <div
+                                    style={{
+                                        fontSize: "0.75rem",
+
+                                        opacity: 0.45,
+
+                                        marginTop: "4px",
+                                    }}
+                                >
+                                    {filteredResults.length} items
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* GRID */}
+                        <div
+                            style={{
+                                flex: 1,
+
+                                overflowY: "auto",
+
+                                padding: "24px",
+
+                                display: "grid",
+
+                                gridTemplateColumns:
+                                    "repeat(4, 1fr)",
+
+                                gap: "18px",
+
+                                alignContent: "start",
+                            }}
+                        >
+                            {!searchTerm ? (
+                                <div
+                                    style={{
+                                        gridColumn: "1 / -1",
+
+                                        display: "flex",
+                                        flexDirection: "column",
+
+                                        justifyContent: "center",
+                                        alignItems: "center",
+
+                                        minHeight: "500px",
+
+                                        textAlign: "center",
+
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        opacity: 0.45,
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            margin: 0,
+                                            fontSize: "0.9rem",
+                                        }}
+                                    >
+                                        Enter a keyword to search
+                                    </p>
+
+                                    <p
+                                        style={{
+                                            marginTop: "6px",
+                                            fontSize: "0.75rem",
+                                        }}
+                                    >
+                                        Search tasks, projects,
+                                        goals, reminders and notes.
+                                    </p>
+                                </div>
+                            ) : (
+                                filteredResults.map((item) => (
+                                    <SearchResultCard
+                                        key={`${item.type}-${item._id}`}
+                                        item={item}
+                                        onClick={() => {
+                                            switch (item.type) {
+                                                case "Task":
+                                                    setSelectedTask(item);
+                                                    break;
+
+                                                case "Project":
+                                                    setSelectedProject(item);
+                                                    break;
+
+                                                case "Goal":
+                                                    setSelectedGoal(item);
+                                                    break;
+
+                                                case "Reminder":
+                                                    setSelectedReminder(item);
+                                                    break;
+
+                                                case "Note":
+                                                    setSelectedNote(item);
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                        }}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </GlassCard>
+            </div>
+            {selectedTask && (
+                <TaskDetailsModal
+                    task={selectedTask}
+                    onClose={() =>
+                        setSelectedTask(null)
+                    }
+                />
+            )}
+
+            {selectedProject && (
+                <ProjectDetailsModal
+                    project={selectedProject}
+                    onClose={() =>
+                        setSelectedProject(null)
+                    }
+                />
+            )}
+
+            {selectedGoal && (
+                <GoalDetailsModal
+                    goal={selectedGoal}
+                    onClose={() =>
+                        setSelectedGoal(null)
+                    }
+                />
+            )}
+
+            {selectedReminder && (
+                <ReminderDetailsModal
+                    reminder={selectedReminder}
+                    onClose={() =>
+                        setSelectedReminder(null)
+                    }
+                />
+            )}
+
+            {selectedNote && (
+                <NoteDetailsModal
+                    note={selectedNote}
+                    onClose={() =>
+                        setSelectedNote(null)
+                    }
+                />
+            )}
         </MainLayout>
     );
 }
