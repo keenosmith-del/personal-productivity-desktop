@@ -1,78 +1,40 @@
 import {
     useState,
     useEffect,
-    useRef,
 } from "react";
 
 import { Bell } from "lucide-react";
 
-import GlassCard from "../GlassCard";
-import PrimaryButton from "../PrimaryButton";
+
 
 function BreakTimer() {
-    // COMPONENT STATES
-    const [duration, setDuration] =
-        useState("30m");
-
+    // STATES
     const [customMinutes, setCustomMinutes] =
         useState("30");
-
-    const durations = [
-        "5",
-        "10",
-        "15m",
-        "30m",
-        "45m",
-        "60m",
-    ];
 
     const [isBreakActive, setIsBreakActive] =
         useState(false);
 
-    const timeMap = {
-        "5": "05:00",
-        "10": "10:00",
-        "15m": "15:00",
-        "30m": "30:00",
-        "45m": "45:00",
-        "60m": "60:00",
-    };
-
-    const durationMap = {
-        "5": 5 * 60,
-        "10": 10 * 60,
-        "15m": 15 * 60,
-        "30m": 30 * 60,
-        "45m": 45 * 60,
-        "60m": 60 * 60,
-    };
-
-    const [secondsLeft, setSecondsLeft] =
-        useState(durationMap[duration]);
-
     const [isPaused, setIsPaused] =
         useState(false);
 
-    const wheelRef = useRef(null);
+    const [secondsLeft, setSecondsLeft] =
+        useState(30 * 60);
 
+    const [isBreakComplete, setIsBreakComplete] =
+        useState(false);
+
+
+    // TIMER VALUES
     const selectedDuration =
-        (Number(
-            customMinutes
-        ) || 15) * 60;
+        (Number(customMinutes) || 15) * 60;
 
     const progress =
         secondsLeft /
         selectedDuration;
 
     const circumference =
-        2 * Math.PI * 140;
-
-    const strokeOffset =
-        circumference *
-        (1 - progress);
-
-    const selectedIndex =
-        durations.indexOf(duration);
+        2 * Math.PI * 185;
 
     const breakEndTime =
         new Date(
@@ -86,24 +48,36 @@ function BreakTimer() {
             }
         );
 
-    // FUNCTIONS
     useEffect(() => {
         if (
             !isBreakActive ||
             isPaused
-        )
+        ) {
             return;
+        }
 
-        const timer = setInterval(() => {
-            setSecondsLeft((prev) => {
-                if (prev <= 1) {
-                    setIsBreakActive(false);
-                    return 0;
-                }
+        const timer =
+            setInterval(() => {
+                setSecondsLeft((prev) => {
+                    if (prev <= 1) {
+                        setIsBreakActive(false);
 
-                return prev - 1;
-            });
-        }, 1000);
+                        setIsBreakComplete(true);
+
+                        setTimeout(() => {
+                            setIsBreakComplete(false);
+
+                            setSecondsLeft(
+                                (Number(customMinutes) || 15) * 60
+                            );
+                        }, 4000);
+
+                        return 0;
+                    }
+
+                    return prev - 1;
+                });
+            }, 1000);
 
         return () =>
             clearInterval(timer);
@@ -112,12 +86,7 @@ function BreakTimer() {
         isPaused,
     ]);
 
-    useEffect(() => {
-        if (!wheelRef.current) return;
-
-        wheelRef.current.scrollTop = 44;
-    }, []);
-
+    // HELPERS
     const formatTime = (seconds) => {
         const mins = Math.floor(
             seconds / 60
@@ -135,11 +104,13 @@ function BreakTimer() {
         )}`;
     };
 
+
     const startBreak = () => {
+        const minutes =
+            Number(customMinutes) || 15;
+
         setSecondsLeft(
-            (Number(
-                customMinutes
-            ) || 15) * 60
+            minutes * 60
         );
 
         setIsPaused(false);
@@ -147,605 +118,471 @@ function BreakTimer() {
         setIsBreakActive(true);
     };
 
+    const buttonStyle = {
+        background: "transparent",
+
+        border:
+            "1px solid rgba(255,255,255,0.08)",
+
+        borderRadius: "999px",
+
+        padding: "12px 18px",
+
+        color:
+            "var(--text-secondary)",
+
+        fontSize: "0.9rem",
+
+        fontWeight: "300",
+
+        cursor: "pointer",
+
+        transition:
+            "all 0.2s ease",
+    };
     return (
-        <>
-            <GlassCard minHeight="650px">
+        <div
+            style={{
+                height: "calc(100vh - 100px)",
+
+                display: "flex",
+
+                flexDirection: "column",
+
+                justifyContent: "center",
+
+                alignItems: "center",
+            }}
+        >
+            <div
+                style={{
+                    marginBottom: "42px",
+
+                    textAlign: "center",
+                }}
+            >
                 <div
                     style={{
-                        height: "100%",
+                        fontSize: "0.82rem",
+
+                        fontWeight: "300",
+
+                        letterSpacing: "0.18em",
+
+                        textTransform: "uppercase",
+
+                        color: "var(--text-secondary)",
+
+                        opacity: 0.5,
+                    }}
+                >
+                    Break Timer
+                </div>
+            </div>
+
+            <div
+                style={{
+                    width: "420px",
+                    height: "420px",
+
+                    borderRadius: "50%",
+
+                    position: "relative",
+
+                    display: "flex",
+
+                    alignItems: "center",
+
+                    justifyContent: "center",
+
+                    marginBottom: "48px",
+                }}
+            >
+                <svg
+                    width="420"
+                    height="420"
+                    style={{
+                        position: "absolute",
+
+                        transform: "rotate(-90deg)",
+                    }}
+                >
+                    <circle
+                        cx="210"
+                        cy="210"
+                        r="185"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.04)"
+                        strokeWidth="2"
+                    />
+
+                    {isBreakActive && (
+                        <circle
+                            cx="210"
+                            cy="210"
+                            r="185"
+                            fill="none"
+                            stroke="rgba(255,255,255,0.22)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={
+                                circumference *
+                                (1 - progress)
+                            }
+                            style={{
+                                transition:
+                                    "stroke-dashoffset 1s linear",
+                            }}
+                        />
+                    )}
+                </svg>
+
+                <div
+                    style={{
+                        width: "360px",
+                        height: "360px",
+
+                        background:
+                            "linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015))",
+
+                        border:
+                            "1px solid rgba(255,255,255,0.06)",
+
+                        backdropFilter:
+                            "blur(24px)",
+
+                        boxShadow: isBreakComplete
+                            ? "0 0 120px rgba(255,255,255,0.08)"
+                            : isBreakActive
+                                ? "0 50px 100px rgba(0,0,0,0.45)"
+                                : "0 40px 80px rgba(0,0,0,0.35)",
+
+                        transform: isBreakActive
+                            ? "scale(1.015)"
+                            : "scale(1)",
+
+                        transition:
+                            "all 0.6s ease",
+
+                        borderRadius: "50%",
 
                         display: "flex",
-
-                        flexDirection: "column",
 
                         alignItems: "center",
 
                         justifyContent: "center",
+
+                        position: "relative",
+
+                        zIndex: 1,
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!isBreakActive) {
+                            e.currentTarget.style.transform =
+                                "scale(1.01)";
+
+                            e.currentTarget.style.boxShadow =
+                                "0 55px 110px rgba(0,0,0,0.42)";
+                        }
+                    }}
+
+                    onMouseLeave={(e) => {
+                        if (!isBreakActive) {
+                            e.currentTarget.style.transform =
+                                "scale(1)";
+
+                            e.currentTarget.style.boxShadow =
+                                "0 40px 80px rgba(0,0,0,0.35)";
+                        }
                     }}
                 >
-                    <h1
-                        style={{
-                            fontSize: "2rem",
-
-                            fontWeight: "400",
-
-                            marginBottom: "48px",
-                        }}
-                    >
-                        Need a break?
-                    </h1>
-
-                    <p
-                        style={{
-                            marginBottom: "40px",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            fontWeight: "300",
-                            letterSpacing: "-0.01em",
-                        }}
-                    >
-                        Take a moment to reset and
-                        recharge.
-                    </p>
-
-                    <div
-                        style={{
-                            width: "320px",
-                            height: "320px",
-
-                            borderRadius: "50%",
-
-                            display: "flex",
-
-                            alignItems: "center",
-
-                            justifyContent: "center",
-
-                            marginBottom: "48px",
-
-                            position: "relative",
-                        }}
-                    >
-                        <svg
-                            width="320"
-                            height="320"
-                            style={{
-                                position: "absolute",
-                                inset: 0,
-                                transform:
-                                    "rotate(-90deg)",
-                            }}
-                        >
-                            <circle
-                                cx="160"
-                                cy="160"
-                                r="140"
-                                fill="none"
-                                stroke="rgba(255,255,255,0.08)"
-                                strokeWidth="4"
-                            />
-
-                            <circle
-                                cx="160"
-                                cy="160"
-                                r="140"
-                                fill="none"
-                                stroke="#52677d"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                strokeDasharray={
-                                    circumference
-                                }
-                                strokeDashoffset={
-                                    isBreakActive
-                                        ? strokeOffset
-                                        : 0
-                                }
-                                style={{
-                                    transition:
-                                        "stroke-dashoffset 1s linear",
-                                }}
-                            />
-                        </svg>
-
+                    {isBreakActive && (
                         <div
                             style={{
-                                width: "280px",
-                                height: "280px",
+                                position: "absolute",
 
-                                borderRadius: "50%",
-
-                                background:
-                                    "rgba(0,0,0,0.30)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.06)",
+                                top: "88px",
 
                                 display: "flex",
 
                                 alignItems: "center",
 
-                                justifyContent: "center",
+                                gap: "8px",
 
-                                backdropFilter:
-                                    "blur(2px)",
+                                fontSize: "0.78rem",
 
-                                position: "relative",
+                                color:
+                                    "var(--text-secondary)",
 
-                                zIndex: 1,
+                                opacity: 0.5,
+
+                                letterSpacing: "0.04em",
                             }}
                         >
-                            <input
-                                onKeyDown={(e) => {
-                                    const cursor =
-                                        e.target.selectionStart;
+                            <Bell size={13} />
 
-                                    if (
-                                        cursor >
-                                        customMinutes.length
-                                    ) {
-                                        e.preventDefault();
-                                    }
-
-                                    if (e.key === "Enter") {
-                                        e.target.blur();
-
-                                        startBreak();
-                                    }
-                                }}
-                                type="text"
-                                value={`${customMinutes}:00`}
-                                onChange={(e) => {
-                                    let value =
-                                        e.target.value.match(
-                                            /^\d{0,2}/
-                                        )?.[0] || "";
-
-                                    if (value !== "") {
-                                        const num =
-                                            Number(value);
-
-                                        if (num > 99) {
-                                            value = "99";
-                                        }
-                                    }
-
-                                    setCustomMinutes(value);
-                                }}
-                                onBlur={() => {
-                                    const mins =
-                                        Number(
-                                            customMinutes
-                                        ) || 15;
-
-                                    setSecondsLeft(
-                                        mins * 60
-                                    );
-                                }}
-                                style={{
-                                    background:
-                                        "transparent",
-
-                                    border: "none",
-
-                                    outline: "none",
-
-                                    color: "white",
-
-                                    width: "240px",
-
-                                    textAlign:
-                                        "center",
-
-                                    fontSize: "5rem",
-
-                                    fontWeight: "300",
-
-                                    letterSpacing:
-                                        "-4px",
-                                }}
-                            />
+                            <span>
+                                Ends {breakEndTime}
+                            </span>
                         </div>
-                    </div>
+                    )}
+                    <input
+                        disabled={isBreakActive}
+                        onKeyDown={(e) => {
+                            const cursor =
+                                e.target.selectionStart;
+
+                            if (
+                                cursor >
+                                customMinutes.length
+                            ) {
+                                e.preventDefault();
+                            }
+
+                            if (e.key === "Enter") {
+                                e.target.blur();
+
+                                startBreak();
+                            }
+                        }}
+                        type="text"
+                        value={
+                            isBreakActive
+                                ? formatTime(secondsLeft)
+                                : `${customMinutes}:00`
+                        }
+                        onChange={(e) => {
+                            let value =
+                                e.target.value.match(
+                                    /^\d{0,2}/
+                                )?.[0] || "";
+
+                            if (value !== "") {
+                                const num =
+                                    Number(value);
+
+                                if (num > 99) {
+                                    value = "99";
+                                }
+                            }
+
+                            setCustomMinutes(value);
+                        }}
+                        onBlur={() => {
+                            const mins =
+                                Number(
+                                    customMinutes
+                                ) || 15;
+
+                            setSecondsLeft(
+                                mins * 60
+                            );
+                        }}
+                        style={{
+                            background:
+                                "transparent",
+
+                            border: "none",
+
+                            outline: "none",
+
+                            color: "white",
+
+                            width: "240px",
+
+                            textAlign:
+                                "center",
+
+                            fontSize: "5.8rem",
+
+                            fontWeight: "200",
+
+                            letterSpacing: "-0.06em",
+                            lineHeight: 1,
+
+                            textShadow:
+                                "0 0 30px rgba(255,255,255,0.03)",
+
+                            fontFamily:
+                                "-apple-system, BlinkMacSystemFont, sans-serif",
+
+                            cursor:
+                                isBreakActive
+                                    ? "default"
+                                    : "text",
+
+                        }}
+                    />
 
                     <div
-                        ref={wheelRef}
                         style={{
-                            height: "95px",
+                            position: "absolute",
+                            bottom: "95px",
 
-                            width: "70px",
+                            opacity:
+                                isBreakActive ? 0 : 0.45,
 
-                            overflowY: "auto",
+                            transform:
+                                isBreakActive
+                                    ? "translateY(8px)"
+                                    : "translateY(0)",
 
-                            display: "flex",
+                            transition:
+                                "all 0.4s ease",
 
-                            flexDirection: "column",
+                            fontSize: "0.8rem",
 
-                            alignItems: "center",
+                            letterSpacing: "0.3em",
 
-                            gap: "12px",
-
-                            marginBottom: "40px",
-
-                            paddingTop: "20px",
-
-                            paddingBottom: "20px",
-
-                            scrollbarWidth: "none",
-
-                            maskImage:
-                                "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)",
-
-                            WebkitMaskImage:
-                                "linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)",
-                        }}
-                    >
-                        {durations.map(
-                            (item, index) => {
-                                const distance =
-                                    Math.abs(
-                                        index -
-                                        selectedIndex
-                                    );
-
-                                return (
-                                    <button
-                                        key={item}
-                                        onClick={() => {
-                                            setDuration(item);
-
-                                            setCustomMinutes(
-                                                item.replace("m", "")
-                                            );
-                                        }}
-                                        style={{
-                                            background:
-                                                "transparent",
-
-                                            border: "none",
-
-                                            cursor: "pointer",
-
-                                            color:
-                                                distance === 0
-                                                    ? "white"
-                                                    : "rgba(255,255,255,0.35)",
-
-                                            fontSize:
-                                                distance === 0
-                                                    ? "1.4rem"
-                                                    : "0.9rem",
-
-                                            fontWeight:
-                                                distance === 0
-                                                    ? "400"
-                                                    : "300",
-
-                                            opacity:
-                                                distance === 0
-                                                    ? 1
-                                                    : distance === 1
-                                                        ? 0.65
-                                                        : 0.15,
-
-                                            filter:
-                                                distance === 0
-                                                    ? "none"
-                                                    : distance === 1
-                                                        ? "none"
-                                                        : "blur(1px)",
-
-                                            transform:
-                                                distance === 0
-                                                    ? "scale(1.1)"
-                                                    : "scale(0.9)",
-
-                                            transition:
-                                                "all 0.2s ease",
-
-                                            height: "32px",
-                                        }}
-                                    >
-                                        {item.replace(
-                                            "m",
-                                            ""
-                                        )}
-                                    </button>
-                                );
-                            })}
-                    </div>
-
-                    <button
-                        onClick={startBreak}
-                        style={{
-                            background: "transparent",
-
-                            border: "1px solid rgba(255,255,255,0.08)",
-
-                            borderRadius: "999px",
-
-                            padding: "12px 18px",
+                            textTransform: "uppercase",
 
                             color: "var(--text-secondary)",
-
-                            fontSize: "0.9rem",
-
-                            fontWeight: "400",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "var(--text-primary)";
+                    >
+                        Minutes
+                    </div>
+                </div>
+            </div>
 
+            <div
+                style={{
+                    display: "flex",
+
+                    gap: "12px",
+
+                    marginTop: "8px",
+                }}
+            >
+                {!isBreakActive ? (
+                    <button
+                        onClick={startBreak}
+                        style={buttonStyle}
+                        onMouseEnter={(e) => {
                             e.currentTarget.style.background =
                                 "rgba(255,255,255,0.04)";
+
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
                         }}
                         onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                                "transparent";
+
                             e.currentTarget.style.color =
                                 "var(--text-secondary)";
 
-                            e.currentTarget.style.background =
-                                "transparent";
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
                         }}
                     >
                         Start break
                     </button>
+                ) : (
+                    <>
+                        <button
+                            onClick={() =>
+                                setIsPaused(
+                                    !isPaused
+                                )
+                            }
+                            style={buttonStyle}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                </div>
-            </GlassCard>
-            {isBreakActive && (
-                <div
-                    style={{
-                        position: "fixed",
-                        inset: 0,
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
 
-                        background:
-                            "rgba(0,0,0,0.75)",
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "transparent";
 
-                        backdropFilter:
-                            "blur(10px)",
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
 
-                        display: "flex",
-
-                        justifyContent:
-                            "center",
-
-                        alignItems:
-                            "center",
-
-                        zIndex: 3000,
-                    }}
-                >
-                    <div
-                        style={{
-                            textAlign: "center",
-
-                            display: "flex",
-
-                            flexDirection:
-                                "column",
-
-                            gap: "24px",
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                justifyContent:
-                                    "center",
-
-                                gap: "8px",
-
-                                color:
-                                    "rgba(255,255,255,0.45)",
-
-                                fontSize: "1rem",
-
-                                fontWeight: "300",
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
                             }}
                         >
-                            <Bell size={14} />
+                            {isPaused
+                                ? "Resume"
+                                : "Pause"}
+                        </button>
 
-                            <span>{breakEndTime}</span>
-                        </div>
+                        <button
+                            onClick={() => {
+                                setIsBreakActive(
+                                    false
+                                );
 
-                        <div
+                                setIsPaused(
+                                    false
+                                );
+
+                                setSecondsLeft(
+                                    (Number(
+                                        customMinutes
+                                    ) || 15) * 60
+                                );
+                            }}
                             style={{
-                                position: "relative",
+                                ...buttonStyle,
 
-                                width: "320px",
+                                color: "#ff6b6b",
 
-                                height: "320px",
+                                border:
+                                    "1px solid rgba(255,107,107,0.12)",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,107,107,0.12)";
 
-                                display: "flex",
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "transparent";
 
-                                justifyContent:
-                                    "center",
-
-                                alignItems:
-                                    "center",
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
                             }}
                         >
-                            <svg
-                                width="320"
-                                height="320"
-                                style={{
-                                    position:
-                                        "absolute",
+                            Cancel
+                        </button>
+                    </>
+                )}
+            </div>
 
-                                    transform:
-                                        "rotate(-90deg)",
-                                }}
-                            >
-                                <circle
-                                    cx="160"
-                                    cy="160"
-                                    r="140"
-                                    fill="none"
-                                    stroke="rgba(255,255,255,0.04)"
-                                    strokeWidth="3"
-                                />
+            <div
+                style={{
+                    marginTop: "24px",
 
-                                <circle
-                                    cx="160"
-                                    cy="160"
-                                    r="140"
-                                    fill="none"
-                                    stroke="#52677d"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    strokeDasharray={
-                                        circumference
-                                    }
-                                    strokeDashoffset={
-                                        strokeOffset
-                                    }
-                                    style={{
-                                        filter:
-                                            "drop-shadow(0 0 8px rgba(255,255,255,0.12))",
-                                    }}
-                                />
-                            </svg>
+                    fontSize: "0.82rem",
 
-                            <div
-                                style={{
-                                    fontSize: "6rem",
+                    color: "var(--text-secondary)",
 
-                                    fontWeight: "200",
+                    opacity: 0.35,
 
-                                    letterSpacing:
-                                        "-4px",
-
-                                    position:
-                                        "relative",
-
-                                    zIndex: 1,
-                                }}
-                            >
-                                {formatTime(
-                                    secondsLeft
-                                )}
-                            </div>
-                        </div>
-
-                        <div
-                            style={{
-                                display: "flex",
-
-                                gap: "12px",
-
-                                justifyContent: "center",
-                            }}
-                        >
-                            <button
-                                onClick={() =>
-                                    setIsPaused(
-                                        !isPaused
-                                    )
-                                }
-                                style={{
-                                    background: "transparent",
-
-                                    border: "1px solid rgba(255,255,255,0.08)",
-
-                                    borderRadius: "999px",
-
-                                    padding: "12px 16px",
-
-                                    color: "var(--text-secondary)",
-
-                                    fontSize: "0.85rem",
-
-                                    fontWeight: "400",
-
-                                    cursor: "pointer",
-
-                                    transition: "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "var(--text-secondary)";
-
-                                    e.currentTarget.style.background =
-                                        "transparent";
-                                }}
-                            >
-                                {isPaused
-                                    ? "Resume"
-                                    : "Pause"}
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    setIsBreakActive(
-                                        false
-                                    );
-
-                                    setIsPaused(
-                                        false
-                                    );
-
-                                    setSecondsLeft(
-                                        (Number(
-                                            customMinutes
-                                        ) || 15) * 60
-                                    );
-                                }}
-                                style={{
-                                    background: "transparent",
-
-                                    border: "1px solid rgba(255,255,255,0.08)",
-
-                                    borderRadius: "999px",
-
-                                    padding: "12px 16px",
-
-                                    color: "#ff6b6b",
-
-                                    fontSize: "0.85rem",
-
-                                    fontWeight: "400",
-
-                                    cursor: "pointer",
-
-                                    transition: "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-
-                                    e.currentTarget.style.background =
-                                        "#ff6b6b";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
-
-                                    e.currentTarget.style.background =
-                                        "transparent";
-                                }}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+                    letterSpacing: "0.04em",
+                }}
+            >
+                {
+                    isBreakComplete
+                        ? "Break complete. Welcome back."
+                        : isBreakActive
+                            ? "Disconnect. Recharge. Return stronger."
+                            : "Step away. Breathe. Reset."
+                }
+            </div>
+        </div>
     );
 }
 
