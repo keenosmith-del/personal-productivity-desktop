@@ -97,13 +97,13 @@ function TaskCard({
         };
 
         document.addEventListener(
-            "mousedown",
+            "click",
             handleOutsideClick
         );
 
         return () => {
             document.removeEventListener(
-                "mousedown",
+                "click",
                 handleOutsideClick
             );
         };
@@ -274,7 +274,9 @@ function TaskCard({
                             }}
                         >
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onView(task);
                                     setOpenTaskMenu(null);
                                 }}
@@ -298,7 +300,9 @@ function TaskCard({
                             </button>
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onEdit(task);
                                     setOpenTaskMenu(null);
                                 }}
@@ -332,7 +336,9 @@ function TaskCard({
 
                             {task.completed ? (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onRestore(task);
                                         setOpenTaskMenu(null);
                                     }}
@@ -356,7 +362,9 @@ function TaskCard({
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onComplete(task);
                                         setOpenTaskMenu(null);
                                     }}
@@ -390,7 +398,9 @@ function TaskCard({
                             />
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onDelete(task._id);
                                     setOpenTaskMenu(null);
                                 }}

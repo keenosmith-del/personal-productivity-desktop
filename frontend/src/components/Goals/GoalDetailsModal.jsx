@@ -38,6 +38,10 @@ function GoalDetailsModal({
             )
             : null;
 
+    const [showDeleteConfirm,
+        setShowDeleteConfirm] =
+        useState(false);
+
     const linkedItemStyle = {
         width: "35px",
         height: "35px",
@@ -72,10 +76,6 @@ function GoalDetailsModal({
 
     const remainingLinks =
         (goal.linkedItems?.length || 0) - 3;
-
-    const [showDeleteConfirm,
-        setShowDeleteConfirm] =
-        useState(false);
 
     return (
         <div

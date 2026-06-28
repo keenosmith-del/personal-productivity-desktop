@@ -77,7 +77,7 @@ function GoalModal({
 
   const [linkedItems, setLinkedItems] =
     useState(
-      goal?.linkedItems || [""]
+      goal?.linkedItems || []
     );
 
   useEffect(() => {

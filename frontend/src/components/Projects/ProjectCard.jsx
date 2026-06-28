@@ -97,13 +97,13 @@ function ProjectCard({
         };
 
         document.addEventListener(
-            "mousedown",
+            "click",
             handleOutsideClick
         );
 
         return () => {
             document.removeEventListener(
-                "mousedown",
+                "click",
                 handleOutsideClick
             );
         };
@@ -274,7 +274,9 @@ function ProjectCard({
                             }}
                         >
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onView(project);
                                     setOpenProjectMenu(null);
                                 }}
@@ -298,7 +300,9 @@ function ProjectCard({
                             </button>
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onEdit(project);
                                     setOpenProjectMenu(null);
                                 }}
@@ -332,7 +336,9 @@ function ProjectCard({
 
                             {project.completed ? (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onRestore(project);
                                         setOpenProjectMenu(null);
                                     }}
@@ -356,7 +362,9 @@ function ProjectCard({
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        
                                         onComplete(project);
                                         setOpenProjectMenu(null);
                                     }}
@@ -390,7 +398,9 @@ function ProjectCard({
                             />
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onDelete(project._id);
                                     setOpenProjectMenu(null);
                                 }}

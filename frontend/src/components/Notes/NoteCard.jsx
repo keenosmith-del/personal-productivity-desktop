@@ -97,13 +97,13 @@ function NoteCard({
         };
 
         document.addEventListener(
-            "mousedown",
+            "click",
             handleOutsideClick
         );
 
         return () => {
             document.removeEventListener(
-                "mousedown",
+                "click",
                 handleOutsideClick
             );
         };
@@ -274,7 +274,9 @@ function NoteCard({
                             }}
                         >
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onView(note);
                                     setOpenNoteMenu(null);
                                 }}
@@ -298,7 +300,9 @@ function NoteCard({
                             </button>
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onEdit(note);
                                     setOpenNoteMenu(null);
                                 }}
@@ -332,7 +336,9 @@ function NoteCard({
 
                             {note.completed ? (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onRestore(note);
                                         setOpenNoteMenu(null);
                                     }}
@@ -356,7 +362,9 @@ function NoteCard({
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        
                                         onComplete(note);
                                         setOpenNoteMenu(null);
                                     }}
@@ -390,7 +398,9 @@ function NoteCard({
                             />
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onDelete(note._id);
                                     setOpenNoteMenu(null);
                                 }}

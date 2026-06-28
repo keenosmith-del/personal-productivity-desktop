@@ -71,8 +71,7 @@ const goalSchema =
 
             linkedItems: {
                 type: [String],
-
-                default: ["NL"],
+                default: [],
             },
 
             linkedProjects: [

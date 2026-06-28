@@ -65,27 +65,6 @@ router.post(
     }
 );
 
-router.delete(
-    "/active",
-    authMiddleware,
-    async (req, res) => {
-        try {
-            await Goal.deleteMany({
-                user: req.user.id,
-                completed: false,
-            });
-
-            res.json({
-                message: "Active goals deleted",
-            });
-        } catch (error) {
-            res.status(500).json({
-                message: "Server error",
-            });
-        }
-    }
-);
-
 router.put(
     "/:id",
     authMiddleware,
@@ -158,6 +137,27 @@ router.put(
             }
 
             res.json(updatedGoal);
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.delete(
+    "/active",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            await Goal.deleteMany({
+                user: req.user.id,
+                completed: false,
+            });
+
+            res.json({
+                message: "Active goals deleted",
+            });
         } catch (error) {
             res.status(500).json({
                 message: "Server error",

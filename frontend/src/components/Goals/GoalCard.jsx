@@ -97,13 +97,13 @@ function GoalCard({
         };
 
         document.addEventListener(
-            "mousedown",
+            "click",
             handleOutsideClick
         );
 
         return () => {
             document.removeEventListener(
-                "mousedown",
+                "click",
                 handleOutsideClick
             );
         };
@@ -274,7 +274,9 @@ function GoalCard({
                             }}
                         >
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onView(goal);
                                     setOpenGoalMenu(null);
                                 }}
@@ -298,7 +300,9 @@ function GoalCard({
                             </button>
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onEdit(goal);
                                     setOpenGoalMenu(null);
                                 }}
@@ -332,7 +336,9 @@ function GoalCard({
 
                             {goal.completed ? (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onRestore(goal);
                                         setOpenGoalMenu(null);
                                     }}
@@ -356,7 +362,9 @@ function GoalCard({
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onComplete(goal);
                                         setOpenGoalMenu(null);
                                     }}
@@ -390,7 +398,9 @@ function GoalCard({
                             />
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onDelete(goal._id);
                                     setOpenGoalMenu(null);
                                 }}

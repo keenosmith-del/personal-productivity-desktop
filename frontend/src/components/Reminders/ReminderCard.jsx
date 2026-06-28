@@ -97,13 +97,13 @@ function ReminderCard({
         };
 
         document.addEventListener(
-            "mousedown",
+            "click",
             handleOutsideClick
         );
 
         return () => {
             document.removeEventListener(
-                "mousedown",
+                "click",
                 handleOutsideClick
             );
         };
@@ -274,7 +274,9 @@ function ReminderCard({
                             }}
                         >
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onView(reminder);
                                     setOpenReminderMenu(null);
                                 }}
@@ -298,7 +300,9 @@ function ReminderCard({
                             </button>
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onEdit(reminder);
                                     setOpenReminderMenu(null);
                                 }}
@@ -332,7 +336,9 @@ function ReminderCard({
 
                             {reminder.completed ? (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        
                                         onRestore(reminder);
                                         setOpenReminderMenu(null);
                                     }}
@@ -356,7 +362,9 @@ function ReminderCard({
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
                                         onComplete(reminder);
                                         setOpenReminderMenu(null);
                                     }}
@@ -390,7 +398,9 @@ function ReminderCard({
                             />
 
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
                                     onDelete(reminder._id);
                                     setOpenReminderMenu(null);
                                 }}

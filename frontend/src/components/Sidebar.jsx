@@ -17,6 +17,8 @@ import {
   Folder,
   Search,
   Plus,
+  CircleAlert,
+  CircleArrowLeft,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -50,6 +52,11 @@ function Sidebar({ collapsed, setCollapsed }) {
 
   const mainNavItems = [
     {
+      label: "QuickAdd",
+      path: "/quickadd",
+      icon: Plus,
+    },
+    {
       label: "Dashboard",
       path: "/analytics",
       icon: BarChart3,
@@ -80,6 +87,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       icon: NotebookPen,
     },
     {
+      label: "Urgent",
+      path: "/urgent",
+      icon: CircleAlert,
+    },
+    {
       label: "Calendar",
       path: "/calendar",
       icon: Calendar,
@@ -97,6 +109,11 @@ function Sidebar({ collapsed, setCollapsed }) {
   ];
 
   const accountNavItems = [
+    {
+      label: "Logout",
+      path: "/",
+      icon: CircleArrowLeft,
+    },
     {
       label: "Account",
       path: "/account",
@@ -119,9 +136,9 @@ function Sidebar({ collapsed, setCollapsed }) {
             ? "center"
             : "flex-start",
 
-          gap: collapsed ? "0" : "12px",
+          gap: collapsed ? "0" : "8px",
 
-          padding: "8px 12px",
+          padding: "6px 10px",
 
           borderRadius:
             "var(--radius-small)",
@@ -192,7 +209,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           <span
             style={{
               fontSize: "0.82rem",
-              fontWeight: "300",
+              fontWeight: "250",
               letterSpacing: "-0.01em",
             }}
           >
@@ -286,7 +303,7 @@ function Sidebar({ collapsed, setCollapsed }) {
 
               fontSize: "1rem",
 
-              fontWeight: "300",
+              fontWeight: "250",
 
               lineHeight: 1,
 
@@ -373,7 +390,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                     fontWeight: "400",
                   }}
                 >
-                  {user?.name || "Loading..."}
+                  {user?.name.split(" ")[0] || "Loading..."}
                 </p>
               </div>
             )}
@@ -386,7 +403,7 @@ function Sidebar({ collapsed, setCollapsed }) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
+            gap: "2px",
           }}
         >
           {mainNavItems.map(
@@ -398,12 +415,12 @@ function Sidebar({ collapsed, setCollapsed }) {
 
         <div
           style={{
-            marginTop: "4px",
+            marginTop: "2px",
 
             display: "flex",
             flexDirection: "column",
 
-            gap: "4px",
+            gap: "2px",
           }}
         >
           {renderNavItem({
@@ -416,7 +433,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         <div
           style={{
             flex: 1,
-            minHeight: "18px",
+            minHeight: "12px",
           }}
         />
 
@@ -427,12 +444,12 @@ function Sidebar({ collapsed, setCollapsed }) {
             borderTop:
               "1px solid var(--glass-border)",
 
-            paddingTop: "16px",
+            paddingTop: "10px",
 
             display: "flex",
             flexDirection: "column",
 
-            gap: "4px",
+            gap: "2px",
           }}
         >
           {accountNavItems.map(
