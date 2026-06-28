@@ -221,7 +221,7 @@ function Account() {
                         justifyContent:
                             "space-between",
 
-                        height: "800px",
+                        height: "860px",
                     }}
                 >
                     <div>
