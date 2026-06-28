@@ -108,7 +108,7 @@ function GoalCard({
             );
         };
     }, [setOpenGoalMenu]);
-    
+
     return (
         <div
             onClick={() =>
@@ -194,7 +194,7 @@ function GoalCard({
 
                 {/* MEATBALL DROPDOWN */}
                 <div
-                ref={menuRef}
+                    ref={menuRef}
                     style={{
                         position: "relative",
                     }}
@@ -536,180 +536,80 @@ function GoalCard({
                 style={{
                     height: "1px",
 
-                    background:"rgba(255,255,255,0.05)",
+                    background: "rgba(255,255,255,0.05)",
 
                     marginBottom: "20px",
                 }}
             />
 
-            {/* AVATARS */}
+            {/* ASSOCIATIONS */}
+
             <div
                 style={{
                     display: "flex",
                     marginBottom: "20px",
                 }}
             >
-                <div
-                    style={{
-                        ...linkedItemStyle,
+                {(goal.linkedItems || [])
+                    .slice(0, 3)
+                    .map((item, index) => (
+                        <div
+                            key={item}
+                            style={{
+                                ...linkedItemStyle,
 
-                        marginRight: "-6px",
+                                marginRight: "-6px",
 
-                        zIndex: 1,
+                                zIndex: index + 1,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px) scale(1.08)";
 
-                        opacity: 0.9,
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(-1px) scale(1.08)";
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.12)";
 
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.12)";
+                                e.currentTarget.style.boxShadow =
+                                    "0 8px 20px rgba(0,0,0,0.25)";
 
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 20px rgba(0,0,0,0.25)";
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(0) scale(1)";
 
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-                    }}
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.06)";
 
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(0) scale(1)";
+                                e.currentTarget.style.boxShadow =
+                                    "none";
 
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.06)";
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }}
+                        >
+                            {item}
+                        </div>
+                    ))}
 
-                        e.currentTarget.style.boxShadow =
-                            "none";
+                {(goal.linkedItems?.length || 0) > 3 && (
+                    <div
+                        style={{
+                            ...linkedItemStyle,
 
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                    }}
-                >
-                    N
-                </div>
+                            background:
+                                "rgba(255,255,255,0.03)",
 
-                <div
-                    style={{
-                        ...linkedItemStyle,
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
 
-                        marginRight: "-6px",
-
-                        zIndex: 2,
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(-1px) scale(1.08)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.12)";
-
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 20px rgba(0,0,0,0.25)";
-
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(0) scale(1)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.06)";
-
-                        e.currentTarget.style.boxShadow =
-                            "none";
-
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                    }}
-                >
-                    P
-                </div>
-
-                <div
-                    style={{
-                        ...linkedItemStyle,
-
-                        marginRight: "-6px",
-
-                        zIndex: 3,
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(-1px) scale(1.08)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.12)";
-
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 20px rgba(0,0,0,0.25)";
-
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(0) scale(1)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.06)";
-
-                        e.currentTarget.style.boxShadow =
-                            "none";
-
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                    }}
-                >
-                    R
-                </div>
-
-                <div
-                    style={{
-                        ...linkedItemStyle,
-
-                        background:
-                            "rgba(255,255,255,0.03)",
-
-                        border:
-                            "1px solid rgba(255,255,255,0.08)",
-
-                        zIndex: 4,
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(-1px) scale(1.08)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.12)";
-
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 20px rgba(0,0,0,0.25)";
-
-                        e.currentTarget.style.color =
-                            "var(--text-primary)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(0) scale(1)";
-
-                        e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.06)";
-
-                        e.currentTarget.style.boxShadow =
-                            "none";
-
-                        e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                    }}
-                >
-                    +6
-                </div>
+                            zIndex: 10,
+                        }}
+                    >
+                        +{goal.linkedItems.length - 3}
+                    </div>
+                )}
             </div>
 
             {/* ROW 6 */}

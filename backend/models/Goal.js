@@ -69,37 +69,11 @@ const goalSchema =
                 default: 0,
             },
 
-            linkedProjects: [
-                {
-                    type:
-                        mongoose.Schema.Types.ObjectId,
-                    ref: "Project",
-                },
-            ],
+            linkedItems: {
+                type: [String],
 
-            linkedTasks: [
-                {
-                    type:
-                        mongoose.Schema.Types.ObjectId,
-                    ref: "Task",
-                },
-            ],
-
-            linkedNotes: [
-                {
-                    type:
-                        mongoose.Schema.Types.ObjectId,
-                    ref: "Note",
-                },
-            ],
-
-            linkedReminders: [
-                {
-                    type:
-                        mongoose.Schema.Types.ObjectId,
-                    ref: "Reminder",
-                },
-            ],
+                default: ["NL"],
+            },
         },
         {
             timestamps: true,
