@@ -578,7 +578,7 @@ function BreakTimer() {
                     isBreakComplete
                         ? "Break complete. Welcome back."
                         : isBreakActive
-                            ? "Disconnect. Recharge. Return stronger."
+                            ? "Disconnect. Recharge."
                             : "Step away. Breathe. Reset."
                 }
             </div>

@@ -42,6 +42,41 @@ function NoteDetailsModal({
         setShowDeleteConfirm] =
         useState(false);
 
+    const linkedItemStyle = {
+        width: "35px",
+        height: "35px",
+
+        borderRadius: "50%",
+
+        background:
+            "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
+        border:
+            "1px solid rgba(255,255,255,0.06)",
+
+        backdropFilter: "blur(20px)",
+
+        display: "flex",
+
+        alignItems: "center",
+
+        justifyContent: "center",
+
+        fontSize: "0.68rem",
+
+        color:
+            "var(--text-secondary)",
+
+        transition:
+            "all 0.2s ease",
+    };
+
+    const visibleLinks =
+        note.linkedItems?.slice(0, 3) || [];
+
+    const remainingLinks =
+        (note.linkedItems?.length || 0) - 3;
+
     return (
         <div
             onClick={onClose}
@@ -377,6 +412,92 @@ function NoteDetailsModal({
                             marginBottom: "20px",
                         }}
                     />
+
+                    {note.linkedItems?.length > 0 && (
+                        <>
+                            <div
+                                style={{
+                                    display: "flex",
+
+                                    justifyContent: "center",
+
+                                    marginBottom: "20px",
+                                }}
+                            >
+                                {visibleLinks.map(
+                                    (item, index) => (
+                                        <div
+                                            key={item}
+                                            style={{
+                                                ...linkedItemStyle,
+
+                                                marginRight: "-6px",
+
+                                                zIndex: index + 1,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform =
+                                                    "translateY(-1px) scale(1.08)";
+
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.12)";
+
+                                                e.currentTarget.style.boxShadow =
+                                                    "0 8px 20px rgba(0,0,0,0.25)";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-primary)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform =
+                                                    "translateY(0) scale(1)";
+
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.06)";
+
+                                                e.currentTarget.style.boxShadow =
+                                                    "none";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-secondary)";
+                                            }}
+                                        >
+                                            {item}
+                                        </div>
+                                    )
+                                )}
+
+                                {remainingLinks > 0 && (
+                                    <div
+                                        style={{
+                                            ...linkedItemStyle,
+
+                                            background:
+                                                "rgba(255,255,255,0.03)",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.08)",
+
+                                            zIndex: 10,
+                                        }}
+                                    >
+                                        +{remainingLinks}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div
+                                style={{
+                                    height: "1px",
+
+                                    background:
+                                        "rgba(255,255,255,0.06)",
+
+                                    marginBottom: "20px",
+                                }}
+                            />
+                        </>
+                    )}
 
                     {/* Completion */}
 

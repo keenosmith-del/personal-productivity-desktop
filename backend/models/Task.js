@@ -78,6 +78,14 @@ const taskSchema =
                 },
             ],
 
+            linkedTasks: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Task",
+                },
+            ],
+
             linkedGoals: [
                 {
                     type:

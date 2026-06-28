@@ -1150,59 +1150,8 @@ function Goals() {
                 fontWeight: "300",
               }}
             >
-              {totalGoals + " Goals" || "No goals yet"}
+              {totalGoals === 1 ? totalGoals + " Goal" : totalGoals + " Goals" || "No goals yet"}
             </p>
-          </div>
-
-          {/* AVATAR */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-
-            }}
-          >
-            <div
-              style={{
-                width: "88px",
-                height: "88px",
-
-                borderRadius: "50%",
-
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-
-                background:
-                  `
-                  radial-gradient(
-                    circle at top left,
-                    rgba(87,112,122,0.35),
-                    rgba(39,60,65,0.15) 60%
-                  ),
-                  linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.08),
-                    rgba(255,255,255,0.02)
-                  )
-                `,
-
-                border:
-                  "1px solid rgba(255,255,255,0.10)",
-
-
-                backdropFilter:
-                  "blur(30px)",
-
-                fontSize: "2rem",
-
-                fontWeight: "300",
-
-                opacity: 0.9,
-              }}
-            >
-              ✓
-            </div>
           </div>
 
           {/* TABS SECTION */}

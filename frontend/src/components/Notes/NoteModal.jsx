@@ -75,6 +75,11 @@ function NoteModal({
             note?.dueDate || new Date().toISOString()
         );
 
+    const [linkedItems, setLinkedItems] =
+        useState(
+            note?.linkedItems || []
+        );
+
     useEffect(() => {
         noteInputRef.current?.focus();
     }, []);
@@ -162,6 +167,15 @@ function NoteModal({
         onClose();
     };
 
+    const associationOptions = [
+        "G",
+        "P",
+        "N",
+        "R",
+        "T",
+        "NL",
+    ];
+
     const handleSave = () => {
         if (!noteName.trim())
             return;
@@ -182,6 +196,8 @@ function NoteModal({
             status,
 
             dueDate: selectedDate,
+
+            linkedItems,
 
             completed:
                 note?.completed ||
@@ -342,7 +358,7 @@ function NoteModal({
                     </button>
                 </div>
 
-                
+
 
                 <div
                     style={{
@@ -846,6 +862,107 @@ function NoteModal({
                         {/* end wrapper status and dropdown */}
                     </div>
 
+                    <div
+                        style={{
+                            display: "flex",
+
+                            justifyContent: "center",
+
+                            gap: "8px",
+
+                            marginBottom: "22px",
+                        }}
+                    >
+                        {associationOptions.map(
+                            (item) => {
+                                const selected =
+                                    linkedItems.includes(
+                                        item
+                                    );
+
+                                return (
+                                    <button
+                                        key={item}
+                                        onClick={() => {
+                                            setLinkedItems((prev) => {
+
+                                                if (item === "NL") {
+                                                    return ["NL"];
+                                                }
+
+                                                const filtered =
+                                                    prev.filter(
+                                                        (i) => i !== "NL"
+                                                    );
+
+                                                return selected
+                                                    ? filtered.filter(
+                                                        (i) => i !== item
+                                                    )
+                                                    : [...filtered, item];
+                                            });
+                                        }}
+                                        style={{
+                                            width: "34px",
+                                            height: "34px",
+
+                                            borderRadius:
+                                                "999px",
+
+                                            border: selected
+                                                ? "1px solid rgba(255,255,255,0.14)"
+                                                : "1px solid rgba(255,255,255,0.06)",
+
+                                            background:
+                                                selected
+                                                    ? "rgba(255,255,255,0.08)"
+                                                    : "rgba(255,255,255,0.03)",
+
+                                            color:
+                                                selected
+                                                    ? "var(--text-primary)"
+                                                    : "var(--text-secondary)",
+
+                                            fontSize:
+                                                "0.72rem",
+
+                                            fontWeight:
+                                                "300",
+
+                                            cursor:
+                                                "pointer",
+
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(
+                                            e
+                                        ) => {
+                                            if (
+                                                !selected
+                                            ) {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.05)";
+                                            }
+                                        }}
+                                        onMouseLeave={(
+                                            e
+                                        ) => {
+                                            if (
+                                                !selected
+                                            ) {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.03)";
+                                            }
+                                        }}
+                                    >
+                                        {item}
+                                    </button>
+                                );
+                            }
+                        )}
+                    </div>
+
                     {/* MARK COMPLETE PILL */}
                     {/* COMPLETION */}
 
@@ -1056,7 +1173,7 @@ function NoteModal({
                             marginBottom: "20px",
                         }}
                     />
-                    
+
                 </div>
 
                 <div

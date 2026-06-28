@@ -65,6 +65,11 @@ const reminderSchema =
                 default: 0,
             },
 
+            linkedItems: {
+                type: [String],
+                default: [],
+            },
+
             linkedProjects: [
                 {
                     type:

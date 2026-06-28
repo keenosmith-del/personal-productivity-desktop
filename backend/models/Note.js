@@ -65,6 +65,19 @@ const noteSchema =
                 default: 0,
             },
 
+            linkedItems: {
+                type: [String],
+                default: [],
+            },
+
+            linkedTasks: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Task",
+                },
+            ],
+
             linkedProjects: [
                 {
                     type:
@@ -81,7 +94,7 @@ const noteSchema =
                 },
             ],
 
-            linkedReminders: [
+            linkedNotes: [
                 {
                     type:
                         mongoose.Schema.Types.ObjectId,
