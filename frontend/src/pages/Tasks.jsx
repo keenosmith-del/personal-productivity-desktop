@@ -1,5 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 
+import { Search, ArrowUpDown, Filter, Trash } from "lucide-react";
+
 import {
   useState,
   useEffect,
@@ -209,7 +211,7 @@ function Tasks() {
   const urgentTasks = sortTasks(
     tasks.filter(
       (task) =>
-        task.priority === "High" && 
+        task.priority === "High" &&
         matchesSearch(task) &&
         matchesFilters(task)
     )
@@ -612,7 +614,7 @@ function Tasks() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
 
@@ -665,52 +667,83 @@ function Tasks() {
                 }}
               >
                 {/* SEARCH */}
-                <input
-                  value={searchTerm}
-                  onChange={(e) =>
-                    setSearchTerm(
-                      e.target.value
-                    )
-                  }
-                  placeholder="Search tasks..."
+                <div
                   style={{
+                    position: "relative",
                     width: "240px",
+                  }}
+                >
+                  <Search
+                    size={15}
+                    opacity={0.6}
+                    style={{
+                      position: "absolute",
+                      left: "16px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      zIndex: 10,
+                      pointerEvents: "none",
+                      color: "var(--text-secondary)",
+                    }}
+                  />
 
-                    padding: "12px 18px",
+                  <input
+                    value={searchTerm}
+                    onChange={(e) =>
+                      setSearchTerm(e.target.value)
+                    }
+                    placeholder="Search tasks..."
+                    style={{
+                      width: "100%",
 
-                    borderRadius: "999px",
+                      padding: "10px 16px 12px 42px", 
 
-                    border:
-                      searchTerm
+                      borderRadius: "999px",
+
+                      border: searchTerm
                         ? "1px solid rgba(87,112,122,0.55)"
-                        : "1px solid rgba(255,255,255,0.08)",
+                        : "1px solid rgba(255,255,255,0.06)",
 
-                    background:
-                      searchTerm
+                      background: searchTerm
                         ? "rgba(87,112,122,0.14)"
-                        : "rgba(255,255,255,0.03)",
+                        : "rgba(255,255,255,0.04)",
 
-                    boxShadow:
-                      searchTerm
+                      boxShadow: searchTerm
                         ? "0 0 0 1px rgba(87,112,122,0.15)"
                         : "none",
 
-                    color:
-                      "var(--text-primary)",
+                      color: "var(--text-primary)",
 
-                    fontSize: "0.82rem",
+                      fontSize: "0.82rem",
 
-                    fontWeight: "300",
+                      fontWeight: "300",
 
-                    outline: "none",
+                      outline: "none",
 
-                    backdropFilter:
-                      "blur(20px)",
+                      backdropFilter: "blur(20px)",
 
-                    transition:
-                      "all 0.2s ease",
-                  }}
-                />
+                      transition: "all 0.2s ease",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border =
+                        "1px solid rgba(255,255,255,0.18)";
+
+                      e.target.style.background =
+                        "rgba(255,255,255,0.06)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.border =
+                        searchTerm
+                          ? "1px solid rgba(87,112,122,0.55)"
+                          : "1px solid rgba(255,255,255,0.06)";
+
+                      e.target.style.background =
+                        searchTerm
+                          ? "rgba(87,112,122,0.14)"
+                          : "rgba(255,255,255,0.04)";
+                    }}
+                  />
+                </div>
 
                 {/* SORT */}
                 <div
@@ -728,7 +761,7 @@ function Tasks() {
                       );
                     }}
                     style={{
-                      padding: "12px 18px",
+                      padding: "10px 16px",
 
                       borderRadius: "999px",
 
@@ -777,7 +810,10 @@ function Tasks() {
                           : "var(--text-secondary)";
                     }}
                   >
-                    Sort
+                    <ArrowUpDown
+                      size={15}
+                      opacity={0.6}
+                    />
                   </button>
 
                   {showSortMenu && (
@@ -879,7 +915,7 @@ function Tasks() {
                       );
                     }}
                     style={{
-                      padding: "12px 18px",
+                      padding: "10px 16px",
 
                       borderRadius: "999px",
 
@@ -928,7 +964,10 @@ function Tasks() {
                           : "var(--text-secondary)";
                     }}
                   >
-                    Filter
+                    <Filter
+                      size={15}
+                      opacity={0.6}
+                    />
                   </button>
 
                   {showFilterMenu && (
@@ -1142,6 +1181,56 @@ function Tasks() {
                     </div>
                   )}
                 </div>
+
+                {/* clear all */}
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <button
+                    style={{
+                      padding: "10px 16px",
+
+                      borderRadius: "999px",
+
+                      border: "1px solid rgba(255, 77, 77, 0.25)",
+
+                      background: "rgba(255, 77, 77, 0.12)",
+
+                      color: "var(--danger)",
+
+                      fontSize: "0.82rem",
+
+                      fontWeight: "300",
+
+                      cursor: "pointer",
+
+                      transition:
+                        "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255, 77, 77, 0.20)";
+
+                      e.currentTarget.style.transform =
+                        "translateY(-1px)";
+                    }}
+
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255, 77, 77, 0.12)";
+
+                      e.currentTarget.style.transform =
+                        "translateY(0)";
+                    }}
+                  >
+                    <Trash
+                      size={15}
+                      opacity={0.6}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1162,59 +1251,6 @@ function Tasks() {
               {totalTasks + " Tasks" || "No tasks yet"}
             </p>
           </div>
-
-          {/* AVATAR */}
-          {/*
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-
-            }}
-          >
-            <div
-              style={{
-                width: "88px",
-                height: "88px",
-
-                borderRadius: "50%",
-
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-
-                background:
-                  `
-                  radial-gradient(
-                    circle at top left,
-                    rgba(87,112,122,0.35),
-                    rgba(39,60,65,0.15) 60%
-                  ),
-                  linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.08),
-                    rgba(255,255,255,0.02)
-                  )
-                `,
-
-                border:
-                  "1px solid rgba(255,255,255,0.10)",
-
-
-                backdropFilter:
-                  "blur(30px)",
-
-                fontSize: "2rem",
-
-                fontWeight: "300",
-
-                opacity: 0.9,
-              }}
-            >
-              ✓
-            </div>
-          </div>
-          */}
 
           {/* TABS SECTION */}
           <div

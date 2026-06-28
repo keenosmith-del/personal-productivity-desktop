@@ -1,12 +1,13 @@
 import MainLayout from "../layouts/MainLayout";
 import GlassCard from "../components/GlassCard";
-import { Search } from "lucide-react";
+import { ArrowUpDown, Filter, Search, Trash } from "lucide-react";
 
 import SearchResultCard from "../components/Search/SearchResultCard";
 
 import {
     useState,
     useEffect,
+    useRef
 } from "react";
 
 import {
@@ -72,6 +73,8 @@ function GlobalSearch() {
     // STATES
     const [searchTerm, setSearchTerm] =
         useState("");
+
+    const sortRef = useRef(null);
 
     const [selectedType, setSelectedType] =
         useState("All");
@@ -460,74 +463,184 @@ function GlobalSearch() {
                                     gap: "12px",
                                 }}
                             >
-                                <input
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    placeholder="Search everything..."
+                                <div
                                     style={{
-                                        width: "300px",
-
-                                        padding: "12px 18px",
-
-                                        borderRadius: "999px",
-
-                                        border: searchTerm
-                                            ? "1px solid rgba(87,112,122,0.55)"
-                                            : "1px solid rgba(255,255,255,0.08)",
-
-                                        background: searchTerm
-                                            ? "rgba(87,112,122,0.14)"
-                                            : "rgba(255,255,255,0.03)",
-
-                                        boxShadow: searchTerm
-                                            ? "0 0 0 1px rgba(87,112,122,0.15)"
-                                            : "none",
-
-                                        color: "var(--text-primary)",
-
-                                        fontSize: "0.82rem",
-
-                                        fontWeight: "300",
-
-                                        outline: "none",
-
-                                        backdropFilter: "blur(20px)",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                />
-
-                                <button
-                                    onClick={() =>
-                                        setShowSortMenu(
-                                            !showSortMenu
-                                        )
-                                    }
-                                    style={{
-                                        padding: "12px 18px",
-
-                                        borderRadius: "999px",
-
-                                        border:
-                                            "1px solid rgba(255,255,255,0.08)",
-
-                                        background:
-                                            "rgba(255,255,255,0.03)",
-
-                                        color:
-                                            "var(--text-secondary)",
-
-                                        fontSize: "0.82rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
+                                        position: "relative",
+                                        width: "240px",
                                     }}
                                 >
-                                    Sort
-                                </button>
+                                    <Search
+                                        size={15}
+                                        opacity={0.6}
+                                        style={{
+                                            position: "absolute",
+                                            left: "16px",
+                                            top: "50%",
+                                            transform: "translateY(-50%)",
+                                            zIndex: 10,
+                                            pointerEvents: "none",
+                                            color: "var(--text-secondary)",
+                                        }}
+                                    />
+
+                                    <input
+                                        value={searchTerm}
+                                        onChange={(e) =>
+                                            setSearchTerm(e.target.value)
+                                        }
+                                        placeholder="Search everything..."
+                                        style={{
+                                            width: "100%",
+
+                                            padding: "12px 18px 12px 42px",
+
+                                            borderRadius: "999px",
+
+                                            border: searchTerm
+                                                ? "1px solid rgba(87,112,122,0.55)"
+                                                : "1px solid rgba(255,255,255,0.06)",
+
+                                            background: searchTerm
+                                                ? "rgba(87,112,122,0.14)"
+                                                : "rgba(255,255,255,0.04)",
+
+                                            boxShadow: searchTerm
+                                                ? "0 0 0 1px rgba(87,112,122,0.15)"
+                                                : "none",
+
+                                            color: "var(--text-primary)",
+
+                                            fontSize: "0.82rem",
+
+                                            fontWeight: "300",
+
+                                            outline: "none",
+
+                                            backdropFilter: "blur(20px)",
+
+                                            transition: "all 0.2s ease",
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.border =
+                                                "1px solid rgba(255,255,255,0.18)";
+
+                                            e.target.style.background =
+                                                "rgba(255,255,255,0.06)";
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.border =
+                                                searchTerm
+                                                    ? "1px solid rgba(87,112,122,0.55)"
+                                                    : "1px solid rgba(255,255,255,0.06)";
+
+                                            e.target.style.background =
+                                                searchTerm
+                                                    ? "rgba(87,112,122,0.14)"
+                                                    : "rgba(255,255,255,0.04)";
+                                        }}
+                                    />
+                                </div>
+
+                                {/* sort */}
+                                <div
+                                    style={{
+                                        position: "relative",
+                                    }}
+                                >
+                                    <button
+                                        style={{
+                                            padding: "10px 16px",
+
+                                            borderRadius: "999px",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.08)",
+
+                                            background:
+                                                "rgba(255,255,255,0.03)",
+
+                                            color:
+                                                "var(--text-secondary)",
+
+                                            fontSize: "0.82rem",
+
+                                            fontWeight: "300",
+
+                                            cursor: "pointer",
+
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.06)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.03)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-secondary)";
+                                        }}
+                                    >
+                                        <ArrowUpDown
+                                            size={15}
+                                            opacity={0.6}
+                                        />
+                                    </button>
+                                </div>
+
+                                {/* FILTER */}
+                                <div
+                                    style={{
+                                        position: "relative",
+                                    }}
+                                >
+                                    <button
+                                        style={{
+                                            padding: "10px 16px",
+
+                                            borderRadius: "999px",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.08)",
+
+                                            background:
+                                                "rgba(255,255,255,0.03)",
+
+                                            color:
+                                                "var(--text-secondary)",
+
+                                            fontSize: "0.82rem",
+
+                                            fontWeight: "300",
+
+                                            cursor: "pointer",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.06)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.03)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-secondary)";
+                                        }}
+                                    >
+                                        <Filter
+                                            size={15}
+                                            opacity={0.6}
+                                        />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

@@ -1,5 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 
+import { ArrowUpDown, Filter, Trash, Search, } from "lucide-react";
+
 import Toast from "../components/Toast";
 
 import { useEffect, useState } from "react";
@@ -358,106 +360,224 @@ function Notifications() {
                 gap: "12px",
               }}
             >
-              <input
-                value={searchTerm}
-                onChange={(e) =>
-                  setSearchTerm(
-                    e.target.value
-                  )
-                }
-                placeholder="Search notifications..."
+              {/* SEARCH */}
+              <div
                 style={{
+                  position: "relative",
                   width: "240px",
-
-                  padding: "12px 18px",
-
-                  borderRadius: "999px",
-
-                  border: searchTerm
-                    ? "1px solid rgba(87,112,122,0.55)"
-                    : "1px solid rgba(255,255,255,0.08)",
-
-                  background: searchTerm
-                    ? "rgba(87,112,122,0.14)"
-                    : "rgba(255,255,255,0.03)",
-
-                  boxShadow: searchTerm
-                    ? "0 0 0 1px rgba(87,112,122,0.15)"
-                    : "none",
-
-                  color:
-                    "var(--text-primary)",
-
-                  fontSize: "0.82rem",
-
-                  fontWeight: "300",
-
-                  outline: "none",
-
-                  transition:
-                    "all 0.2s ease",
-                }}
-              />
-
-              <button
-                onClick={() =>
-                  setSortBy(
-                    sortBy === "newest"
-                      ? "oldest"
-                      : "newest"
-                  )
-                }
-                style={{
-                  padding: "12px 18px",
-
-                  borderRadius: "999px",
-
-                  border:
-                    "1px solid rgba(255,255,255,0.08)",
-
-                  background:
-                    "rgba(255,255,255,0.03)",
-
-                  color:
-                    "var(--text-secondary)",
-
-                  cursor: "pointer",
-
-                  fontWeight: "300",
                 }}
               >
-                Sort
-              </button>
+                <Search
+                  size={15}
+                  opacity={0.6}
+                  style={{
+                    position: "absolute",
+                    left: "16px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    zIndex: 10,
+                    pointerEvents: "none",
+                    color: "var(--text-secondary)",
+                  }}
+                />
 
-              <button
-                onClick={() =>
-                  setSortBy(
-                    sortBy === "newest"
-                      ? "oldest"
-                      : "newest"
-                  )
-                }
+                <input
+                  onChange={(e) =>
+                    setSearchTerm(e.target.value)
+                  }
+                  placeholder="Search notifications..."
+                  style={{
+                    width: "100%",
+
+                    padding: "10px 16px 12px 42px",
+
+                    borderRadius: "999px",
+
+                    border: "1px solid rgba(255,255,255,0.06)",
+
+                    background: "rgba(255,255,255,0.04)",
+
+                    boxShadow: "0 0 0 1px rgba(87,112,122,0.15)",
+
+                    color: "var(--text-primary)",
+
+                    fontSize: "0.82rem",
+
+                    fontWeight: "300",
+
+                    outline: "none",
+
+                    backdropFilter: "blur(20px)",
+
+                    transition: "all 0.2s ease",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.border =
+                      "1px solid rgba(255,255,255,0.18)";
+
+                    e.target.style.background =
+                      "rgba(255,255,255,0.06)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.border =
+                      "1px solid rgba(255,255,255,0.06)";
+
+                    e.target.style.background =
+                      "rgba(255,255,255,0.04)";
+                  }}
+                />
+              </div>
+
+              {/* SORT */}
+              <div
                 style={{
-                  padding: "12px 18px",
-
-                  borderRadius: "999px",
-
-                  border:
-                    "1px solid rgba(255,255,255,0.08)",
-
-                  background:
-                    "rgba(255,255,255,0.03)",
-
-                  color:
-                    "var(--text-secondary)",
-
-                  cursor: "pointer",
-
-                  fontWeight: "300",
+                  position: "relative",
                 }}
               >
-                Filter
-              </button>
+                <button
+                  style={{
+                    padding: "10px 16px",
+
+                    borderRadius: "999px",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.08)",
+
+                    background:
+                      "rgba(255,255,255,0.03)",
+
+                    color:
+                      "var(--text-secondary)",
+
+                    fontSize: "0.82rem",
+
+                    fontWeight: "300",
+
+                    cursor: "pointer",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.06)";
+
+                    e.currentTarget.style.color =
+                      "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.03)";
+
+                    e.currentTarget.style.color =
+                      "var(--text-secondary)";
+                  }}
+                >
+                  <ArrowUpDown
+                    size={15}
+                    opacity={0.6}
+                  />
+                </button>
+              </div>
+
+              {/* FILTER */}
+              <div
+                style={{
+                  position: "relative",
+                }}
+              >
+                <button
+                  style={{
+                    padding: "10px 16px",
+
+                    borderRadius: "999px",
+
+                    border:
+                      "1px solid rgba(255,255,255,0.08)",
+
+                    background:
+                      "rgba(255,255,255,0.03)",
+
+                    color:
+                      "var(--text-secondary)",
+
+                    fontSize: "0.82rem",
+
+                    fontWeight: "300",
+
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.06)";
+
+                    e.currentTarget.style.color =
+                      "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255,255,255,0.03)";
+
+                    e.currentTarget.style.color =
+                      "var(--text-secondary)";
+                  }}
+                >
+                  <Filter
+                    size={15}
+                    opacity={0.6}
+                  />
+                </button>
+              </div>
+
+              {/* clear all */}
+              <div
+                style={{
+                  position: "relative",
+                }}
+              >
+                <button
+                  style={{
+                    padding: "10px 16px",
+
+                    borderRadius: "999px",
+
+                    border: "1px solid rgba(255, 77, 77, 0.25)",
+
+                    background: "rgba(255, 77, 77, 0.12)",
+
+                    color: "var(--danger)",
+
+                    fontSize: "0.82rem",
+
+                    fontWeight: "300",
+
+                    cursor: "pointer",
+
+                    transition:
+                      "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255, 77, 77, 0.20)";
+
+                    e.currentTarget.style.transform =
+                      "translateY(-1px)";
+                  }}
+
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(255, 77, 77, 0.12)";
+
+                    e.currentTarget.style.transform =
+                      "translateY(0)";
+                  }}
+                >
+                  <Trash
+                    size={15}
+                    opacity={0.6}
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
