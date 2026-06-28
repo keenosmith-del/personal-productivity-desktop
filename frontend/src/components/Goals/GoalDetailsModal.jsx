@@ -401,6 +401,18 @@ function GoalDetailsModal({
                         )}
                     </div>
 
+                    {/* DIVIDER */}
+                    <div
+                        style={{
+                            height: "1px",
+
+                            background:
+                                "rgba(255,255,255,0.06)",
+
+                            marginBottom: "20px",
+                        }}
+                    />
+
                     {/* ASSOCIATIONS */}
                     {goal.linkedItems?.length > 0 && (
                         <>
@@ -475,20 +487,18 @@ function GoalDetailsModal({
                                 )}
                             </div>
 
+                            <div
+                                style={{
+                                    height: "1px",
+
+                                    background:
+                                        "rgba(255,255,255,0.06)",
+
+                                    marginBottom: "20px",
+                                }}
+                            />
                         </>
                     )}
-
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
 
                     {/* Completion */}
 

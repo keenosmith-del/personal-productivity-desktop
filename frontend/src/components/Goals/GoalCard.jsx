@@ -109,6 +109,12 @@ function GoalCard({
         };
     }, [setOpenGoalMenu]);
 
+    const visibleLinks =
+        goal.linkedItems?.slice(0, 3) || [];
+
+    const remainingLinks =
+        (goal.linkedItems?.length || 0) - 3;
+
     return (
         <div
             onClick={() =>
@@ -542,17 +548,18 @@ function GoalCard({
                 }}
             />
 
+
             {/* ASSOCIATIONS */}
 
             <div
                 style={{
                     display: "flex",
+
                     marginBottom: "20px",
                 }}
             >
-                {(goal.linkedItems || [])
-                    .slice(0, 3)
-                    .map((item, index) => (
+                {visibleLinks.map(
+                    (item, index) => (
                         <div
                             key={item}
                             style={{
@@ -591,9 +598,10 @@ function GoalCard({
                         >
                             {item}
                         </div>
-                    ))}
+                    )
+                )}
 
-                {(goal.linkedItems?.length || 0) > 3 && (
+                {remainingLinks > 0 && (
                     <div
                         style={{
                             ...linkedItemStyle,
@@ -607,7 +615,7 @@ function GoalCard({
                             zIndex: 10,
                         }}
                     >
-                        +{goal.linkedItems.length - 3}
+                        +{remainingLinks}
                     </div>
                 )}
             </div>
