@@ -114,6 +114,11 @@ const projectSchema =
                 default: false,
             },
 
+            linkedItems: {
+                type: [String],
+                default: [],
+            },
+
             linkedTasks: [
                 {
                     type:
@@ -143,6 +148,14 @@ const projectSchema =
                     type:
                         mongoose.Schema.Types.ObjectId,
                     ref: "Reminder",
+                },
+            ],
+
+            linkedProjects: [
+                {
+                    type:
+                        mongoose.Schema.Types.ObjectId,
+                    ref: "Project",
                 },
             ],
         },

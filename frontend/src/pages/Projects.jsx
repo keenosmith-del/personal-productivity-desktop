@@ -2761,7 +2761,7 @@ function Projects() {
                       </p>
                     </div>
                   ) : (
-                    discussionProjects.map((Project) => (
+                    discussionProjects.map((project) => (
                       <ProjectCard
                         key={project._id}
                         project={project}
