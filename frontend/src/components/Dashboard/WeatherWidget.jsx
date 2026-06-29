@@ -30,7 +30,7 @@ function WeatherWidget() {
   }
 
   return (
-    <GlassCard minHeight="160px">
+    <GlassCard minHeight="240px">
       <div
         style={{
           height: "100%",

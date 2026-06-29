@@ -17,8 +17,8 @@ import {
   Folder,
   Search,
   Plus,
-  CircleAlert,
   CircleArrowLeft,
+  Megaphone,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -87,11 +87,6 @@ function Sidebar({ collapsed, setCollapsed }) {
       icon: NotebookPen,
     },
     {
-      label: "Urgent",
-      path: "/urgent",
-      icon: CircleAlert,
-    },
-    {
       label: "Calendar",
       path: "/calendar",
       icon: Calendar,
@@ -99,7 +94,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     {
       label: "Notifications",
       path: "/notifications",
-      icon: Bell,
+      icon: Megaphone,
     },
     {
       label: "Search",

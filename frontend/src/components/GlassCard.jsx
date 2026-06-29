@@ -13,8 +13,6 @@ function GlassCard({
                 borderRadius:
                     "var(--radius-large)",
 
-                // this causes that fucking fuzzy white horizontal line below url
-                // maybe if it was darker
                 backdropFilter: "blur(20px)",
 
                 WebkitBackdropFilter: "blur(20px)",
