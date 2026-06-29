@@ -17,16 +17,17 @@ import GoalModal from "../Goals/GoalModal";
 import ProjectModal from "../Projects/ProjectModal";
 import ReminderModal from "../Reminders/ReminderModal";
 
-import { createTask }
+
+import { createTask, deleteTask }
     from "../../services/taskService";
 
-import { createGoal }
+import { createGoal, deleteGoal }
     from "../../services/goalService";
 
-import { createProject }
+import { createProject, deleteProject }
     from "../../services/projectService";
 
-import { createReminder }
+import { createReminder, deleteReminder }
     from "../../services/reminderService";
 
 function CalendarModal({
@@ -92,6 +93,11 @@ function CalendarModal({
     const [
         showReminderModal,
         setShowReminderModal,
+    ] = useState(false);
+
+    const [
+        showClearConfirm,
+        setShowClearConfirm,
     ] = useState(false);
 
     const linkedItemStyle = {
@@ -160,6 +166,47 @@ function CalendarModal({
     };
 
     // HANDLERS
+    const handleClearAll =
+        async () => {
+            try {
+                for (const event of events) {
+                    if (event.type === "task") {
+                        await deleteTask(event._id);
+                    }
+
+                    if (event.type === "goal") {
+                        await deleteGoal(event._id);
+                    }
+
+                    if (event.type === "project") {
+                        await deleteProject(event._id);
+                    }
+
+                    if (event.type === "reminder") {
+                        await deleteReminder(event._id);
+                    }
+                }
+
+                await refreshCalendarData();
+
+                setToast("Day cleared");
+
+                setTimeout(() => {
+                    setToast("");
+                }, 3000);
+
+                setShowClearConfirm(false);
+
+                setSelectedTask(null);
+                setSelectedGoal(null);
+                setSelectedProject(null);
+                setSelectedReminder(null);
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
     const handleCreateTask =
         async (taskData) => {
             await createTask(taskData);
@@ -929,6 +976,7 @@ function CalendarModal({
                             cursor: "pointer",
 
                             transition: "all 0.2s ease",
+
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background =
@@ -950,19 +998,29 @@ function CalendarModal({
 
                     {/* CLEAR DAY */}
                     <button
-                        onClick={onClose}
+                        disabled={events.length === 0}
+                        onClick={() =>
+                            setShowClearConfirm(true)
+                        }
                         style={{
                             padding: "11px 18px",
 
                             borderRadius: "999px",
 
                             background:
-                                "rgba(255,77,77,0.12)",
+                                events.length === 0
+                                    ? "rgba(255,77,77,0.05)"
+                                    : "rgba(255,77,77,0.12)",
 
                             border:
-                                "1px solid rgba(255,77,77,0.25)",
+                                events.length === 0
+                                    ? "1px solid rgba(255,77,77,0.08)"
+                                    : "1px solid rgba(255,77,77,0.25)",
 
-                            color: "var(--danger)",
+                            color:
+                                events.length === 0
+                                    ? "rgba(255,255,255,0.25)"
+                                    : "var(--danger)",
 
                             fontSize: "0.8rem",
 
@@ -973,7 +1031,10 @@ function CalendarModal({
                             transition:
                                 "all 0.2s ease",
                         }}
+                        // remove if disabled 
                         onMouseEnter={(e) => {
+                            if (events.length === 0) return;
+
                             e.currentTarget.style.background =
                                 "rgba(255,77,77,0.20)";
 
@@ -981,6 +1042,7 @@ function CalendarModal({
                                 "translateY(-1px)";
                         }}
                         onMouseLeave={(e) => {
+                            if (events.length === 0) return;
                             e.currentTarget.style.background =
                                 "rgba(255,77,77,0.12)";
 
@@ -1068,7 +1130,6 @@ function CalendarModal({
                     calendarMode={true}
                 />
             )}
-
             {showReminderModal && (
                 <ReminderModal
                     mode="create"
@@ -1079,6 +1140,181 @@ function CalendarModal({
                     onSave={handleCreateReminder}
                     calendarMode={true}
                 />
+            )}
+            {showClearConfirm && (
+                <div
+                    onClick={() =>
+                        setShowClearConfirm(false)
+                    }
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+
+                        background:
+                            "rgba(0,0,0,0.8)",
+
+                        backdropFilter:
+                            "blur(20px)",
+
+                        display: "flex",
+
+                        justifyContent: "center",
+
+                        alignItems: "center",
+
+                        zIndex: 3000,
+                    }}
+                >
+                    <div
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                        style={{
+                            width: "400px",
+
+                            padding: "28px",
+
+                            borderRadius: "24px",
+
+                            background:
+                                "rgba(20,20,20,0.90)",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
+                        }}
+                    >
+                        <h3
+                            style={{
+                                marginBottom: "12px",
+                                fontWeight: "400",
+                                fontSize: "0.95rem",
+                            }}
+                        >
+                            Clear all events?
+                        </h3>
+
+                        <p
+                            style={{
+                                color:
+                                    "var(--text-secondary)",
+
+                                marginBottom: "24px",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                opacity: 0.55,
+                            }}
+                        >
+                            This permanently deletes every
+                            task, project, goal and reminder
+                            scheduled for this day.
+                        </p>
+
+                        <div
+                            style={{
+                                display: "flex",
+
+                                justifyContent:
+                                    "flex-end",
+
+                                gap: "12px",
+                            }}
+                        >
+                            <button
+                                onClick={() =>
+                                    setShowClearConfirm(false)
+                                }
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    color:
+                                        "var(--text-primary)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.14)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.18)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.08)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.10)";
+                                }}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={handleClearAll}
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,77,77,0.12)",
+
+                                    border:
+                                        "1px solid rgba(255,77,77,0.25)",
+
+                                    color: "var(--danger)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.20)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.12)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+                                }}
+                            >
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
