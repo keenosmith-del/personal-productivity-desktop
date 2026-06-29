@@ -56,24 +56,19 @@ function CalendarModal({
             border: "#4d689366",
         },
 
-        project: {
-            bg: "#5f5b8733",
-            border: "#5f5b8766",
+        goal: {
+            bg: "#bf877633",
+            border: "#bf877666",
         },
 
-        goal: {
+        reminder: {
             bg: "#5d766233",
             border: "#5d766266",
         },
 
-        reminder: {
-            bg: "#7a685533",
-            border: "#7a685566",
-        },
-
-        note: {
-            bg: "#6d5d7333",
-            border: "#6d5d7366",
+        project: {
+            bg: "#72515c33",
+            border: "#72515c66",
         },
     };
 
@@ -231,7 +226,7 @@ function CalendarModal({
                     style={{
                         textAlign: "center",
 
-                        marginBottom: "28px",
+                        marginBottom: "20px",
                     }}
                 >
                     <div
@@ -276,7 +271,7 @@ function CalendarModal({
 
                             opacity: 0.4,
 
-                            marginTop: "10px",
+                            marginTop: "8px",
                         }}
                     >
                         {events.length} event
@@ -287,76 +282,51 @@ function CalendarModal({
                     </div>
                 </div>
 
-                {/* CHIPS */}
+                {/* CHIPS REMOVED */}
 
+                {/* FLOATING ACTION PILL */}
                 <div
                     style={{
                         display: "flex",
 
-                        gap: "8px",
+                        justifyContent: "center",
 
-                        flexWrap: "wrap",
-
-                        marginBottom: "24px",
+                        marginBottom: "20px",
                     }}
                 >
-                    {events.length === 0 ? (
-                        <span
+                    <div
+                        style={{
+                            display: "flex",
+
+                            gap: "18px",
+
+                            padding: "8px 14px",
+
+                            borderRadius: "999px",
+
+                            background:
+                                "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
+
+                            backdropFilter:
+                                "blur(24px)",
+                        }}
+                    >
+                        <button
                             style={{
-                                padding: "4px 10px",
-
-                                borderRadius:
-                                    "999px",
-
-                                fontSize: "0.68rem",
-
-                                background:
-                                    "rgba(255,255,255,0.03)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                background: "none",
+                                border: "none",
+                                color:
+                                    "var(--text-secondary)",
+                                cursor: "pointer",
+                                fontSize: "0.9rem",
                             }}
                         >
-                            Empty Day
-                        </span>
-                    ) : (
-                        Object.entries(
-                            eventCounts
-                        ).map(
-                            ([type, count]) => (
-                                <span
-                                    key={type}
-                                    style={{
-                                        padding:
-                                            "4px 10px",
-
-                                        borderRadius:
-                                            "999px",
-
-                                        fontSize:
-                                            "0.68rem",
-
-                                        background:
-                                            chipStyles[
-                                                type
-                                            ]?.bg,
-
-                                        border: `1px solid ${chipStyles[
-                                            type
-                                        ]?.border
-                                            }`,
-                                    }}
-                                >
-                                    {count}{" "}
-                                    {type.charAt(0).toUpperCase() +
-                                        type.slice(1)}
-                                    {count > 1
-                                        ? "s"
-                                        : ""}
-                                </span>
-                            )
-                        )
-                    )}
+                            +
+                        </button>
+                    </div>
                 </div>
 
                 {/* DIVIDER */}
@@ -372,62 +342,7 @@ function CalendarModal({
                     }}
                 />
 
-                {/* STACKED CIRCLES */}
-
-                <div
-                    style={{
-                        display: "flex",
-
-                        marginBottom: "24px",
-                    }}
-                >
-                    {Object.keys(
-                        eventCounts
-                    )
-                        .slice(0, 3)
-                        .map((type, index) => (
-                            <div
-                                key={type}
-                                style={{
-                                    ...linkedItemStyle,
-
-                                    marginRight: "-6px",
-
-                                    zIndex: index + 1,
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px) scale(1.08)";
-
-                                    e.currentTarget.style.border =
-                                        "1px solid rgba(255,255,255,0.12)";
-
-                                    e.currentTarget.style.boxShadow =
-                                        "0 8px 20px rgba(0,0,0,0.25)";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0) scale(1)";
-
-                                    e.currentTarget.style.border =
-                                        "1px solid rgba(255,255,255,0.06)";
-
-                                    e.currentTarget.style.boxShadow =
-                                        "none";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-secondary)";
-                                }}
-                            >
-                                {type
-                                    .charAt(0)
-                                    .toUpperCase()}
-                            </div>
-                        ))}
-                </div>
+                {/* STACKED CIRCLES REMOVED */}
 
                 {/* EVENTS */}
 
@@ -471,23 +386,18 @@ function CalendarModal({
                     ) : (
                         <div
                             style={{
-                                display: "flex",
+                                display: "grid",
 
-                                flexDirection:
-                                    "column",
+                                gridTemplateColumns:
+                                    "1fr 1fr",
 
-                                gap: "10px",
+                                gap: "14px",
                             }}
                         >
                             {events.map((event) => {
                                 const chipStyle =
                                     chipStyles[event.type] ||
                                     chipStyles.task;
-
-                                const secondaryLabel =
-                                    event.priority ||
-                                    event.category ||
-                                    "Scheduled";
 
                                 const Icon =
                                     eventIcons[event.type];
@@ -496,175 +406,156 @@ function CalendarModal({
                                     <div
                                         key={event.title}
                                         style={{
-                                            background:
-                                                "rgba(255,255,255,0.025)",
+                                            background: `
+                                                linear-gradient(
+                                                    135deg,
+                                                    ${chipStyle.bg},
+                                                    rgba(255,255,255,0.02)
+                                                )
+                                            `,
 
-                                            border:
-                                                "1px solid rgba(255,255,255,0.06)",
+                                            border: `1px solid ${chipStyle.border}`,
 
-                                            borderRadius: "20px",
+                                            borderRadius: "28px",
 
-                                            padding: "16px",
+                                            minHeight: "190px",
 
-                                            transition:
-                                                "all 0.2s ease",
+                                            padding: "20px",
+
+                                            backdropFilter: "blur(30px)",
+
+                                            display: "flex",
+
+                                            flexDirection: "column",
+
+                                            alignItems: "center",
+
+                                            justifyContent: "space-between",
+
+                                            transition: "all 0.2s ease",
+
+                                            cursor: "pointer",
                                         }}
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.transform =
-                                                "translateY(-1px)";
+                                                "translateY(-2px) scale(1.01)";
 
-                                            e.currentTarget.style.background =
-                                                "rgba(255,255,255,0.035)";
+                                            e.currentTarget.style.boxShadow =
+                                                "0 16px 32px rgba(0,0,0,0.18)";
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.transform =
-                                                "translateY(0)";
+                                                "translateY(0) scale(1)";
 
-                                            e.currentTarget.style.background =
-                                                "rgba(255,255,255,0.025)";
+                                            e.currentTarget.style.boxShadow =
+                                                "none";
                                         }}
                                     >
-                                        {/* CHIPS */}
+                                        {/* ICON */}
 
                                         <div
                                             style={{
+                                                width: "54px",
+                                                height: "54px",
+
+                                                borderRadius: "50%",
+
+                                                background:
+                                                    "rgba(255,255,255,0.08)",
+
+                                                border:
+                                                    "1px solid rgba(255,255,255,0.10)",
+
                                                 display: "flex",
 
-                                                gap: "6px",
+                                                alignItems: "center",
 
-                                                marginBottom: "14px",
+                                                justifyContent: "center",
+
+                                                backdropFilter:
+                                                    "blur(20px)",
                                             }}
                                         >
-                                            <span
-                                                style={{
-                                                    padding: "4px 10px",
-
-                                                    borderRadius:
-                                                        "999px",
-
-                                                    fontSize: "0.68rem",
-
-                                                    textTransform:
-                                                        "capitalize",
-
-                                                    background:
-                                                        chipStyle.bg,
-
-                                                    border: `1px solid ${chipStyle.border}`,
-                                                }}
-                                            >
-                                                {event.type}
-                                            </span>
-
-                                            <span
-                                                style={{
-                                                    padding: "4px 10px",
-
-                                                    borderRadius:
-                                                        "999px",
-
-                                                    fontSize: "0.68rem",
-
-                                                    background:
-                                                        "rgba(255,255,255,0.04)",
-
-                                                    border:
-                                                        "1px solid rgba(255,255,255,0.08)",
-
-                                                    opacity: 0.8,
-                                                }}
-                                            >
-                                                {secondaryLabel}
-                                            </span>
+                                            <Icon size={22} />
                                         </div>
 
                                         {/* TITLE */}
 
                                         <div
                                             style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "10px",
-                                                marginBottom: "10px",
+                                                textAlign: "center",
+
+                                                marginTop: "18px",
                                             }}
                                         >
                                             <div
                                                 style={{
-                                                    width: "28px",
-                                                    height: "28px",
-
-                                                    borderRadius: "50%",
-
-                                                    background:
-                                                        chipStyle.bg,
-
-                                                    border: `1px solid ${chipStyle.border}`,
-
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                <Icon size={14} />
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: "0.95rem",
+                                                    fontSize: "0.92rem",
 
                                                     fontWeight: "350",
 
                                                     letterSpacing: "-0.02em",
+
+                                                    marginBottom: "8px",
                                                 }}
                                             >
                                                 {event.title}
                                             </div>
+
+                                            <div
+                                                style={{
+                                                    fontSize: "0.72rem",
+
+                                                    opacity: 0.55,
+                                                }}
+                                            >
+                                                {event.category} · {event.priority}
+                                            </div>
                                         </div>
 
-                                        {/* DESCRIPTION */}
+                                        {/* ASSOCIATIONS */}
 
-                                        <div
-                                            style={{
-                                                fontSize: "0.74rem",
+                                        {event.linkedItems?.length >
+                                            0 && (
+                                                <div
+                                                    style={{
+                                                        display: "flex",
 
-                                                opacity: 0.5,
+                                                        marginTop: "18px",
+                                                    }}
+                                                >
+                                                    {event.linkedItems
+                                                        .slice(0, 3)
+                                                        .map(
+                                                            (
+                                                                item,
+                                                                index
+                                                            ) => (
+                                                                <div
+                                                                    key={item}
+                                                                    style={{
+                                                                        ...linkedItemStyle,
 
-                                                lineHeight: 1.5,
+                                                                        marginRight:
+                                                                            "-6px",
 
-                                                minHeight: "22px",
-                                            }}
-                                        >
-                                            {event.type === "task" &&
-                                                "Scheduled task"}
+                                                                        zIndex:
+                                                                            index + 1,
 
-                                            {event.type === "project" &&
-                                                "Project milestone"}
+                                                                        width: "30px",
 
-                                            {event.type === "goal" &&
-                                                "Goal target date"}
+                                                                        height: "30px",
 
-                                            {event.type ===
-                                                "reminder" &&
-                                                "Reminder notification"}
-                                        </div>
-
-                                        {/* DIVIDER */}
-
-                                        <div
-                                            style={{
-                                                height: "1px",
-
-                                                background:
-                                                    "rgba(255,255,255,0.05)",
-
-                                                margin:
-                                                    "16px 0 12px",
-                                            }}
-                                        />
-
-                                        {/* FOOTER */}
+                                                                        fontSize:
+                                                                            "0.62rem",
+                                                                    }}
+                                                                >
+                                                                    {item}
+                                                                </div>
+                                                            )
+                                                        )}
+                                                </div>
+                                            )}
 
                                     </div>
                                 );

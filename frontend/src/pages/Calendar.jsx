@@ -101,67 +101,146 @@ function Calendar() {
           );
         };
 
-        projects.forEach(
-          (project) => {
+        projects
+          .filter(
+            (project) => !project.completed
+          )
+          .forEach((project) => {
             addEvent(
               project.dueDate,
               {
-                title:
-                  project.title,
-                type:
-                  "project",
+                _id: project._id,
+
+                title: project.title,
+
+                description:
+                  project.description,
+
                 category:
                   project.category,
+
+                priority:
+                  project.priority,
+
+                status:
+                  project.status,
+
+                linkedItems:
+                  project.linkedItems || [],
+
+                completed:
+                  project.completed,
+
+                type: "project",
               }
             );
-          }
-        );
+          });
 
-        tasks.forEach(
-          (task) => {
+        tasks
+          .filter(
+            (task) => !task.completed
+          )
+          .forEach((task) => {
             addEvent(
               task.dueDate,
               {
-                title:
-                  task.title,
-                type: "task",
+                _id: task._id,
+
+                title: task.title,
+
+                description:
+                  task.description,
+
+                category:
+                  task.category,
+
                 priority:
                   task.priority,
+
+                status:
+                  task.status,
+
+                linkedItems:
+                  task.linkedItems || [],
+
+                completed:
+                  task.completed,
+
+                type: "task",
               }
             );
-          }
-        );
+          });
 
-        goals.forEach(
-          (goal) => {
+        goals
+          .filter(
+            (goal) => !goal.completed
+          )
+          .forEach((goal) => {
             addEvent(
-              goal.targetDate,
+              goal.dueDate,
               {
-                title:
-                  goal.title,
-                type: "goal",
+                _id: goal._id,
+
+                title: goal.title,
+
+                description:
+                  goal.description,
+
                 category:
                   goal.category,
+
+                priority:
+                  goal.priority,
+
+                status:
+                  goal.status,
+
+                linkedItems:
+                  goal.linkedItems || [],
+
+                completed:
+                  goal.completed,
+
+                type: "goal",
               }
             );
-          }
-        );
+          });
 
-        reminders.forEach(
-          (reminder) => {
+        reminders
+          .filter(
+            (reminder) =>
+              !reminder.completed
+          )
+          .forEach((reminder) => {
             addEvent(
-              reminder.reminderDate,
+              reminder.dueDate,
               {
-                title:
-                  reminder.title,
-                type:
-                  "reminder",
+                _id: reminder._id,
+
+                title: reminder.title,
+
+                description:
+                  reminder.description,
+
                 category:
                   reminder.category,
+
+                priority:
+                  reminder.priority,
+
+                status:
+                  reminder.status,
+
+                linkedItems:
+                  reminder.linkedItems || [],
+
+                completed:
+                  reminder.completed,
+
+                type: "reminder",
               }
             );
-          }
-        );
+          });
 
         setCalendarEvents(
           events

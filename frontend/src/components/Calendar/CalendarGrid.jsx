@@ -85,24 +85,19 @@ function CalendarGrid({
       border: "#4d689366",
     },
 
-    project: {
-      bg: "#5f5b8733",
-      border: "#5f5b8766",
+    goal: {
+      bg: "#bf877633",
+      border: "#bf877666",
     },
 
-    goal: {
+    reminder: {
       bg: "#5d766233",
       border: "#5d766266",
     },
 
-    reminder: {
-      bg: "#7a685533",
-      border: "#7a685566",
-    },
-
-    note: {
-      bg: "#6d5d7333",
-      border: "#6d5d7366",
+    project: {
+      bg: "#72515c33",
+      border: "#72515c66",
     },
   };
 

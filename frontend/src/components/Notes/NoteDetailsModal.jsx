@@ -624,6 +624,7 @@ function NoteDetailsModal({
 
                     {/* Due Date */}
 
+                    {/* no date for notes?
                     <div>
                         <p
                             style={{
@@ -662,6 +663,7 @@ function NoteDetailsModal({
                                 : "No due date"}
                         </p>
                     </div>
+                    */}
                 </div>
 
 
