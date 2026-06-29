@@ -1,21 +1,21 @@
-import { X, CheckSquare, } from "lucide-react";
+import { X, Target, } from "lucide-react";
 import { useState } from "react";
 
 import {
-    deleteTask,
-    updateTask,
-} from "../../services/taskService";
+    deleteGoal,
+    updateGoal,
+} from "../../services/goalService";
 
-function CalendarTaskDetailsModal({
-    task,
+function CalendarGoalDetailsModal({
+    goal,
     onClose,
     refreshCalendarData,
     setToast,
 }) {
     const formattedCreatedDate =
-        task?.createdAt
+        goal?.createdAt
             ? new Date(
-                task.createdAt
+                goal.createdAt
             ).toLocaleDateString(
                 "en-US",
                 {
@@ -27,14 +27,14 @@ function CalendarTaskDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        task?.completedDate
+        goal?.completedDate
             ? (() => {
                 const [
                     day,
                     month,
                     year,
                 ] =
-                    task.completedDate.split("/");
+                    goal.completedDate.split("/");
 
                 return new Date(
                     year,
@@ -81,24 +81,24 @@ function CalendarTaskDetailsModal({
     };
 
     const visibleLinks =
-        task.linkedItems?.slice(0, 2) || [];
+        goal.linkedItems?.slice(0, 3) || [];
 
     const remainingLinks =
-        (task.linkedItems?.length || 0) - 2;
+        (goal.linkedItems?.length || 0) - 3;
 
     const [showDeleteConfirm,
         setShowDeleteConfirm] =
         useState(false);
 
-    const handleDeleteTask =
+    const handleDeleteGoal =
         async () => {
             try {
-                await deleteTask(
-                    task._id
+                await deleteGoal(
+                    goal._id
                 );
 
                 setToast(
-                    "Task deleted"
+                    "Goal deleted"
                 );
 
                 setTimeout(() => {
@@ -118,13 +118,13 @@ function CalendarTaskDetailsModal({
             }
         };
 
-    const handleCompleteTask =
+    const handleCompleteGoal =
         async () => {
             try {
-                await updateTask(
-                    task._id,
+                await updateGoal(
+                    goal._id,
                     {
-                        ...task,
+                        ...goal,
 
                         completed: true,
 
@@ -139,16 +139,16 @@ function CalendarTaskDetailsModal({
                     }
                 );
 
-                task.completed =
+                goal.completed =
                     true;
 
-                task.completedDate =
+                goal.completedDate =
                     new Date()
                         .toLocaleDateString(
                             "en-GB"
                         );
 
-                task.status =
+                goal.status =
                     "Complete";
 
                 await refreshCalendarData();
@@ -158,13 +158,13 @@ function CalendarTaskDetailsModal({
             }
         };
 
-    const handleRestoreTask =
+    const handleRestoreGoal =
         async () => {
             try {
-                await updateTask(
-                    task._id,
+                await updateGoal(
+                    goal._id,
                     {
-                        ...task,
+                        ...goal,
 
                         completed: false,
 
@@ -176,13 +176,13 @@ function CalendarTaskDetailsModal({
                     }
                 );
 
-                task.completed =
+                goal.completed =
                     false;
 
-                task.completedDate =
+                goal.completedDate =
                     null;
 
-                task.status =
+                goal.status =
                     "Active";
 
                 await refreshCalendarData();
@@ -250,7 +250,7 @@ function CalendarTaskDetailsModal({
                                 fontWeight: "400",
                             }}
                         >
-                            Task Details
+                            Goal Details
                         </h2>
 
                         <p
@@ -262,7 +262,7 @@ function CalendarTaskDetailsModal({
                                 opacity: 0.55,
                             }}
                         >
-                            View task information
+                            View goal information
                         </p>
                     </div>
 
@@ -350,7 +350,7 @@ function CalendarTaskDetailsModal({
                                     "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            <CheckSquare
+                            <Target
                                 size={28}
                                 strokeWidth={1.8}
                             />
@@ -377,7 +377,7 @@ function CalendarTaskDetailsModal({
                         </p>
                     )}
 
-                    {task.completedDate && (
+                    {goal.completedDate && (
                         <p
                             style={{
                                 marginTop: "2px",
@@ -414,7 +414,7 @@ function CalendarTaskDetailsModal({
                             marginBottom: "14px",
                         }}
                     >
-                        {task.title}
+                        {goal.title}
                     </h3>
 
                     {/* Chips */}
@@ -444,25 +444,25 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    task.category === "Work"
+                                    goal.category === "Work"
                                         ? "#466a6d33"
-                                        : task.category === "Study"
+                                        : goal.category === "Study"
                                             ? "#536b8333"
-                                            : task.category === "Personal"
+                                            : goal.category === "Personal"
                                                 ? "#6f5f7a33"
                                                 : "#57707a33",
 
                                 border:
-                                    task.category === "Work"
+                                    goal.category === "Work"
                                         ? "1px solid #466a6d66"
-                                        : task.category === "Study"
+                                        : goal.category === "Study"
                                             ? "1px solid #536b8366"
-                                            : task.category === "Personal"
+                                            : goal.category === "Personal"
                                                 ? "1px solid #6f5f7a66"
                                                 : "1px solid #57707a66",
                             }}
                         >
-                            {task.category}
+                            {goal.category}
                         </span>
 
                         <span
@@ -476,24 +476,24 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    task.priority === "Low"
+                                    goal.priority === "Low"
                                         ? "#273c4133"
-                                        : task.priority === "Medium"
+                                        : goal.priority === "Medium"
                                             ? "#5e687433"
                                             : "#6b544733",
 
                                 border:
-                                    task.priority === "Low"
+                                    goal.priority === "Low"
                                         ? "1px solid #273c4166"
-                                        : task.priority === "Medium"
+                                        : goal.priority === "Medium"
                                             ? "1px solid #5e687466"
                                             : "1px solid #6b544766",
                             }}
                         >
-                            {task.priority}
+                            {goal.priority}
                         </span>
 
-                        {!task.completed && (
+                        {!goal.completed && (
                             <span
                                 style={{
                                     padding: "6px 12px",
@@ -505,27 +505,27 @@ function CalendarTaskDetailsModal({
                                     fontSize: "0.7rem",
 
                                     background:
-                                        task.status === "Active"
+                                        goal.status === "Active"
                                             ? "#4d689333"
-                                            : task.status === "Paused"
+                                            : goal.status === "Paused"
                                                 ? "#45575b33"
                                                 : "#728a6e33",
 
                                     border:
-                                        task.status === "Active"
+                                        goal.status === "Active"
                                             ? "1px solid #4d689366"
-                                            : task.status === "Paused"
+                                            : goal.status === "Paused"
                                                 ? "1px solid #45575b66"
                                                 : "1px solid #728a6e66",
                                 }}
                             >
-                                {task.status}
+                                {goal.status}
                             </span>
                         )}
                     </div>
 
                     {/* ASSOCIATIONS */}
-                    {task.linkedItems?.length > 0 && (
+                    {goal.linkedItems?.length > 0 && (
                         <>
                             <div
                                 style={{
@@ -647,10 +647,10 @@ function CalendarTaskDetailsModal({
                             marginBottom: "24px",
                         }}
                     >
-                        {!task.completed ? (
+                        {!goal.completed ? (
                             <button
                                 onClick={
-                                    handleCompleteTask
+                                    handleCompleteGoal
                                 }
                                 style={{
                                     padding: "10px 18px",
@@ -763,7 +763,7 @@ function CalendarTaskDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {task.description ||
+                            {goal.description ||
                                 "No description provided."}
                         </p>
                     </div>
@@ -795,7 +795,7 @@ function CalendarTaskDetailsModal({
                             }}
                         >
                             {new Date(
-                                task.dueDate
+                                goal.dueDate
                             ).toLocaleDateString(
                                 "en-US",
                                 {
@@ -863,7 +863,7 @@ function CalendarTaskDetailsModal({
                         Delete
                     </button>
 
-                    {!task.completed ? (
+                    {!goal.completed ? (
                         <button
                             onClick={() => {
                                 onClose();
@@ -916,7 +916,7 @@ function CalendarTaskDetailsModal({
                     ) : (
                         <button
                             onClick={
-                                handleRestoreTask
+                                handleRestoreGoal
                             }
                             style={{
                                 padding: "11px 18px",
@@ -1017,7 +1017,7 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.95rem",
                             }}
                         >
-                            Delete task?
+                            Delete goal?
                         </h3>
 
                         <p
@@ -1098,7 +1098,7 @@ function CalendarTaskDetailsModal({
 
                             <button
                                 onClick={
-                                    handleDeleteTask
+                                    handleDeleteGoal
                                 }
                                 style={{
                                     padding: "11px 18px",
@@ -1147,4 +1147,4 @@ function CalendarTaskDetailsModal({
     );
 }
 
-export default CalendarTaskDetailsModal;
+export default CalendarGoalDetailsModal;

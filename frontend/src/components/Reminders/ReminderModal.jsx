@@ -18,6 +18,9 @@ function ReminderModal({
   reminder = null,
   onSave,
   onCompleteReminder,
+  initialDate,
+
+  calendarMode = false,
 }) {
   const reminderInputRef = useRef(null);
 
@@ -73,7 +76,9 @@ function ReminderModal({
 
   const [selectedDate, setSelectedDate] =
     useState(
-      reminder?.dueDate || new Date().toISOString()
+      reminder?.dueDate ||
+      initialDate ||
+      new Date().toISOString()
     );
 
   const [linkedItems, setLinkedItems] =
@@ -243,9 +248,13 @@ function ReminderModal({
         position: "fixed",
         inset: 0,
 
-        background: "rgba(0,0,0,0.35)",
+        background: calendarMode
+          ? "rgba(0,0,0,0.7)"
+          : "rgba(0,0,0,0.35)",
 
-        backdropFilter: "blur(20px)",
+        backdropFilter: calendarMode
+          ? "blur(28px)"
+          : "blur(20px)",
 
         display: "flex",
         justifyContent: "center",

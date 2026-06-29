@@ -18,6 +18,9 @@ function TaskModal({
   task = null,
   onSave,
   onCompleteTask,
+  initialDate,
+
+  calendarMode = false,
 }) {
   const taskInputRef = useRef(null);
 
@@ -73,7 +76,9 @@ function TaskModal({
 
   const [selectedDate, setSelectedDate] =
     useState(
-      task?.dueDate || new Date().toISOString()
+      task?.dueDate ||
+      initialDate ||
+      new Date().toISOString()
     );
 
   const [linkedItems, setLinkedItems] =
@@ -243,7 +248,13 @@ function TaskModal({
         position: "fixed",
         inset: 0,
 
-        background: "rgba(0,0,0,0.35)",
+        background: calendarMode
+          ? "rgba(0,0,0,0.7)"
+          : "rgba(0,0,0,0.35)",
+
+        backdropFilter: calendarMode
+          ? "blur(28px)"
+          : "blur(20px)",
 
         backdropFilter: "blur(20px)",
 

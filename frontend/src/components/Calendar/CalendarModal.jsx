@@ -8,6 +8,26 @@ import {
 import { useState } from "react";
 
 import CalendarTaskDetailsModal from "./CalendarTaskDetailsModal";
+import CalendarGoalDetailsModal from "./CalendarGoalDetailsModal";
+import CalendarProjectDetailsModal from "./CalendarProjectDetailsModal";
+import CalendarReminderDetailsModal from "./CalendarReminderDetailsModal";
+
+import TaskModal from "../Tasks/TaskModal";
+import GoalModal from "../Goals/GoalModal";
+import ProjectModal from "../Projects/ProjectModal";
+import ReminderModal from "../Reminders/ReminderModal";
+
+import { createTask }
+    from "../../services/taskService";
+
+import { createGoal }
+    from "../../services/goalService";
+
+import { createProject }
+    from "../../services/projectService";
+
+import { createReminder }
+    from "../../services/reminderService";
 
 function CalendarModal({
     selectedDate,
@@ -32,6 +52,47 @@ function CalendarModal({
         selectedTask,
         setSelectedTask,
     ] = useState(null);
+
+    const [
+        selectedGoal,
+        setSelectedGoal,
+    ] = useState(null);
+
+    const [
+        selectedProject,
+        setSelectedProject,
+    ] = useState(null);
+
+    const [
+        selectedReminder,
+        setSelectedReminder,
+    ] = useState(null);
+
+    // glass dropdown
+    const [
+        showAddMenu,
+        setShowAddMenu,
+    ] = useState(false);
+
+    const [
+        showTaskModal,
+        setShowTaskModal,
+    ] = useState(false);
+
+    const [
+        showGoalModal,
+        setShowGoalModal,
+    ] = useState(false);
+
+    const [
+        showProjectModal,
+        setShowProjectModal,
+    ] = useState(false);
+
+    const [
+        showReminderModal,
+        setShowReminderModal,
+    ] = useState(false);
 
     const linkedItemStyle = {
         width: "35px",
@@ -97,6 +158,67 @@ function CalendarModal({
         goal: Target,
         reminder: Bell,
     };
+
+    // HANDLERS
+    const handleCreateTask =
+        async (taskData) => {
+            await createTask(taskData);
+
+            setShowTaskModal(false);
+
+            refreshCalendarData();
+
+            setToast("Task created");
+
+            setTimeout(() => {
+                setToast("");
+            }, 3000);
+        };
+
+    const handleCreateGoal =
+        async (goalData) => {
+            await createGoal(goalData);
+
+            setShowGoalModal(false);
+
+            refreshCalendarData();
+
+            setToast("Goal created");
+
+            setTimeout(() => {
+                setToast("");
+            }, 3000);
+        };
+
+    const handleCreateProject =
+        async (projectData) => {
+            await createProject(projectData);
+
+            setShowProjectModal(false);
+
+            refreshCalendarData();
+
+            setToast("Project created");
+
+            setTimeout(() => {
+                setToast("");
+            }, 3000);
+        };
+
+    const handleCreateReminder =
+        async (reminderData) => {
+            await createReminder(reminderData);
+
+            setShowReminderModal(false);
+
+            refreshCalendarData();
+
+            setToast("Reminder created");
+
+            setTimeout(() => {
+                setToast("");
+            }, 3000);
+        };
 
     return (
         <div
@@ -307,8 +429,17 @@ function CalendarModal({
                         marginBottom: "20px",
                     }}
                 >
-                    <div>
+                    <div
+                        style={{
+                            position: "relative",
+                        }}
+                    >
                         <button
+                            onClick={() =>
+                                setShowAddMenu(
+                                    !showAddMenu
+                                )
+                            }
                             style={{
                                 width: "32px",
                                 height: "32px",
@@ -347,6 +478,136 @@ function CalendarModal({
                         >
                             +
                         </button>
+
+                        {/* glass dropdown */}
+                        {/* favourite dropdown -- implement on other dropdowns */}
+                        {showAddMenu && (
+                            <div
+                                style={{
+                                    position: "absolute",
+
+                                    top: "42px",
+
+                                    left: "50%",
+
+                                    transform:
+                                        "translateX(-50%)",
+
+                                    width: "170px",
+
+                                    background:
+                                        "rgba(20,20,20,0.92)",
+
+                                    backdropFilter:
+                                        "blur(24px)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    boxShadow:
+                                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                                    borderRadius: "18px",
+
+                                    padding: "8px",
+
+                                    display: "flex",
+
+                                    flexDirection: "column",
+
+                                    gap: "4px",
+
+                                    zIndex: 2001,
+                                }}
+                            >
+                                {[
+                                    {
+                                        label: "Task",
+                                        action:
+                                            setShowTaskModal,
+                                    },
+
+                                    {
+                                        label: "Goal",
+                                        action:
+                                            setShowGoalModal,
+                                    },
+
+                                    {
+                                        label: "Project",
+                                        action:
+                                            setShowProjectModal,
+                                    },
+
+                                    {
+                                        label: "Reminder",
+                                        action:
+                                            setShowReminderModal,
+                                    },
+                                ].map(
+                                    ({
+                                        label,
+                                        action,
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() => {
+                                                setShowAddMenu(
+                                                    false
+                                                );
+
+                                                action(true);
+                                            }}
+                                            style={{
+                                                background:
+                                                    "transparent",
+
+                                                border:
+                                                    "none",
+
+                                                color:
+                                                    "var(--text-primary)",
+
+                                                padding:
+                                                    "10px 14px",
+
+                                                borderRadius:
+                                                    "12px",
+
+                                                cursor:
+                                                    "pointer",
+
+                                                textAlign:
+                                                    "left",
+
+                                                fontSize:
+                                                    "0.78rem",
+
+                                                fontWeight:
+                                                    "300",
+
+                                                transition:
+                                                    "all 0.2s ease",
+                                            }}
+                                            onMouseEnter={(
+                                                e
+                                            ) => {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.06)";
+                                            }}
+                                            onMouseLeave={(
+                                                e
+                                            ) => {
+                                                e.currentTarget.style.background =
+                                                    "transparent";
+                                            }}
+                                        >
+                                            {label}
+                                        </button>
+                                    )
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -429,6 +690,18 @@ function CalendarModal({
                                         onClick={() => {
                                             if (event.type === "task") {
                                                 setSelectedTask(event);
+                                            }
+
+                                            if (event.type === "goal") {
+                                                setSelectedGoal(event);
+                                            }
+
+                                            if (event.type === "project") {
+                                                setSelectedProject(event);
+                                            }
+
+                                            if (event.type === "reminder") {
+                                                setSelectedReminder(event);
                                             }
                                         }}
                                         style={{
@@ -528,21 +801,51 @@ function CalendarModal({
                                                 {event.title}
                                             </div>
 
-                                            <div
-                                                style={{
-                                                    fontSize: "0.72rem",
+                                            {event.completed ? (
+                                                <div
+                                                    style={{
+                                                        display: "inline-flex",
 
-                                                    opacity: 0.55,
-                                                }}
-                                            >
-                                                {event.category} · {event.priority}
-                                            </div>
+                                                        alignItems: "center",
+
+                                                        gap: "6px",
+
+                                                        padding: "6px 12px",
+
+                                                        borderRadius: "999px",
+
+                                                        background:
+                                                            "rgba(93,118,98,0.16)",
+
+                                                        border:
+                                                            "1px solid rgba(93,118,98,0.28)",
+
+                                                        fontSize: "0.7rem",
+
+                                                        fontWeight: "300",
+
+                                                        opacity: 0.9,
+                                                    }}
+                                                >
+                                                    ✓ Completed
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    style={{
+                                                        fontSize: "0.72rem",
+
+                                                        opacity: 0.55,
+                                                    }}
+                                                >
+                                                    {event.category} · {event.priority}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* ASSOCIATIONS */}
 
-                                        {event.linkedItems?.length >
-                                            0 && (
+                                        {!event.completed &&
+                                            event.linkedItems?.length > 0 && (
                                                 <div
                                                     style={{
                                                         display: "flex",
@@ -596,10 +899,56 @@ function CalendarModal({
                     style={{
                         display: "flex",
 
-                        justifyContent:
-                            "flex-end",
+                        justifyContent: "flex-end",
+
+                        gap: "10px",
+
+                        marginTop: "24px",
                     }}
                 >
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: "11px 18px",
+
+                            borderRadius: "999px",
+
+                            background:
+                                "rgba(255,255,255,0.08)",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.10)",
+
+                            color:
+                                "var(--text-primary)",
+
+                            fontSize: "0.8rem",
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.14)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                                "rgba(255,255,255,0.08)";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
+                        }}
+                    >
+                        Cancel
+                    </button>
+
+                    {/* CLEAR DAY */}
                     <button
                         onClick={onClose}
                         style={{
@@ -637,9 +986,10 @@ function CalendarModal({
 
                             e.currentTarget.style.transform =
                                 "translateY(0)";
+
                         }}
                     >
-                        Cancel
+                        Clear All
                     </button>
                 </div>
             </div>
@@ -651,6 +1001,83 @@ function CalendarModal({
                     refreshCalendarData={
                         refreshCalendarData
                     }
+                />
+            )}
+            {selectedProject && (
+                <CalendarProjectDetailsModal
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                    setToast={setToast}
+                    refreshCalendarData={
+                        refreshCalendarData
+                    }
+                />
+            )}
+            {selectedGoal && (
+                <CalendarGoalDetailsModal
+                    goal={selectedGoal}
+                    onClose={() => setSelectedGoal(null)}
+                    setToast={setToast}
+                    refreshCalendarData={
+                        refreshCalendarData
+                    }
+                />
+            )}
+            {selectedReminder && (
+                <CalendarReminderDetailsModal
+                    reminder={selectedReminder}
+                    onClose={() => setSelectedReminder(null)}
+                    setToast={setToast}
+                    refreshCalendarData={
+                        refreshCalendarData
+                    }
+                />
+            )}
+            {showTaskModal && (
+                <TaskModal
+                    mode="create"
+                    initialDate={date.toISOString()}
+                    onClose={() =>
+                        setShowTaskModal(false)
+                    }
+                    onSave={handleCreateTask}
+                    calendarMode={true}
+                />
+            )}
+
+            {showGoalModal && (
+                <GoalModal
+                    mode="create"
+                    initialDate={date.toISOString()}
+                    onClose={() =>
+                        setShowGoalModal(false)
+                    }
+                    onSave={handleCreateGoal}
+                    calendarMode={true}
+                />
+            )}
+
+            {showProjectModal && (
+                <ProjectModal
+                    mode="create"
+                    initialDate={date.toISOString()}
+                    onClose={() =>
+                        setShowProjectModal(false)
+                    }
+                    onSave={handleCreateProject}
+                    calendarMode={true}
+                />
+            )}
+
+            {showReminderModal && (
+                <ReminderModal
+                    mode="create"
+                    initialDate={date.toISOString()}
+                    onClose={() =>
+                        setShowReminderModal(false)
+                    }
+                    onSave={handleCreateReminder}
+                    calendarMode={true}
                 />
             )}
         </div>

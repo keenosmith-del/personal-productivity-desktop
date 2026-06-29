@@ -18,6 +18,9 @@ function GoalModal({
   goal = null,
   onSave,
   onCompleteGoal,
+  initialDate,
+
+  calendarMode = false,
 }) {
   const goalInputRef = useRef(null);
 
@@ -73,7 +76,9 @@ function GoalModal({
 
   const [selectedDate, setSelectedDate] =
     useState(
-      goal?.dueDate || new Date().toISOString()
+      goal?.dueDate ||
+      initialDate ||
+      new Date().toISOString()
     );
 
   const [linkedItems, setLinkedItems] =
@@ -243,9 +248,13 @@ function GoalModal({
         position: "fixed",
         inset: 0,
 
-        background: "rgba(0,0,0,0.35)",
+        background: calendarMode
+          ? "rgba(0,0,0,0.7)"
+          : "rgba(0,0,0,0.35)",
 
-        backdropFilter: "blur(20px)",
+        backdropFilter: calendarMode
+          ? "blur(28px)"
+          : "blur(20px)",
 
         display: "flex",
         justifyContent: "center",

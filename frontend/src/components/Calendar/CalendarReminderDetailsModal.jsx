@@ -2,20 +2,20 @@ import { X, CheckSquare, } from "lucide-react";
 import { useState } from "react";
 
 import {
-    deleteTask,
-    updateTask,
-} from "../../services/taskService";
+    deleteReminder,
+    updateReminder,
+} from "../../services/reminderService";
 
-function CalendarTaskDetailsModal({
-    task,
+function CalendarReminderDetailsModal({
+    reminder,
     onClose,
     refreshCalendarData,
     setToast,
 }) {
     const formattedCreatedDate =
-        task?.createdAt
+        reminder?.createdAt
             ? new Date(
-                task.createdAt
+                reminder.createdAt
             ).toLocaleDateString(
                 "en-US",
                 {
@@ -27,14 +27,14 @@ function CalendarTaskDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        task?.completedDate
+        reminder?.completedDate
             ? (() => {
                 const [
                     day,
                     month,
                     year,
                 ] =
-                    task.completedDate.split("/");
+                    reminder.completedDate.split("/");
 
                 return new Date(
                     year,
@@ -81,24 +81,24 @@ function CalendarTaskDetailsModal({
     };
 
     const visibleLinks =
-        task.linkedItems?.slice(0, 2) || [];
+        reminder.linkedItems?.slice(0, 2) || [];
 
     const remainingLinks =
-        (task.linkedItems?.length || 0) - 2;
+        (reminder.linkedItems?.length || 0) - 2;
 
     const [showDeleteConfirm,
         setShowDeleteConfirm] =
         useState(false);
 
-    const handleDeleteTask =
+    const handleDeleteReminder =
         async () => {
             try {
-                await deleteTask(
-                    task._id
+                await deleteReminder(
+                    reminder._id
                 );
 
                 setToast(
-                    "Task deleted"
+                    "Reminder deleted"
                 );
 
                 setTimeout(() => {
@@ -118,13 +118,13 @@ function CalendarTaskDetailsModal({
             }
         };
 
-    const handleCompleteTask =
+    const handleCompleteReminder =
         async () => {
             try {
-                await updateTask(
-                    task._id,
+                await updateReminder(
+                    reminder._id,
                     {
-                        ...task,
+                        ...reminder,
 
                         completed: true,
 
@@ -139,16 +139,16 @@ function CalendarTaskDetailsModal({
                     }
                 );
 
-                task.completed =
+                reminder.completed =
                     true;
 
-                task.completedDate =
+                reminder.completedDate =
                     new Date()
                         .toLocaleDateString(
                             "en-GB"
                         );
 
-                task.status =
+                reminder.status =
                     "Complete";
 
                 await refreshCalendarData();
@@ -158,13 +158,13 @@ function CalendarTaskDetailsModal({
             }
         };
 
-    const handleRestoreTask =
+    const handleRestoreReminder =
         async () => {
             try {
-                await updateTask(
-                    task._id,
+                await updateReminder(
+                    reminder._id,
                     {
-                        ...task,
+                        ...reminder,
 
                         completed: false,
 
@@ -176,13 +176,13 @@ function CalendarTaskDetailsModal({
                     }
                 );
 
-                task.completed =
+                reminder.completed =
                     false;
 
-                task.completedDate =
+                reminder.completedDate =
                     null;
 
-                task.status =
+                reminder.status =
                     "Active";
 
                 await refreshCalendarData();
@@ -250,7 +250,7 @@ function CalendarTaskDetailsModal({
                                 fontWeight: "400",
                             }}
                         >
-                            Task Details
+                            Reminder Details
                         </h2>
 
                         <p
@@ -262,7 +262,7 @@ function CalendarTaskDetailsModal({
                                 opacity: 0.55,
                             }}
                         >
-                            View task information
+                            View reminder information
                         </p>
                     </div>
 
@@ -377,7 +377,7 @@ function CalendarTaskDetailsModal({
                         </p>
                     )}
 
-                    {task.completedDate && (
+                    {reminder.completedDate && (
                         <p
                             style={{
                                 marginTop: "2px",
@@ -414,7 +414,7 @@ function CalendarTaskDetailsModal({
                             marginBottom: "14px",
                         }}
                     >
-                        {task.title}
+                        {reminder.title}
                     </h3>
 
                     {/* Chips */}
@@ -444,25 +444,25 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    task.category === "Work"
+                                    reminder.category === "Work"
                                         ? "#466a6d33"
-                                        : task.category === "Study"
+                                        : reminder.category === "Study"
                                             ? "#536b8333"
-                                            : task.category === "Personal"
+                                            : reminder.category === "Personal"
                                                 ? "#6f5f7a33"
                                                 : "#57707a33",
 
                                 border:
-                                    task.category === "Work"
+                                    reminder.category === "Work"
                                         ? "1px solid #466a6d66"
-                                        : task.category === "Study"
+                                        : reminder.category === "Study"
                                             ? "1px solid #536b8366"
-                                            : task.category === "Personal"
+                                            : reminder.category === "Personal"
                                                 ? "1px solid #6f5f7a66"
                                                 : "1px solid #57707a66",
                             }}
                         >
-                            {task.category}
+                            {reminder.category}
                         </span>
 
                         <span
@@ -476,24 +476,24 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    task.priority === "Low"
+                                    reminder.priority === "Low"
                                         ? "#273c4133"
-                                        : task.priority === "Medium"
+                                        : reminder.priority === "Medium"
                                             ? "#5e687433"
                                             : "#6b544733",
 
                                 border:
-                                    task.priority === "Low"
+                                    reminder.priority === "Low"
                                         ? "1px solid #273c4166"
-                                        : task.priority === "Medium"
+                                        : reminder.priority === "Medium"
                                             ? "1px solid #5e687466"
                                             : "1px solid #6b544766",
                             }}
                         >
-                            {task.priority}
+                            {reminder.priority}
                         </span>
 
-                        {!task.completed && (
+                        {!reminder.completed && (
                             <span
                                 style={{
                                     padding: "6px 12px",
@@ -505,27 +505,27 @@ function CalendarTaskDetailsModal({
                                     fontSize: "0.7rem",
 
                                     background:
-                                        task.status === "Active"
+                                        reminder.status === "Active"
                                             ? "#4d689333"
-                                            : task.status === "Paused"
+                                            : reminder.status === "Paused"
                                                 ? "#45575b33"
                                                 : "#728a6e33",
 
                                     border:
-                                        task.status === "Active"
+                                        reminder.status === "Active"
                                             ? "1px solid #4d689366"
-                                            : task.status === "Paused"
+                                            : reminder.status === "Paused"
                                                 ? "1px solid #45575b66"
                                                 : "1px solid #728a6e66",
                                 }}
                             >
-                                {task.status}
+                                {reminder.status}
                             </span>
                         )}
                     </div>
 
                     {/* ASSOCIATIONS */}
-                    {task.linkedItems?.length > 0 && (
+                    {reminder.linkedItems?.length > 0 && (
                         <>
                             <div
                                 style={{
@@ -647,10 +647,10 @@ function CalendarTaskDetailsModal({
                             marginBottom: "24px",
                         }}
                     >
-                        {!task.completed ? (
+                        {!reminder.completed ? (
                             <button
                                 onClick={
-                                    handleCompleteTask
+                                    handleCompleteReminder
                                 }
                                 style={{
                                     padding: "10px 18px",
@@ -763,7 +763,7 @@ function CalendarTaskDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {task.description ||
+                            {reminder.description ||
                                 "No description provided."}
                         </p>
                     </div>
@@ -795,7 +795,7 @@ function CalendarTaskDetailsModal({
                             }}
                         >
                             {new Date(
-                                task.dueDate
+                                reminder.dueDate
                             ).toLocaleDateString(
                                 "en-US",
                                 {
@@ -863,7 +863,7 @@ function CalendarTaskDetailsModal({
                         Delete
                     </button>
 
-                    {!task.completed ? (
+                    {!reminder.completed ? (
                         <button
                             onClick={() => {
                                 onClose();
@@ -916,7 +916,7 @@ function CalendarTaskDetailsModal({
                     ) : (
                         <button
                             onClick={
-                                handleRestoreTask
+                                handleRestoreReminder
                             }
                             style={{
                                 padding: "11px 18px",
@@ -1017,7 +1017,7 @@ function CalendarTaskDetailsModal({
                                 fontSize: "0.95rem",
                             }}
                         >
-                            Delete task?
+                            Delete reminder?
                         </h3>
 
                         <p
@@ -1098,7 +1098,7 @@ function CalendarTaskDetailsModal({
 
                             <button
                                 onClick={
-                                    handleDeleteTask
+                                    handleDeleteReminder
                                 }
                                 style={{
                                     padding: "11px 18px",
@@ -1147,4 +1147,4 @@ function CalendarTaskDetailsModal({
     );
 }
 
-export default CalendarTaskDetailsModal;
+export default CalendarReminderDetailsModal;
