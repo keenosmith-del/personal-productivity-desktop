@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Target, } from "lucide-react";
 import { useState } from "react";
 
 function GoalDetailsModal({
@@ -25,17 +25,28 @@ function GoalDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        goal?.comple
-            ? new Date(
-                goal.createdAt
-            ).toLocaleDateString(
-                "en-US",
-                {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                }
-            )
+        goal?.completedDate
+            ? (() => {
+                const [
+                    day,
+                    month,
+                    year,
+                ] =
+                    goal.completedDate.split("/");
+
+                return new Date(
+                    year,
+                    month - 1,
+                    day
+                ).toLocaleDateString(
+                    "en-US",
+                    {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                    }
+                );
+            })()
             : null;
 
     const [showDeleteConfirm,
@@ -210,8 +221,8 @@ function GoalDetailsModal({
                     >
                         <div
                             style={{
-                                width: "88px",
-                                height: "88px",
+                                width: "72px",
+                                height: "72px",
 
                                 borderRadius: "50%",
 
@@ -225,12 +236,20 @@ function GoalDetailsModal({
                                 border:
                                     "1px solid rgba(255,255,255,0.12)",
 
-                                fontSize: "2rem",
+                                backdropFilter:
+                                    "blur(24px)",
 
-                                fontWeight: "300",
+                                WebkitBackdropFilter:
+                                    "blur(24px)",
+
+                                boxShadow:
+                                    "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            ✓
+                            <Target
+                                size={28}
+                                strokeWidth={1.8}
+                            />
                         </div>
                     </div>
 
@@ -271,7 +290,7 @@ function GoalDetailsModal({
                             }}
                         >
                             Completed on{" "}
-                            {goal.completedDate}
+                            {formattedCompletedDate}
                         </p>
                     )}
 
@@ -401,17 +420,6 @@ function GoalDetailsModal({
                         )}
                     </div>
 
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
 
                     {/* ASSOCIATIONS */}
                     {goal.linkedItems?.length > 0 && (

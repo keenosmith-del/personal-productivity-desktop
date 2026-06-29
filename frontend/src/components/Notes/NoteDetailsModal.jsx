@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { NotebookPen, X } from "lucide-react";
 import { useState } from "react";
 
 function NoteDetailsModal({
@@ -210,8 +210,8 @@ function NoteDetailsModal({
                     >
                         <div
                             style={{
-                                width: "88px",
-                                height: "88px",
+                                width: "72px",
+                                height: "72px",
 
                                 borderRadius: "50%",
 
@@ -225,12 +225,20 @@ function NoteDetailsModal({
                                 border:
                                     "1px solid rgba(255,255,255,0.12)",
 
-                                fontSize: "2rem",
+                                backdropFilter:
+                                    "blur(24px)",
 
-                                fontWeight: "300",
+                                WebkitBackdropFilter:
+                                    "blur(24px)",
+
+                                boxShadow:
+                                    "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            ✓
+                            <NotebookPen
+                                size={28}
+                                strokeWidth={1.8}
+                            />
                         </div>
                     </div>
 
@@ -400,18 +408,6 @@ function NoteDetailsModal({
                             </span>
                         )}
                     </div>
-
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
 
                     {note.linkedItems?.length > 0 && (
                         <>

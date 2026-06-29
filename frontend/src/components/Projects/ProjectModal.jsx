@@ -7,6 +7,7 @@ import {
 import {
   X,
   Calendar,
+  FolderKanban,
 } from "lucide-react";
 
 import MiniCalendarModal from "../MiniCalendarModal";
@@ -365,37 +366,46 @@ function ProjectModal({
           }}
         >
 
-          {/* AVATAR */}
+          {/* Avatar */}
           <div
             style={{
               display: "flex",
               justifyContent: "center",
+
               marginBottom: "18px",
             }}
           >
-            {/* AVATAR CIRCLE */}
             <div
               style={{
-                width: "88px",
-                height: "88px",
+                width: "72px",
+                height: "72px",
 
                 borderRadius: "50%",
 
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+
                 background:
-                  "rgba(255,255,255,0.05)",
+                  "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
                 border:
-                  "1px solid rgba(255,255,255,0.08)",
+                  "1px solid rgba(255,255,255,0.12)",
 
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                backdropFilter:
+                  "blur(24px)",
 
-                fontSize: "1.4rem",
-                fontWeight: "300",
+                WebkitBackdropFilter:
+                  "blur(24px)",
+
+                boxShadow:
+                  "0 12px 30px rgba(0,0,0,0.18)",
               }}
             >
-              ✓
+              <FolderKanban
+                size={28}
+                strokeWidth={1.8}
+              />
             </div>
           </div>
 

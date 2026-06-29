@@ -7,6 +7,7 @@ import {
 import {
     X,
     Calendar,
+    NotebookPen,
 } from "lucide-react";
 
 import MiniCalendarModal from "../MiniCalendarModal";

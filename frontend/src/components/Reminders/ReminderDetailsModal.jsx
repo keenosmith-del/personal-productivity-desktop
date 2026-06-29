@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Bell, } from "lucide-react";
 import { useState } from "react";
 
 function ReminderDetailsModal({
@@ -25,17 +25,28 @@ function ReminderDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        reminder?.comple
-            ? new Date(
-                reminder.createdAt
-            ).toLocaleDateString(
-                "en-US",
-                {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                }
-            )
+        reminder?.completedDate
+            ? (() => {
+                const [
+                    day,
+                    month,
+                    year,
+                ] =
+                    reminder.completedDate.split("/");
+
+                return new Date(
+                    year,
+                    month - 1,
+                    day
+                ).toLocaleDateString(
+                    "en-US",
+                    {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                    }
+                );
+            })()
             : null;
 
     const linkedItemStyle = {
@@ -210,8 +221,8 @@ function ReminderDetailsModal({
                     >
                         <div
                             style={{
-                                width: "88px",
-                                height: "88px",
+                                width: "72px",
+                                height: "72px",
 
                                 borderRadius: "50%",
 
@@ -225,12 +236,20 @@ function ReminderDetailsModal({
                                 border:
                                     "1px solid rgba(255,255,255,0.12)",
 
-                                fontSize: "2rem",
+                                backdropFilter:
+                                    "blur(24px)",
 
-                                fontWeight: "300",
+                                WebkitBackdropFilter:
+                                    "blur(24px)",
+
+                                boxShadow:
+                                    "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            ✓
+                            <Bell
+                                size={28}
+                                strokeWidth={1.8}
+                            />
                         </div>
                     </div>
 
@@ -271,7 +290,7 @@ function ReminderDetailsModal({
                             }}
                         >
                             Completed on{" "}
-                            {reminder.completedDate}
+                            {formattedCompletedDate}
                         </p>
                     )}
 
@@ -401,17 +420,6 @@ function ReminderDetailsModal({
                         )}
                     </div>
 
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
 
                     {reminder.linkedItems?.length > 0 && (
                         <>

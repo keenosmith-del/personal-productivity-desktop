@@ -1,19 +1,28 @@
-import { X, FolderKanban, } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
-function ProjectDetailsModal({
-    project,
+import {
+    CheckSquare,
+    FolderKanban,
+    Target,
+    Bell,
+} from "lucide-react";
+
+import {
+    deleteTask,
+    updateTask,
+} from "../../services/taskService";
+
+function CalendarTaskDetailsModal({
+    task,
     onClose,
-    onEditProject,
-    onDeleteProject,
-    onCompleteProject,
-    onRestoreProject,
+    refreshCalendarData,
     setToast,
 }) {
     const formattedCreatedDate =
-        project?.createdAt
+        task?.createdAt
             ? new Date(
-                project.createdAt
+                task.createdAt
             ).toLocaleDateString(
                 "en-US",
                 {
@@ -25,14 +34,14 @@ function ProjectDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        project?.completedDate
+        task?.completedDate
             ? (() => {
                 const [
                     day,
                     month,
                     year,
                 ] =
-                    project.completedDate.split("/");
+                    task.completedDate.split("/");
 
                 return new Date(
                     year,
@@ -48,10 +57,6 @@ function ProjectDetailsModal({
                 );
             })()
             : null;
-
-    const [showDeleteConfirm,
-        setShowDeleteConfirm] =
-        useState(false);
 
     const linkedItemStyle = {
         width: "35px",
@@ -83,10 +88,116 @@ function ProjectDetailsModal({
     };
 
     const visibleLinks =
-        project.linkedItems?.slice(0, 4) || [];
+        task.linkedItems?.slice(0, 2) || [];
 
     const remainingLinks =
-        (project.linkedItems?.length || 0) - 4;
+        (task.linkedItems?.length || 0) - 2;
+
+    const [showDeleteConfirm,
+        setShowDeleteConfirm] =
+        useState(false);
+
+    const handleDeleteTask =
+        async () => {
+            try {
+                await deleteTask(
+                    task._id
+                );
+
+                setToast(
+                    "Task deleted"
+                );
+
+                setTimeout(() => {
+                    setToast("");
+                }, 4000);
+
+                await refreshCalendarData();
+
+                setShowDeleteConfirm(
+                    false
+                );
+
+                onClose();
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    const handleCompleteTask =
+        async () => {
+            try {
+                await updateTask(
+                    task._id,
+                    {
+                        ...task,
+
+                        completed: true,
+
+                        completedDate:
+                            new Date()
+                                .toLocaleDateString(
+                                    "en-GB"
+                                ),
+
+                        status:
+                            "Complete",
+                    }
+                );
+
+                task.completed =
+                    true;
+
+                task.completedDate =
+                    new Date()
+                        .toLocaleDateString(
+                            "en-GB"
+                        );
+
+                task.status =
+                    "Complete";
+
+                await refreshCalendarData();
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+    const handleRestoreTask =
+        async () => {
+            try {
+                await updateTask(
+                    task._id,
+                    {
+                        ...task,
+
+                        completed: false,
+
+                        completedDate:
+                            null,
+
+                        status:
+                            "Active",
+                    }
+                );
+
+                task.completed =
+                    false;
+
+                task.completedDate =
+                    null;
+
+                task.status =
+                    "Active";
+
+                await refreshCalendarData();
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
     return (
         <div
@@ -114,7 +225,7 @@ function ProjectDetailsModal({
                     width: "500px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                        "linear-gradient(135deg, rgba(28, 32, 36, 0.7), rgba(18, 20, 24, 0.7))",
 
                     border:
                         "1px solid rgba(255,255,255,0.10)",
@@ -146,7 +257,7 @@ function ProjectDetailsModal({
                                 fontWeight: "400",
                             }}
                         >
-                            Project Details
+                            Task Details
                         </h2>
 
                         <p
@@ -158,7 +269,7 @@ function ProjectDetailsModal({
                                 opacity: 0.55,
                             }}
                         >
-                            View project information
+                            View task information
                         </p>
                     </div>
 
@@ -246,7 +357,7 @@ function ProjectDetailsModal({
                                     "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            <FolderKanban
+                            <CheckSquare
                                 size={28}
                                 strokeWidth={1.8}
                             />
@@ -273,7 +384,7 @@ function ProjectDetailsModal({
                         </p>
                     )}
 
-                    {project.completedDate && (
+                    {task.completedDate && (
                         <p
                             style={{
                                 marginTop: "2px",
@@ -310,7 +421,7 @@ function ProjectDetailsModal({
                             marginBottom: "14px",
                         }}
                     >
-                        {project.title}
+                        {task.title}
                     </h3>
 
                     {/* Chips */}
@@ -340,25 +451,25 @@ function ProjectDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    project.category === "Work"
+                                    task.category === "Work"
                                         ? "#466a6d33"
-                                        : project.category === "Study"
+                                        : task.category === "Study"
                                             ? "#536b8333"
-                                            : project.category === "Personal"
+                                            : task.category === "Personal"
                                                 ? "#6f5f7a33"
                                                 : "#57707a33",
 
                                 border:
-                                    project.category === "Work"
+                                    task.category === "Work"
                                         ? "1px solid #466a6d66"
-                                        : project.category === "Study"
+                                        : task.category === "Study"
                                             ? "1px solid #536b8366"
-                                            : project.category === "Personal"
+                                            : task.category === "Personal"
                                                 ? "1px solid #6f5f7a66"
                                                 : "1px solid #57707a66",
                             }}
                         >
-                            {project.category}
+                            {task.category}
                         </span>
 
                         <span
@@ -372,24 +483,24 @@ function ProjectDetailsModal({
                                 fontSize: "0.7rem",
 
                                 background:
-                                    project.priority === "Low"
+                                    task.priority === "Low"
                                         ? "#273c4133"
-                                        : project.priority === "Medium"
+                                        : task.priority === "Medium"
                                             ? "#5e687433"
                                             : "#6b544733",
 
                                 border:
-                                    project.priority === "Low"
+                                    task.priority === "Low"
                                         ? "1px solid #273c4166"
-                                        : project.priority === "Medium"
+                                        : task.priority === "Medium"
                                             ? "1px solid #5e687466"
                                             : "1px solid #6b544766",
                             }}
                         >
-                            {project.priority}
+                            {task.priority}
                         </span>
 
-                        {!project.completed && (
+                        {!task.completed && (
                             <span
                                 style={{
                                     padding: "6px 12px",
@@ -401,27 +512,27 @@ function ProjectDetailsModal({
                                     fontSize: "0.7rem",
 
                                     background:
-                                        project.status === "Active"
+                                        task.status === "Active"
                                             ? "#4d689333"
-                                            : project.status === "Paused"
+                                            : task.status === "Paused"
                                                 ? "#45575b33"
                                                 : "#728a6e33",
 
                                     border:
-                                        project.status === "Active"
+                                        task.status === "Active"
                                             ? "1px solid #4d689366"
-                                            : project.status === "Paused"
+                                            : task.status === "Paused"
                                                 ? "1px solid #45575b66"
                                                 : "1px solid #728a6e66",
                                 }}
                             >
-                                {project.status}
+                                {task.status}
                             </span>
                         )}
                     </div>
 
                     {/* ASSOCIATIONS */}
-                    {project.linkedItems?.length > 0 && (
+                    {task.linkedItems?.length > 0 && (
                         <>
                             <div
                                 style={{
@@ -488,6 +599,32 @@ function ProjectDetailsModal({
 
                                             zIndex: 10,
                                         }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform =
+                                                "translateY(-1px) scale(1.08)";
+
+                                            e.currentTarget.style.border =
+                                                "1px solid rgba(255,255,255,0.12)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "0 8px 20px rgba(0,0,0,0.25)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform =
+                                                "translateY(0) scale(1)";
+
+                                            e.currentTarget.style.border =
+                                                "1px solid rgba(255,255,255,0.06)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "none";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-secondary)";
+                                        }}
                                     >
                                         +{remainingLinks}
                                     </div>
@@ -517,10 +654,10 @@ function ProjectDetailsModal({
                             marginBottom: "24px",
                         }}
                     >
-                        {!project.completed ? (
+                        {!task.completed ? (
                             <button
-                                onClick={() =>
-                                    onCompleteProject(project)
+                                onClick={
+                                    handleCompleteTask
                                 }
                                 style={{
                                     padding: "10px 18px",
@@ -575,6 +712,14 @@ function ProjectDetailsModal({
 
                                     transition: "all 0.2s ease",
                                 }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+                                }}
                             >
                                 ✓ Completed
                             </button>
@@ -625,7 +770,7 @@ function ProjectDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {project.description ||
+                            {task.description ||
                                 "No description provided."}
                         </p>
                     </div>
@@ -656,18 +801,16 @@ function ProjectDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {project.dueDate
-                                ? new Date(
-                                    project.dueDate
-                                ).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                        month: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                    }
-                                )
-                                : "No due date"}
+                            {new Date(
+                                task.dueDate
+                            ).toLocaleDateString(
+                                "en-US",
+                                {
+                                    month: "long",
+                                    day: "numeric",
+                                    year: "numeric",
+                                }
+                            )} {/* SHOWS INVALID DATE */}
                         </p>
                     </div>
                 </div>
@@ -727,10 +870,9 @@ function ProjectDetailsModal({
                         Delete
                     </button>
 
-                    {!project.completed ? (
+                    {!task.completed ? (
                         <button
                             onClick={() => {
-                                onEditProject(project);
                                 onClose();
                             }}
                             style={{
@@ -776,13 +918,13 @@ function ProjectDetailsModal({
                                     "1px solid rgba(255,255,255,0.10)";
                             }}
                         >
-                            Edit
+                            Cancel
                         </button>
                     ) : (
                         <button
-                            onClick={() => {
-                                onRestoreProject(project);
-                            }}
+                            onClick={
+                                handleRestoreTask
+                            }
                             style={{
                                 padding: "11px 18px",
 
@@ -831,198 +973,185 @@ function ProjectDetailsModal({
                     )}
                 </div>
             </div>
-            {
-                showDeleteConfirm && (
+            {showDeleteConfirm && (
+                <div
+                    onClick={() =>
+                        setShowDeleteConfirm(false)
+                    }
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+
+                        background:
+                            "rgba(0,0,0,0.8)",
+
+                        backdropFilter:
+                            "blur(20px)",
+
+                        display: "flex",
+
+                        justifyContent:
+                            "center",
+
+                        alignItems:
+                            "center",
+
+                        zIndex: 3000,
+                    }}
+                >
                     <div
-                        onClick={() =>
-                            setShowDeleteConfirm(false)
+                        onClick={(e) =>
+                            e.stopPropagation()
                         }
                         style={{
-                            position: "fixed",
-                            inset: 0,
+                            width: "400px",
+
+                            padding: "28px",
+
+                            borderRadius: "24px",
 
                             background:
-                                "rgba(0,0,0,0.8)",
+                                "rgba(20,20,20,0.90)",
 
-                            backdropFilter:
-                                "blur(20px)",
-
-                            display: "flex",
-
-                            justifyContent:
-                                "center",
-
-                            alignItems:
-                                "center",
-
-                            zIndex: 3000,
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
                         }}
                     >
-                        <div
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
+                        <h3
                             style={{
-                                width: "400px",
-
-                                padding: "28px",
-
-                                borderRadius: "24px",
-
-                                background:
-                                    "rgba(20,20,20,0.90)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                marginBottom: "12px",
+                                fontWeight: "400",
+                                fontSize: "0.95rem",
                             }}
                         >
-                            <h3
-                                style={{
-                                    marginBottom: "12px",
-                                    fontWeight: "400",
-                                    fontSize: "0.95rem",
-                                }}
-                            >
-                                Delete project?
-                            </h3>
+                            Delete task?
+                        </h3>
 
-                            <p
-                                style={{
-                                    color: "var(--text-secondary)",
+                        <p
+                            style={{
+                                color: "var(--text-secondary)",
 
-                                    marginBottom: "24px",
+                                marginBottom: "24px",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                opacity: 0.55,
+                            }}
+                        >
+                            This action cannot be undone.
+                        </p>
+
+                        <div
+                            style={{
+                                display: "flex",
+
+                                justifyContent:
+                                    "flex-end",
+
+                                gap: "12px",
+                            }}
+                        >
+                            <button
+                                onClick={() =>
+                                    setShowDeleteConfirm(false)
+                                }
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    color:
+                                        "var(--text-primary)",
 
                                     fontSize: "0.8rem",
 
                                     fontWeight: "300",
 
-                                    opacity: 0.55,
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.14)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.18)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.08)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.10)";
                                 }}
                             >
-                                This action cannot be undone.
-                            </p>
+                                Cancel
+                            </button>
 
-                            <div
+                            <button
+                                onClick={
+                                    handleDeleteTask
+                                }
                                 style={{
-                                    display: "flex",
+                                    padding: "11px 18px",
 
-                                    justifyContent:
-                                        "flex-end",
+                                    borderRadius: "999px",
 
-                                    gap: "12px",
+                                    background:
+                                        "rgba(255,77,77,0.12)",
+
+                                    border:
+                                        "1px solid rgba(255,77,77,0.25)",
+
+                                    color: "var(--danger)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.20)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.12)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                <button
-                                    onClick={() =>
-                                        setShowDeleteConfirm(false)
-                                    }
-                                    style={{
-                                        padding: "11px 18px",
-
-                                        borderRadius: "999px",
-
-                                        background:
-                                            "rgba(255,255,255,0.08)",
-
-                                        border:
-                                            "1px solid rgba(255,255,255,0.10)",
-
-                                        color:
-                                            "var(--text-primary)",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.14)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.18)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.08)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.10)";
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        onDeleteProject(project._id);
-
-                                        setToast(
-                                            "Project deleted"
-                                        );
-
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
-
-                                        setShowDeleteConfirm(false);
-
-                                        onClose();
-                                    }}
-                                    style={{
-                                        padding: "11px 18px",
-
-                                        borderRadius: "999px",
-
-                                        background:
-                                            "rgba(255,77,77,0.12)",
-
-                                        border:
-                                            "1px solid rgba(255,77,77,0.25)",
-
-                                        color: "var(--danger)",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.20)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.12)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                    }}
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                                Delete
+                            </button>
                         </div>
                     </div>
-                )
+                </div>
+            )
             }
         </div>
     );
 }
 
-export default ProjectDetailsModal;
+export default CalendarTaskDetailsModal;

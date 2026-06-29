@@ -5,10 +5,18 @@ import {
     Bell,
 } from "lucide-react";
 
+import { useState } from "react";
+
+import CalendarTaskDetailsModal from "./CalendarTaskDetailsModal";
+
 function CalendarModal({
     selectedDate,
     events = [],
     onClose,
+
+    setToast,
+
+    refreshCalendarData,
 }) {
     const eventCounts = events.reduce(
         (acc, event) => {
@@ -19,6 +27,11 @@ function CalendarModal({
         },
         {}
     );
+
+    const [
+        selectedTask,
+        setSelectedTask,
+    ] = useState(null);
 
     const linkedItemStyle = {
         width: "35px",
@@ -284,7 +297,7 @@ function CalendarModal({
 
                 {/* CHIPS REMOVED */}
 
-                {/* FLOATING ACTION PILL */}
+                {/* FLOATING ACTION PILL + */}
                 <div
                     style={{
                         display: "flex",
@@ -294,34 +307,42 @@ function CalendarModal({
                         marginBottom: "20px",
                     }}
                 >
-                    <div
-                        style={{
-                            display: "flex",
-
-                            gap: "18px",
-
-                            padding: "8px 14px",
-
-                            borderRadius: "999px",
-
-                            background:
-                                "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            backdropFilter:
-                                "blur(24px)",
-                        }}
-                    >
+                    <div>
                         <button
                             style={{
-                                background: "none",
-                                border: "none",
+                                width: "32px",
+                                height: "32px",
+
+                                borderRadius: "999px",
+
+                                border:
+                                    "1px solid rgba(255,255,255,0.08)",
+
+                                background:
+                                    "rgba(255,255,255,0.04)",
+
                                 color:
                                     "var(--text-secondary)",
+
                                 cursor: "pointer",
-                                fontSize: "0.9rem",
+
+                                fontSize: "0.85rem",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.10)";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1.05)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
+
+                                e.currentTarget.style.transform =
+                                    "scale(1)";
                             }}
                         >
                             +
@@ -405,6 +426,11 @@ function CalendarModal({
                                 return (
                                     <div
                                         key={event.title}
+                                        onClick={() => {
+                                            if (event.type === "task") {
+                                                setSelectedTask(event);
+                                            }
+                                        }}
                                         style={{
                                             background: `
                                                 linear-gradient(
@@ -617,6 +643,16 @@ function CalendarModal({
                     </button>
                 </div>
             </div>
+            {selectedTask && (
+                <CalendarTaskDetailsModal
+                    task={selectedTask}
+                    onClose={() => setSelectedTask(null)}
+                    setToast={setToast}
+                    refreshCalendarData={
+                        refreshCalendarData
+                    }
+                />
+            )}
         </div>
     );
 }

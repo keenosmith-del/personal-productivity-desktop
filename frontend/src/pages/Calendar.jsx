@@ -5,8 +5,8 @@ import {
 } from "react";
 
 import CalendarGrid from "../components/Calendar/CalendarGrid";
-
 import CalendarModal from "../components/Calendar/CalendarModal";
+import Toast from "../components/Toast";
 
 import {
   getProjects,
@@ -53,6 +53,11 @@ function Calendar() {
     calendarEvents,
     setCalendarEvents,
   ] = useState({});
+
+  const [
+    toast,
+    setToast,
+  ] = useState("");
 
   const loadCalendarData =
     async () => {
@@ -101,146 +106,61 @@ function Calendar() {
           );
         };
 
-        projects
-          .filter(
-            (project) => !project.completed
-          )
-          .forEach((project) => {
-            addEvent(
-              project.dueDate,
-              {
-                _id: project._id,
+        projects.forEach((project) => {
+          addEvent(
+            project.dueDate,
+            {
+              ...project,
 
-                title: project.title,
+              linkedItems:
+                project.linkedItems || [],
 
-                description:
-                  project.description,
+              type: "project",
+            }
+          );
+        });
 
-                category:
-                  project.category,
+        tasks.forEach((task) => {
+          addEvent(
+            task.dueDate,
+            {
+              ...task,
 
-                priority:
-                  project.priority,
+              linkedItems:
+                task.linkedItems || [],
 
-                status:
-                  project.status,
+              type: "task",
+            }
+          );
+        });
 
-                linkedItems:
-                  project.linkedItems || [],
+        goals.forEach((goal) => {
+          addEvent(
+            goal.dueDate,
+            {
+              ...goal,
 
-                completed:
-                  project.completed,
+              linkedItems:
+                goal.linkedItems || [],
 
-                type: "project",
-              }
-            );
-          });
+              type: "goal",
+            }
+          );
+        });
 
-        tasks
-          .filter(
-            (task) => !task.completed
-          )
-          .forEach((task) => {
-            addEvent(
-              task.dueDate,
-              {
-                _id: task._id,
+        reminders.forEach((reminder) => {
+          addEvent(
+            reminder.dueDate,
+            {
+              ...reminder,
 
-                title: task.title,
+              linkedItems:
+                reminder.linkedItems || [],
 
-                description:
-                  task.description,
-
-                category:
-                  task.category,
-
-                priority:
-                  task.priority,
-
-                status:
-                  task.status,
-
-                linkedItems:
-                  task.linkedItems || [],
-
-                completed:
-                  task.completed,
-
-                type: "task",
-              }
-            );
-          });
-
-        goals
-          .filter(
-            (goal) => !goal.completed
-          )
-          .forEach((goal) => {
-            addEvent(
-              goal.dueDate,
-              {
-                _id: goal._id,
-
-                title: goal.title,
-
-                description:
-                  goal.description,
-
-                category:
-                  goal.category,
-
-                priority:
-                  goal.priority,
-
-                status:
-                  goal.status,
-
-                linkedItems:
-                  goal.linkedItems || [],
-
-                completed:
-                  goal.completed,
-
-                type: "goal",
-              }
-            );
-          });
-
-        reminders
-          .filter(
-            (reminder) =>
-              !reminder.completed
-          )
-          .forEach((reminder) => {
-            addEvent(
-              reminder.dueDate,
-              {
-                _id: reminder._id,
-
-                title: reminder.title,
-
-                description:
-                  reminder.description,
-
-                category:
-                  reminder.category,
-
-                priority:
-                  reminder.priority,
-
-                status:
-                  reminder.status,
-
-                linkedItems:
-                  reminder.linkedItems || [],
-
-                completed:
-                  reminder.completed,
-
-                type: "reminder",
-              }
-            );
-          });
+              type: "reminder",
+            }
+          );
+        });
 
         setCalendarEvents(
           events
@@ -304,8 +224,17 @@ function Calendar() {
           onClose={() =>
             setShowCalendarModal(false)
           }
+
+          setToast={setToast}
+
+          refreshCalendarData={
+            loadCalendarData
+          }
         />
       )}
+      <Toast
+        message={toast}
+      />
     </MainLayout>
   );
 }

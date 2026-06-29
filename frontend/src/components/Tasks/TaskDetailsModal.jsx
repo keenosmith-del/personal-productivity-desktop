@@ -1,6 +1,10 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 
+import {
+    CheckSquare,
+} from "lucide-react";
+
 function TaskDetailsModal({
     task,
     onClose,
@@ -25,17 +29,28 @@ function TaskDetailsModal({
             : null;
 
     const formattedCompletedDate =
-        task?.comple
-            ? new Date(
-                task.createdAt
-            ).toLocaleDateString(
-                "en-US",
-                {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                }
-            )
+        task?.completedDate
+            ? (() => {
+                const [
+                    day,
+                    month,
+                    year,
+                ] =
+                    task.completedDate.split("/");
+
+                return new Date(
+                    year,
+                    month - 1,
+                    day
+                ).toLocaleDateString(
+                    "en-US",
+                    {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                    }
+                );
+            })()
             : null;
 
     const linkedItemStyle = {
@@ -210,8 +225,8 @@ function TaskDetailsModal({
                     >
                         <div
                             style={{
-                                width: "88px",
-                                height: "88px",
+                                width: "72px",
+                                height: "72px",
 
                                 borderRadius: "50%",
 
@@ -225,12 +240,20 @@ function TaskDetailsModal({
                                 border:
                                     "1px solid rgba(255,255,255,0.12)",
 
-                                fontSize: "2rem",
+                                backdropFilter:
+                                    "blur(24px)",
 
-                                fontWeight: "300",
+                                WebkitBackdropFilter:
+                                    "blur(24px)",
+
+                                boxShadow:
+                                    "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            ✓
+                            <CheckSquare
+                                size={28}
+                                strokeWidth={1.8}
+                            />
                         </div>
                     </div>
 
@@ -271,7 +294,7 @@ function TaskDetailsModal({
                             }}
                         >
                             Completed on{" "}
-                            {task.completedDate}
+                            {formattedCompletedDate}
                         </p>
                     )}
 
@@ -400,18 +423,6 @@ function TaskDetailsModal({
                             </span>
                         )}
                     </div>
-
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
 
                     {/* ASSOCIATIONS */}
                     {task.linkedItems?.length > 0 && (
@@ -649,8 +660,8 @@ function TaskDetailsModal({
                                 margin: 0,
                             }}
                         >
-                            {task.dueDate
-                                ? new Date(
+                            {
+                                new Date(
                                     task.dueDate
                                 ).toLocaleDateString(
                                     "en-US",
@@ -660,7 +671,7 @@ function TaskDetailsModal({
                                         year: "numeric",
                                     }
                                 )
-                                : "No due date"}
+                            }
                         </p>
                     </div>
                 </div>
@@ -824,195 +835,194 @@ function TaskDetailsModal({
                     )}
                 </div>
             </div>
-            {
-                showDeleteConfirm && (
+            {showDeleteConfirm && (
+                <div
+                    onClick={() =>
+                        setShowDeleteConfirm(false)
+                    }
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+
+                        background:
+                            "rgba(0,0,0,0.8)",
+
+                        backdropFilter:
+                            "blur(20px)",
+
+                        display: "flex",
+
+                        justifyContent:
+                            "center",
+
+                        alignItems:
+                            "center",
+
+                        zIndex: 3000,
+                    }}
+                >
                     <div
-                        onClick={() =>
-                            setShowDeleteConfirm(false)
+                        onClick={(e) =>
+                            e.stopPropagation()
                         }
                         style={{
-                            position: "fixed",
-                            inset: 0,
+                            width: "400px",
+
+                            padding: "28px",
+
+                            borderRadius: "24px",
 
                             background:
-                                "rgba(0,0,0,0.8)",
+                                "rgba(20,20,20,0.90)",
 
-                            backdropFilter:
-                                "blur(20px)",
-
-                            display: "flex",
-
-                            justifyContent:
-                                "center",
-
-                            alignItems:
-                                "center",
-
-                            zIndex: 3000,
+                            border:
+                                "1px solid rgba(255,255,255,0.08)",
                         }}
                     >
-                        <div
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
+                        <h3
                             style={{
-                                width: "400px",
-
-                                padding: "28px",
-
-                                borderRadius: "24px",
-
-                                background:
-                                    "rgba(20,20,20,0.90)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                marginBottom: "12px",
+                                fontWeight: "400",
+                                fontSize: "0.95rem",
                             }}
                         >
-                            <h3
-                                style={{
-                                    marginBottom: "12px",
-                                    fontWeight: "400",
-                                    fontSize: "0.95rem",
-                                }}
-                            >
-                                Delete task?
-                            </h3>
+                            Delete task?
+                        </h3>
 
-                            <p
-                                style={{
-                                    color: "var(--text-secondary)",
+                        <p
+                            style={{
+                                color: "var(--text-secondary)",
 
-                                    marginBottom: "24px",
+                                marginBottom: "24px",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                opacity: 0.55,
+                            }}
+                        >
+                            This action cannot be undone.
+                        </p>
+
+                        <div
+                            style={{
+                                display: "flex",
+
+                                justifyContent:
+                                    "flex-end",
+
+                                gap: "12px",
+                            }}
+                        >
+                            <button
+                                onClick={() =>
+                                    setShowDeleteConfirm(false)
+                                }
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    color:
+                                        "var(--text-primary)",
 
                                     fontSize: "0.8rem",
 
                                     fontWeight: "300",
 
-                                    opacity: 0.55,
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.14)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.18)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.08)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.10)";
                                 }}
                             >
-                                This action cannot be undone.
-                            </p>
+                                Cancel
+                            </button>
 
-                            <div
+                            <button
+                                onClick={() => {
+                                    onDeleteTask(task._id);
+
+                                    setToast(
+                                        "Task deleted"
+                                    );
+
+                                    setTimeout(() => {
+                                        setToast("");
+                                    }, 4000);
+
+                                    setShowDeleteConfirm(false);
+
+                                    onClose();
+                                }}
                                 style={{
-                                    display: "flex",
+                                    padding: "11px 18px",
 
-                                    justifyContent:
-                                        "flex-end",
+                                    borderRadius: "999px",
 
-                                    gap: "12px",
+                                    background:
+                                        "rgba(255,77,77,0.12)",
+
+                                    border:
+                                        "1px solid rgba(255,77,77,0.25)",
+
+                                    color: "var(--danger)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.20)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.12)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                <button
-                                    onClick={() =>
-                                        setShowDeleteConfirm(false)
-                                    }
-                                    style={{
-                                        padding: "11px 18px",
-
-                                        borderRadius: "999px",
-
-                                        background:
-                                            "rgba(255,255,255,0.08)",
-
-                                        border:
-                                            "1px solid rgba(255,255,255,0.10)",
-
-                                        color:
-                                            "var(--text-primary)",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.14)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.18)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.08)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.10)";
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        onDeleteTask(task._id);
-
-                                        setToast(
-                                            "Task deleted"
-                                        );
-
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
-
-                                        setShowDeleteConfirm(false);
-
-                                        onClose();
-                                    }}
-                                    style={{
-                                        padding: "11px 18px",
-
-                                        borderRadius: "999px",
-
-                                        background:
-                                            "rgba(255,77,77,0.12)",
-
-                                        border:
-                                            "1px solid rgba(255,77,77,0.25)",
-
-                                        color: "var(--danger)",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.20)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.12)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                    }}
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                                Delete
+                            </button>
                         </div>
                     </div>
-                )
+                </div>
+            )
             }
         </div>
     );
