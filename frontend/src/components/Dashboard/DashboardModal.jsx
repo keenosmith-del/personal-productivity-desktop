@@ -1,11 +1,275 @@
-import { Trash2, X, } from "lucide-react";
+import {
+    CheckSquare,
+    FolderKanban,
+    Target,
+    Bell,
+    Check,
+    CircleAlert,
+    Shield,
+    Pause,
+    LoaderCircle,
+} from "lucide-react";
+
+import { useState } from "react";
+
+import TaskDetailsModal from "../Tasks/TaskDetailsModal";
+import ProjectDetailsModal from "../Projects/ProjectDetailsModal";
+import GoalDetailsModal from "../Goals/GoalDetailsModal";
+import ReminderDetailsModal from "../Reminders/ReminderDetailsModal";
 
 function DashboardModal({
     title,
-    items,
+    subtitle,
+
+    events,
+
+    tasks,
+    projects,
+    goals,
+    reminders,
+
+    remainingCount,
+
+    expanded,
+    onShowAll,
+    onShowLess,
+
     onClose,
-    onNavigate,
 }) {
+    // props
+    const date = new Date();
+
+    const [selectedTask, setSelectedTask] =
+        useState(null);
+
+    const [selectedProject, setSelectedProject] =
+        useState(null);
+
+    const [selectedGoal, setSelectedGoal] =
+        useState(null);
+
+    const [selectedReminder, setSelectedReminder] =
+        useState(null);
+
+    const handleEventClick = (event) => {
+        switch (event.type) {
+            case "task":
+                setSelectedTask(event);
+                break;
+
+            case "project":
+                setSelectedProject(event);
+                break;
+
+            case "goal":
+                setSelectedGoal(event);
+                break;
+
+            case "reminder":
+                setSelectedReminder(event);
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    const eventIcons = {
+        task: CheckSquare,
+        project: FolderKanban,
+        goal: Target,
+        reminder: Bell,
+    };
+
+    const formatDueDate = (dueDate) => {
+        if (!dueDate) return "";
+
+        const today = new Date();
+        const tomorrow = new Date();
+
+        tomorrow.setDate(
+            tomorrow.getDate() + 1
+        );
+
+        const eventDate =
+            new Date(dueDate);
+
+        const todayString =
+            today.toDateString();
+
+        const tomorrowString =
+            tomorrow.toDateString();
+
+        if (
+            eventDate.toDateString() ===
+            todayString
+        ) {
+            return "Today";
+        }
+
+        if (
+            eventDate.toDateString() ===
+            tomorrowString
+        ) {
+            return "Tomorrow";
+        }
+
+        return eventDate.toLocaleDateString(
+            "en-GB",
+            {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }
+        );
+    };
+
+    // completedDate in (Event)Modal changes format of completedDate
+    const formatCompletedDate = (
+        completedDate
+    ) => {
+        if (!completedDate) {
+            return "";
+        }
+
+        const [
+            day,
+            month,
+            year,
+        ] = completedDate.split("/");
+
+        const eventCompletedDate =
+            new Date(
+                year,
+                month - 1,
+                day
+            );
+
+        const today = new Date();
+        const tomorrow = new Date();
+
+        tomorrow.setDate(
+            tomorrow.getDate() + 1
+        );
+
+        if (
+            eventCompletedDate.toDateString() ===
+            today.toDateString()
+        ) {
+            return "Today";
+        }
+
+        if (
+            eventCompletedDate.toDateString() ===
+            tomorrow.toDateString()
+        ) {
+            return "Tomorrow";
+        }
+
+        return eventCompletedDate.toLocaleDateString(
+            "en-GB",
+            {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }
+        );
+    };
+
+    const getDisplayStatus = (event) => {
+        if (event.completed) {
+            return "Complete";
+        }
+
+        if (event.status === "Paused") {
+            return "Paused";
+        }
+
+        const eventDate = new Date(event.dueDate);
+
+        eventDate.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        if (eventDate < today) {
+            return "Overdue";
+        }
+
+        return event.status || "Active";
+    };
+
+    const statusConfig = {
+        Active: {
+            icon: Shield,
+            label: "Active",
+
+            background: "#4d689333",
+            border: "#4d689366",
+            color: "#8faec0",
+        },
+
+        "In Progress": {
+            icon: LoaderCircle,
+            label: "In Progress",
+
+            background: "#5d766233",
+            border: "#5d766266",
+            color: "#a8bf9f",
+        },
+
+        Paused: {
+            icon: Pause,
+            label: "Paused",
+
+            background: "#45575b33",
+            border: "#45575b66",
+            color: "#9ca9ad",
+        },
+
+        Overdue: {
+            icon: CircleAlert,
+            label: "Overdue",
+
+            background: "#8b5a5a33",
+            border: "#8b5a5a66",
+            color: "#c79a9a",
+        },
+
+        // complete or completed? needs to be consistent
+        Complete: {
+            icon: Check,
+            label: "Complete",
+
+            background: "#728a6e33",
+            border: "#728a6e66",
+            color: "#9bc091",
+        },
+    };
+
+    // tinted card colors
+    const chipStyles = {
+        task: {
+            bg: "#4d689333",
+            border: "#4d689366",
+        },
+
+        goal: {
+            bg: "#bf877633",
+            border: "#bf877666",
+        },
+
+        reminder: {
+            bg: "#5d766233",
+            border: "#5d766266",
+        },
+
+        project: {
+            bg: "#72515c33",
+            border: "#72515c66",
+        },
+    };
     return (
         <div
             onClick={onClose}
@@ -13,15 +277,20 @@ function DashboardModal({
                 position: "fixed",
                 inset: 0,
 
-                background: "rgba(0,0,0,0.55)",
+                background:
+                    "rgba(0,0,0,0.35)",
 
-                backdropFilter: "blur(12px)",
+                backdropFilter:
+                    "blur(20px)",
 
                 display: "flex",
-                justifyContent: "center",
+
+                justifyContent:
+                    "center",
+
                 alignItems: "center",
 
-                zIndex: 1000,
+                zIndex: 2000,
             }}
         >
             <div
@@ -29,35 +298,51 @@ function DashboardModal({
                     e.stopPropagation()
                 }
                 style={{
-                    width: "560px",
+                    width: "520px",
 
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                    maxHeight: "80vh",
 
-                    border: "1px solid rgba(255,255,255,0.10)",
+                    overflowY: "auto",
+
+                    background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+
+                    border:
+                        "1px solid rgba(255,255,255,0.10)",
 
                     borderRadius: "36px",
 
                     backdropFilter: "blur(30px)",
 
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+                    boxShadow:
+                        "0 30px 80px rgba(0,0,0,0.45)",
 
                     padding: "36px",
                 }}
             >
+                {/* HEADER */}
+
                 <div
                     style={{
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        marginBottom: "24px",
+
+                        justifyContent:
+                            "space-between",
+
+                        alignItems: "center",
+
+                        marginBottom: "32px",
                     }}
                 >
                     <div>
                         <h2
                             style={{
                                 margin: 0,
-                                fontSize: "0.95rem",
-                                fontWeight: "400",
+
+                                fontWeight: "350",
+
+                                letterSpacing:
+                                    "-0.03em",
                             }}
                         >
                             {title}
@@ -65,14 +350,14 @@ function DashboardModal({
 
                         <p
                             style={{
-                                marginTop: "4px",
-                                marginBottom: 0,
-                                fontSize: "0.8rem",
-                                fontWeight: "300",
+                                marginTop: "8px",
+
+                                fontSize: "0.82rem",
+
                                 opacity: 0.55,
                             }}
                         >
-                            View matching items
+                            {subtitle}
                         </p>
                     </div>
 
@@ -118,199 +403,449 @@ function DashboardModal({
                     </button>
                 </div>
 
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "6px",
+                {/* TODAY'S DATE TITLE */}
 
-                        maxHeight: "45vh",
-
-                        overflowY: "auto",
-
-                        paddingRight: "4px",
-                    }}
-                >
-                    {items.length === 0 ? (
+                {!expanded && (
+                    <div
+                        style={{
+                            textAlign: "center",
+                            marginBottom: "20px",
+                        }}
+                    >
                         <div
                             style={{
-                                padding: "24px",
-                                textAlign: "center",
-                                color: "var(--text-secondary)",
-                                fontSize: "0.85rem",
+                                fontSize: "2rem",
+
+                                fontWeight: "300",
+
+                                letterSpacing:
+                                    "-0.04em",
                             }}
                         >
-                            No items found.
+                            {date.toLocaleDateString(
+                                "en-US",
+                                {
+                                    month: "long",
+                                    day: "numeric",
+                                }
+                            )}
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "0.9rem",
+
+                                opacity: 0.55,
+
+                                marginTop: "4px",
+                            }}
+                        >
+                            {date.toLocaleDateString(
+                                "en-US",
+                                {
+                                    weekday: "long",
+                                }
+                            )}
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "0.75rem",
+
+                                opacity: 0.4,
+
+                                marginTop: "8px",
+                            }}
+                        >
+                            Showing {events.length} out of{" "}
+                            {events.length + remainingCount}{" "}
+                            {title === "High Priority"
+                                ? "urgent items"
+                                : title.toLowerCase()}
+
+                            {events.length + remainingCount !== 1
+                                ? ""
+                                : ""}
+                        </div>
+                    </div>
+                )}
+
+                {/* DIVIDER */}
+
+                <div
+                    style={{
+                        height: "1px",
+
+                        background:
+                            "rgba(255,255,255,0.05)",
+
+                        marginBottom: "24px",
+                    }}
+                />
+
+                {/* EVENTS */}
+
+                <div
+                    style={{
+                        marginBottom: "32px",
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: "0.82rem",
+
+                            opacity: 0.5,
+
+                            marginBottom: "12px",
+                        }}
+                    >
+                        {expanded
+                            ? `${events.length} event${events.length !== 1
+                                ? "s"
+                                : ""
+                            }`
+                            : "Events"}
+                    </div>
+
+                    {events.length === 0 ? (
+                        <div
+                            style={{
+                                fontSize: "0.8rem",
+
+                                opacity: 0.45,
+
+                                lineHeight: 1.6,
+                            }}
+                        >
+                            No urgent events.
+
+                            <br />
+                            <br />
+
+                            Tasks, reminders,
+                            goals and projects
+                            that need attention will appear here.
                         </div>
                     ) : (
-                        items.map((item) => (
-                            <div
-                                key={item.title}
-                                style={{
-                                    padding: "10px 12px",
-                                    borderRadius: "14px",
+                        <div
+                            style={{
+                                display: "grid",
 
-                                    cursor: "pointer",
+                                gridTemplateColumns:
+                                    "1fr 1fr",
 
-                                    transition: "all 0.2s ease",
+                                gap: "14px",
+                            }}
+                        >
+                            {events.map((event) => {
+                                const chipStyle =
+                                    chipStyles[event.type];
 
-                                    display: "flex",
+                                const Icon =
+                                    eventIcons[event.type];
 
-                                    justifyContent: "space-between",
+                                const displayStatus =
+                                    getDisplayStatus(event);
 
-                                    alignItems: "flex-start",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-                                }}
+                                const status =
+                                    statusConfig[displayStatus];
 
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-                                }}
-                            >
-                                <div>
+                                const StatusIcon =
+                                    status.icon;
+
+                                return (
                                     <div
+                                        key={event.title}
+                                        onClick={() =>
+                                            handleEventClick(event)
+                                        }
                                         style={{
+                                            background: `
+                                                linear-gradient(
+                                                    135deg,
+                                                    ${chipStyle.bg},
+                                                    rgba(255,255,255,0.02)
+                                                )
+                                            `,
+
+                                            border: `1px solid ${chipStyle.border}`,
+
+                                            borderRadius: "28px",
+
+                                            minHeight: "190px",
+
+                                            padding: "20px",
+
+                                            backdropFilter: "blur(30px)",
+
                                             display: "flex",
-                                            gap: "8px",
-                                            marginBottom: "8px",
-                                            flexWrap: "wrap",
+
+                                            flexDirection: "column",
+
+                                            alignItems: "center",
+
+                                            justifyContent: "space-between",
+
+                                            transition: "all 0.2s ease",
+
+                                            cursor: "pointer",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform =
+                                                "translateY(-2px) scale(1.01)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "0 16px 32px rgba(0,0,0,0.18)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform =
+                                                "translateY(0) scale(1)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "none";
                                         }}
                                     >
-                                        <span
+                                        {/* ICON */}
+
+                                        <div
                                             style={{
-                                                padding: "4px 8px",
+                                                width: "54px",
+                                                height: "54px",
 
-                                                borderRadius: "999px",
-
-                                                fontSize: "0.7rem",
+                                                borderRadius: "50%",
 
                                                 background:
-                                                    item.entity === "Task"
-                                                        ? "#72715c33"
-                                                        : item.entity === "Goal"
-                                                            ? "#c59c7033"
-                                                            : item.entity === "Project"
-                                                                ? "#854c4933"
-                                                                : item.entity === "Note"
-                                                                    ? "#52677d33"
-                                                                    : "#83545c33",
+                                                    "rgba(255,255,255,0.08)",
 
                                                 border:
-                                                    item.entity === "Task"
-                                                        ? "1px solid #72715c66"
-                                                        : item.entity === "Goal"
-                                                            ? "1px solid #c59c7066"
-                                                            : item.entity === "Project"
-                                                                ? "1px solid #854c4966"
-                                                                : item.entity === "Note"
-                                                                    ? "1px solid #52677d66"
-                                                                    : "1px solid #83545c66",
+                                                    "1px solid rgba(255,255,255,0.10)",
+
+                                                display: "flex",
+
+                                                alignItems: "center",
+
+                                                justifyContent: "center",
+
+                                                backdropFilter:
+                                                    "blur(20px)",
                                             }}
                                         >
-                                            {item.entity}
-                                        </span>
+                                            <Icon size={22} />
+                                        </div>
 
-                                        {item.priority && (
-                                            <span
+                                        {/* TITLE */}
+
+                                        <div
+                                            style={{
+                                                textAlign: "center",
+
+                                                marginTop: "18px",
+
+                                                width: "100%",
+                                            }}
+                                        >
+                                            <div
                                                 style={{
-                                                    padding: "4px 8px",
+                                                    fontSize: "0.92rem",
+
+                                                    fontWeight: "350",
+
+                                                    letterSpacing: "-0.02em",
+
+                                                    marginBottom: "8px",
+
+                                                    whiteSpace: "nowrap",
+
+                                                    overflow: "hidden",
+
+                                                    textOverflow: "ellipsis",
+
+                                                    width: "100%",
+
+                                                    maxWidth: "160px",
+
+                                                    marginLeft: "auto",
+
+                                                    marginRight: "auto",
+                                                }}
+                                            >
+                                                {event.title}
+                                            </div>
+
+                                            <div
+                                                style={{
+                                                    fontSize: "0.72rem",
+
+                                                    opacity: 0.55,
+
+                                                    display: "flex",
+
+                                                    flexDirection: "column",
+
+                                                    gap: "4px",
+
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <div>
+                                                    Due{" "}{formatDueDate(
+                                                        event.dueDate
+                                                    )}
+                                                </div>
+
+                                                {event.completed && (
+                                                    <div
+                                                        style={{
+                                                            fontSize: "0.68rem",
+
+                                                            opacity: 0.45,
+                                                        }}
+                                                    >
+                                                        {event.completedDate
+                                                            ? `Completed ${formatCompletedDate(
+                                                                event.completedDate
+                                                            )}`
+                                                            : "Completed"}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* STATUS CHIP */}
+                                        <div
+                                            style={{
+                                                marginTop: "18px",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: "inline-flex",
+
+                                                    alignItems: "center",
+
+                                                    gap: "8px",
+
+                                                    padding: "10px 18px",
 
                                                     borderRadius: "999px",
 
-                                                    fontSize: "0.7rem",
-
                                                     background:
-                                                        item.priority === "High"
-                                                            ? "#ab313033"
-                                                            : item.priority === "Medium"
-                                                                ? "#62929e33"
-                                                                : "#ffdb5833",
+                                                        status.background,
 
                                                     border:
-                                                        item.priority === "High"
-                                                            ? "1px solid #ab313066"
-                                                            : item.priority === "Medium"
-                                                                ? "1px solid #62929e66"
-                                                                : "1px solid #ffdb5866",
+                                                        `1px solid ${status.border}`,
+
+                                                    color:
+                                                        status.color,
+
+                                                    fontSize: "0.8rem",
+
+                                                    fontWeight: "300",
+
+                                                    transition:
+                                                        "all 0.2s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(-1px)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(0)";
                                                 }}
                                             >
-                                                {item.priority}
-                                            </span>
-                                        )}
+                                                <StatusIcon size={14} />
 
-                                        {item.category && (
-                                            <span
-                                                style={{
-                                                    padding: "4px 8px",
+                                                {status.label}
+                                            </div>
+                                        </div>
 
-                                                    borderRadius: "999px",
-
-                                                    fontSize: "0.7rem",
-
-                                                    background:
-                                                        item.category === "Work"
-                                                            ? "#063f4733"
-                                                            : item.category === "Study"
-                                                                ? "#29737633"
-                                                                : item.category === "Personal"
-                                                                    ? "#5c939633"
-                                                                    : "#10343933",
-
-                                                    border:
-                                                        item.category === "Work"
-                                                            ? "1px solid #063f4766"
-                                                            : item.category === "Study"
-                                                                ? "1px solid #29737666"
-                                                                : item.category === "Personal"
-                                                                    ? "1px solid #5c939666"
-                                                                    : "1px solid #10343966",
-                                                }}
-                                            >
-                                                {item.category}
-                                            </span>
-                                        )}
                                     </div>
-
-                                    <span
-                                        style={{
-                                            fontWeight: "300",
-                                            fontSize: "0.85rem",
-                                            letterSpacing: "-0.015em",
-                                        }}
-                                    >
-                                        {item.title}
-                                    </span>
-                                </div>
-
-                                <Trash2
-                                    size={16}
-                                    strokeWidth={1.5}
-                                    style={{
-                                        cursor: "pointer",
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color =
-                                            "#ff6b6b";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color =
-                                            "";
-
-                                        e.currentTarget.style.transform =
-                                            "scale(1)";
-                                    }}
-                                />
-                            </div>
-                        ))
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
+                {/* expand / collapse */}
+                {!expanded && remainingCount > 0 && (
+                    <div
+                        onClick={onShowAll}
+                        style={{
+                            marginTop: "18px",
+
+                            textAlign: "center",
+
+                            fontSize: "0.74rem",
+
+                            opacity: 0.4,
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity =
+                                "0.65";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity =
+                                "0.4";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
+                        }}
+                    >
+                        +{remainingCount} other
+                        {remainingCount !== 1
+                            ? "s"
+                            : ""}
+                    </div>
+                )}
+
+                {expanded && (
+                    <div
+                        onClick={onShowLess}
+                        style={{
+                            marginTop: "18px",
+
+                            textAlign: "center",
+
+                            fontSize: "0.74rem",
+
+                            opacity: 0.4,
+
+                            fontWeight: "300",
+
+                            cursor: "pointer",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity =
+                                "0.65";
+
+                            e.currentTarget.style.transform =
+                                "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity =
+                                "0.4";
+
+                            e.currentTarget.style.transform =
+                                "translateY(0)";
+                        }}
+                    >
+                        Show less
+                    </div>
+                )}
+
+                {/* BUTTON */}
+
                 <div
                     style={{
                         display: "flex",
@@ -319,7 +854,7 @@ function DashboardModal({
 
                         gap: "10px",
 
-                        marginTop: "20px",
+                        marginTop: "24px",
                     }}
                 >
                     <button
@@ -335,7 +870,8 @@ function DashboardModal({
                             border:
                                 "1px solid rgba(255,77,77,0.25)",
 
-                            color: "var(--danger)",
+                            color:
+                                "var(--danger)",
 
                             fontSize: "0.8rem",
 
@@ -344,6 +880,7 @@ function DashboardModal({
                             cursor: "pointer",
 
                             transition: "all 0.2s ease",
+
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background =
@@ -358,76 +895,53 @@ function DashboardModal({
 
                             e.currentTarget.style.transform =
                                 "translateY(0)";
+
                         }}
                     >
                         Cancel
                     </button>
-
-                    <button
-                        onClick={() => {
-                            if (
-                                title === "Projects"
-                            ) {
-                                onNavigate("/projects");
-                            } else if (
-                                title === "Goals"
-                            ) {
-                                onNavigate("/goals");
-                            } else {
-                                onNavigate("/tasks");
-                            }
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.14)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.18)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.08)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.10)";
-                        }}
-                        style={{
-                            padding: "11px 18px",
-
-                            borderRadius: "999px",
-
-                            background:
-                                "rgba(255,255,255,0.08)",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.10)",
-
-                            color:
-                                "var(--text-primary)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                    >
-                        {title === "Projects"
-                            ? "Go To Projects"
-                            : title === "Goals"
-                                ? "Go To Goals"
-                                : "Go To Tasks"}
-                    </button>
                 </div>
             </div>
+            {/* open modal from individual */}
+            {selectedTask && (
+                <TaskDetailsModal
+                    task={selectedTask}
+                    dashboardMode={true}
+                    onClose={() =>
+                        setSelectedTask(null)
+                    }
+                />
+            )}
+
+            {selectedProject && (
+                <ProjectDetailsModal
+                    project={selectedProject}
+                    dashboardMode={true}
+                    onClose={() =>
+                        setSelectedProject(null)
+                    }
+                />
+            )}
+
+            {selectedGoal && (
+                <GoalDetailsModal
+                    goal={selectedGoal}
+                    dashboardMode={true}
+                    onClose={() =>
+                        setSelectedGoal(null)
+                    }
+                />
+            )}
+
+            {selectedReminder && (
+                <ReminderDetailsModal
+                    reminder={selectedReminder}
+                    dashboardMode={true}
+                    onClose={() =>
+                        setSelectedReminder(null)
+                    }
+                />
+            )}
         </div>
     );
 }

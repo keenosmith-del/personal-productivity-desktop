@@ -9,6 +9,8 @@ function GoalDetailsModal({
     onCompleteGoal,
     onRestoreGoal,
     setToast,
+
+    dashboardMode = false,
 }) {
     const formattedCreatedDate =
         goal?.createdAt
@@ -95,9 +97,13 @@ function GoalDetailsModal({
                 position: "fixed",
                 inset: 0,
 
-                background: "rgba(0,0,0,0.35)",
+                background: dashboardMode
+                    ? "rgba(0, 0, 0, 0.7)"
+                    : "rgba(0, 0, 0, 0.35)",
 
-                backdropFilter: "blur(20px)",
+                backdropFilter: dashboardMode
+                    ? "blur(30px)"
+                    : "blur(20px)",
 
                 display: "flex",
                 justifyContent: "center",

@@ -15,6 +15,8 @@ import DashboardNotesCard from "../components/Dashboard/DashboardNotesCard";
 import WeatherWidget from "../components/Dashboard/WeatherWidget";
 import ClockWidget from "../components/Dashboard/ClockWidget";
 
+import DashboardModal from "../components/Dashboard/DashboardModal";
+
 function Dashboard() {
 
   const [projects, setProjects] =
@@ -31,6 +33,43 @@ function Dashboard() {
 
   const [notes, setNotes] =
     useState([]);
+
+  // show modal functions
+  // show urgent modal
+  const [showUrgentModal, setShowUrgentModal] =
+    useState(false);
+
+  const [showAllUrgent, setShowAllUrgent] =
+    useState(false);
+
+  // show projects modal
+  const [showProjectsModal, setShowProjectsModal] =
+    useState(false);
+
+  const [showAllProjects, setShowAllProjects] =
+    useState(false);
+
+  // show tasks modal
+  const [showTasksModal, setShowTasksModal] =
+    useState(false);
+
+  const [showAllTasks, setShowAllTasks] =
+    useState(false);
+
+  // show goals modal
+  const [showGoalsModal, setShowGoalsModal] =
+    useState(false);
+
+  const [showAllGoals, setShowAllGoals] =
+    useState(false);
+
+  // reminders modal
+  const [showRemindersModal, setShowRemindersModal] =
+    useState(false);
+
+  const [showAllReminders, setShowAllReminders] =
+    useState(false);
+  // end show modal functions
 
   useEffect(() => {
     loadDashboardData();
@@ -63,6 +102,7 @@ function Dashboard() {
       }
     };
 
+  // why unique by ID?
   const uniqueById = (items) => {
     const map = new Map();
     items.forEach((item) => {
@@ -70,6 +110,127 @@ function Dashboard() {
     });
     return Array.from(map.values());
   };
+
+  // helpers to sort
+  const sortByDate = (items) =>
+    [...items].sort((a, b) => {
+      const dateA =
+        a.dueDate
+          ? new Date(a.dueDate)
+          : new Date("9999-12-31");
+
+      const dateB =
+        b.dueDate
+          ? new Date(b.dueDate)
+          : new Date("9999-12-31");
+
+      return dateA - dateB;
+    });
+
+  // urgent items
+  const urgentItems = uniqueById([
+    ...tasks
+      .filter(
+        (task) =>
+          task.priority === "High"
+      )
+      .map((task) => ({
+        ...task,
+        type: "task",
+      })),
+
+    ...goals
+      .filter(
+        (goal) =>
+          goal.priority === "High"
+      )
+      .map((goal) => ({
+        ...goal,
+        type: "goal",
+      })),
+
+    ...projects
+      .filter(
+        (project) =>
+          project.priority === "High"
+      )
+      .map((project) => ({
+        ...project,
+        type: "project",
+      })),
+
+    ...reminders
+      .filter(
+        (reminder) =>
+          reminder.priority === "High"
+      )
+      .map((reminder) => ({
+        ...reminder,
+        type: "reminder",
+      })),
+  ]);
+
+  const sortedUrgentItems =
+    [...urgentItems].sort(
+      (a, b) => {
+        const dateA =
+          a.dueDate
+            ? new Date(a.dueDate)
+            : new Date(
+              "9999-12-31"
+            );
+
+        const dateB =
+          b.dueDate
+            ? new Date(b.dueDate)
+            : new Date(
+              "9999-12-31"
+            );
+
+        return dateA - dateB;
+      }
+    );
+
+  // showing not completed only?
+  // project items
+  const projectItems =
+  sortByDate(
+    projects
+      .map((project) => ({
+        ...project,
+        type: "project",
+      }))
+    );
+
+  // task items
+  const taskItems =
+  sortByDate(
+    tasks
+      .map((task) => ({
+        ...task,
+        type: "task",
+      }))
+    );
+
+  // goal items
+  const goalItems =
+  sortByDate(
+    goals
+      .map((goal) => ({
+        ...goal,
+        type: "goal",
+      }))
+    );
+
+  // reminder items
+  const reminderItems =
+  sortByDate(
+    reminders
+      .map((reminder) => ({
+        ...reminder,
+        type: "reminder",
+      }))
+    );
 
   const today = new Date();
 
@@ -88,17 +249,15 @@ function Dashboard() {
         task.dueDate &&
         task.dueDate.startsWith(
           todayDate
-        ) &&
-        !task.completed
+        ) 
     ),
 
     ...goals.filter(
       (goal) =>
-        goal.targetDate &&
-        goal.targetDate.startsWith(
+        goal.dueDate &&
+        goal.dueDate.startsWith(
           todayDate
-        ) &&
-        !goal.completed
+        ) 
     ),
 
     ...projects.filter(
@@ -106,43 +265,15 @@ function Dashboard() {
         project.dueDate &&
         project.dueDate.startsWith(
           todayDate
-        ) &&
-        !project.completed
+        ) 
     ),
 
     ...reminders.filter(
       (reminder) =>
-        reminder.reminderDate &&
-        reminder.reminderDate.startsWith(
+        reminder.dueDate &&
+        reminder.dueDate.startsWith(
           todayDate
-        ) &&
-        !reminder.completed
-    ),
-  ]);
-
-  const urgentItems = uniqueById([
-    ...tasks.filter(
-      (task) =>
-        !task.completed &&
-        task.priority === "High"
-    ),
-
-    ...goals.filter(
-      (goal) =>
-        !goal.completed &&
-        goal.priority === "High"
-    ),
-
-    ...projects.filter(
-      (project) =>
-        !project.completed &&
-        project.priority === "High"
-    ),
-
-    ...reminders.filter(
-      (reminder) =>
-        !reminder.completed &&
-        reminder.priority === "High"
+        ) 
     ),
   ]);
 
@@ -188,8 +319,8 @@ function Dashboard() {
 
           {/* NOTES */}
           <div>
-            <DashboardNotesCard 
-            notes={notes}
+            <DashboardNotesCard
+              notes={notes}
             />
           </div>
 
@@ -294,6 +425,9 @@ function Dashboard() {
               items={urgentItems}
               letter="T"
               subtitle="Needs attention"
+              onClick={() =>
+                setShowUrgentModal(true)
+              }
             />
           </div>
 
@@ -309,21 +443,23 @@ function Dashboard() {
             {/* projects */}
             <DashboardEntityCard
               title="Projects"
-              items={projects.filter(
-                (project) => !project.completed
-              )}
+              items={projectItems}
               letter="P"
-              subtitle="Active projects"
+              subtitle="All projects"
+              onClick={() =>
+                setShowProjectsModal(true)
+              }
             />
 
             {/* tasks */}
             <DashboardEntityCard
               title="Tasks"
-              items={tasks.filter(
-                (task) => !task.completed
-              )}
+              items={taskItems}
               letter="T"
-              subtitle="Active tasks"
+              subtitle="All tasks"
+              onClick={() =>
+                setShowTasksModal(true)
+              }
             />
           </div>
 
@@ -339,26 +475,250 @@ function Dashboard() {
             {/* goals */}
             <DashboardEntityCard
               title="Goals"
-              items={goals.filter(
-                (goal) => !goal.completed
-              )}
+              items={goalItems}
               letter="G"
-              subtitle="Active goals"
+              subtitle="All goals"
+              onClick={() =>
+                setShowGoalsModal(true)
+              }
             />
 
 
             {/* reminders */}
             <DashboardEntityCard
               title="Reminders"
-              items={reminders.filter(
-                (reminder) => !reminder.completed
-              )}
+              items={reminderItems}
               letter="R"
-              subtitle="Active reminders"
+              subtitle="All reminders"
+              onClick={() =>
+                setShowRemindersModal(true)
+              }
             />
           </div>
         </div>
       </div>
+      {/* show modals */}
+      {/* urgent */}
+      {showUrgentModal && (
+        <DashboardModal
+          title="High Priority"
+          subtitle="Items that need attention."
+
+          events={
+            showAllUrgent
+              ? urgentItems
+              : urgentItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllUrgent
+              ? 0
+              : Math.max(
+                0,
+                urgentItems.length - 4
+              )
+          }
+
+          expanded={showAllUrgent}
+
+          onShowAll={() =>
+            setShowAllUrgent(true)
+          }
+
+          onShowLess={() =>
+            setShowAllUrgent(false)
+          }
+
+          onClose={() => {
+            setShowUrgentModal(false);
+
+            setShowAllUrgent(false);
+          }}
+        />
+      )}
+
+      {/* projects */}
+      {showProjectsModal && (
+        <DashboardModal
+          title="Projects"
+          subtitle="All projects."
+
+          events={
+            showAllProjects
+              ? projectItems
+              : projectItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllProjects
+              ? 0
+              : Math.max(
+                0,
+                projectItems.length - 4
+              )
+          }
+
+          expanded={showAllProjects}
+
+          onShowAll={() =>
+            setShowAllProjects(true)
+          }
+
+          onShowLess={() =>
+            setShowAllProjects(false)
+          }
+
+          onClose={() => {
+            setShowProjectsModal(false);
+
+            setShowAllProjects(false);
+          }}
+        />
+      )}
+
+      {/* tasks */}
+      {showTasksModal && (
+        <DashboardModal
+          title="Tasks"
+          subtitle="All tasks."
+
+          events={
+            showAllTasks
+              ? taskItems
+              : taskItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllTasks
+              ? 0
+              : Math.max(
+                0,
+                taskItems.length - 4
+              )
+          }
+
+          expanded={showAllTasks}
+
+          onShowAll={() =>
+            setShowAllTasks(true)
+          }
+
+          onShowLess={() =>
+            setShowAllTasks(false)
+          }
+
+          onClose={() => {
+            setShowTasksModal(false);
+
+            setShowAllTasks(false);
+          }}
+        />
+      )}
+
+      {/* goals */}
+      {showGoalsModal && (
+        <DashboardModal
+          title="Goals"
+          subtitle="Active goals."
+
+          events={
+            showAllGoals
+              ? goalItems
+              : goalItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllGoals
+              ? 0
+              : Math.max(
+                0,
+                goalItems.length - 4
+              )
+          }
+
+          expanded={showAllGoals}
+
+          onShowAll={() =>
+            setShowAllGoals(true)
+          }
+
+          onShowLess={() =>
+            setShowAllGoals(false)
+          }
+
+          onClose={() => {
+            setShowGoalsModal(false);
+
+            setShowAllGoals(false);
+          }}
+        />
+      )}
+
+      {/* reminders */}
+      {showRemindersModal && (
+        <DashboardModal
+          title="Reminders"
+          subtitle="All reminders."
+
+          events={
+            showAllReminders
+              ? reminderItems
+              : reminderItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllReminders
+              ? 0
+              : Math.max(
+                0,
+                reminderItems.length - 4
+              )
+          }
+
+          expanded={showAllReminders}
+
+          onShowAll={() =>
+            setShowAllReminders(true)
+          }
+
+          onShowLess={() =>
+            setShowAllReminders(false)
+          }
+
+          onClose={() => {
+            setShowRemindersModal(false);
+
+            setShowAllReminders(false);
+          }}
+        />
+      )}
+
+      {/* end show modals */}
     </MainLayout>
   );
 }

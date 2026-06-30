@@ -13,6 +13,8 @@ function TaskDetailsModal({
     onCompleteTask,
     onRestoreTask,
     setToast,
+
+    dashboardMode = false,
 }) {
     const formattedCreatedDate =
         task?.createdAt
@@ -99,9 +101,13 @@ function TaskDetailsModal({
                 position: "fixed",
                 inset: 0,
 
-                background: "rgba(0,0,0,0.35)",
+                background: dashboardMode
+                    ? "rgba(0, 0, 0, 0.7)"
+                    : "rgba(0, 0, 0, 0.35)",
 
-                backdropFilter: "blur(20px)",
+                backdropFilter: dashboardMode
+                    ? "blur(30px)"
+                    : "blur(20px)",
 
                 display: "flex",
                 justifyContent: "center",
@@ -578,6 +584,14 @@ function TaskDetailsModal({
                                     fontWeight: "300",
 
                                     transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
                                 ✓ Completed

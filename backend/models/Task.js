@@ -27,7 +27,7 @@ const taskSchema =
 
             completedDate: {
                 type: String,
-                default: null,
+                default: "",
             },
 
             category: {
