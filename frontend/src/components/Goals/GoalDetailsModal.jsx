@@ -98,11 +98,11 @@ function GoalDetailsModal({
                 inset: 0,
 
                 background: dashboardMode
-                    ? "rgba(0, 0, 0, 0.7)"
+                    ? "rgba(0, 0, 0, 0.8)"
                     : "rgba(0, 0, 0, 0.35)",
 
                 backdropFilter: dashboardMode
-                    ? "blur(30px)"
+                    ? "blur(40px)"
                     : "blur(20px)",
 
                 display: "flex",

@@ -1,31 +1,8 @@
 function DashboardPreviewCard({
     item,
+    onClick,
 }) {
     if (!item) return null;
-
-    const getLetter = () => {
-        if (
-            item.reminderDate
-        ) {
-            return "R";
-        }
-
-        if (
-            item.targetDate
-        ) {
-            return "G";
-        }
-
-        if (
-            item.dueDate &&
-            item.linkedProjects !==
-            undefined
-        ) {
-            return "T";
-        }
-
-        return "P";
-    };
 
     const priorityStyles = {
         Low: {
@@ -107,11 +84,24 @@ function DashboardPreviewCard({
         ] ||
         statusStyles.default;
 
+    const chips =
+        item.linkedItems?.length > 0
+            ? item.linkedItems
+            : ["NL"];
+
     return (
         <div
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick?.();
+            }}
             style={{
                 width: "100%",
                 height: "100%",
+
+                cursor: "pointer",
+
+                transition: "all 0.2s ease",
 
                 background:
                     "rgba(255,255,255,0.025)",
@@ -126,6 +116,20 @@ function DashboardPreviewCard({
                 display: "flex",
 
                 flexDirection: "column",
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform =
+                    "translateY(-2px)";
+
+                e.currentTarget.style.background =
+                    "rgba(15,15,15,0.2)";
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform =
+                    "translateY(0)";
+
+                e.currentTarget.style.background =
+                    "rgba(255, 255, 255, 0.025)";
             }}
         >
             {/* PRIORITY */}
@@ -273,42 +277,52 @@ function DashboardPreviewCard({
                 }}
             />
 
-            {/* ENTITY */}
+            {/* STACKED ASSOCIATIONS */}
 
             <div
                 style={{
-                    width: "28px",
-
-                    height: "28px",
-
-                    borderRadius:
-                        "50%",
-
-                    background:
-                        "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.06)",
-
-                    backdropFilter:
-                        "blur(20px)",
-
                     display: "flex",
-
-                    alignItems:
-                        "center",
-
-                    justifyContent:
-                        "center",
-
-                    fontSize:
-                        "0.62rem",
-
-                    color:
-                        "var(--text-secondary)",
                 }}
             >
-                {getLetter()}
+                {chips.map(
+                    (chip, index) => (
+                        <div
+                            key={`${chip}-${index}`}
+                            style={{
+                                width: "28px",
+                                height: "28px",
+
+                                borderRadius: "50%",
+
+                                marginRight: "-6px",
+
+                                zIndex: index + 1,
+
+                                background:
+                                    "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
+                                border:
+                                    "1px solid rgba(255,255,255,0.06)",
+
+                                backdropFilter:
+                                    "blur(20px)",
+
+                                display: "flex",
+
+                                alignItems: "center",
+
+                                justifyContent: "center",
+
+                                fontSize: "0.62rem",
+
+                                color:
+                                    "var(--text-secondary)",
+                            }}
+                        >
+                            {chip}
+                        </div>
+                    )
+                )}
             </div>
         </div>
     );

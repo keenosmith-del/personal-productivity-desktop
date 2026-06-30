@@ -270,6 +270,38 @@ function DashboardModal({
             border: "#72515c66",
         },
     };
+
+    const emptyStates = {
+        Urgent: {
+            title: "Nothing urgent right now.",
+            message:
+                "You're in good shape. High-priority tasks, projects, goals and reminders will appear here when they need attention.",
+        },
+
+        Projects: {
+            title: "No projects yet.",
+            message:
+                "Create a project to start organising larger pieces of work and long-term plans.",
+        },
+
+        Tasks: {
+            title: "No tasks yet.",
+            message:
+                "Tasks you create will appear here so you can keep track of what needs to be done.",
+        },
+
+        Goals: {
+            title: "No goals yet.",
+            message:
+                "Set a goal to begin tracking progress toward something meaningful.",
+        },
+
+        Reminders: {
+            title: "No reminders yet.",
+            message:
+                "Important reminders and follow-ups will appear here once you've added them.",
+        },
+    };
     return (
         <div
             onClick={onClose}
@@ -499,32 +531,36 @@ function DashboardModal({
                             marginBottom: "12px",
                         }}
                     >
-                        {expanded
-                            ? `${events.length} event${events.length !== 1
-                                ? "s"
-                                : ""
-                            }`
-                            : "Events"}
+                        {events.length > 0 &&
+                            (expanded
+                                ? `${events.length} event${events.length !== 1
+                                    ? "s"
+                                    : ""
+                                }`
+                                : "Events")}
                     </div>
 
                     {events.length === 0 ? (
                         <div
                             style={{
                                 fontSize: "0.8rem",
-
                                 opacity: 0.45,
-
-                                lineHeight: 1.6,
+                                lineHeight: 1.7,
+                                textAlign: "center",
+                                padding: "24px 12px",
                             }}
                         >
-                            No urgent events.
+                            <div
+                                style={{
+                                    fontSize: "0.92rem",
+                                    marginBottom: "12px",
+                                    opacity: 0.8,
+                                }}
+                            >
+                                {emptyStates[title]?.title}
+                            </div>
 
-                            <br />
-                            <br />
-
-                            Tasks, reminders,
-                            goals and projects
-                            that need attention will appear here.
+                            {emptyStates[title]?.message}
                         </div>
                     ) : (
                         <div

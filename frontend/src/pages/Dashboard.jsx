@@ -17,6 +17,12 @@ import ClockWidget from "../components/Dashboard/ClockWidget";
 
 import DashboardModal from "../components/Dashboard/DashboardModal";
 
+import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
+import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
+import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
+import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
+import NoteModal from "../components/Notes/NoteModal";
+
 function Dashboard() {
 
   const [projects, setProjects] =
@@ -33,6 +39,24 @@ function Dashboard() {
 
   const [notes, setNotes] =
     useState([]);
+
+  const today = new Date();
+
+  today.setDate(
+    today.getDate()
+  );
+
+  const todayDate =
+    today
+      .toISOString()
+      .split("T")[0];
+
+  const nextWeek = new Date();
+
+  nextWeek.setDate(
+    nextWeek.getDate() + 7
+  );
+
 
   // show modal functions
   // show urgent modal
@@ -70,6 +94,19 @@ function Dashboard() {
   const [showAllReminders, setShowAllReminders] =
     useState(false);
   // end show modal functions
+
+  // upcoming wide card modal
+  const [showUpcomingModal, setShowUpcomingModal] =
+    useState(false);
+
+  const [showAllUpcoming, setShowAllUpcoming] =
+    useState(false);
+
+  const [selectedUpcomingItem, setSelectedUpcomingItem] =
+    useState(null);
+
+  const [selectedNote, setSelectedNote] =
+    useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -111,6 +148,141 @@ function Dashboard() {
     return Array.from(map.values());
   };
 
+  // helper functions 
+  const getPriorityChips = (items) => {
+    const low =
+      items.filter(
+        (item) =>
+          item.priority === "Low"
+      ).length;
+
+    const medium =
+      items.filter(
+        (item) =>
+          item.priority === "Medium"
+      ).length;
+
+    const high =
+      items.filter(
+        (item) =>
+          item.priority === "High"
+      ).length;
+
+    const chips = [];
+
+    if (low > 0) {
+      chips.push(`L${low}`);
+    }
+
+    if (medium > 0) {
+      chips.push(`M${medium}`);
+    }
+
+    if (high > 0) {
+      chips.push(`H${high}`);
+    }
+
+    return chips.length > 0
+      ? chips
+      : ["—"];
+  };
+
+  const getUpcomingChips = (items) => {
+    const goalsCount =
+      items.filter(
+        (item) =>
+          item.type === "goal"
+      ).length;
+
+    const tasksCount =
+      items.filter(
+        (item) =>
+          item.type === "task"
+      ).length;
+
+    const projectsCount =
+      items.filter(
+        (item) =>
+          item.type === "project"
+      ).length;
+
+    const remindersCount =
+      items.filter(
+        (item) =>
+          item.type === "reminder"
+      ).length;
+
+    const chips = [];
+
+    if (goalsCount > 0) {
+      chips.push(`G${goalsCount}`);
+    }
+
+    if (tasksCount > 0) {
+      chips.push(`T${tasksCount}`);
+    }
+
+    if (projectsCount > 0) {
+      chips.push(`P${projectsCount}`);
+    }
+
+    if (remindersCount > 0) {
+      chips.push(`R${remindersCount}`);
+    }
+
+    return chips.length > 0
+      ? chips
+      : ["—"];
+  };
+
+  const getUrgentChips = () => {
+    const goalsCount =
+      urgentItems.filter(
+        (item) =>
+          item.type === "goal"
+      ).length;
+
+    const tasksCount =
+      urgentItems.filter(
+        (item) =>
+          item.type === "task"
+      ).length;
+
+    const projectsCount =
+      urgentItems.filter(
+        (item) =>
+          item.type === "project"
+      ).length;
+
+    const remindersCount =
+      urgentItems.filter(
+        (item) =>
+          item.type === "reminder"
+      ).length;
+
+    const chips = [];
+
+    if (goalsCount > 0) {
+      chips.push(`G${goalsCount}`);
+    }
+
+    if (tasksCount > 0) {
+      chips.push(`T${tasksCount}`);
+    }
+
+    if (projectsCount > 0) {
+      chips.push(`P${projectsCount}`);
+    }
+
+    if (remindersCount > 0) {
+      chips.push(`R${remindersCount}`);
+    }
+
+    return chips.length > 0
+      ? chips
+      : ["—"];
+  };
+
   // helpers to sort
   const sortByDate = (items) =>
     [...items].sort((a, b) => {
@@ -126,6 +298,44 @@ function Dashboard() {
 
       return dateA - dateB;
     });
+
+  // upcoming items
+  const upcomingItems = uniqueById([
+    ...tasks.map((task) => ({
+      ...task,
+      type: "task",
+    })),
+
+    ...goals.map((goal) => ({
+      ...goal,
+      type: "goal",
+    })),
+
+    ...projects.map((project) => ({
+      ...project,
+      type: "project",
+    })),
+
+    ...reminders.map((reminder) => ({
+      ...reminder,
+      type: "reminder",
+    })),
+  ]).filter((item) => {
+    if (!item.dueDate) {
+      return false;
+    }
+
+    const dueDate =
+      new Date(item.dueDate);
+
+    return (
+      dueDate >= today &&
+      dueDate <= nextWeek
+    );
+  }).sort((a, b) =>
+    new Date(a.dueDate) -
+    new Date(b.dueDate)
+  );
 
   // urgent items
   const urgentItems = uniqueById([
@@ -191,92 +401,62 @@ function Dashboard() {
       }
     );
 
+  const upcomingSortedItems =
+    [...upcomingItems].sort((a, b) => {
+      const dateA =
+        a.dueDate
+          ? new Date(a.dueDate)
+          : new Date("9999-12-31");
+
+      const dateB =
+        b.dueDate
+          ? new Date(b.dueDate)
+          : new Date("9999-12-31");
+
+      return dateA - dateB;
+    });
+
+
   // showing not completed only?
   // project items
   const projectItems =
-  sortByDate(
-    projects
-      .map((project) => ({
-        ...project,
-        type: "project",
-      }))
+    sortByDate(
+      projects
+        .map((project) => ({
+          ...project,
+          type: "project",
+        }))
     );
 
   // task items
   const taskItems =
-  sortByDate(
-    tasks
-      .map((task) => ({
-        ...task,
-        type: "task",
-      }))
+    sortByDate(
+      tasks
+        .map((task) => ({
+          ...task,
+          type: "task",
+        }))
     );
 
   // goal items
   const goalItems =
-  sortByDate(
-    goals
-      .map((goal) => ({
-        ...goal,
-        type: "goal",
-      }))
+    sortByDate(
+      goals
+        .map((goal) => ({
+          ...goal,
+          type: "goal",
+        }))
     );
 
   // reminder items
   const reminderItems =
-  sortByDate(
-    reminders
-      .map((reminder) => ({
-        ...reminder,
-        type: "reminder",
-      }))
+    sortByDate(
+      reminders
+        .map((reminder) => ({
+          ...reminder,
+          type: "reminder",
+        }))
     );
-
-  const today = new Date();
-
-  today.setDate(
-    today.getDate()
-  );
-
-  const todayDate =
-    today
-      .toISOString()
-      .split("T")[0];
-
-  const todayItems = uniqueById([
-    ...tasks.filter(
-      (task) =>
-        task.dueDate &&
-        task.dueDate.startsWith(
-          todayDate
-        ) 
-    ),
-
-    ...goals.filter(
-      (goal) =>
-        goal.dueDate &&
-        goal.dueDate.startsWith(
-          todayDate
-        ) 
-    ),
-
-    ...projects.filter(
-      (project) =>
-        project.dueDate &&
-        project.dueDate.startsWith(
-          todayDate
-        ) 
-    ),
-
-    ...reminders.filter(
-      (reminder) =>
-        reminder.dueDate &&
-        reminder.dueDate.startsWith(
-          todayDate
-        ) 
-    ),
-  ]);
-
   return (
     <MainLayout>
       <div
@@ -313,7 +493,16 @@ function Dashboard() {
           <div>
             <DashboardWideCard
               title="Upcoming"
-              items={todayItems}
+              items={upcomingSortedItems}
+              chips={getUpcomingChips(
+                upcomingSortedItems
+              )}
+              onClick={() =>
+                setShowUpcomingModal(true)
+              }
+              onPreviewClick={
+                setSelectedUpcomingItem
+              }
             />
           </div>
 
@@ -321,6 +510,7 @@ function Dashboard() {
           <div>
             <DashboardNotesCard
               notes={notes}
+              onNoteClick={setSelectedNote}
             />
           </div>
 
@@ -373,6 +563,22 @@ function Dashboard() {
 
                 textAlign: "center",
               }}
+              onMouseEnter={(e) => {
+
+                e.currentTarget.style.transform =
+                  "translateY(-1px)";
+
+                e.currentTarget.style.background =
+                  "rgba(255,255,255,0.03)";
+              }}
+              onMouseLeave={(e) => {
+
+                e.currentTarget.style.transform =
+                  "translateY(0)";
+
+                e.currentTarget.style.background =
+                  "var(--glass-bg)";
+              }}
             >
               <div
                 style={{
@@ -423,7 +629,9 @@ function Dashboard() {
             <DashboardEntityCard
               title="Urgent"
               items={urgentItems}
-              letter="T"
+              placeholderTitle="No urgent items right now"
+              placeholderFooter="urgent items will appear here"
+              chips={getUrgentChips()}
               subtitle="Needs attention"
               onClick={() =>
                 setShowUrgentModal(true)
@@ -444,7 +652,9 @@ function Dashboard() {
             <DashboardEntityCard
               title="Projects"
               items={projectItems}
-              letter="P"
+              placeholderTitle="No Projects"
+              placeholderFooter="Create a project to see it here"
+              chips={getPriorityChips(projectItems)}
               subtitle="All projects"
               onClick={() =>
                 setShowProjectsModal(true)
@@ -455,7 +665,9 @@ function Dashboard() {
             <DashboardEntityCard
               title="Tasks"
               items={taskItems}
-              letter="T"
+              placeholderTitle="No Tasks"
+              placeholderFooter="Create a task to see it here"
+              chips={getPriorityChips(taskItems)}
               subtitle="All tasks"
               onClick={() =>
                 setShowTasksModal(true)
@@ -476,7 +688,9 @@ function Dashboard() {
             <DashboardEntityCard
               title="Goals"
               items={goalItems}
-              letter="G"
+              placeholderTitle="No Goals"
+              placeholderFooter="Create a goal to see it here"
+              chips={getPriorityChips(goalItems)}
               subtitle="All goals"
               onClick={() =>
                 setShowGoalsModal(true)
@@ -488,7 +702,9 @@ function Dashboard() {
             <DashboardEntityCard
               title="Reminders"
               items={reminderItems}
-              letter="R"
+              placeholderTitle="No Reminders"
+              placeholderFooter="Create a reminder to see it here"
+              chips={getPriorityChips(reminderItems)}
               subtitle="All reminders"
               onClick={() =>
                 setShowRemindersModal(true)
@@ -718,7 +934,97 @@ function Dashboard() {
         />
       )}
 
-      {/* end show modals */}
+      {/* show upcoming modal */}
+      {showUpcomingModal && (
+        <DashboardModal
+          title="Upcoming"
+          subtitle="Events due in the next 7 days."
+
+          events={
+            showAllUpcoming
+              ? upcomingItems
+              : upcomingItems.slice(0, 4)
+          }
+
+          projects={projects}
+          tasks={tasks}
+          goals={goals}
+          reminders={reminders}
+
+          remainingCount={
+            showAllUpcoming
+              ? 0
+              : Math.max(
+                0,
+                upcomingItems.length - 4
+              )
+          }
+
+          expanded={showAllUpcoming}
+
+          onShowAll={() =>
+            setShowAllUpcoming(true)
+          }
+
+          onShowLess={() =>
+            setShowAllUpcoming(false)
+          }
+
+          onClose={() => {
+            setShowUpcomingModal(false);
+
+            setShowAllUpcoming(false);
+          }}
+        />
+      )}
+
+      {/* show preview item on wide card */}
+      {selectedUpcomingItem?.type === "task" && (
+        <TaskDetailsModal
+          task={selectedUpcomingItem}
+          onClose={() =>
+            setSelectedUpcomingItem(null)
+          }
+        />
+      )}
+
+      {selectedUpcomingItem?.type === "project" && (
+        <ProjectDetailsModal
+          project={selectedUpcomingItem}
+          onClose={() =>
+            setSelectedUpcomingItem(null)
+          }
+        />
+      )}
+
+      {selectedUpcomingItem?.type === "goal" && (
+        <GoalDetailsModal
+          goal={selectedUpcomingItem}
+          onClose={() =>
+            setSelectedUpcomingItem(null)
+          }
+        />
+      )}
+
+      {selectedUpcomingItem?.type === "reminder" && (
+        <ReminderDetailsModal
+          reminder={selectedUpcomingItem}
+          onClose={() =>
+            setSelectedUpcomingItem(null)
+          }
+        />
+      )}
+
+      {/* open preview note */}
+        { selectedNote && (
+          <NoteModal
+            note={selectedNote}
+            onClose={() =>
+              setSelectedNote(null)
+            }
+            mode = "edit"
+          />
+        )}
     </MainLayout>
   );
 }

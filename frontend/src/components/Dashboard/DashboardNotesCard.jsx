@@ -2,7 +2,7 @@ import DashboardNotePreviewCard from "./DashboardNotePreviewCard";
 
 function DashboardNotesCard({
     notes = [],
-    onClick,
+    onNoteClick,
 }) {
     const visibleNotes =
         notes.slice(0, 2);
@@ -12,7 +12,6 @@ function DashboardNotesCard({
 
     return (
         <div
-            onClick={onClick}
             style={{
                 background:
                     "var(--glass-bg)",
@@ -31,10 +30,7 @@ function DashboardNotesCard({
 
                 padding: "24px",
 
-                cursor:
-                    onClick
-                        ? "pointer"
-                        : "default",
+                cursor: "default",
 
                 transition:
                     "all 0.2s ease",
@@ -49,8 +45,6 @@ function DashboardNotesCard({
                 minHeight: "240px",
             }}
             onMouseEnter={(e) => {
-                if (!onClick) return;
-
                 e.currentTarget.style.transform =
                     "translateY(-1px)";
 
@@ -58,7 +52,6 @@ function DashboardNotesCard({
                     "rgba(255,255,255,0.03)";
             }}
             onMouseLeave={(e) => {
-                if (!onClick) return;
 
                 e.currentTarget.style.transform =
                     "translateY(0)";
@@ -112,10 +105,11 @@ function DashboardNotesCard({
                 {visibleNotes.map(
                     (note) => (
                         <DashboardNotePreviewCard
-                            key={
-                                note._id
-                            }
+                            key={note._id}
                             note={note}
+                            onClick={() =>
+                                onNoteClick?.(note)
+                            }
                         />
                     )
                 )}

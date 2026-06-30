@@ -2193,8 +2193,7 @@ function Goals() {
                         marginTop: "4px",
                       }}
                     >
-                      {urgentGoals.length}{" "}
-                      {urgentGoals.length === 1 ? ("Goal") : ("Goals")}
+                      {urgentGoals.length}{" Urgent"}
                     </div>
                   </div>
 
@@ -2397,8 +2396,7 @@ function Goals() {
                         marginTop: "4px",
                       }}
                     >
-                      {flaggedGoals.length}{" "}
-                      {flaggedGoals.length === 1 ? ("Goal") : ("Goals")}
+                      {flaggedGoals.length}{" Flagged"}
                     </div>
                   </div>
                 </div>
@@ -2558,7 +2556,7 @@ function Goals() {
                       }}
                     >
                       {likedGoals.length}{" "}
-                      {likedGoals.length === 1 ? ("Goal") : ("Goals")}
+                      {likedGoals.length === 1 ? ("Favourite") : ("Favourites")}
                     </div>
                   </div>
                 </div>
@@ -2717,8 +2715,7 @@ function Goals() {
                         marginTop: "4px",
                       }}
                     >
-                      {discussionGoals.length}{" "}
-                      {discussionGoals.length === 1 ? ("Goal") : ("Goals")}
+                      {discussionGoals.length}{" Commented"}
                     </div>
                   </div>
                 </div>

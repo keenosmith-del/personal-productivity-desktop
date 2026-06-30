@@ -1,10 +1,16 @@
 function DashboardNotePreviewCard({
     note,
+    onClick,
 }) {
     if (!note) return null;
 
     return (
         <div
+            onClick={(e) => {
+                e.stopPropagation();
+
+                onClick?.();
+            }}
             style={{
                 width: "100%",
 
@@ -25,6 +31,24 @@ function DashboardNotePreviewCard({
                 flexDirection: "column",
 
                 overflow: "hidden",
+
+                cursor: "pointer",
+
+                transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform =
+                    "translateY(-2px)";
+
+                e.currentTarget.style.background =
+                    "rgba(15,15,15,0.2)";
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform =
+                    "translateY(0)";
+
+                e.currentTarget.style.background =
+                    "rgba(255, 255, 255, 0.025)";
             }}
         >
             {/* TITLE */}

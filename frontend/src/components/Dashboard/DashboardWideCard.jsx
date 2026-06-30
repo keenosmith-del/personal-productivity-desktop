@@ -3,59 +3,22 @@ import DashboardPreviewCard from "./DashboardPreviewCard";
 function DashboardWideCard({
     title,
     items = [],
-    maxVisibleItems = 3,
-    maxAvatars = 5,
+    chips = [],
     onClick,
+    onPreviewClick,
 }) {
     const visibleItems =
-        items.slice(
-            0,
-            maxVisibleItems
-        );
+        items.slice(0, 1);
 
     const remainingItems =
-        items.length -
-        maxVisibleItems;
-
-    const visibleAvatars =
-        items.slice(
-            0,
-            maxAvatars
-        );
-
-    const remainingAvatars =
-        items.length -
-        maxAvatars;
-
-    const getLetter = (
-        item
-    ) => {
-        if (
-            item.reminderDate
-        ) {
-            return "R";
-        }
-
-        if (
-            item.targetDate
-        ) {
-            return "G";
-        }
-
-        if (
-            item.dueDate &&
-            item.linkedProjects !==
-            undefined
-        ) {
-            return "T";
-        }
-
-        return "P";
-    };
+        items.length - 1;
 
     return (
         <div
-            onClick={onClick}
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick?.();
+            }}
             style={{
                 background:
                     "var(--glass-bg)",
@@ -96,12 +59,6 @@ function DashboardWideCard({
                 alignItems: "start",
             }}
             onMouseEnter={(e) => {
-                if (
-                    !onClick
-                ) {
-                    return;
-                }
-
                 e.currentTarget.style.transform =
                     "translateY(-1px)";
 
@@ -109,12 +66,6 @@ function DashboardWideCard({
                     "rgba(255,255,255,0.03)";
             }}
             onMouseLeave={(e) => {
-                if (
-                    !onClick
-                ) {
-                    return;
-                }
-
                 e.currentTarget.style.transform =
                     "translateY(0)";
 
@@ -189,88 +140,79 @@ function DashboardWideCard({
                 <div
                     style={{
                         display: "flex",
-
-                        alignItems:
-                            "center",
                     }}
                 >
-                    {visibleAvatars.map(
-                        (
-                            item,
-                            index
-                        ) => (
-                            <div
-                                key={
-                                    item._id
-                                }
-                                style={{
-                                    width:
-                                        "28px",
+                    {chips.map((chip, index) => (
+                        <div
+                            key={`${chip}-${index}`}
+                            style={{
+                                width: "35px",
+                                height: "35px",
 
-                                    height:
-                                        "28px",
+                                borderRadius: "50%",
 
-                                    borderRadius:
-                                        "50%",
+                                marginRight: "-6px",
 
-                                    marginRight:
-                                        "-6px",
+                                zIndex:
+                                    index + 1,
 
-                                    zIndex:
-                                        index +
-                                        1,
+                                background:
+                                    "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
 
-                                    background:
-                                        "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+                                border:
+                                    "1px solid rgba(255,255,255,0.06)",
 
-                                    border:
-                                        "1px solid rgba(255,255,255,0.06)",
+                                color:
+                                    "var(--text-secondary)",
 
-                                    backdropFilter:
-                                        "blur(20px)",
+                                backdropFilter:
+                                    "blur(20px)",
 
-                                    display:
-                                        "flex",
+                                display: "flex",
 
-                                    alignItems:
-                                        "center",
+                                alignItems: "center",
 
-                                    justifyContent:
-                                        "center",
+                                justifyContent:
+                                    "center",
 
-                                    fontSize:
-                                        "0.62rem",
+                                fontSize:
+                                    "0.62rem",
 
-                                    color:
-                                        "var(--text-secondary)",
-                                }}
-                            >
-                                {getLetter(
-                                    item
-                                )}
-                            </div>
-                        )
-                    )}
+                                fontWeight: "300",
 
-                    {remainingAvatars >
-                        0 && (
-                            <div
-                                style={{
-                                    marginLeft:
-                                        "12px",
+                                transition:
+                                    "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px) scale(1.08)";
 
-                                    fontSize:
-                                        "0.72rem",
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.12)";
 
-                                    opacity: 0.45,
-                                }}
-                            >
-                                +
-                                {
-                                    remainingAvatars
-                                }
-                            </div>
-                        )}
+                                e.currentTarget.style.boxShadow =
+                                    "0 8px 20px rgba(0,0,0,0.25)";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(0) scale(1)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.boxShadow =
+                                    "none";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }}
+                        >
+                            {chip}
+                        </div>
+                    ))}
                 </div>
 
                 {/* TITLES */}
@@ -279,65 +221,45 @@ function DashboardWideCard({
                     style={{
                         display: "flex",
 
-                        flexDirection:
-                            "column",
+                        flexDirection: "column",
 
                         gap: "2px",
-
                     }}
                 >
                     {visibleItems.map(
-                        (
-                            item
-                        ) => (
+                        (item) => (
                             <div
-                                key={
-                                    item._id
-                                }
+                                key={item._id}
                                 style={{
-                                    fontSize:
-                                        "0.78rem",
+                                    fontSize: "0.78rem",
 
-                                    fontWeight:
-                                        "300",
+                                    fontWeight: "300",
 
-                                    whiteSpace:
-                                        "nowrap",
+                                    whiteSpace: "nowrap",
 
-                                    overflow:
-                                        "hidden",
+                                    overflow: "hidden",
 
-                                    textOverflow:
-                                        "ellipsis",
+                                    textOverflow: "ellipsis",
 
-                                    opacity:
-                                        0.85,
+                                    opacity: 0.85,
                                 }}
                             >
-                                {
-                                    item.title
-                                }
+                                {item.title}
                             </div>
                         )
                     )}
 
-                    {remainingItems >
-                        0 && (
-                            <div
-                                style={{
-                                    fontSize:
-                                        "0.74rem",
+                    {remainingItems > 0 && (
+                        <div
+                            style={{
+                                fontSize: "0.74rem",
 
-                                    opacity: 0.4,
-                                }}
-                            >
-                                +
-                                {
-                                    remainingItems
-                                }{" "}
-                                more
-                            </div>
-                        )}
+                                opacity: 0.4,
+                            }}
+                        >
+                            +{remainingItems} more
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -359,6 +281,9 @@ function DashboardWideCard({
                 {items.length > 0 && (
                     <DashboardPreviewCard
                         item={items[0]}
+                        onClick={() =>
+                            onPreviewClick?.(items[0])
+                        }
                     />
                 )}
             </div>

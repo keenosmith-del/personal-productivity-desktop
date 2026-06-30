@@ -1,6 +1,9 @@
 function DashboardEntityCard({
     title,
     items = [],
+    placeholderTitle,
+    placeholderFooter,
+    chips,
     letter,
     subtitle,
     onClick,
@@ -75,31 +78,79 @@ function DashboardEntityCard({
                     {title}
                 </div>
 
-                <div
-                    style={{
-                        fontSize: "2rem",
+                {items.length > 0 ? (
+                    <>
+                        <div
+                            style={{
+                                fontSize: "2rem",
 
-                        fontWeight: "300",
+                                fontWeight: "300",
 
-                        letterSpacing: "-0.04em",
-                    }}
-                >
-                    {items.length}
-                </div>
+                                letterSpacing: "-0.04em",
+                            }}
+                        >
+                            {items.length}
+                        </div>
 
-                {subtitle && (
+                        {subtitle && (
+                            <div
+                                style={{
+                                    marginTop: "6px",
+
+                                    marginBottom: "10px",
+
+                                    fontSize: "0.74rem",
+
+                                    opacity: 0.45,
+                                }}
+                            >
+                                {subtitle}
+                            </div>
+                        )}
+                    </>
+                ) : (
                     <div
                         style={{
-                            marginTop: "6px",
+                            marginTop: "8px",
 
-                            marginBottom: "10px",
+                            display: "flex",
 
-                            fontSize: "0.74rem",
+                            flexDirection: "column",
 
-                            opacity: 0.45,
+                            gap: "6px",
                         }}
                     >
-                        {subtitle}
+                        <div
+                            style={{
+                                fontSize: "0.82rem",
+
+                                fontWeight: "300",
+                            }}
+                        >
+                            Nothing here yet.
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "0.72rem",
+
+                                opacity: 0.45,
+
+                                lineHeight: 1.5,
+                            }}
+                        >
+                            {placeholderTitle}
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "0.72rem",
+
+                                opacity: 0.35,
+                            }}
+                        >
+                            {placeholderFooter}
+                        </div>
                     </div>
                 )}
             </div>
@@ -111,48 +162,94 @@ function DashboardEntityCard({
                     display: "flex",
                 }}
             >
-                {items
-                    .slice(0, 4)
-                    .map((item, index) => (
-                        <div
-                            key={item._id}
-                            style={{
-                                width: "28px",
-                                height: "28px",
+                {chips.map((chip, index) => (
+                    <div
+                        key={`${chip}-${index}`}
+                        style={{
+                            width: "35px",
+                            height: "35px",
 
-                                borderRadius: "50%",
+                            borderRadius: "50%",
 
-                                marginRight: "-6px",
+                            marginRight: "-6px",
 
-                                zIndex:
-                                    index + 1,
+                            zIndex:
+                                index + 1,
 
-                                background:
-                                    "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+                            background:
+                                chip.startsWith("L")
+                                    ? "#4d689333"
+                                    : chip.startsWith("M")
+                                        ? "#5b667033"
+                                        : chip.startsWith("H")
+                                            ? "#72515c33"
+                                            : "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
 
-                                border:
-                                    "1px solid rgba(255,255,255,0.06)",
+                            border:
+                                chip.startsWith("L")
+                                    ? "1px solid #4d689366"
+                                    : chip.startsWith("M")
+                                        ? "1px solid #5b667066"
+                                        : chip.startsWith("H")
+                                            ? "1px solid #72515c66"
+                                            : "1px solid rgba(255,255,255,0.06)",
 
-                                backdropFilter:
-                                    "blur(20px)",
+                            color:
+                                chip.startsWith("L")
+                                    ? "#8faec0"
+                                    : chip.startsWith("M")
+                                        ? "#a8b2bb"
+                                        : chip.startsWith("H")
+                                            ? "#c1a2ad"
+                                            : "var(--text-secondary)",
 
-                                display: "flex",
+                            backdropFilter:
+                                "blur(20px)",
 
-                                alignItems: "center",
+                            display: "flex",
 
-                                justifyContent:
-                                    "center",
+                            alignItems: "center",
 
-                                fontSize:
-                                    "0.62rem",
+                            justifyContent:
+                                "center",
 
-                                color:
-                                    "var(--text-secondary)",
-                            }}
-                        >
-                            {letter}
-                        </div>
-                    ))}
+                            fontSize:
+                                "0.62rem",
+
+                            transition: "all 0.2s ease",
+
+                            // add cursor tooltip?
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.12)";
+
+                            e.currentTarget.style.boxShadow =
+                                "0 8px 20px rgba(0,0,0,0.25)";
+
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.06)";
+
+                            e.currentTarget.style.boxShadow =
+                                "none";
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                        }}
+                    >
+                        {chip}
+                    </div>
+                ))}
             </div>
         </div>
     );
