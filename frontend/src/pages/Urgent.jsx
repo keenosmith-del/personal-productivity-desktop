@@ -6,10 +6,12 @@ import {
   Filter,
   Ellipsis,
   ArrowLeft,
-  BarChart3,
   ArrowRight,
-  Sprout,
-  Plus,
+  LayoutGrid,
+  Sparkles,
+  Shapes,
+  ChartLine,
+  CircleAlert,
 } from "lucide-react";
 
 import {
@@ -18,22 +20,7 @@ import {
   useRef,
 } from "react";
 
-import GoalCard from "../components/Goals/GoalCard";
-import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
-import GoalModal from "../components/Goals/GoalModal";
-
-import Toast from "../components/Toast";
-
-import {
-  getGoals,
-  createGoal,
-  updateGoal,
-  deleteGoal,
-  clearCompletedGoals,
-  clearActiveGoals,
-} from "../services/goalService";
-
-function Goals() {
+function Urgent() {
   // REFS
   const sortRef = useRef(null);
 
@@ -43,33 +30,9 @@ function Goals() {
 
   const moreRef = useRef(null);
 
-  //COMPONENT STATES
-  const [showGoalModal, setShowGoalModal] =
-    useState(false);
-
-  const [openGoalMenu, setOpenGoalMenu] =
-    useState(null);
-
-  const [selectedGoal, setSelectedGoal] =
-    useState(null);
-
-  const [editingGoal, setEditingGoal] =
-    useState(null);
-
-  const [goals, setGoals] = useState([]);
-
-  const [toast, setToast] =
-    useState("");
-
-  const [completionTimeout, setCompletionTimeout] =
-    useState(null);
-
-  const [showClearCompleted, setShowClearCompleted] =
-    useState(false);
-
-  const [showClearActive, setShowClearActive] =
-    useState(false);
-
+  // COMPONENT STATES
+  const allUrgent = []; // placeholder until data wired
+  
   const [searchTerm, setSearchTerm] =
     useState("");
 
@@ -99,232 +62,6 @@ function Goals() {
 
   const [showMoreMenu, setShowMoreMenu] =
     useState(false);
-
-  const matchesFilters = (goal) => {
-    const categoryMatch =
-      selectedCategory === "All" ||
-      goal.category ===
-      selectedCategory;
-
-    const priorityMatch =
-      selectedPriority === "All" ||
-      goal.priority ===
-      selectedPriority;
-
-    return (
-      categoryMatch &&
-      priorityMatch
-    );
-  };
-
-  const matchesSearch = (goal) =>
-    goal.title
-      .toLowerCase()
-      .includes(
-        searchTerm.toLowerCase()
-      ) ||
-
-    (goal.description || "")
-      .toLowerCase()
-      .includes(
-        searchTerm.toLowerCase());
-
-  const sortGoals = (goalsToSort) => {
-    return [...goalsToSort].sort(
-      (a, b) => {
-        switch (sortBy) {
-          case "oldest":
-            return (
-              new Date(a.createdAt) -
-              new Date(b.createdAt)
-            );
-
-          case "priority": {
-            const order = {
-              High: 0,
-              Medium: 1,
-              Low: 2,
-            };
-
-            return (
-              order[a.priority] -
-              order[b.priority]
-            );
-          }
-
-          case "dueDate":
-            return (
-              new Date(a.dueDate || 0) -
-              new Date(b.dueDate || 0)
-            );
-
-          case "alphabetical":
-            return a.title.localeCompare(
-              b.title
-            );
-
-          case "newest":
-          default:
-            return (
-              new Date(b.createdAt) -
-              new Date(a.createdAt)
-            );
-        }
-      }
-    );
-  };
-
-
-  {/* ALL GOALS */ }
-  {/* NO COLS */ }
-  const allGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const activeGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        !goal.completed &&
-        goal.status === "Active" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const inProgressGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        !goal.completed &&
-        goal.status ===
-        "In Progress" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const pausedGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        !goal.completed &&
-        goal.status === "Paused" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const completedGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.status ===
-        "Completed" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  {/* FOCUS TAB GOAL SORT */ }
-  const urgentGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.priority === "High" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const flaggedGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.flagged &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const likedGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.liked &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const discussionGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.commentCount > 0 &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  )
-
-  {/* CATEGORIES TAB*/ }
-  {/* WORK */ }
-  const workGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.category === "Work" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  {/* STUDY */ }
-  const studyGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.category === "Study" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  {/* PERSONAL */ }
-  const personalGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.category === "Personal" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  {/* HEALTH */ }
-  const healthGoals = sortGoals(
-    goals.filter(
-      (goal) =>
-        goal.category === "Health" &&
-        matchesSearch(goal) &&
-        matchesFilters(goal)
-    )
-  );
-
-  const hasFilters =
-    selectedCategory !== "All" ||
-    selectedPriority !== "All";
-
-  const totalGoals = goals.length;
-
-  // FUNCTIONS
-  const loadGoals = async () => {
-    try {
-      const data =
-        await getGoals();
-
-      setGoals(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    loadGoals();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (
@@ -373,235 +110,6 @@ function Goals() {
       );
   }, []);
 
-  // HANDLERS
-  const handleDeleteGoal =
-    async (goalId) => {
-      try {
-        await deleteGoal(goalId);
-
-        setGoals((prev) =>
-          prev.filter(
-            (goal) =>
-              goal._id !== goalId
-          )
-        );
-
-        setToast(
-          "Goal deleted"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to delete goal"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleCompleteGoal =
-    async (goal) => {
-      try {
-        const updatedGoal =
-          await updateGoal(
-            goal._id,
-            {
-              completed: true,
-              status: "Completed",
-              completedDate:
-                new Date().toLocaleDateString(),
-            }
-          );
-
-        setGoals((prev) =>
-          prev.map((g) =>
-            g._id === updatedGoal._id
-              ? updatedGoal
-              : g
-          )
-        );
-
-        setSelectedGoal((prev) =>
-          prev?._id === updatedGoal._id
-            ? updatedGoal
-            : prev
-        );
-
-        setEditingGoal((prev) =>
-          prev?._id === updatedGoal._id
-            ? updatedGoal
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to complete goal"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleRestoreGoal =
-    async (goal) => {
-      try {
-        const updatedGoal =
-          await updatedGoal(
-            goal._id,
-            {
-              completed: false,
-              completedDate: null,
-              status: "Active",
-            }
-          );
-
-        setGoals((prev) =>
-          prev.map((g) =>
-            g._id === updatedGoal._id
-              ? updatedGoal
-              : g
-          )
-        );
-
-        setSelectedGoal((prev) =>
-          prev?._id === updatedGoal._id
-            ? updatedGoal
-            : prev
-        );
-
-        setEditingGoal((prev) =>
-          prev?._id === updatedGoal._id
-            ? updatedGoal
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to restore goal"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleClearCompletedGoal =
-    async () => {
-      try {
-        await clearCompletedGoals();
-
-        setGoals((prev) =>
-          prev.filter(
-            (goal) =>
-              !goal.completed
-          )
-        );
-
-        setToast(
-          "Completed goals cleared"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to clear completed goals"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleToggleFlag =
-    async (goal) => {
-      await updateGoal(
-        goal._id,
-        {
-          ...goal,
-
-          flagged:
-            !goal.flagged,
-        }
-      );
-
-      loadGoals();
-    };
-
-  const handleToggleLike =
-    async (goal) => {
-      await updateGoal(
-        goal._id,
-        {
-          ...goal,
-
-          liked:
-            !goal.liked,
-        }
-      );
-
-      loadGoals();
-    };
-
-  const handleAddComment =
-    async (goal) => {
-      await updateGoal(
-        goal._id,
-        {
-          ...goal,
-
-          commentCount:
-            (goal.commentCount || 0) +
-            1,
-        }
-      );
-
-      loadGoals();
-    };
-
-  const dropdownItemStyle = {
-    width: "100%",
-
-    padding: "10px 12px",
-
-    background: "transparent",
-
-    border: "none",
-
-    borderRadius: "10px",
-
-    color: "var(--text-primary)",
-
-    textAlign: "left",
-
-    fontSize: "0.8rem",
-
-    fontWeight: "300",
-
-    cursor: "pointer",
-
-    transition: "all 0.2s ease",
-  };
-
   const actionIconStyle = {
     width: "32px",
 
@@ -636,7 +144,6 @@ function Goals() {
           gap: "20px",
         }}
       >
-
         <div
           style={{
             display: "flex",
@@ -644,6 +151,7 @@ function Goals() {
             gap: "24px",
           }}
         >
+
           {/* HEADER */}
           <div
             style={{
@@ -667,7 +175,7 @@ function Goals() {
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  Goals
+                  Urgent
                 </h1>
 
                 <p
@@ -677,7 +185,7 @@ function Goals() {
                     fontWeight: "300",
                   }}
                 >
-                  Manage and organize your goals.
+                  Urgent items will appear here.
                 </p>
               </div>
 
@@ -689,49 +197,7 @@ function Goals() {
                   gap: "12px",
                 }}
               >
-                {/* CREATE */}
-                <button
-                  onClick={() => {
-                    setShowGoalModal(true);
-                  }}
-                  style={{
-                    width: "36px",
-                    height: "36px",
-
-                    borderRadius: "999px",
-
-                    border: "none",
-
-                    background:
-                      "rgba(255,255,255,0.025)",
-
-                    color:
-                      "var(--text-secondary)",
-
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-
-                    cursor: "pointer",
-
-                    backdropFilter: "blur(28px)",
-
-                    boxShadow:
-                      "0 6px 20px rgba(0,0,0,0.28)",
-
-                    transition:
-                      "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-
-                    transform: "translateX(0)",
-                  }}
-                >
-                  <Plus
-                    size={16}
-                    strokeWidth={1.5}
-                  />
-                </button>
-
-                {/* all */}
+                {/* ALL */}
                 <div
                   onMouseEnter={() =>
                     setShowActions(true)
@@ -952,7 +418,7 @@ function Goals() {
                               onChange={(e) =>
                                 setSearchTerm(e.target.value)
                               }
-                              placeholder="Search goals..."
+                              placeholder="Search..."
                               style={{
                                 background: "none",
 
@@ -1462,94 +928,6 @@ function Goals() {
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowGoalModal(true);
-                              }}
-                              style={{
-                                background: "transparent",
-
-                                border: "none",
-
-                                color: "var(--text-secondary)",
-
-                                padding: "10px 14px",
-
-                                borderRadius: "12px",
-
-                                cursor: "pointer",
-
-                                textAlign: "left",
-
-                                fontSize: "0.78rem",
-
-                                fontWeight: "300",
-
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Create Goal
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearCompleted(true);
-                              }}
-                              style={{
-                                background: "transparent",
-
-                                border: "none",
-
-                                color: "var(--text-secondary)",
-
-                                padding: "10px 14px",
-
-                                borderRadius: "12px",
-
-                                cursor: "pointer",
-
-                                textAlign: "left",
-
-                                fontSize: "0.78rem",
-
-                                fontWeight: "300",
-
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear Completed
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
                                 setShowClearActive(true);
                               }}
                               style={{
@@ -1599,8 +977,6 @@ function Goals() {
               </div> {/* END TOP RIGHT */}
             </div> {/* END WITHIN HEADER */}
 
-
-            {/* */}
             <p
               style={{
                 marginTop: "6px",
@@ -1615,10 +991,9 @@ function Goals() {
                 fontWeight: "300",
               }}
             >
-              {totalGoals === 1 ? totalGoals + " Goal" : totalGoals + " Goals" || "No goals yet"}
+              Nothing here yet
             </p>
           </div> {/* END HEADER */}
-
 
           {/* DIVIDER */}
           <div
@@ -1629,15 +1004,18 @@ function Goals() {
             }}
           />
 
-          {/* ALL GOALS */}
+          {/* ALL URGENT (OVERDUE) */}
           <div
             style={{
+
               borderRadius:
                 "var(--radius-large)",
 
-              backdropFilter: "blur(20px)",
+              backdropFilter:
+                "blur(20px)",
 
-              WebkitBackdropFilter: "blur(20px)",
+              WebkitBackdropFilter:
+                "blur(20px)",
 
               height: "700px",
 
@@ -1661,7 +1039,8 @@ function Goals() {
 
                 display: "grid",
 
-                gridTemplateColumns: "repeat(4, 1fr)",
+                gridTemplateColumns:
+                  "repeat(4, 1fr)",
 
                 gap: "18px",
 
@@ -1669,7 +1048,7 @@ function Goals() {
               }}
             >
 
-              {allGoals.length === 0 ? (
+              {allUrgent.length === 0 ? (
                 <div
                   style={{
                     gridColumn: "1 / -1",
@@ -1695,7 +1074,7 @@ function Goals() {
                       marginBottom: "8px",
                     }}
                   >
-                    <Sprout
+                    <CircleAlert
                       size={60}
                       strokeWidth={1.8}
                       opacity={0.85}
@@ -1708,482 +1087,21 @@ function Goals() {
                       fontSize: "0.9rem",
                     }}
                   >
-                    No Goals
-                  </p>
-
-                  <p
-                    style={{
-                      marginTop: "2px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Click + to create one
-                    {/* or try searching a different term */}
+                    Nothing urgent
                   </p>
                 </div>
               ) : (
-                allGoals.map((goal) => (
-                  <GoalCard
-                    key={goal._id}
-                    goal={goal}
-                    onClick={setSelectedGoal}
-
-                    openGoalMenu={openGoalMenu}
-                    setOpenGoalMenu={setOpenGoalMenu}
-
-                    onView={setSelectedGoal}
-                    onEdit={setEditingGoal}
-
-                    onDelete={handleDeleteGoal}
-
-                    onComplete={handleCompleteGoal}
-                    onRestore={handleRestoreGoal}
-
-                    onToggleFlag={
-                      handleToggleFlag
-                    }
-
-                    onToggleLike={
-                      handleToggleLike
-                    }
-
-                    onAddComment={
-                      handleAddComment
-                    }
-                  />
-                ))
+                <p>
+                  map UrgentCard
+                </p>
               )}
             </div>
-          </div> {/* ALL END */}
+          </div>
 
         </div>
       </div>
-      {showGoalModal && (
-        <GoalModal
-          onClose={() =>
-            setShowGoalModal(false)
-          }
-          onSave={(goalData) => {
-            createGoal(goalData)
-              .then((newGoal) => {
-                setGoals((prev) => [
-                  newGoal,
-                  ...prev,
-                ]);
-
-                setToast(
-                  "Goal created"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to create goal"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
-          }}
-        />
-      )}
-
-      {selectedGoal && (
-        <GoalDetailsModal
-          goal={selectedGoal}
-          onClose={() =>
-            setSelectedGoal(null)
-          }
-          onDeleteGoal={handleDeleteGoal}
-          setToast={setToast}
-          onEditGoal={setEditingGoal}
-          onCompleteGoal={
-            handleCompleteGoal
-          }
-          onRestoreGoal={
-            handleRestoreGoal
-          }
-        />
-      )}
-      {editingGoal && (
-        <GoalModal
-          mode="edit"
-          goal={editingGoal}
-          onCompleteGoal={
-            handleCompleteGoal
-          }
-          onClose={() =>
-            setEditingGoal(null)
-          }
-          onSave={(goalData) => {
-            updateGoal(
-              editingGoal._id,
-              goalData
-            )
-              .then((updatedGoal) => {
-                setGoals((prev) =>
-                  prev.map((goal) =>
-                    goal._id ===
-                      updatedGoal._id
-                      ? updatedGoal
-                      : goal
-                  )
-                );
-
-                setToast(
-                  "Goal updated"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-
-                setEditingGoal(null);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to update goal"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
-          }}
-        />
-      )}
-
-      {showClearCompleted && (
-        <div
-          onClick={() =>
-            setShowClearCompleted(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius:
-                "24px",
-              background:
-                "rgba(20,20,20,0.85)",
-              border:
-                "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear completed goals?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearCompleted(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={async () => {
-                  await handleClearCompletedGoals();
-
-                  setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={async () => {
-              await handleClearActiveGoals();
-
-              setShowClearActive(
-                false
-              );
-            }}
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background: "rgba(20,20,20,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear active goals?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearActive(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setGoals((prev) =>
-                    prev.filter(
-                      (goal) =>
-                        goal.completed
-                    )
-                  );
-
-                  setToast("Active goals cleared");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
-
-                  setShowClearActive(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <Toast
-        message={toast}
-      />
-      <Toast message={toast} />
     </MainLayout>
   );
 }
 
-export default Goals;
+export default Urgent;

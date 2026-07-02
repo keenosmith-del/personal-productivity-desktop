@@ -19,6 +19,7 @@ import {
   Plus,
   CircleArrowLeft,
   Megaphone,
+  CircleAlert,
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
@@ -62,6 +63,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       icon: Grip,
     },
     {
+      label: "Urgent",
+      path: "/urgent",
+      icon: CircleAlert,
+    },
+    {
       label: "Tasks",
       path: "/tasks",
       icon: CheckSquare,
@@ -79,6 +85,11 @@ function Sidebar({ collapsed, setCollapsed }) {
     {
       label: "Reminders",
       path: "/reminders",
+      icon: Bell,
+    },
+    {
+      label: "Alarms",
+      path: "/alarms",
       icon: AlarmClock,
     },
     {

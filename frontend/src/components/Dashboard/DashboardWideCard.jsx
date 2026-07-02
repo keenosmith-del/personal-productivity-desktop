@@ -3,6 +3,8 @@ import DashboardPreviewCard from "./DashboardPreviewCard";
 function DashboardWideCard({
     title,
     items = [],
+    placeholderTitle,
+    placeholderFooter,
     chips = [],
     onClick,
     onPreviewClick,
@@ -108,32 +110,57 @@ function DashboardWideCard({
                     >
                         {title}
                     </div>
-                </div>
 
-                {/* today count */}
-                <div
-                    style={{
-                        display: "flex",
+                    {/* START CONDITIONAL */}
+                    {items.length > 0 ? (
+                        <>
+                            <div
+                                style={{
+                                    fontSize: "2rem",
 
-                        alignItems:
-                            "center",
+                                    fontWeight: "300",
 
-                    }}
-                >
-                    <div
-                        style={{
-                            fontSize:
-                                "2rem",
+                                    letterSpacing: "-0.04em",
+                                }}
+                            >
+                                {items.length}
+                            </div>
+                        </>
+                    ) : (
+                        <div
+                            style={{
+                                marginTop: "8px",
 
-                            fontWeight:
-                                "300",
+                                display: "flex",
 
-                            letterSpacing:
-                                "-0.04em",
-                        }}
-                    >
-                        {items.length}
-                    </div>
+                                flexDirection: "column",
+
+                                gap: "6px",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    fontSize: "0.82rem",
+
+                                    fontWeight: "300",
+                                }}
+                            >
+                                Nothing here yet.
+                            </div>
+
+                            <div
+                                style={{
+                                    fontSize: "0.72rem",
+
+                                    opacity: 0.45,
+
+                                    lineHeight: 1.5,
+                                }}
+                            >
+                                {placeholderTitle}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* STACKED AVATARS */}

@@ -362,7 +362,7 @@ function NotificationCard({
                     : "Today"}
             </div>
 
-            {/* ACTIONS */}
+            {/* BOTTOM ROW */}
             <div
                 style={{
                     display: "flex",
@@ -373,49 +373,6 @@ function NotificationCard({
                     alignItems: "center",
                 }}
             >
-                <div
-                    onClick={(e) => {
-                        e.stopPropagation();
-
-                        onToggleArchive(
-                            notification
-                        );
-                    }}
-                    style={{
-                        color:
-                            notification.archived
-                                ? "white"
-                                : "var(--text-secondary)",
-
-                        transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(-1px) scale(1.08)";
-
-                        e.currentTarget.style.color =
-                            "white";
-                    }}
-
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform =
-                            "translateY(0) scale(1)";
-
-                        e.currentTarget.style.color =
-                            notification.archived
-                                ? "white"
-                                : "var(--text-secondary)";
-                    }}
-                >
-                    <Archive
-                        size={18}
-                        fill={
-                            notification.archived
-                                ? "currentColor"
-                                : "none"
-                        }
-                    />
-                </div>
 
                 <div
                     style={{
@@ -426,55 +383,6 @@ function NotificationCard({
                         alignItems: "center",
                     }}
                 >
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation();
-
-                            onToggleRead(
-                                notification
-                            );
-                        }}
-                        style={{
-                            color:
-                                notification.read
-                                    ? "white"
-                                    : "var(--text-secondary)",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform =
-                                "translateY(-1px) scale(1.08)";
-
-                            e.currentTarget.style.color =
-                                "white";
-                        }}
-
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform =
-                                "translateY(0) scale(1)";
-
-                            e.currentTarget.style.color =
-                                notification.read
-                                    ? "white"
-                                    : "var(--text-secondary)";
-                        }}
-                    >
-                        <Bell
-                            size={18}
-                            fill={
-                                notification.read
-                                    ? "currentColor"
-                                    : "none"
-                            }
-                            strokeWidth={
-                                notification.read
-                                    ? 1.75
-                                    : 2
-                            }
-                        />
-                    </div>
-
                     <div
                         onClick={(e) => {
                             e.stopPropagation();

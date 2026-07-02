@@ -1,5 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
-// test 
+
 import {
   Search,
   ArrowUpDown,
@@ -7,10 +7,12 @@ import {
   Ellipsis,
   ArrowLeft,
   ArrowRight,
-  Folder,
+  LayoutGrid,
+  Sparkles,
+  Shapes,
+  ChartLine,
   Plus,
-  NotebookPen,
-  Infinity,
+  AlarmClock,
 } from "lucide-react";
 
 import {
@@ -19,22 +21,7 @@ import {
   useRef,
 } from "react";
 
-import NoteModal from "../components/Notes/NoteModal";
-import NoteCard from "../components/Notes/NoteCard";
-import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
-
-import {
-  getNotes,
-  createNote,
-  updateNote,
-  clearAllNotes,
-  clearPinnedNotes,
-  deleteNote,
-} from "../services/noteService";
-
-import Toast from "../components/Toast";
-
-function Notes() {
+function Alarms() {
   // REFS
   const sortRef = useRef(null);
 
@@ -44,37 +31,8 @@ function Notes() {
 
   const moreRef = useRef(null);
 
-  //COMPONENT STATES
-  const [showNoteModal, setShowNoteModal] =
-    useState(false);
-
-  const [openNoteMenu, setOpenNoteMenu] =
-    useState(null);
-
-  const [selectedNote, setSelectedNote] =
-    useState(null);
-
-  const [editingNote,
-    setEditingNote] =
-    useState(null);
-
-  const [notes, setNotes] =
-    useState([]);
-
-  const [toast, setToast] =
-    useState("");
-
-  const [completionTimeout,
-    setCompletionTimeout] =
-    useState(null);
-
-  const [showClearCompleted,
-    setShowClearCompleted] =
-    useState(false);
-
-  const [showClearActive,
-    setShowClearActive] =
-    useState(false);
+  // COMPONENT STATES
+  const allAlarms = []; // placeholder until data wired 
 
   const [searchTerm, setSearchTerm] =
     useState("");
@@ -105,246 +63,6 @@ function Notes() {
 
   const [showMoreMenu, setShowMoreMenu] =
     useState(false);
-
-  const matchesFilters = (note) => {
-    const categoryMatch =
-      selectedCategory === "All" ||
-      note.category ===
-      selectedCategory;
-
-    const priorityMatch =
-      selectedPriority === "All" ||
-      note.priority ===
-      selectedPriority;
-
-    return (
-      categoryMatch &&
-      priorityMatch
-    );
-  };
-
-  const matchesSearch = (note) =>
-    note.title
-      .toLowerCase()
-      .includes(
-        searchTerm.toLowerCase()
-      ) ||
-
-    (note.content || "")
-      .toLowerCase()
-      .includes(
-        searchTerm.toLowerCase());
-
-  const sortNotes = (notesToSort) => {
-    return [...notesToSort].sort(
-      (a, b) => {
-        switch (sortBy) {
-          case "oldest":
-            return (
-              new Date(a.createdAt) -
-              new Date(b.createdAt)
-            );
-
-          case "priority": {
-            const order = {
-              High: 0,
-              Medium: 1,
-              Low: 2,
-            };
-
-            return (
-              order[a.priority] -
-              order[b.priority]
-            );
-          }
-
-          case "dueDate":
-            return (
-              new Date(a.dueDate || 0) -
-              new Date(b.dueDate || 0)
-            );
-
-          case "alphabetical":
-            return a.title.localeCompare(
-              b.title
-            );
-
-          case "newest":
-          default:
-            return (
-              new Date(b.createdAt) -
-              new Date(a.createdAt)
-            );
-        }
-      }
-    );
-  };
-
-
-  {/* BEGIN NOTES SORT VARIABLES */ }
-  const allNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const activeNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        !note.completed &&
-        note.status === "Active" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const inProgressNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        !note.completed &&
-        note.status ===
-        "In Progress" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const pausedNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        !note.completed &&
-        note.status === "Paused" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const completedNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.status ===
-        "Completed" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  {/* URGENT NOTES SORT */ }
-  const urgentNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.priority === "High" && //
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const flaggedNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.flagged &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const likedNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.liked &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const discussionNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.commentCount > 0 &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  )
-
-  {/* CATEGORIES TAB*/ }
-  {/* WORK */ }
-  const workNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.category === "Work" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  {/* STUDY */ }
-  const studyNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.category === "Study" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  {/* PERSONAL */ }
-  const personalNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.category === "Personal" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  {/* HEALTH */ }
-  const healthNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.category === "Health" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const hasFilters =
-    selectedCategory !== "All" ||
-    selectedPriority !== "All";
-
-  const totalNotes =
-    notes.length;
-
-  // FUNCTIONS
-  const loadNotes = async () => {
-    try {
-      const data =
-        await getNotes();
-
-      setNotes(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const noteTabs = [
-    {
-      key: "all",
-      icon: Infinity,
-    },
-    {
-      key: "folders",
-      icon: Folder,
-    },
-  ];
-
-  const [activeTab, setActiveTab] =
-    useState("all");
-
-  useEffect(() => {
-    loadNotes();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (
@@ -393,211 +111,6 @@ function Notes() {
       );
   }, []);
 
-  // HANDLERS
-  const handleDeleteNote =
-    async (noteId) => {
-      try {
-        await deleteNote(noteId);
-
-        setNotes((prev) =>
-          prev.filter(
-            (note) =>
-              note._id !== noteId
-          )
-        );
-
-        setToast(
-          "Note deleted"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to delete note"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleCompleteNote =
-    async (note) => {
-      try {
-        const updatedNote =
-          await updateNote(
-            note._id,
-            {
-              completed: true,
-              status: "Completed",
-              completedDate:
-                new Date().toLocaleDateString(),
-            }
-          );
-
-        setNotes((prev) =>
-          prev.map((t) =>
-            t._id === updatedNote._id
-              ? updatedNote
-              : t
-          )
-        );
-
-        setSelectedNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-        setEditingNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to complete note"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleRestoreNote =
-    async (note) => {
-      try {
-        const updatedNote =
-          await updateNote(
-            note._id,
-            {
-              completed: false,
-              completedDate: null,
-              status: "Active",
-            }
-          );
-
-        setNotes((prev) =>
-          prev.map((t) =>
-            t._id === updatedNote._id
-              ? updatedNote
-              : t
-          )
-        );
-
-        setSelectedNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-        setEditingNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to restore note"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleClearCompletedNotes =
-    async () => {
-      try {
-        await clearCompletedNotes();
-
-        setNotes((prev) =>
-          prev.filter(
-            (note) =>
-              !note.completed
-          )
-        );
-
-        setToast(
-          "Completed notes cleared"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to clear completed notes"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleToggleFlag =
-    async (note) => {
-      await updateNote(
-        note._id,
-        {
-          ...note,
-
-          flagged:
-            !note.flagged,
-        }
-      );
-
-      loadNotes();
-    };
-
-  const handleToggleLike =
-    async (note) => {
-      await updateNote(
-        note._id,
-        {
-          ...note,
-
-          liked:
-            !note.liked,
-        }
-      );
-
-      loadNotes();
-    };
-
-  const handleAddComment =
-    async (note) => {
-      await updateNote(
-        note._id,
-        {
-          ...note,
-
-          commentCount:
-            (note.commentCount || 0) +
-            1,
-        }
-      );
-
-      loadNotes();
-    };
-
   const actionIconStyle = {
     width: "32px",
 
@@ -629,10 +142,9 @@ function Notes() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
-
         <div
           style={{
             display: "flex",
@@ -640,6 +152,7 @@ function Notes() {
             gap: "24px",
           }}
         >
+
           {/* HEADER */}
           <div
             style={{
@@ -663,7 +176,7 @@ function Notes() {
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  Notes
+                  Alarms
                 </h1>
 
                 <p
@@ -673,7 +186,7 @@ function Notes() {
                     fontWeight: "300",
                   }}
                 >
-                  Manage and organize your notes.
+                  Manage and organize your alarms.
                 </p>
               </div>
 
@@ -687,9 +200,7 @@ function Notes() {
               >
                 {/* CREATE */}
                 <button
-                  onClick={() => {
-                    setShowNoteModal(true);
-                  }}
+                  onClick={() => { }}
                   style={{
                     width: "36px",
                     height: "36px",
@@ -821,8 +332,8 @@ function Notes() {
                       width:
                         showActions
                           ? showSearchBar
-                            ? "420px"
-                            : "280px"
+                            ? "330px"
+                            : "200px"
                           : "0px",
 
                       overflow: "visible",
@@ -948,7 +459,7 @@ function Notes() {
                               onChange={(e) =>
                                 setSearchTerm(e.target.value)
                               }
-                              placeholder="Search notes..."
+                              placeholder="Search alarms..."
                               style={{
                                 background: "none",
 
@@ -1379,89 +890,7 @@ function Notes() {
                         </div>
                       </div>
 
-                      {/* OVERVIEW / FOCUS / CATEGORIES / INSIGHTS */}
-                      {/* TABS */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-
-                          gap: "6px",
-
-                          padding: "4px",
-
-                          borderRadius: "999px",
-
-                          background:
-                            "rgba(255,255,255,0.025)",
-
-                          backdropFilter: "blur(28px)",
-
-                          boxShadow:
-                            "0 6px 20px rgba(0,0,0,0.2)",
-                        }}
-                      >
-                        {noteTabs.map((tab) => {
-                          const Icon = tab.icon;
-
-                          const active =
-                            activeTab === tab.key;
-
-                          return (
-                            <button
-                              key={tab.key}
-                              onClick={() => {
-                                setActiveTab(tab.key);
-
-                                setShowSortMenu(false);
-
-                                setShowFilterMenu(false);
-
-                                setShowMoreMenu(false);
-                              }}
-                              style={{
-                                ...actionIconStyle,
-
-                                background: active
-                                  ? "rgba(255,255,255,0.025)"
-                                  : "transparent",
-
-                                boxShadow: active
-                                  ? "0 4px 10px rgba(0,0,0,0.18)"
-                                  : "none",
-
-                                color: active
-                                  ? "rgba(255,255,255,0.85)"
-                                  : "var(--text-secondary)",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.transform =
-                                  "translateY(-1px)";
-
-                                if (!active) {
-                                  e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.transform =
-                                  "translateY(0)";
-
-                                if (!active) {
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
-                                }
-                              }}
-                            >
-                              <Icon
-                                size={15}
-                                strokeWidth={1.6}
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-
+                      {/* NO TABS */}
 
                       {/* MORE */}
                       <div
@@ -1540,7 +969,7 @@ function Notes() {
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowNoteModal(true);
+                                setShowReminderModal(true);
                               }}
                               style={{
                                 background: "transparent",
@@ -1578,7 +1007,7 @@ function Notes() {
                                   "var(--text-secondary)";
                               }}
                             >
-                              Create Note
+                              Create Alarm
                             </button>
 
                             <button
@@ -1691,9 +1120,9 @@ function Notes() {
                 fontWeight: "300",
               }}
             >
-              {totalNotes + " Notes" || "No notes yet"}
+              Nothing here yet
             </p>
-          </div>
+          </div> {/* END HEADER */}
 
           {/* DIVIDER */}
           <div
@@ -1704,9 +1133,8 @@ function Notes() {
             }}
           />
 
-          {/* ALL NOTES ACTIVE TAB */}
-          {activeTab === "all" && (
-            <div
+          {/* ALL ALARMS */}
+          <div
               style={{
 
                 borderRadius:
@@ -1749,7 +1177,7 @@ function Notes() {
                 }}
               >
 
-                {allNotes.length === 0 ? (
+                {allAlarms.length === 0 ? (
                   <div
                     style={{
                       gridColumn: "1 / -1",
@@ -1775,7 +1203,7 @@ function Notes() {
                         marginBottom: "8px",
                       }}
                     >
-                      <NotebookPen
+                      <AlarmClock
                         size={60}
                         strokeWidth={1.8}
                         opacity={0.85}
@@ -1788,140 +1216,7 @@ function Notes() {
                         fontSize: "0.9rem",
                       }}
                     >
-                      No notes
-                    </p>
-
-                    <p
-                      style={{
-                        marginTop: "2px",
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Click + to create one
-                      {/* or try searching a different term */}
-                    </p>
-                  </div>
-                ) : (
-                  allNotes.map((note) => (
-                    <NoteCard
-                      key={note._id}
-                      note={note}
-                      onClick={setSelectedNote}
-
-                      openNoteMenu={openNoteMenu}
-                      setOpenNoteMenu={setOpenNoteMenu}
-
-                      onView={setSelectedNote}
-                      onEdit={setEditingNote}
-
-                      onDelete={handleDeleteNote}
-
-                      onComplete={handleCompleteNote}
-                      onRestore={handleRestoreNote}
-
-                      onToggleFlag={
-                        handleToggleFlag
-                      }
-
-                      onToggleLike={
-                        handleToggleLike
-                      }
-
-                      onAddComment={
-                        handleAddComment
-                      }
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* FOLDERS TAB */}
-          {activeTab === "folders" && (
-            <div
-              style={{
-
-                borderRadius:
-                  "var(--radius-large)",
-
-                backdropFilter:
-                  "blur(20px)",
-
-                WebkitBackdropFilter:
-                  "blur(20px)",
-
-                height: "700px",
-
-                display: "flex",
-
-                flexDirection: "column",
-
-                overflow: "hidden",
-              }}
-            >
-              {/* HEADER REMOVED */}
-
-              {/* GRID */}
-              <div
-                style={{
-                  flex: 1,
-
-                  overflowY: "auto",
-
-                  padding: "24px",
-
-                  display: "grid",
-
-                  gridTemplateColumns:
-                    "repeat(4, 1fr)",
-
-                  gap: "18px",
-
-                  alignContent: "start",
-                }}
-              >
-
-                {allNotes.length === 0 ? (
-                  <div
-                    style={{
-                      gridColumn: "1 / -1",
-
-                      display: "flex",
-                      flexDirection: "column",
-
-                      justifyContent: "center",
-                      alignItems: "center",
-
-                      minHeight: "500px",
-
-                      textAlign: "center",
-
-                      color: "var(--text-secondary)",
-
-                      opacity: 0.85,
-                    }}
-                  >
-
-                    <div
-                      style={{
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <Folder
-                        size={60}
-                        strokeWidth={1.8}
-                        opacity={0.85}
-                      />
-                    </div>
-
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      No Folders
+                      No Alarms
                     </p>
 
                     <p
@@ -1936,440 +1231,16 @@ function Notes() {
                   </div>
                 ) : (
                   <p>
-                    mapped folders
+                    map AlarmCard
                   </p>
                 )}
               </div>
             </div>
-          )}
 
         </div>
       </div>
-      {showNoteModal && (
-        <NoteModal
-          onClose={() =>
-            setShowNoteModal(false)
-          }
-          onSave={(noteData) => {
-            createNote(noteData)
-              .then((newNote) => {
-                setNotes((prev) => [
-                  newNote,
-                  ...prev,
-                ]);
-
-                setToast(
-                  "Note created"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to create note"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
-          }}
-        />
-      )}
-
-      {selectedNote && (
-        <NoteDetailsModal
-          note={selectedNote}
-          onClose={() =>
-            setSelectedNote(null)
-          }
-          onDeleteNote={handleDeleteNote}
-          setToast={setToast}
-          onEditNote={setEditingNote}
-          onCompleteNote={
-            handleCompleteNote
-          }
-          onRestoreNote={
-            handleRestoreNote
-          }
-        />
-      )}
-      {editingNote && (
-        <NoteModal
-          mode="edit"
-          note={editingNote}
-          onCompleteNote={
-            handleCompleteNote
-          }
-          onClose={() =>
-            setEditingNote(null)
-          }
-          onSave={(noteData) => {
-            updateNote(
-              editingNote._id,
-              noteData
-            )
-              .then((updatedNote) => {
-                setNotes((prev) =>
-                  prev.map((note) =>
-                    note._id ===
-                      updatedNote._id
-                      ? updatedNote
-                      : note
-                  )
-                );
-
-                setToast(
-                  "Note updated"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-
-                setEditingNote(null);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to update note"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
-          }}
-        />
-      )}
-
-      {showClearCompleted && (
-        <div
-          onClick={() =>
-            setShowClearCompleted(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius:
-                "24px",
-              background:
-                "rgba(20,20,20,0.85)",
-              border:
-                "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear completed notes?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearCompleted(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={async () => {
-                  await handleClearCompletedNotes();
-
-                  setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={async () => {
-              await handleClearActiveNotes();
-
-              setShowClearActive(
-                false
-              );
-            }}
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background: "rgba(20,20,20,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear active notes?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearActive(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setNotes((prev) =>
-                    prev.filter(
-                      (note) =>
-                        note.completed
-                    )
-                  );
-
-                  setToast("Active notes cleared");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
-
-                  setShowClearActive(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <Toast
-        message={toast}
-      />
     </MainLayout>
   );
 }
 
-export default Notes;
+export default Alarms;

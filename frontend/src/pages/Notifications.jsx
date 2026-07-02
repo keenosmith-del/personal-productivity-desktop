@@ -7,11 +7,7 @@ import {
   Ellipsis,
   ArrowLeft,
   ArrowRight,
-  LayoutGrid,
-  Sparkles,
-  Shapes,
-  ChartLine,
-  Plus,
+  Megaphone,
 } from "lucide-react";
 
 import {
@@ -198,46 +194,6 @@ function Notifications() {
       )
     );
 
-  const readNotifications =
-    sortNotifications(
-      notifications.filter(
-        (n) =>
-          n.read &&
-          matchesSearch(n)
-      )
-    );
-
-  const archivedNotifications =
-    sortNotifications(
-      notifications.filter(
-        (n) =>
-          n.archived &&
-          matchesSearch(n)
-      )
-    );
-
-  const notificationColumns = [
-    {
-      title: "All",
-      data: allNotifications,
-    },
-
-    {
-      title: "Starred",
-      data: starredNotifications,
-    },
-
-    {
-      title: "Read",
-      data: readNotifications,
-    },
-
-    {
-      title: "Archived",
-      data: archivedNotifications,
-    },
-  ];
-
   // HANDLERS
   async function handleToggleStar(
     notification
@@ -260,78 +216,6 @@ function Notifications() {
         updated.starred
           ? "Notification starred"
           : "Removed star"
-      );
-
-      setTimeout(
-        () => setToast(""),
-        3000
-      );
-    } catch (error) {
-      console.error(error);
-
-      setToast(
-        "Failed to update notification"
-      );
-    }
-  }
-
-  async function handleToggleArchive(
-    notification
-  ) {
-    try {
-      const updated =
-        await toggleArchiveNotification(
-          notification._id
-        );
-
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item._id === updated._id
-            ? updated
-            : item
-        )
-      );
-
-      setToast(
-        updated.archived
-          ? "Notification archived"
-          : "Removed from archive"
-      );
-
-      setTimeout(
-        () => setToast(""),
-        3000
-      );
-    } catch (error) {
-      console.error(error);
-
-      setToast(
-        "Failed to update notification"
-      );
-    }
-  }
-
-  async function handleToggleRead(
-    notification
-  ) {
-    try {
-      const updated =
-        await toggleReadNotification(
-          notification._id
-        );
-
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item._id === updated._id
-            ? updated
-            : item
-        )
-      );
-
-      setToast(
-        updated.read
-          ? "Marked read"
-          : "Marked unread"
       );
 
       setTimeout(
@@ -575,8 +459,8 @@ function Notifications() {
                       width:
                         showActions
                           ? showSearchBar
-                            ? "500px"
-                            : "360px"
+                            ? "330px"
+                            : "200px"
                           : "0px",
 
                       overflow: "visible",
@@ -1207,49 +1091,6 @@ function Notifications() {
                               zIndex: 2001,
                             }}
                           >
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearCompleted(true);
-                              }}
-                              style={{
-                                background: "transparent",
-
-                                border: "none",
-
-                                color: "var(--text-secondary)",
-
-                                padding: "10px 14px",
-
-                                borderRadius: "12px",
-
-                                cursor: "pointer",
-
-                                textAlign: "left",
-
-                                fontSize: "0.78rem",
-
-                                fontWeight: "300",
-
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear Completed
-                            </button>
 
                             <button
                               onClick={() => {
@@ -1327,163 +1168,117 @@ function Notifications() {
             }}
           />
 
-          {/* GRID */}
+          {/* ALL NOTIFICATIONS */}
           <div
             style={{
-              display: "grid",
+              borderRadius:
+                "var(--radius-large)",
 
-              gridTemplateColumns:
-                "repeat(4, minmax(0, 1fr))",
+              backdropFilter: "blur(20px)",
 
-              gap: "24px",
+              WebkitBackdropFilter: "blur(20px)",
+
+              height: "700px",
+
+              display: "flex",
+
+              flexDirection: "column",
+
+              overflow: "hidden",
             }}
           >
-            {notificationColumns.map(
-              (column) => (
+            {/* HEADER REMOVED */}
+
+            {/* GRID */}
+            <div
+              style={{
+                flex: 1,
+
+                overflowY: "auto",
+
+                padding: "24px",
+
+                display: "grid",
+
+                gridTemplateColumns: "repeat(4, 1fr)",
+
+                gap: "18px",
+
+                alignContent: "start",
+              }}
+            >
+
+              {allNotifications.length === 0 ? (
                 <div
-                  key={column.title}
                   style={{
-                    background:
-                      "var(--glass-bg)",
-
-                    border:
-                      "1px solid var(--glass-border)",
-
-                    borderRadius:
-                      "var(--radius-large)",
-
-                    backdropFilter:
-                      "blur(20px)",
-
-                    WebkitBackdropFilter:
-                      "blur(20px)",
-
-                    height: "700px",
+                    gridColumn: "1 / -1",
 
                     display: "flex",
-
                     flexDirection: "column",
 
-                    overflow: "hidden",
+                    justifyContent: "center",
+                    alignItems: "center",
+
+                    minHeight: "500px",
+
+                    textAlign: "center",
+
+                    color: "var(--text-secondary)",
+
+                    opacity: 0.85,
                   }}
                 >
-                  {/* HEADER */}
+
                   <div
                     style={{
-                      padding: "20px 24px",
-
-                      borderBottom:
-                        "1px solid rgba(255,255,255,0.06)",
-
-                      display: "flex",
-
-                      justifyContent:
-                        "space-between",
-
-                      alignItems: "center",
+                      marginBottom: "8px",
                     }}
                   >
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "1rem",
-                          fontWeight: "400",
-                        }}
-                      >
-                        {column.title}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-
-                          opacity: 0.45,
-
-                          marginTop: "4px",
-                        }}
-                      >
-                        {column.data.length} notifications
-                      </div>
-                    </div>
+                    <Megaphone
+                      size={60}
+                      strokeWidth={1.8}
+                      opacity={0.85}
+                    />
                   </div>
 
-                  {/* SCROLL AREA */}
-                  <div
+                  <p
                     style={{
-                      flex: 1,
-
-                      overflowY: "auto",
-
-                      padding: "16px",
-
-                      display: "flex",
-
-                      flexDirection: "column",
-
-                      gap: "12px",
+                      margin: 0,
+                      fontSize: "0.9rem",
                     }}
                   >
-                    {column.data.length === 0 ? (
-                      <div
-                        style={{
-                          flex: 1,
+                    No Notifications
+                  </p>
 
-                          display: "flex",
-
-                          justifyContent: "center",
-
-                          alignItems: "center",
-
-                          color:
-                            "var(--text-secondary)",
-
-                          opacity: 0.45,
-
-                          textAlign: "center",
-
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        No notifications
-                      </div>
-                    ) : (
-                      column.data.map(
-                        (notification) => (
-                          <NotificationCard
-                            key={notification._id}
-                            notification={notification}
-                            openNotificationMenu={
-                              openNotificationMenu
-                            }
-
-                            setOpenNotificationMenu={
-                              setOpenNotificationMenu
-                            }
-
-                            onDelete={
-                              handleDeleteNotification
-                            }
-
-                            onToggleArchive={
-                              handleToggleArchive
-                            }
-
-                            onToggleStar={
-                              handleToggleStar
-                            }
-
-                            onToggleRead={
-                              handleToggleRead
-                            }
-                          />
-                        )
-                      )
-                    )}
-                  </div>
+                  <p
+                    style={{
+                      marginTop: "2px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Your notification feed will appear here
+                    {/* or try searching a different term */}
+                  </p>
                 </div>
-              )
-            )}
-          </div>
+              ) : (
+                allNotifications.map((notification) => (
+                  <NotificationCard
+                    key={notification._id}
+                    notification={notification}
+
+                    openNotificationMenu={openNotificationMenu}
+                    setOpenNotificationMenu={setOpenNotificationMenu}
+
+                    onDelete={handleDeleteNotification}
+
+                    onToggleStar={
+                      handleToggleStar
+                    }
+                  />
+                ))
+              )}
+            </div>
+          </div> {/* ALL END */}
         </div>
       </div>
       <Toast message={toast} />

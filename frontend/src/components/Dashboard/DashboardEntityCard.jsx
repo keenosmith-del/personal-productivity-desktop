@@ -4,7 +4,6 @@ function DashboardEntityCard({
     placeholderTitle,
     placeholderFooter,
     chips,
-    letter,
     subtitle,
     onClick,
 }) {
@@ -156,7 +155,6 @@ function DashboardEntityCard({
             </div>
 
             {/* STACKED AVATARS */}
-
             <div
                 style={{
                     display: "flex",

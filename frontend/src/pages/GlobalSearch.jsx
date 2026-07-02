@@ -1,5 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
-
+// test
 import {
     Search,
     ArrowUpDown,
@@ -344,46 +344,6 @@ function GlobalSearch() {
                                     gap: "12px",
                                 }}
                             >
-                                {/* CREATE */}
-                                <button
-                                    onClick={() => { }}
-                                    style={{
-                                        width: "36px",
-                                        height: "36px",
-
-                                        borderRadius: "999px",
-
-                                        border: "none",
-
-                                        background:
-                                            "rgba(255,255,255,0.025)",
-
-                                        color:
-                                            "var(--text-secondary)",
-
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-
-                                        cursor: "pointer",
-
-                                        backdropFilter: "blur(28px)",
-
-                                        boxShadow:
-                                            "0 6px 20px rgba(0,0,0,0.28)",
-
-                                        transition:
-                                            "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-
-                                        transform: "translateX(0)",
-                                    }}
-                                >
-                                    <Plus
-                                        size={16}
-                                        strokeWidth={1.5}
-                                    />
-                                </button>
-
                                 {/* ALL */}
                                 <div
                                     onMouseEnter={() =>
@@ -478,8 +438,8 @@ function GlobalSearch() {
                                             width:
                                                 showActions
                                                     ? showSearchBar
-                                                        ? "500px"
-                                                        : "360px"
+                                                        ? "330px"
+                                                        : "200px"
                                                     : "0px",
 
                                             overflow: "visible",
@@ -1276,76 +1236,13 @@ function GlobalSearch() {
                         }}
                     />
 
-                    {/* TYPE CHIPS */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {[
-                            "All",
-                            "Task",
-                            "Project",
-                            "Goal",
-                            "Note",
-                            "Reminder",
-                        ].map((type) => (
-                            <button
-                                key={type}
-                                onClick={() =>
-                                    setSelectedType(type)
-                                }
-                                style={{
-                                    padding: "8px 14px",
-
-                                    borderRadius: "999px",
-
-                                    background:
-                                        selectedType === type
-                                            ? typeStyles[type].bg
-                                            : "rgba(255,255,255,0.03)",
-
-                                    border:
-                                        selectedType === type
-                                            ? `1px solid ${typeStyles[type].border}`
-                                            : "1px solid rgba(255,255,255,0.06)",
-
-                                    color:
-                                        selectedType === type
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    cursor: "pointer",
-
-                                    transition: "all 0.2s ease",
-                                }}
-                            >
-                                {type}
-                            </button>
-                        ))}
-                    </div>
-
                     {/* GIANT CARD */}
                     <div
                         style={{
-                            background: "var(--glass-bg)",
-
-                            border:
-                                "1px solid var(--glass-border)",
-
-                            borderRadius:
-                                "var(--radius-large)",
 
                             backdropFilter: "blur(20px)",
 
-                            WebkitBackdropFilter:
-                                "blur(20px)",
+                            WebkitBackdropFilter: "blur(20px)",
 
                             height: "700px",
 
@@ -1356,45 +1253,6 @@ function GlobalSearch() {
                             overflow: "hidden",
                         }}
                     >
-                        {/* HEADER */}
-                        <div
-                            style={{
-                                padding: "20px 24px",
-
-                                borderBottom:
-                                    "1px solid rgba(255,255,255,0.06)",
-
-                                display: "flex",
-
-                                justifyContent:
-                                    "space-between",
-
-                                alignItems: "center",
-                            }}
-                        >
-                            <div>
-                                <div
-                                    style={{
-                                        fontSize: "1rem",
-                                        fontWeight: "400",
-                                    }}
-                                >
-                                    Search Results
-                                </div>
-
-                                <div
-                                    style={{
-                                        fontSize: "0.75rem",
-
-                                        opacity: 0.45,
-
-                                        marginTop: "4px",
-                                    }}
-                                >
-                                    {filteredResults.length} items
-                                </div>
-                            </div>
-                        </div>
 
                         {/* GRID */}
                         <div
@@ -1432,9 +1290,21 @@ function GlobalSearch() {
 
                                         color: "var(--text-secondary)",
 
-                                        opacity: 0.45,
+                                        opacity: 0.85,
                                     }}
                                 >
+                                    <div
+                                        style={{
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        <Search
+                                            size={60}
+                                            strokeWidth={1.8}
+                                            opacity={0.85}
+                                        />
+                                    </div>
+
                                     <p
                                         style={{
                                             margin: 0,
@@ -1446,7 +1316,7 @@ function GlobalSearch() {
 
                                     <p
                                         style={{
-                                            marginTop: "6px",
+                                            marginTop: "2px",
                                             fontSize: "0.75rem",
                                         }}
                                     >

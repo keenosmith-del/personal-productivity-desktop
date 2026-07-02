@@ -7,8 +7,8 @@ import {
   Ellipsis,
   ArrowRight,
   ArrowLeft,
-  AlarmClock,
-  Infinity,
+  Plus,
+  Bell,
 } from "lucide-react";
 
 import {
@@ -173,8 +173,7 @@ function Reminders() {
     );
   };
 
-
-  {/* BEGIN REMINDERS SORT VARIABLES */ }
+  {/* ALL REMINDERS */ }
   {/* NO COLS */ }
   const allReminders = sortReminders(
     reminders.filter(
@@ -225,7 +224,6 @@ function Reminders() {
     )
   );
 
-  {/* FOCUS SORT */ }
   const urgentReminders = sortReminders(
     reminders.filter(
       (reminder) =>
@@ -319,20 +317,6 @@ function Reminders() {
       console.error(error);
     }
   };
-
-  const reminderTabs = [
-    {
-      key: "alarms",
-      icon: AlarmClock,
-    },
-    {
-      key: "all",
-      icon: Infinity,
-    },
-  ];
-
-  const [activeTab, setActiveTab] =
-    useState("alarms");
 
   useEffect(() => {
     loadReminders();
@@ -688,7 +672,7 @@ function Reminders() {
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  Reminders and Alarms
+                  Reminders
                 </h1>
 
                 <p
@@ -698,7 +682,7 @@ function Reminders() {
                     fontWeight: "300",
                   }}
                 >
-                  Manage and organize your reminders and alarms.
+                  Manage and organize your reminders.
                 </p>
               </div>
 
@@ -710,6 +694,49 @@ function Reminders() {
                   gap: "12px",
                 }}
               >
+                {/* CREATE */}
+                <button
+                  onClick={() => {
+                    setShowReminderModal(true);
+                  }}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+
+                    borderRadius: "999px",
+
+                    border: "none",
+
+                    background:
+                      "rgba(255,255,255,0.025)",
+
+                    color:
+                      "var(--text-secondary)",
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                    cursor: "pointer",
+
+                    backdropFilter: "blur(28px)",
+
+                    boxShadow:
+                      "0 6px 20px rgba(0,0,0,0.28)",
+
+                    transition:
+                      "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+
+                    transform: "translateX(0)",
+                  }}
+                >
+                  <Plus
+                    size={16}
+                    strokeWidth={1.5}
+                  />
+                </button>
+
+                {/* ALL */}
                 <div
                   onMouseEnter={() =>
                     setShowActions(true)
@@ -803,8 +830,8 @@ function Reminders() {
                       width:
                         showActions
                           ? showSearchBar
-                            ? "500px"
-                            : "360px"
+                            ? "330px"
+                            : "200px"
                           : "0px",
 
                       overflow: "visible",
@@ -1361,89 +1388,7 @@ function Reminders() {
                         </div>
                       </div>
 
-                      {/* ALARMS / ALL REMINDERS */}
-                      {/* TABS */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-
-                          gap: "6px",
-
-                          padding: "4px",
-
-                          borderRadius: "999px",
-
-                          background:
-                            "rgba(255,255,255,0.025)",
-
-                          backdropFilter: "blur(28px)",
-
-                          boxShadow:
-                            "0 6px 20px rgba(0,0,0,0.2)",
-                        }}
-                      >
-                        {reminderTabs.map((tab) => {
-                          const Icon = tab.icon;
-
-                          const active =
-                            activeTab === tab.key;
-
-                          return (
-                            <button
-                              key={tab.key}
-                              onClick={() => {
-                                setActiveTab(tab.key);
-
-                                setShowSortMenu(false);
-
-                                setShowFilterMenu(false);
-
-                                setShowMoreMenu(false);
-                              }}
-                              style={{
-                                ...actionIconStyle,
-
-                                background: active
-                                  ? "rgba(255,255,255,0.025)"
-                                  : "transparent",
-
-                                boxShadow: active
-                                  ? "0 4px 10px rgba(0,0,0,0.18)"
-                                  : "none",
-
-                                color: active
-                                  ? "rgba(255,255,255,0.85)"
-                                  : "var(--text-secondary)",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.transform =
-                                  "translateY(-1px)";
-
-                                if (!active) {
-                                  e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.transform =
-                                  "translateY(0)";
-
-                                if (!active) {
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
-                                }
-                              }}
-                            >
-                              <Icon
-                                size={15}
-                                strokeWidth={1.6}
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-
+                      {/* NO TABS */}
 
                       {/* MORE */}
                       <div
@@ -1673,9 +1618,9 @@ function Reminders() {
                 fontWeight: "300",
               }}
             >
-              {totalReminders + " Reminders" || "No reminders yet"}
+              {totalReminders + " Reminders" || " "} {/* blank because page will show no reminders OR 1 reminder cs reminder(s) */}
             </p>
-          </div>
+          </div> {/* END HEADER */}
 
           {/* DIVIDER */}
           <div
@@ -1686,248 +1631,132 @@ function Reminders() {
             }}
           />
 
-          {/* ALARMS TAB */}
-          {activeTab === "alarms" && (
+          {/* ALL REMINDERS */}
+          <div
+            style={{
+              borderRadius:
+                "var(--radius-large)",
+
+              backdropFilter: "blur(20px)",
+
+              WebkitBackdropFilter: "blur(20px)",
+
+              height: "700px",
+
+              display: "flex",
+
+              flexDirection: "column",
+
+              overflow: "hidden",
+            }}
+          >
+            {/* HEADER REMOVED */}
+
+            {/* GRID */}
             <div
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                flex: 1,
 
-                minHeight: "300px",
+                overflowY: "auto",
 
-                borderRadius: "32px",
+                padding: "24px",
 
-                backdropFilter:
-                  "blur(20px)",
+                display: "grid",
+
+                gridTemplateColumns: "repeat(4, 1fr)",
+
+                gap: "18px",
+
+                alignContent: "start",
               }}
             >
-              <div
-                style={{
-                  textAlign: "center",
-                  opacity: 0.85,
-                  color: "var(--text-secondary)",
-                }}
-              >
+
+              {allReminders.length === 0 ? (
                 <div
                   style={{
-                    marginBottom: "8px",
+                    gridColumn: "1 / -1",
 
+                    display: "flex",
+                    flexDirection: "column",
+
+                    justifyContent: "center",
+                    alignItems: "center",
+
+                    minHeight: "500px",
+
+                    textAlign: "center",
+
+                    color: "var(--text-secondary)",
+
+                    opacity: 0.85,
                   }}
                 >
-                  <AlarmClock
-                    size={60}
-                    strokeWidth={1.8}
-                    opacity={0.85}
-                  />
-                </div>
-
-                <p
-                  style={{
-                    margin: 0,
-                    fontWeight: "300",
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  No Alarms
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* ALL REMINDERS TAB */}
-          {activeTab === "all" && (
-            <div
-              style={{
-                background: "var(--glass-bg)",
-
-                border:
-                  "1px solid var(--glass-border)",
-
-                borderRadius:
-                  "var(--radius-large)",
-
-                backdropFilter:
-                  "blur(20px)",
-
-                WebkitBackdropFilter:
-                  "blur(20px)",
-
-                height: "700px",
-
-                display: "flex",
-
-                flexDirection: "column",
-
-                overflow: "hidden",
-              }}
-            >
-              {/* HEADER */}
-              <div
-                style={{
-                  padding: "20px 24px",
-
-                  borderBottom:
-                    "1px solid rgba(255,255,255,0.06)",
-
-                  display: "flex",
-
-                  justifyContent:
-                    "space-between",
-
-                  alignItems: "center",
-
-                  flexShrink: 0,
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "1rem",
-                      fontWeight: "400",
-                    }}
-                  >
-                    All Reminders
-                  </div>
 
                   <div
                     style={{
-                      fontSize: "0.75rem",
-
-                      opacity: 0.45,
-
-                      marginTop: "4px",
+                      marginBottom: "8px",
                     }}
                   >
-                    {reminders.length} reminders
-                  </div>
-                </div>
-
-                <button
-                  onClick={() =>
-                    setShowReminderModal(
-                      true
-                    )
-                  }
-                  style={{
-                    width: "32px",
-                    height: "32px",
-
-                    borderRadius:
-                      "999px",
-
-                    border:
-                      "1px solid rgba(255,255,255,0.08)",
-
-                    background:
-                      "rgba(255,255,255,0.04)",
-
-                    color:
-                      "var(--text-primary)",
-
-                    cursor: "pointer",
-
-                    fontSize: "1rem",
-                  }}
-                >
-                  +
-                </button>
-              </div>
-
-              {/* GRID */}
-              <div
-                style={{
-                  flex: 1,
-
-                  overflowY: "auto",
-
-                  padding: "24px",
-
-                  display: "grid",
-
-                  gridTemplateColumns:
-                    "repeat(4, 1fr)",
-
-                  gap: "18px",
-
-                  alignContent: "start",
-                }}
-              >
-
-                {allReminders.length === 0 ? (
-                  <div
-                    style={{
-                      gridColumn: "1 / -1",
-
-                      display: "flex",
-                      flexDirection: "column",
-
-                      justifyContent: "center",
-                      alignItems: "center",
-
-                      minHeight: "500px",
-
-                      textAlign: "center",
-
-                      color: "var(--text-secondary)",
-
-                      opacity: 0.45,
-                    }}
-                  >
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      No reminders
-                    </p>
-
-                    <p
-                      style={{
-                        marginTop: "6px",
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Click + to create one
-                      {/* or try searching a different term */}
-                    </p>
-                  </div>
-                ) : (
-                  allReminders.map((reminder) => (
-                    <ReminderCard
-                      key={reminder._id}
-                      reminder={reminder}
-                      onClick={setSelectedReminder}
-
-                      openReminderMenu={openReminderMenu}
-                      setOpenReminderMenu={setOpenReminderMenu}
-
-                      onView={setSelectedReminder}
-                      onEdit={setEditingReminder}
-
-                      onDelete={handleDeleteReminder}
-
-                      onComplete={handleCompleteReminder}
-                      onRestore={handleRestoreReminder}
-
-                      onToggleFlag={
-                        handleToggleFlag
-                      }
-
-                      onToggleLike={
-                        handleToggleLike
-                      }
-
-                      onAddComment={
-                        handleAddComment
-                      }
+                    <Bell
+                      size={60}
+                      strokeWidth={1.8}
+                      opacity={0.85}
                     />
-                  ))
-                )}
-              </div>
+                  </div>
+
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    No Reminders
+                  </p>
+
+                  <p
+                    style={{
+                      marginTop: "2px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Click + to create one
+                    {/* or try searching a different term */}
+                  </p>
+                </div>
+              ) : (
+                allReminders.map((reminder) => (
+                  <ReminderCard
+                    key={reminder._id}
+                    reminder={reminder}
+                    onClick={setSelectedReminder}
+
+                    openReminderMenu={openReminderMenu}
+                    setOpenReminderMenu={setOpenReminderMenu}
+
+                    onView={setSelectedReminder}
+                    onEdit={setEditingReminder}
+
+                    onDelete={handleDeleteReminder}
+
+                    onComplete={handleCompleteReminder}
+                    onRestore={handleRestoreReminder}
+
+                    onToggleFlag={
+                      handleToggleFlag
+                    }
+
+                    onToggleLike={
+                      handleToggleLike
+                    }
+
+                    onAddComment={
+                      handleAddComment
+                    }
+                  />
+                ))
+              )}
             </div>
-          )}
+          </div> {/* ALL END */}
 
         </div>
       </div>

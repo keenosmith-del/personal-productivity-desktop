@@ -15,6 +15,8 @@ import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
 import GlobalSearch from "./pages/GlobalSearch";
 import QuickAdd from "./pages/QuickAdd";
+import Urgent from "./pages/Urgent";
+import Alarms from "./pages/Alarms";
 
 import Account from "./pages/Account";
 
@@ -94,6 +96,24 @@ function App() {
           element={
             <ProtectedRoute>
               <Reminders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/urgent"
+          element={
+            <ProtectedRoute>
+              <Urgent />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/alarms"
+          element={
+            <ProtectedRoute>
+              <Alarms />
             </ProtectedRoute>
           }
         />

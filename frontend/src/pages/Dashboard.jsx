@@ -491,9 +491,12 @@ function Dashboard() {
           {/* DUE TODAY and upcoming */}
 
           <div>
+            {/* need placeholder empty card for notes and wide card if none */}
             <DashboardWideCard
               title="Upcoming"
               items={upcomingSortedItems}
+              placeholderTitle="Upcomming events will appear here"
+              placeholderFooter=""
               chips={getUpcomingChips(
                 upcomingSortedItems
               )}
@@ -630,7 +633,7 @@ function Dashboard() {
               title="Urgent"
               items={urgentItems}
               placeholderTitle="No urgent items right now"
-              placeholderFooter="urgent items will appear here"
+              placeholderFooter=""
               chips={getUrgentChips()}
               subtitle="Needs attention"
               onClick={() =>
@@ -652,8 +655,8 @@ function Dashboard() {
             <DashboardEntityCard
               title="Projects"
               items={projectItems}
-              placeholderTitle="No Projects"
-              placeholderFooter="Create a project to see it here"
+              placeholderTitle="Create a project to see it heres"
+              placeholderFooter=""
               chips={getPriorityChips(projectItems)}
               subtitle="All projects"
               onClick={() =>
@@ -665,8 +668,8 @@ function Dashboard() {
             <DashboardEntityCard
               title="Tasks"
               items={taskItems}
-              placeholderTitle="No Tasks"
-              placeholderFooter="Create a task to see it here"
+              placeholderTitle="Create a task to see it here"
+              placeholderFooter=""
               chips={getPriorityChips(taskItems)}
               subtitle="All tasks"
               onClick={() =>
@@ -688,8 +691,8 @@ function Dashboard() {
             <DashboardEntityCard
               title="Goals"
               items={goalItems}
-              placeholderTitle="No Goals"
-              placeholderFooter="Create a goal to see it here"
+              placeholderTitle="Create a goal to see it here"
+              placeholderFooter=""
               chips={getPriorityChips(goalItems)}
               subtitle="All goals"
               onClick={() =>
@@ -702,8 +705,8 @@ function Dashboard() {
             <DashboardEntityCard
               title="Reminders"
               items={reminderItems}
-              placeholderTitle="No Reminders"
-              placeholderFooter="Create a reminder to see it here"
+              placeholderTitle="Create a reminder to see it here"
+              placeholderFooter=""
               chips={getPriorityChips(reminderItems)}
               subtitle="All reminders"
               onClick={() =>
