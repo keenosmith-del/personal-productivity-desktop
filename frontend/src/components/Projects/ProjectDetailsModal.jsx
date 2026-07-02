@@ -1,4 +1,4 @@
-import { X, FolderKanban, } from "lucide-react";
+import { X, Folder, } from "lucide-react";
 import { useState } from "react";
 
 function ProjectDetailsModal({
@@ -252,7 +252,7 @@ function ProjectDetailsModal({
                                     "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            <FolderKanban
+                            <Folder
                                 size={28}
                                 strokeWidth={1.8}
                             />

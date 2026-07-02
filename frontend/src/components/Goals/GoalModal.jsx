@@ -7,7 +7,7 @@ import {
 import {
   X,
   Calendar,
-  Target,
+  Sprout,
 } from "lucide-react";
 
 import MiniCalendarModal from "../MiniCalendarModal";
@@ -411,7 +411,7 @@ function GoalModal({
                   "0 12px 30px rgba(0,0,0,0.18)",
               }}
             >
-              <Target
+              <Sprout
                 size={28}
                 strokeWidth={1.8}
               />

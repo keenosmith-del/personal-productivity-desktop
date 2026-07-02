@@ -1,8 +1,8 @@
 import {
     CheckSquare,
-    FolderKanban,
-    Target,
-    Bell,
+    Folder,
+    Sprout,
+    AlarmClock,
 } from "lucide-react";
 
 import { useState } from "react";
@@ -160,9 +160,9 @@ function CalendarModal({
 
     const eventIcons = {
         task: CheckSquare,
-        project: FolderKanban,
-        goal: Target,
-        reminder: Bell,
+        project: Folder,
+        goal: Sprout,
+        reminder: AlarmClock,
     };
 
     // HANDLERS

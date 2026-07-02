@@ -1,4 +1,4 @@
-import { X, CheckSquare, } from "lucide-react";
+import { X, AlarmClock, } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -350,7 +350,7 @@ function CalendarReminderDetailsModal({
                                     "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            <CheckSquare
+                            <AlarmClock
                                 size={28}
                                 strokeWidth={1.8}
                             />

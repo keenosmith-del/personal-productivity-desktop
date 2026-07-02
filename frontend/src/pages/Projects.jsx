@@ -1,24 +1,30 @@
 import MainLayout from "../layouts/MainLayout";
 
-import { ArrowUpDown, Filter, Search, Trash } from "lucide-react";
-
 import {
+  Search,
+  ArrowUpDown,
+  Filter,
+  Ellipsis,
+  ArrowLeft,
+  BarChart3,
+  ArrowRight,
   LayoutGrid,
   Sparkles,
   Shapes,
   ChartLine,
 } from "lucide-react";
 
-import AllProjectsCard from "../components/Projects/AllProjectsCard";
-import ViewProjectModal from "../components/Projects/ViewProjectModal";
-import CompletedProjectsCard from "../components/Projects/CompletedProjectsCard";
-import PinnedProjectsCard from "../components/Projects/PinnedProjectsCard";
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
 import ProjectCard from "../components/Projects/ProjectCard";
 import ProjectModal from "../components/Projects/ProjectModal";
 
-import FloatingTabs from "../components/FloatingTabs";
+import Toast from "../components/Toast";
 
 import {
   getProjects,
@@ -30,20 +36,17 @@ import {
   unpinAllProjects,
 } from "../services/projectService";
 
-import {
-  useState,
-  useEffect,
-  useRef,
-} from "react";
-
-import Toast from "../components/Toast";
-
 function Projects() {
-  //COMPONENT STATES
+  // REFS
   const sortRef = useRef(null);
 
   const filterRef = useRef(null);
 
+  const searchInputRef = useRef(null);
+
+  const moreRef = useRef(null);
+
+  //COMPONENT STATES
   const [showProjectModal, setShowProjectModal] =
     useState(false);
 
@@ -53,8 +56,7 @@ function Projects() {
   const [selectedProject, setSelectedProject] =
     useState(null);
 
-  const [editingProject,
-    setEditingProject] =
+  const [editingProject, setEditingProject] =
     useState(null);
 
   const [projects, setProjects] =
@@ -63,16 +65,13 @@ function Projects() {
   const [toast, setToast] =
     useState("");
 
-  const [completionTimeout,
-    setCompletionTimeout] =
+  const [completionTimeout, setCompletionTimeout] =
     useState(null);
 
-  const [showClearCompleted,
-    setShowClearCompleted] =
+  const [showClearCompleted, setShowClearCompleted] =
     useState(false);
 
-  const [showClearActive,
-    setShowClearActive] =
+  const [showClearActive, setShowClearActive] =
     useState(false);
 
   const [searchTerm, setSearchTerm] =
@@ -92,6 +91,18 @@ function Projects() {
 
   const [selectedPriority, setSelectedPriority] =
     useState("All");
+
+  const [showActions, setShowActions] =
+    useState(false);
+
+  const [showSearchBar, setShowSearchBar] =
+    useState(false);
+
+  const [actionsPinned, setActionsPinned] =
+    useState(false);
+
+  const [showMoreMenu, setShowMoreMenu] =
+    useState(false);
 
   const matchesFilters = (project) => {
     const categoryMatch =
@@ -338,6 +349,7 @@ function Projects() {
       event
     ) => {
       if (
+        showSortMenu &&
         sortRef.current &&
         !sortRef.current.contains(
           event.target
@@ -347,12 +359,23 @@ function Projects() {
       }
 
       if (
+        showFilterMenu &&
         filterRef.current &&
         !filterRef.current.contains(
           event.target
         )
       ) {
         setShowFilterMenu(false);
+      }
+
+      if (
+        showMoreMenu &&
+        moreRef.current &&
+        !moreRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowMoreMenu(false);
       }
     };
 
@@ -573,61 +596,29 @@ function Projects() {
       loadProjects();
     };
 
-  const handleClearActiveProjects =
-    async () => {
-      try {
-        await clearActiveProjects();
+  const actionIconStyle = {
+    width: "32px",
 
-        setProjects((prev) =>
-          prev.filter(
-            (project) =>
-              project.completed
-          )
-        );
+    height: "32px",
 
-        setToast(
-          "Active projects cleared"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to clear active projects"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const dropdownItemStyle = {
-    width: "100%",
-
-    padding: "10px 12px",
-
-    background: "transparent",
+    borderRadius: "999px",
 
     border: "none",
 
-    borderRadius: "10px",
+    background: "transparent",
 
-    color: "var(--text-primary)",
+    color: "var(--text-secondary)",
 
-    textAlign: "left",
+    display: "flex",
 
-    fontSize: "0.8rem",
+    alignItems: "center",
 
-    fontWeight: "300",
+    justifyContent: "center",
 
     cursor: "pointer",
 
-    transition: "all 0.2s ease",
+    transition:
+      "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
   };
 
   return (
@@ -648,12 +639,17 @@ function Projects() {
           }}
         >
           {/* HEADER */}
-          <div>
+          <div
+            style={{
+              position: "relative",
+              zIndex: 100,
+            }}
+          >
+            {/* WITHIN HEADER */}
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
@@ -662,8 +658,7 @@ function Projects() {
                   style={{
                     margin: 0,
                     fontWeight: "400",
-                    letterSpacing:
-                      "-0.03em",
+                    letterSpacing: "-0.03em",
                   }}
                 >
                   Projects
@@ -672,8 +667,7 @@ function Projects() {
                 <p
                   style={{
                     marginTop: "8px",
-                    color:
-                      "var(--text-secondary)",
+                    color: "var(--text-secondary)",
                     fontWeight: "300",
                   }}
                 >
@@ -681,6 +675,7 @@ function Projects() {
                 </p>
               </div>
 
+              {/* TOP RIGHT */}
               <div
                 style={{
                   display: "flex",
@@ -688,570 +683,954 @@ function Projects() {
                   gap: "12px",
                 }}
               >
-                {/* SEARCH */}
                 <div
-                  style={{
-                    position: "relative",
-                    width: "240px",
-                  }}
-                >
-                  <Search
-                    size={15}
-                    opacity={0.6}
-                    style={{
-                      position: "absolute",
-                      left: "16px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 10,
-                      pointerEvents: "none",
-                      color: "var(--text-secondary)",
-                    }}
-                  />
-
-                  <input
-                    value={searchTerm}
-                    onChange={(e) =>
-                      setSearchTerm(e.target.value)
+                  onMouseEnter={() =>
+                    setShowActions(true)
+                  }
+                  onMouseLeave={() => {
+                    if (
+                      !actionsPinned &&
+                      !showSortMenu &&
+                      !showFilterMenu &&
+                      !showMoreMenu
+                    ) {
+                      setShowActions(false);
                     }
-                    placeholder="Search projects..."
-                    style={{
-                      width: "100%",
-
-                      padding: "12px 18px 12px 42px",
-
-                      borderRadius: "999px",
-
-                      border: searchTerm
-                        ? "1px solid rgba(87,112,122,0.55)"
-                        : "1px solid rgba(255,255,255,0.06)",
-
-                      background: searchTerm
-                        ? "rgba(87,112,122,0.14)"
-                        : "rgba(255,255,255,0.04)",
-
-                      boxShadow: searchTerm
-                        ? "0 0 0 1px rgba(87,112,122,0.15)"
-                        : "none",
-
-                      color: "var(--text-primary)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      outline: "none",
-
-                      backdropFilter: "blur(20px)",
-
-                      transition: "all 0.2s ease",
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.border =
-                        "1px solid rgba(255,255,255,0.18)";
-
-                      e.target.style.background =
-                        "rgba(255,255,255,0.06)";
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.border =
-                        searchTerm
-                          ? "1px solid rgba(87,112,122,0.55)"
-                          : "1px solid rgba(255,255,255,0.06)";
-
-                      e.target.style.background =
-                        searchTerm
-                          ? "rgba(87,112,122,0.14)"
-                          : "rgba(255,255,255,0.04)";
-                    }}
-                  />
-                </div>
-
-                {/* SORT */}
-                <div
-                  ref={sortRef}
+                  }}
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+
+                    justifyContent: "flex-end",
+
                     position: "relative",
                   }}
                 >
+                  {/* EXPAND ARROW */}
                   <button
                     onClick={() => {
-                      setShowFilterMenu(false);
+                      if (showActions && actionsPinned) {
+                        setShowActions(false);
 
-                      setShowSortMenu(
-                        !showSortMenu
-                      );
+                        setActionsPinned(false);
+
+                        setShowSearchBar(false);
+
+                        setSearchTerm("");
+
+                        setShowSortMenu(false);
+
+                        setShowFilterMenu(false);
+                      }
                     }}
                     style={{
-                      padding: "10px 16px",
+                      width: "36px",
+                      height: "36px",
 
                       borderRadius: "999px",
 
-                      border:
-                        "1px solid rgba(255,255,255,0.08)",
+                      border: "none",
 
                       background:
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)",
+                        "rgba(255,255,255,0.025)",
 
                       color:
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
+                        "var(--text-secondary)",
 
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
 
                       cursor: "pointer",
 
+                      backdropFilter: "blur(28px)",
+
+                      boxShadow:
+                        "0 6px 20px rgba(0,0,0,0.28)",
+
                       transition:
-                        "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.06)";
+                        "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
 
-                      e.currentTarget.style.color =
-                        "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)";
-
-                      e.currentTarget.style.color =
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)";
+                      transform: showActions
+                        ? "translateX(2px)"
+                        : "translateX(0)",
                     }}
                   >
-                    <ArrowUpDown
-                      size={15}
-                      opacity={0.6}
-                    />
+                    {actionsPinned ? (
+                      <ArrowRight
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    ) : (
+                      <ArrowLeft
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    )}
                   </button>
 
-                  {showSortMenu && (
+                  {/* ACTIONS */}
+                  <div
+                    style={{
+                      width:
+                        showActions
+                          ? showSearchBar
+                            ? "500px"
+                            : "360px"
+                          : "0px",
+
+                      overflow: "visible",
+
+                      transition: "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                  >
                     <div
                       style={{
-                        position: "absolute",
+                        display: "flex",
+                        alignItems: "center",
 
-                        top: "52px",
-                        right: 0,
+                        gap: "8px",
 
-                        background:
-                          "rgba(20,20,20,0.95)",
+                        overflow: "visible",
 
-                        backdropFilter:
-                          "blur(20px)",
+                        width:
+                          showActions
+                            ? showSearchBar
+                              ? "500px"
+                              : "360px"
+                            : "0px",
 
-                        border:
-                          "1px solid rgba(255,255,255,0.08)",
+                        opacity: showActions
+                          ? 1
+                          : 0,
 
-                        minWidth: "140px",
+                        transform: showActions
+                          ? "translateX(0)"
+                          : "translateX(12px)",
 
-                        borderRadius: "16px",
-
-                        overflow: "hidden",
-
-                        zIndex: 100,
+                        transition:
+                          "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
                       }}
                     >
-                      {[
-                        "newest",
-                        "oldest",
-                        "priority",
-                        "dueDate",
-                        "alphabetical",
-                      ].map((option) => (
+                      {/* SEARCH / SORT / FILTER */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+
+                          gap: "6px",
+
+                          padding: "4px",
+
+                          borderRadius: "999px",
+
+                          background: "rgba(255,255,255,0.025)",
+
+                          backdropFilter: "blur(28px)",
+
+                          boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {/* search wrapper */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+
+                            overflow: "hidden",
+
+                            width: showSearchBar
+                              ? "170px"
+                              : "32px",
+
+                            minWidth: "32px",
+
+                            borderRadius: "999px",
+
+                            transition: "width 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+                          }}
+                        >
+                          {/* SEARCH ICON */}
+                          <button
+                            onClick={() => {
+                              if (!showSearchBar) {
+                                setShowSearchBar(true);
+
+                                setActionsPinned(true);
+
+                                setTimeout(() => {
+                                  searchInputRef.current?.focus();
+                                }, 50);
+                              }
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Search
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {/* INPUT */}
+                          {showSearchBar && (
+                            <input
+                              ref={searchInputRef}
+                              onFocus={() => {
+                                setActionsPinned(true);
+
+                                setShowSortMenu(false);
+
+                                setShowFilterMenu(false);
+
+                                setShowMoreMenu(false);
+                              }}
+                              value={searchTerm}
+                              onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                              }
+                              placeholder="Search projects..."
+                              style={{
+                                background: "none",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                color:
+                                  "var(--text-primary)",
+
+                                fontSize: "0.82rem",
+
+                                fontWeight: "300",
+
+                                width: "100%",
+
+                                paddingRight: "12px",
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        {/* SORT BUTTON */}
+                        <div
+                          ref={sortRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowSortMenu(!showSortMenu);
+
+                              setShowFilterMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <ArrowUpDown
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showSortMenu && (
+                            <div
+                              style={{
+                                position: "fixed",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "170px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 9999999,
+                              }}
+                            >
+                              {[
+                                "newest",
+                                "oldest",
+                                "priority",
+                                "dueDate",
+                                "alphabetical",
+                              ].map((option) => (
+                                <button
+                                  key={option}
+                                  onClick={() => {
+                                    setSortBy(option);
+
+                                    setShowSortMenu(false);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      sortBy === option
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {option === "dueDate"
+                                    ? "Due Date"
+                                    : option === "alphabetical"
+                                      ? "A → Z"
+                                      : option.charAt(0).toUpperCase() +
+                                      option.slice(1)}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* FILTER BUTTON */}
+                        <div
+                          ref={filterRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowFilterMenu(!showFilterMenu);
+
+                              setShowSortMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Filter
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showFilterMenu && (
+                            <div
+                              style={{
+                                position: "absolute",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "200px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 2001,
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Category
+                              </p>
+
+                              {[
+                                "All",
+                                "Work",
+                                "Study",
+                                "Personal",
+                                "Health",
+                              ].map((category) => (
+                                <button
+                                  key={category}
+                                  onClick={() => {
+                                    setSelectedCategory(category);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedCategory === category
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {category}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background: "rgba(255,255,255,0.06)",
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Priority
+                              </p>
+
+                              {[
+                                "All",
+                                "High",
+                                "Medium",
+                                "Low",
+                              ].map((priority) => (
+                                <button
+                                  key={priority}
+                                  onClick={() => {
+                                    setSelectedPriority(priority);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedPriority === priority
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {priority}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.06)",
+
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory("All");
+                                  setSelectedPriority("All");
+                                  setShowFilterMenu(false);
+                                }}
+                                style={{
+                                  background: "transparent",
+
+                                  border: "none",
+
+                                  color:
+                                    "var(--text-secondary)",
+
+                                  padding: "10px 14px",
+
+                                  borderRadius: "12px",
+
+                                  cursor: "pointer",
+
+                                  textAlign: "left",
+
+                                  fontSize: "0.78rem",
+
+                                  fontWeight: "300",
+
+                                  transition:
+                                    "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.06)";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                                }}
+                              >
+                                Clear Filters
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* OVERVIEW / FOCUS / CATEGORIES / INSIGHTS */}
+                      {/* TABS */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+
+                          gap: "6px",
+
+                          padding: "4px",
+
+                          borderRadius: "999px",
+
+                          background:
+                            "rgba(255,255,255,0.025)",
+
+                          backdropFilter: "blur(28px)",
+
+                          boxShadow:
+                            "0 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {projectTabs.map((tab) => {
+                          const Icon = tab.icon;
+
+                          const active =
+                            activeTab === tab.key;
+
+                          return (
+                            <button
+                              key={tab.key}
+                              onClick={() => {
+                                setActiveTab(tab.key);
+
+                                setShowSortMenu(false);
+
+                                setShowFilterMenu(false);
+
+                                setShowMoreMenu(false);
+                              }}
+                              style={{
+                                ...actionIconStyle,
+
+                                background: active
+                                  ? "rgba(255,255,255,0.025)"
+                                  : "transparent",
+
+                                boxShadow: active
+                                  ? "0 4px 10px rgba(0,0,0,0.18)"
+                                  : "none",
+
+                                color: active
+                                  ? "rgba(255,255,255,0.85)"
+                                  : "var(--text-secondary)",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                  "translateY(-1px)";
+
+                                if (!active) {
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                  "translateY(0)";
+
+                                if (!active) {
+                                  e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                                }
+                              }}
+                            >
+                              <Icon
+                                size={15}
+                                strokeWidth={1.6}
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+
+
+                      {/* MORE */}
+                      <div
+                        ref={moreRef}
+                        style={{
+                          position: "relative",
+                        }}
+                      >
                         <button
-                          key={option}
                           onClick={() => {
-                            setSortBy(option);
+                            setShowMoreMenu(!showMoreMenu);
+
+                            setActionsPinned(true);
+
+                            setShowActions(true);
+
                             setShowSortMenu(false);
-                          }}
-                          style={{
-                            ...dropdownItemStyle,
 
-                            background:
-                              sortBy === option
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              sortBy === option
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
+                            setShowFilterMenu(false);
                           }}
+                          style={actionIconStyle}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
+                            e.currentTarget.style.transform =
+                              "translateY(-1px)";
 
                             e.currentTarget.style.color =
-                              "#F5F5F5";
+                              "var(--text-primary)";
                           }}
-
                           onMouseLeave={(e) => {
-                            if (sortBy !== option) {
-                              e.currentTarget.style.background =
-                                "transparent";
+                            e.currentTarget.style.transform =
+                              "translateY(0)";
 
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
+                            e.currentTarget.style.color =
+                              "var(--text-secondary)";
                           }}
                         >
-                          {option === "dueDate"
-                            ? "Due Date"
-                            : option ===
-                              "alphabetical"
-                              ? "A → Z"
-                              : option.charAt(0).toUpperCase() +
-                              option.slice(1)}
+                          <Ellipsis
+                            size={16}
+                            strokeWidth={1.6}
+                          />
                         </button>
-                      ))}
+
+                        {showMoreMenu && (
+                          <div
+                            style={{
+                              position: "fixed",
+
+                              top: "42px",
+                              right: 0,
+
+                              width: "180px",
+
+                              background: "rgba(20,20,20,0.92)",
+
+                              backdropFilter: "blur(24px)",
+                              WebkitBackdropFilter: "blur(24px)",
+
+                              border: "1px solid rgba(255,255,255,0.10)",
+
+                              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+
+                              borderRadius: "18px",
+
+                              overflow: "hidden",
+
+                              padding: "8px",
+
+                              display: "flex",
+                              flexDirection: "column",
+
+                              gap: "4px",
+
+                              zIndex: 2001,
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowProjectModal(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Create Project
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearCompleted(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear Completed
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearActive(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  </div> {/* END ACTIONS CONTAINER */}
                 </div>
-
-                {/* FILTER */}
-                <div
-                  ref={filterRef}
-                  style={{
-                    position: "relative",
-                  }}
-                >
-                  <button
-                    onClick={() => {
-                      setShowSortMenu(false);
-
-                      setShowFilterMenu(
-                        !showFilterMenu
-                      );
-                    }}
-                    style={{
-                      padding: "10px 16px",
-
-                      borderRadius: "999px",
-
-                      border:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "1px solid rgba(87,112,122,0.45)"
-                          : "1px solid rgba(255,255,255,0.08)",
-
-                      background:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "rgba(87,112,122,0.16)"
-                          : "rgba(255,255,255,0.03)",
-
-                      color:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.06)";
-
-                      e.currentTarget.style.color =
-                        "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        showFilterMenu ||
-                          hasFilters
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)";
-
-                      e.currentTarget.style.color =
-                        showFilterMenu ||
-                          hasFilters
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)";
-                    }}
-                  >
-                    <Filter size={16} opacity={0.6} />
-                  </button>
-
-                  {showFilterMenu && (
-                    <div
-                      style={{
-                        position: "absolute",
-
-                        top: "52px",
-                        right: 0,
-
-                        width: "220px",
-
-                        background:
-                          "rgba(20,20,20,0.95)",
-
-                        backdropFilter:
-                          "blur(20px)",
-
-                        border:
-                          "1px solid rgba(255,255,255,0.08)",
-
-                        borderRadius: "16px",
-
-                        padding: "12px",
-
-                        zIndex: 100,
-                      }}
-                    >
-                      <p
-                        style={{
-                          fontSize: "0.75rem",
-                          opacity: 0.5,
-                          marginBottom: "10px",
-                        }}
-                      >
-                        Category
-                      </p>
-
-                      {/* CATEGORY OPTIONS */}
-                      {[
-                        "All",
-                        "Work",
-                        "Study",
-                        "Personal",
-                        "Health",
-                      ].map((category) => (
-                        <button
-                          key={category}
-                          onClick={() =>
-                            setSelectedCategory(category)
-                          }
-                          style={{
-                            ...dropdownItemStyle,
-
-                            background:
-                              selectedCategory === category
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              selectedCategory === category
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.color =
-                              "#F5F5F5";
-                          }}
-
-                          onMouseLeave={(e) => {
-                            if (
-                              selectedCategory !== category
-                            ) {
-                              e.currentTarget.style.background =
-                                "transparent";
-
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
-                          }}
-                        >
-                          {category}
-                        </button>
-                      ))}
-
-                      <div
-                        style={{
-                          height: "1px",
-                          background:
-                            "rgba(255,255,255,0.06)",
-                          margin: "14px 0",
-                        }}
-                      />
-
-                      <p
-                        style={{
-                          fontSize: "0.75rem",
-                          opacity: 0.5,
-                          marginBottom: "10px",
-                        }}
-                      >
-                        Priority
-                      </p>
-
-                      {[
-                        "All",
-                        "High",
-                        "Medium",
-                        "Low",
-                      ].map((priority) => (
-                        <button
-                          key={priority}
-                          onClick={() =>
-                            setSelectedPriority(
-                              priority
-                            )
-                          }
-                          style={{
-                            ...dropdownItemStyle,
-
-                            background:
-                              selectedPriority === priority
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              selectedPriority === priority
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.color =
-                              "#F5F5F5";
-                          }}
-
-                          onMouseLeave={(e) => {
-                            if (
-                              selectedPriority !== priority
-                            ) {
-                              e.currentTarget.style.background =
-                                "transparent";
-
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
-                          }}
-                        >
-                          {priority}
-                        </button>
-                      ))}
-                      <div
-                        style={{
-                          height: "1px",
-                          background:
-                            "rgba(255,255,255,0.06)",
-
-                          margin: "14px 0",
-                        }}
-                      />
-
-                      <button
-                        onClick={() => {
-                          setSelectedCategory(
-                            "All"
-                          );
-
-                          setSelectedPriority(
-                            "All"
-                          );
-
-                          setShowFilterMenu(false);
-                        }}
-                        style={{
-                          width: "100%",
-
-                          background: "none",
-
-                          border: "none",
-
-                          color:
-                            "var(--text-secondary)",
-
-                          fontSize: "0.8rem",
-
-                          fontWeight: "300",
-
-                          cursor: "pointer",
-
-                          paddingTop: "6px",
-
-                          transition:
-                            "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color =
-                            "var(--text-primary)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                        }}
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* clear all */}
-                <div
-                  style={{
-                    position: "relative",
-                  }}
-                >
-                  <button
-                    style={{
-                      padding: "10px 16px",
-
-                      borderRadius: "999px",
-
-                      border: "1px solid rgba(255, 77, 77, 0.25)",
-
-                      background: "rgba(255, 77, 77, 0.12)",
-
-                      color: "var(--danger)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      cursor: "pointer",
-
-                      transition:
-                        "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255, 77, 77, 0.20)";
-
-                      e.currentTarget.style.transform =
-                        "translateY(-1px)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255, 77, 77, 0.12)";
-
-                      e.currentTarget.style.transform =
-                        "translateY(0)";
-                    }}
-                  >
-                    <Trash
-                      size={15}
-                      opacity={0.6}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
+              </div> {/* END TOP RIGHT */}
+            </div> {/* END WITHIN HEADER */}
 
             <p
               style={{
@@ -1270,13 +1649,6 @@ function Projects() {
               {totalProjects + " Projects" || "No projects yet"}
             </p>
           </div>
-
-          {/* TABS SECTION */}
-          <FloatingTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            tabs={projectTabs}
-          />
 
           {/* DIVIDER */}
           <div

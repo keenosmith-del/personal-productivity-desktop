@@ -6,15 +6,12 @@ import {
   Filter,
   Ellipsis,
   ArrowLeft,
-  BarChart3,
   ArrowRight,
-} from "lucide-react";
-
-import {
   LayoutGrid,
   Sparkles,
   Shapes,
   ChartLine,
+  Plus,
 } from "lucide-react";
 
 import {
@@ -23,19 +20,11 @@ import {
   useRef,
 } from "react";
 
-
-import CompletedTasks from "../components/Tasks/CompletedTasks";
-import ActiveTasks from "../components/Tasks/ActiveTasks";
 import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
-import TaskStats from "../components/Tasks/TaskStats";
-import TaskActivity from "../components/Tasks/TaskActivity";
-
 import TaskCard from "../components/Tasks/TaskCard";
 import TaskModal from "../components/Tasks/TaskModal";
 
 import Toast from "../components/Toast";
-
-import FloatingTabs from "../components/FloatingTabs";
 
 import {
   getTasks,
@@ -45,11 +34,6 @@ import {
   clearCompletedTasks,
   clearActiveTasks,
 } from "../services/taskService";
-
-import {
-  getGoals,
-  updateGoal,
-} from "../services/goalService";
 
 function Tasks() {
   // REFS
@@ -71,8 +55,7 @@ function Tasks() {
   const [selectedTask, setSelectedTask] =
     useState(null);
 
-  const [editingTask,
-    setEditingTask] =
+  const [editingTask, setEditingTask] =
     useState(null);
 
   const [tasks, setTasks] =
@@ -81,16 +64,13 @@ function Tasks() {
   const [toast, setToast] =
     useState("");
 
-  const [completionTimeout,
-    setCompletionTimeout] =
+  const [completionTimeout, setCompletionTimeout] =
     useState(null);
 
-  const [showClearCompleted,
-    setShowClearCompleted] =
+  const [showClearCompleted, setShowClearCompleted] =
     useState(false);
 
-  const [showClearActive,
-    setShowClearActive] =
+  const [showClearActive, setShowClearActive] =
     useState(false);
 
   const [searchTerm, setSearchTerm] =
@@ -323,8 +303,7 @@ function Tasks() {
     selectedCategory !== "All" ||
     selectedPriority !== "All";
 
-  const totalTasks =
-    tasks.length;
+  const totalTasks = tasks.length;
 
   // FUNCTIONS
   const loadTasks = async () => {
@@ -616,39 +595,6 @@ function Tasks() {
       loadTasks();
     };
 
-  const handleClearActiveTasks =
-    async () => {
-      try {
-        await clearActiveTasks();
-
-        setTasks((prev) =>
-          prev.filter(
-            (task) =>
-              task.completed
-          )
-        );
-
-        setToast(
-          "Active tasks cleared"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to clear active tasks"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
   const actionIconStyle = {
     width: "32px",
 
@@ -698,11 +644,11 @@ function Tasks() {
               zIndex: 100,
             }}
           >
+            {/* WITHIN HEADER */}
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
@@ -711,8 +657,7 @@ function Tasks() {
                   style={{
                     margin: 0,
                     fontWeight: "400",
-                    letterSpacing:
-                      "-0.03em",
+                    letterSpacing: "-0.03em",
                   }}
                 >
                   Tasks
@@ -721,8 +666,7 @@ function Tasks() {
                 <p
                   style={{
                     marginTop: "8px",
-                    color:
-                      "var(--text-secondary)",
+                    color: "var(--text-secondary)",
                     fontWeight: "300",
                   }}
                 >
@@ -738,6 +682,47 @@ function Tasks() {
                   gap: "12px",
                 }}
               >
+                {/* CREATE */}
+                <button
+                    onClick={() => {}}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+
+                      borderRadius: "999px",
+
+                      border: "none",
+
+                      background:
+                        "rgba(255,255,255,0.025)",
+
+                      color:
+                        "var(--text-secondary)",
+
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+
+                      cursor: "pointer",
+
+                      backdropFilter: "blur(28px)",
+
+                      boxShadow:
+                        "0 6px 20px rgba(0,0,0,0.28)",
+
+                      transition:
+                        "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+
+                      transform: "translateX(0)",
+                    }}
+                  >
+                      <Plus
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                  </button>
+
+                {/* ALL */}
                 <div
                   onMouseEnter={() =>
                     setShowActions(true)
@@ -837,8 +822,7 @@ function Tasks() {
 
                       overflow: "visible",
 
-                      transition:
-                        "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                      transition: "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
                     }}
                   >
                     <div
@@ -881,8 +865,7 @@ function Tasks() {
 
                           borderRadius: "999px",
 
-                          background:
-                            "rgba(255,255,255,0.025)",
+                          background: "rgba(255,255,255,0.025)",
 
                           backdropFilter: "blur(28px)",
 
@@ -905,8 +888,7 @@ function Tasks() {
 
                             borderRadius: "999px",
 
-                            transition:
-                              "width 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+                            transition: "width 320ms cubic-bezier(0.22, 1, 0.36, 1)",
                           }}
                         >
                           {/* SEARCH ICON */}
@@ -1065,7 +1047,7 @@ function Tasks() {
                                 "oldest",
                                 "priority",
                                 "dueDate",
-                                "alphabetical", // test
+                                "alphabetical",
                               ].map((option) => (
                                 <button
                                   key={option}
@@ -1264,9 +1246,7 @@ function Tasks() {
                               <div
                                 style={{
                                   height: "1px",
-                                  background:
-                                    "rgba(255,255,255,0.06)",
-
+                                  background: "rgba(255,255,255,0.06)",
                                   margin: "8px 0",
                                 }}
                               />
@@ -1689,9 +1669,8 @@ function Tasks() {
                     </div>
                   </div> {/* END ACTIONS CONTAINER */}
                 </div>
-              </div>
-
-            </div>
+              </div> {/* END TOP RIGHT */}
+            </div> {/* END WITHIN HEADER */}
 
             <p
               style={{
@@ -1709,7 +1688,7 @@ function Tasks() {
             >
               {totalTasks + " Tasks" || "No tasks yet"}
             </p>
-          </div>
+          </div> {/* END HEADER */}
 
           {/* DIVIDER */}
           <div
@@ -4016,171 +3995,6 @@ function Tasks() {
                   await handleClearCompletedTasks();
 
                   setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={async () => {
-              await handleClearActiveTasks();
-
-              setShowClearActive(
-                false
-              );
-            }}
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background: "rgba(20,20,20,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear active tasks?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearActive(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setTasks((prev) =>
-                    prev.filter(
-                      (task) =>
-                        task.completed
-                    )
-                  );
-
-                  setToast("Active tasks cleared");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
-
-                  setShowClearActive(
                     false
                   );
                 }}

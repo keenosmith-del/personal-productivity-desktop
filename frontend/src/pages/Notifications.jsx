@@ -1,10 +1,28 @@
 import MainLayout from "../layouts/MainLayout";
 
-import { ArrowUpDown, Filter, Trash, Search, } from "lucide-react";
+import {
+  Search,
+  ArrowUpDown,
+  Filter,
+  Ellipsis,
+  ArrowLeft,
+  ArrowRight,
+  LayoutGrid,
+  Sparkles,
+  Shapes,
+  ChartLine,
+  Plus,
+} from "lucide-react";
+
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+
+import NotificationCard from "../components/Notifications/NotificationCard";
 
 import Toast from "../components/Toast";
-
-import { useEffect, useState } from "react";
 
 import {
   getNotifications,
@@ -15,36 +33,102 @@ import {
   toggleArchiveNotification,
 } from "../services/notificationService";
 
-import NotificationCard from "../components/Notifications/NotificationCard";
-
 function Notifications() {
-  // STATES
-  const [searchTerm, setSearchTerm] =
-    useState("");
+  // REFS
+  const sortRef = useRef(null);
 
-  const [sortBy, setSortBy] =
-    useState("newest");
+  const filterRef = useRef(null);
 
-  const [
-    openNotificationMenu,
-    setOpenNotificationMenu,
-  ] = useState(null);
+  const searchInputRef = useRef(null);
 
-  const [toast, setToast] =
-    useState("");
+  const moreRef = useRef(null);
 
-  const [
-    showClearAll,
-    setShowClearAll,
-  ] = useState(false);
+  // COMPONENT STATES
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const [
-    notifications,
-    setNotifications,
-  ] = useState([]);
+  const [sortBy, setSortBy] = useState("newest");
+
+  const [openNotificationMenu, setOpenNotificationMenu] = useState(null);
+
+  const [toast, setToast] = useState("");
+
+  const [showClearAll, setShowClearAll] = useState(false);
+
+  const [notifications, setNotifications] = useState([]);
+
+  const [showSortMenu, setShowSortMenu] =
+    useState(false);
+
+  const [showFilterMenu, setShowFilterMenu] =
+    useState(false);
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("All");
+
+  const [selectedPriority, setSelectedPriority] =
+    useState("All");
+
+  const [showActions, setShowActions] =
+    useState(false);
+
+  const [showSearchBar, setShowSearchBar] =
+    useState(false);
+
+  const [actionsPinned, setActionsPinned] =
+    useState(false);
+
+  const [showMoreMenu, setShowMoreMenu] =
+    useState(false);
 
   useEffect(() => {
     loadNotifications();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (
+      event
+    ) => {
+      if (
+        showSortMenu &&
+        sortRef.current &&
+        !sortRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowSortMenu(false);
+      }
+
+      if (
+        showFilterMenu &&
+        filterRef.current &&
+        !filterRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowFilterMenu(false);
+      }
+
+      if (
+        showMoreMenu &&
+        moreRef.current &&
+        !moreRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowMoreMenu(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   async function loadNotifications() {
@@ -310,6 +394,30 @@ function Notifications() {
       }
     };
 
+  const actionIconStyle = {
+    width: "32px",
+
+    height: "32px",
+
+    borderRadius: "999px",
+
+    border: "none",
+
+    background: "transparent",
+
+    color: "var(--text-secondary)",
+
+    display: "flex",
+
+    alignItems: "center",
+
+    justifyContent: "center",
+
+    cursor: "pointer",
+
+    transition:
+      "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
+  };
 
 
   return (
@@ -318,454 +426,1067 @@ function Notifications() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
-        <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent:
-                "space-between",
-
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <h1
-                style={{
-                  margin: 0,
-                  fontWeight: "400",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                Notifications
-              </h1>
-
-              <p
-                style={{
-                  marginTop: "8px",
-                  color:
-                    "var(--text-secondary)",
-                  fontWeight: "300",
-                }}
-              >
-                Manage activity across your workspace.
-              </p>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-              }}
-            >
-              {/* SEARCH */}
-              <div
-                style={{
-                  position: "relative",
-                  width: "240px",
-                }}
-              >
-                <Search
-                  size={15}
-                  opacity={0.6}
-                  style={{
-                    position: "absolute",
-                    left: "16px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    zIndex: 10,
-                    pointerEvents: "none",
-                    color: "var(--text-secondary)",
-                  }}
-                />
-
-                <input
-                  onChange={(e) =>
-                    setSearchTerm(e.target.value)
-                  }
-                  placeholder="Search notifications..."
-                  style={{
-                    width: "100%",
-
-                    padding: "10px 16px 12px 42px",
-
-                    borderRadius: "999px",
-
-                    border: "1px solid rgba(255,255,255,0.06)",
-
-                    background: "rgba(255,255,255,0.04)",
-
-                    boxShadow: "0 0 0 1px rgba(87,112,122,0.15)",
-
-                    color: "var(--text-primary)",
-
-                    fontSize: "0.82rem",
-
-                    fontWeight: "300",
-
-                    outline: "none",
-
-                    backdropFilter: "blur(20px)",
-
-                    transition: "all 0.2s ease",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.border =
-                      "1px solid rgba(255,255,255,0.18)";
-
-                    e.target.style.background =
-                      "rgba(255,255,255,0.06)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.border =
-                      "1px solid rgba(255,255,255,0.06)";
-
-                    e.target.style.background =
-                      "rgba(255,255,255,0.04)";
-                  }}
-                />
-              </div>
-
-              {/* SORT */}
-              <div
-                style={{
-                  position: "relative",
-                }}
-              >
-                <button
-                  style={{
-                    padding: "10px 16px",
-
-                    borderRadius: "999px",
-
-                    border:
-                      "1px solid rgba(255,255,255,0.08)",
-
-                    background:
-                      "rgba(255,255,255,0.03)",
-
-                    color:
-                      "var(--text-secondary)",
-
-                    fontSize: "0.82rem",
-
-                    fontWeight: "300",
-
-                    cursor: "pointer",
-
-                    transition:
-                      "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.06)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.03)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-secondary)";
-                  }}
-                >
-                  <ArrowUpDown
-                    size={15}
-                    opacity={0.6}
-                  />
-                </button>
-              </div>
-
-              {/* FILTER */}
-              <div
-                style={{
-                  position: "relative",
-                }}
-              >
-                <button
-                  style={{
-                    padding: "10px 16px",
-
-                    borderRadius: "999px",
-
-                    border:
-                      "1px solid rgba(255,255,255,0.08)",
-
-                    background:
-                      "rgba(255,255,255,0.03)",
-
-                    color:
-                      "var(--text-secondary)",
-
-                    fontSize: "0.82rem",
-
-                    fontWeight: "300",
-
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.06)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255,255,255,0.03)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-secondary)";
-                  }}
-                >
-                  <Filter
-                    size={15}
-                    opacity={0.6}
-                  />
-                </button>
-              </div>
-
-              {/* clear all */}
-              <div
-                style={{
-                  position: "relative",
-                }}
-              >
-                <button
-                  style={{
-                    padding: "10px 16px",
-
-                    borderRadius: "999px",
-
-                    border: "1px solid rgba(255, 77, 77, 0.25)",
-
-                    background: "rgba(255, 77, 77, 0.12)",
-
-                    color: "var(--danger)",
-
-                    fontSize: "0.82rem",
-
-                    fontWeight: "300",
-
-                    cursor: "pointer",
-
-                    transition:
-                      "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255, 77, 77, 0.20)";
-
-                    e.currentTarget.style.transform =
-                      "translateY(-1px)";
-                  }}
-
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(255, 77, 77, 0.12)";
-
-                    e.currentTarget.style.transform =
-                      "translateY(0)";
-                  }}
-                >
-                  <Trash
-                    size={15}
-                    opacity={0.6}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-
-
-          <p
-            style={{
-              marginTop: "6px",
-
-              fontSize: "0.8rem",
-
-              color: "var(--text-secondary)",
-
-              opacity: 0.65,
-            }}
-          >
-            {allNotifications.length} notifications
-          </p>
-        </div>
-
-        {/* DIVIDER */}
         <div
           style={{
-            height: "1px",
-            background:
-              "rgba(255,255,255,0.06)",
-          }}
-        />
-
-        {/* GRID */}
-        <div
-          style={{
-            display: "grid",
-
-            gridTemplateColumns:
-              "repeat(4, minmax(0, 1fr))",
-
+            display: "flex",
+            flexDirection: "column",
             gap: "24px",
           }}
         >
-          {notificationColumns.map(
-            (column) => (
-              <div
-                key={column.title}
-                style={{
-                  background:
-                    "var(--glass-bg)",
-
-                  border:
-                    "1px solid var(--glass-border)",
-
-                  borderRadius:
-                    "var(--radius-large)",
-
-                  backdropFilter:
-                    "blur(20px)",
-
-                  WebkitBackdropFilter:
-                    "blur(20px)",
-
-                  height: "700px",
-
-                  display: "flex",
-
-                  flexDirection: "column",
-
-                  overflow: "hidden",
-                }}
-              >
-                {/* HEADER */}
-                <div
+          {/* HEADER */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 100,
+            }}
+          >
+            {/* WITHIN HEADER */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <h1
                   style={{
-                    padding: "20px 24px",
-
-                    borderBottom:
-                      "1px solid rgba(255,255,255,0.06)",
-
-                    display: "flex",
-
-                    justifyContent:
-                      "space-between",
-
-                    alignItems: "center",
+                    margin: 0,
+                    fontWeight: "400",
+                    letterSpacing: "-0.03em",
                   }}
                 >
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "1rem",
-                        fontWeight: "400",
-                      }}
-                    >
-                      {column.title}
-                    </div>
+                  Notifications
+                </h1>
 
-                    <div
-                      style={{
-                        fontSize: "0.75rem",
-
-                        opacity: 0.45,
-
-                        marginTop: "4px",
-                      }}
-                    >
-                      {column.data.length} notifications
-                    </div>
-                  </div>
-                </div>
-
-                {/* SCROLL AREA */}
-                <div
+                <p
                   style={{
-                    flex: 1,
+                    marginTop: "8px",
+                    color: "var(--text-secondary)",
+                    fontWeight: "300",
+                  }}
+                >
+                  Manage and organize your notifications.
+                </p>
+              </div>
 
-                    overflowY: "auto",
+              {/* TOP RIGHT */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                {/* ALL */}
+                <div
+                  onMouseEnter={() =>
+                    setShowActions(true)
+                  }
+                  onMouseLeave={() => {
+                    if (
+                      !actionsPinned &&
+                      !showSortMenu &&
+                      !showFilterMenu &&
+                      !showMoreMenu
+                    ) {
+                      setShowActions(false);
+                    }
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
 
-                    padding: "16px",
+                    justifyContent: "flex-end",
+
+                    position: "relative",
+                  }}
+                >
+                  {/* EXPAND ARROW */}
+                  <button
+                    onClick={() => {
+                      if (showActions && actionsPinned) {
+                        setShowActions(false);
+
+                        setActionsPinned(false);
+
+                        setShowSearchBar(false);
+
+                        setSearchTerm("");
+
+                        setShowSortMenu(false);
+
+                        setShowFilterMenu(false);
+                      }
+                    }}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+
+                      borderRadius: "999px",
+
+                      border: "none",
+
+                      background:
+                        "rgba(255,255,255,0.025)",
+
+                      color:
+                        "var(--text-secondary)",
+
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+
+                      cursor: "pointer",
+
+                      backdropFilter: "blur(28px)",
+
+                      boxShadow:
+                        "0 6px 20px rgba(0,0,0,0.28)",
+
+                      transition:
+                        "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+
+                      transform: showActions
+                        ? "translateX(2px)"
+                        : "translateX(0)",
+                    }}
+                  >
+                    {actionsPinned ? (
+                      <ArrowRight
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    ) : (
+                      <ArrowLeft
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    )}
+                  </button>
+
+                  {/* ACTIONS */}
+                  <div
+                    style={{
+                      width:
+                        showActions
+                          ? showSearchBar
+                            ? "500px"
+                            : "360px"
+                          : "0px",
+
+                      overflow: "visible",
+
+                      transition: "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+
+                        gap: "8px",
+
+                        overflow: "visible",
+
+                        width:
+                          showActions
+                            ? showSearchBar
+                              ? "500px"
+                              : "360px"
+                            : "0px",
+
+                        opacity: showActions
+                          ? 1
+                          : 0,
+
+                        transform: showActions
+                          ? "translateX(0)"
+                          : "translateX(12px)",
+
+                        transition:
+                          "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                      }}
+                    >
+                      {/* SEARCH / SORT / FILTER */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+
+                          gap: "6px",
+
+                          padding: "4px",
+
+                          borderRadius: "999px",
+
+                          background: "rgba(255,255,255,0.025)",
+
+                          backdropFilter: "blur(28px)",
+
+                          boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {/* search wrapper */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+
+                            overflow: "hidden",
+
+                            width: showSearchBar
+                              ? "170px"
+                              : "32px",
+
+                            minWidth: "32px",
+
+                            borderRadius: "999px",
+
+                            transition: "width 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+                          }}
+                        >
+                          {/* SEARCH ICON */}
+                          <button
+                            onClick={() => {
+                              if (!showSearchBar) {
+                                setShowSearchBar(true);
+
+                                setActionsPinned(true);
+
+                                setTimeout(() => {
+                                  searchInputRef.current?.focus();
+                                }, 50);
+                              }
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Search
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {/* INPUT */}
+                          {showSearchBar && (
+                            <input
+                              ref={searchInputRef}
+                              onFocus={() => {
+                                setActionsPinned(true);
+
+                                setShowSortMenu(false);
+
+                                setShowFilterMenu(false);
+
+                                setShowMoreMenu(false);
+                              }}
+                              value={searchTerm}
+                              onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                              }
+                              placeholder="Search notifications..."
+                              style={{
+                                background: "none",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                color:
+                                  "var(--text-primary)",
+
+                                fontSize: "0.82rem",
+
+                                fontWeight: "300",
+
+                                width: "100%",
+
+                                paddingRight: "12px",
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        {/* SORT BUTTON */}
+                        <div
+                          ref={sortRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowSortMenu(!showSortMenu);
+
+                              setShowFilterMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <ArrowUpDown
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showSortMenu && (
+                            <div
+                              style={{
+                                position: "fixed",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "170px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 9999999,
+                              }}
+                            >
+                              {[
+                                "newest",
+                                "oldest",
+                                "priority",
+                                "dueDate",
+                                "alphabetical",
+                              ].map((option) => (
+                                <button
+                                  key={option}
+                                  onClick={() => {
+                                    setSortBy(option);
+
+                                    setShowSortMenu(false);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      sortBy === option
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {option === "dueDate"
+                                    ? "Due Date"
+                                    : option === "alphabetical"
+                                      ? "A → Z"
+                                      : option.charAt(0).toUpperCase() +
+                                      option.slice(1)}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* FILTER BUTTON */}
+                        <div
+                          ref={filterRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowFilterMenu(!showFilterMenu);
+
+                              setShowSortMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Filter
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showFilterMenu && (
+                            <div
+                              style={{
+                                position: "absolute",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "200px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 2001,
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Category
+                              </p>
+
+                              {[
+                                "All",
+                                "Work",
+                                "Study",
+                                "Personal",
+                                "Health",
+                              ].map((category) => (
+                                <button
+                                  key={category}
+                                  onClick={() => {
+                                    setSelectedCategory(category);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedCategory === category
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {category}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background: "rgba(255,255,255,0.06)",
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Priority
+                              </p>
+
+                              {[
+                                "All",
+                                "High",
+                                "Medium",
+                                "Low",
+                              ].map((priority) => (
+                                <button
+                                  key={priority}
+                                  onClick={() => {
+                                    setSelectedPriority(priority);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedPriority === priority
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {priority}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.06)",
+
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory("All");
+                                  setSelectedPriority("All");
+                                  setShowFilterMenu(false);
+                                }}
+                                style={{
+                                  background: "transparent",
+
+                                  border: "none",
+
+                                  color:
+                                    "var(--text-secondary)",
+
+                                  padding: "10px 14px",
+
+                                  borderRadius: "12px",
+
+                                  cursor: "pointer",
+
+                                  textAlign: "left",
+
+                                  fontSize: "0.78rem",
+
+                                  fontWeight: "300",
+
+                                  transition:
+                                    "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.06)";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                                }}
+                              >
+                                Clear Filters
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* MORE */}
+                      <div
+                        ref={moreRef}
+                        style={{
+                          position: "relative",
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            setShowMoreMenu(!showMoreMenu);
+
+                            setActionsPinned(true);
+
+                            setShowActions(true);
+
+                            setShowSortMenu(false);
+
+                            setShowFilterMenu(false);
+                          }}
+                          style={actionIconStyle}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                              "translateY(-1px)";
+
+                            e.currentTarget.style.color =
+                              "var(--text-primary)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                              "translateY(0)";
+
+                            e.currentTarget.style.color =
+                              "var(--text-secondary)";
+                          }}
+                        >
+                          <Ellipsis
+                            size={16}
+                            strokeWidth={1.6}
+                          />
+                        </button>
+
+                        {showMoreMenu && (
+                          <div
+                            style={{
+                              position: "fixed",
+
+                              top: "42px",
+                              right: 0,
+
+                              width: "180px",
+
+                              background: "rgba(20,20,20,0.92)",
+
+                              backdropFilter: "blur(24px)",
+                              WebkitBackdropFilter: "blur(24px)",
+
+                              border: "1px solid rgba(255,255,255,0.10)",
+
+                              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+
+                              borderRadius: "18px",
+
+                              overflow: "hidden",
+
+                              padding: "8px",
+
+                              display: "flex",
+                              flexDirection: "column",
+
+                              gap: "4px",
+
+                              zIndex: 2001,
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearCompleted(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear Completed
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearActive(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div> {/* END ACTIONS CONTAINER */}
+                </div>
+              </div> {/* END TOP RIGHT */}
+            </div> {/* END WITHIN HEADER */}
+
+            <p
+              style={{
+                marginTop: "6px",
+
+                fontSize: "0.8rem",
+
+                color: "var(--text-secondary)",
+
+                opacity: 0.65,
+              }}
+            >
+              {allNotifications.length} notifications
+            </p>
+          </div>
+
+          {/* DIVIDER */}
+          <div
+            style={{
+              height: "1px",
+              background:
+                "rgba(255,255,255,0.06)",
+            }}
+          />
+
+          {/* GRID */}
+          <div
+            style={{
+              display: "grid",
+
+              gridTemplateColumns:
+                "repeat(4, minmax(0, 1fr))",
+
+              gap: "24px",
+            }}
+          >
+            {notificationColumns.map(
+              (column) => (
+                <div
+                  key={column.title}
+                  style={{
+                    background:
+                      "var(--glass-bg)",
+
+                    border:
+                      "1px solid var(--glass-border)",
+
+                    borderRadius:
+                      "var(--radius-large)",
+
+                    backdropFilter:
+                      "blur(20px)",
+
+                    WebkitBackdropFilter:
+                      "blur(20px)",
+
+                    height: "700px",
 
                     display: "flex",
 
                     flexDirection: "column",
 
-                    gap: "12px",
+                    overflow: "hidden",
                   }}
                 >
-                  {column.data.length === 0 ? (
-                    <div
-                      style={{
-                        flex: 1,
+                  {/* HEADER */}
+                  <div
+                    style={{
+                      padding: "20px 24px",
 
-                        display: "flex",
+                      borderBottom:
+                        "1px solid rgba(255,255,255,0.06)",
 
-                        justifyContent: "center",
+                      display: "flex",
 
-                        alignItems: "center",
+                      justifyContent:
+                        "space-between",
 
-                        color:
-                          "var(--text-secondary)",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: "400",
+                        }}
+                      >
+                        {column.title}
+                      </div>
 
-                        opacity: 0.45,
+                      <div
+                        style={{
+                          fontSize: "0.75rem",
 
-                        textAlign: "center",
+                          opacity: 0.45,
 
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      No notifications
+                          marginTop: "4px",
+                        }}
+                      >
+                        {column.data.length} notifications
+                      </div>
                     </div>
-                  ) : (
-                    column.data.map(
-                      (notification) => (
-                        <NotificationCard
-                          key={notification._id}
-                          notification={notification}
-                          openNotificationMenu={
-                            openNotificationMenu
-                          }
+                  </div>
 
-                          setOpenNotificationMenu={
-                            setOpenNotificationMenu
-                          }
+                  {/* SCROLL AREA */}
+                  <div
+                    style={{
+                      flex: 1,
 
-                          onDelete={
-                            handleDeleteNotification
-                          }
+                      overflowY: "auto",
 
-                          onToggleArchive={
-                            handleToggleArchive
-                          }
+                      padding: "16px",
 
-                          onToggleStar={
-                            handleToggleStar
-                          }
+                      display: "flex",
 
-                          onToggleRead={
-                            handleToggleRead
-                          }
-                        />
+                      flexDirection: "column",
+
+                      gap: "12px",
+                    }}
+                  >
+                    {column.data.length === 0 ? (
+                      <div
+                        style={{
+                          flex: 1,
+
+                          display: "flex",
+
+                          justifyContent: "center",
+
+                          alignItems: "center",
+
+                          color:
+                            "var(--text-secondary)",
+
+                          opacity: 0.45,
+
+                          textAlign: "center",
+
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        No notifications
+                      </div>
+                    ) : (
+                      column.data.map(
+                        (notification) => (
+                          <NotificationCard
+                            key={notification._id}
+                            notification={notification}
+                            openNotificationMenu={
+                              openNotificationMenu
+                            }
+
+                            setOpenNotificationMenu={
+                              setOpenNotificationMenu
+                            }
+
+                            onDelete={
+                              handleDeleteNotification
+                            }
+
+                            onToggleArchive={
+                              handleToggleArchive
+                            }
+
+                            onToggleStar={
+                              handleToggleStar
+                            }
+
+                            onToggleRead={
+                              handleToggleRead
+                            }
+                          />
+                        )
                       )
-                    )
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          )}
+              )
+            )}
+          </div>
         </div>
       </div>
       <Toast message={toast} />
-
     </MainLayout>
   );
 }

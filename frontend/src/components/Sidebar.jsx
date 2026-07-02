@@ -6,7 +6,7 @@ import { getCurrentUser } from "../services/authService";
 import {
   Grip,
   CheckSquare,
-  Target,
+  Sprout,
   Calendar,
   Bell,
   AlarmClock,
@@ -69,7 +69,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     {
       label: "Goals",
       path: "/goals",
-      icon: Target,
+      icon: Sprout,
     },
     {
       label: "Projects",

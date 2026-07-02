@@ -1,8 +1,8 @@
 import {
     CheckSquare,
-    FolderKanban,
-    Target,
-    Bell,
+    Folder,
+    AlarmClock,
+    Sprout,
     Check,
     CircleAlert,
     Shield,
@@ -76,9 +76,9 @@ function DashboardModal({
 
     const eventIcons = {
         task: CheckSquare,
-        project: FolderKanban,
-        goal: Target,
-        reminder: Bell,
+        project: Folder,
+        goal: Sprout,
+        reminder: AlarmClock,
     };
 
     const formatDueDate = (dueDate) => {

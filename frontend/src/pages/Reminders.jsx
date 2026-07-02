@@ -1,8 +1,27 @@
-import { useState, useEffect, useRef } from "react";
-
 import MainLayout from "../layouts/MainLayout";
 
-import { ArrowUpDown, Filter, Search, Trash } from "lucide-react";
+import {
+  Search,
+  ArrowUpDown,
+  Filter,
+  Ellipsis,
+  ArrowRight,
+  ArrowLeft,
+  AlarmClock,
+  Infinity,
+} from "lucide-react";
+
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+
+import ReminderCard from "../components/Reminders/ReminderCard";
+import ReminderModal from "../components/Reminders/ReminderModal";
+import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
+
+import Toast from "../components/Toast";
 
 import {
   getReminders,
@@ -12,21 +31,17 @@ import {
   clearAllReminders,
 } from "../services/reminderService";
 
-import SearchBar from "../components/SearchBar";
-import ReminderOverview from "../components/Reminders/ReminderOverview";
-
-import ReminderCard from "../components/Reminders/ReminderCard";
-import ReminderModal from "../components/Reminders/ReminderModal";
-import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
-
-import Toast from "../components/Toast";
-
 function Reminders() {
-  //COMPONENT STATES
+  // REFS
   const sortRef = useRef(null);
 
   const filterRef = useRef(null);
 
+  const searchInputRef = useRef(null);
+
+  const moreRef = useRef(null);
+
+  //COMPONENT STATES
   const [showReminderModal, setShowReminderModal] =
     useState(false);
 
@@ -36,8 +51,7 @@ function Reminders() {
   const [selectedReminder, setSelectedReminder] =
     useState(null);
 
-  const [editingReminder,
-    setEditingReminder] =
+  const [editingReminder, setEditingReminder] =
     useState(null);
 
   const [reminders, setReminders] =
@@ -46,16 +60,13 @@ function Reminders() {
   const [toast, setToast] =
     useState("");
 
-  const [completionTimeout,
-    setCompletionTimeout] =
+  const [completionTimeout, setCompletionTimeout] =
     useState(null);
 
-  const [showClearCompleted,
-    setShowClearCompleted] =
+  const [showClearCompleted, setShowClearCompleted] =
     useState(false);
 
-  const [showClearActive,
-    setShowClearActive] =
+  const [showClearActive, setShowClearActive] =
     useState(false);
 
   const [searchTerm, setSearchTerm] =
@@ -75,6 +86,18 @@ function Reminders() {
 
   const [selectedPriority, setSelectedPriority] =
     useState("All");
+
+  const [showActions, setShowActions] =
+    useState(false);
+
+  const [showSearchBar, setShowSearchBar] =
+    useState(false);
+
+  const [actionsPinned, setActionsPinned] =
+    useState(false);
+
+  const [showMoreMenu, setShowMoreMenu] =
+    useState(false);
 
   const matchesFilters = (reminder) => {
     const categoryMatch =
@@ -152,7 +175,7 @@ function Reminders() {
 
 
   {/* BEGIN REMINDERS SORT VARIABLES */ }
-
+  {/* NO COLS */ }
   const allReminders = sortReminders(
     reminders.filter(
       (reminder) =>
@@ -202,7 +225,7 @@ function Reminders() {
     )
   );
 
-  {/* FOCUS TAB reminder SORT */ }
+  {/* FOCUS SORT */ }
   const urgentReminders = sortReminders(
     reminders.filter(
       (reminder) =>
@@ -239,8 +262,7 @@ function Reminders() {
     )
   )
 
-  {/* CATEGORIES TAB*/ }
-  {/* WORK */ }
+  {/* CATEGORIES SORT */ }
   const workReminders = sortReminders(
     reminders.filter(
       (reminder) =>
@@ -284,8 +306,7 @@ function Reminders() {
     selectedCategory !== "All" ||
     selectedPriority !== "All";
 
-  const totalReminders =
-    reminders.length;
+  const totalReminders = reminders.length;
 
   // FUNCTIONS
   const loadReminders = async () => {
@@ -299,6 +320,20 @@ function Reminders() {
     }
   };
 
+  const reminderTabs = [
+    {
+      key: "alarms",
+      icon: AlarmClock,
+    },
+    {
+      key: "all",
+      icon: Infinity,
+    },
+  ];
+
+  const [activeTab, setActiveTab] =
+    useState("alarms");
+
   useEffect(() => {
     loadReminders();
   }, []);
@@ -308,6 +343,7 @@ function Reminders() {
       event
     ) => {
       if (
+        showSortMenu &&
         sortRef.current &&
         !sortRef.current.contains(
           event.target
@@ -317,12 +353,23 @@ function Reminders() {
       }
 
       if (
+        showFilterMenu &&
         filterRef.current &&
         !filterRef.current.contains(
           event.target
         )
       ) {
         setShowFilterMenu(false);
+      }
+
+      if (
+        showMoreMenu &&
+        moreRef.current &&
+        !moreRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowMoreMenu(false);
       }
     };
 
@@ -576,28 +623,29 @@ function Reminders() {
       }
     };
 
-  const dropdownItemStyle = {
-    width: "100%",
+  const actionIconStyle = {
+    width: "32px",
 
-    padding: "10px 12px",
+    height: "32px",
 
-    background: "transparent",
+    borderRadius: "999px",
 
     border: "none",
 
-    borderRadius: "10px",
+    background: "transparent",
 
-    color: "var(--text-primary)",
+    color: "var(--text-secondary)",
 
-    textAlign: "left",
+    display: "flex",
 
-    fontSize: "0.8rem",
+    alignItems: "center",
 
-    fontWeight: "300",
+    justifyContent: "center",
 
     cursor: "pointer",
 
-    transition: "all 0.2s ease",
+    transition:
+      "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
   };
 
   return (
@@ -618,12 +666,17 @@ function Reminders() {
           }}
         >
           {/* HEADER */}
-          <div>
+          <div
+            style={{
+              position: "relative",
+              zIndex: 100,
+            }}
+          >
+            {/* WITHIN HEADER */}
             <div
               style={{
                 display: "flex",
-                justifyContent:
-                  "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
@@ -632,25 +685,24 @@ function Reminders() {
                   style={{
                     margin: 0,
                     fontWeight: "400",
-                    letterSpacing:
-                      "-0.03em",
+                    letterSpacing: "-0.03em",
                   }}
                 >
-                  Reminders
+                  Reminders and Alarms
                 </h1>
 
                 <p
                   style={{
                     marginTop: "8px",
-                    color:
-                      "var(--text-secondary)",
+                    color: "var(--text-secondary)",
                     fontWeight: "300",
                   }}
                 >
-                  Manage and organize your reminders.
+                  Manage and organize your reminders and alarms.
                 </p>
               </div>
 
+              {/* TOP RIGHT */}
               <div
                 style={{
                   display: "flex",
@@ -658,566 +710,954 @@ function Reminders() {
                   gap: "12px",
                 }}
               >
-                {/* SEARCH */}
                 <div
-                  style={{
-                    position: "relative",
-                    width: "240px",
-                  }}
-                >
-                  <Search
-                    size={15}
-                    opacity={0.6}
-                    style={{
-                      position: "absolute",
-                      left: "16px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 10,
-                      pointerEvents: "none",
-                      color: "var(--text-secondary)",
-                    }}
-                  />
-
-                  <input
-                    value={searchTerm}
-                    onChange={(e) =>
-                      setSearchTerm(e.target.value)
+                  onMouseEnter={() =>
+                    setShowActions(true)
+                  }
+                  onMouseLeave={() => {
+                    if (
+                      !actionsPinned &&
+                      !showSortMenu &&
+                      !showFilterMenu &&
+                      !showMoreMenu
+                    ) {
+                      setShowActions(false);
                     }
-                    placeholder="Search reminders..."
-                    style={{
-                      width: "100%",
-
-                      padding: "10px 16px 12px 42px",
-
-                      borderRadius: "999px",
-
-                      border: searchTerm
-                        ? "1px solid rgba(87,112,122,0.55)"
-                        : "1px solid rgba(255,255,255,0.06)",
-
-                      background: searchTerm
-                        ? "rgba(87,112,122,0.14)"
-                        : "rgba(255,255,255,0.04)",
-
-                      boxShadow: searchTerm
-                        ? "0 0 0 1px rgba(87,112,122,0.15)"
-                        : "none",
-
-                      color: "var(--text-primary)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      outline: "none",
-
-                      backdropFilter: "blur(20px)",
-
-                      transition: "all 0.2s ease",
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.border =
-                        "1px solid rgba(255,255,255,0.18)";
-
-                      e.target.style.background =
-                        "rgba(255,255,255,0.06)";
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.border =
-                        searchTerm
-                          ? "1px solid rgba(87,112,122,0.55)"
-                          : "1px solid rgba(255,255,255,0.06)";
-
-                      e.target.style.background =
-                        searchTerm
-                          ? "rgba(87,112,122,0.14)"
-                          : "rgba(255,255,255,0.04)";
-                    }}
-                  />
-                </div>
-
-                {/* SORT */}
-                <div
-                  ref={sortRef}
+                  }}
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+
+                    justifyContent: "flex-end",
+
                     position: "relative",
                   }}
                 >
+                  {/* EXPAND ARROW */}
                   <button
                     onClick={() => {
-                      setShowFilterMenu(false);
+                      if (showActions && actionsPinned) {
+                        setShowActions(false);
 
-                      setShowSortMenu(
-                        !showSortMenu
-                      );
+                        setActionsPinned(false);
+
+                        setShowSearchBar(false);
+
+                        setSearchTerm("");
+
+                        setShowSortMenu(false);
+
+                        setShowFilterMenu(false);
+                      }
                     }}
                     style={{
-                      padding: "10px 16px",
+                      width: "36px",
+                      height: "36px",
 
                       borderRadius: "999px",
 
-                      border:
-                        "1px solid rgba(255,255,255,0.08)",
+                      border: "none",
 
                       background:
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)",
+                        "rgba(255,255,255,0.025)",
 
                       color:
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
+                        "var(--text-secondary)",
 
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
 
                       cursor: "pointer",
 
+                      backdropFilter: "blur(28px)",
+
+                      boxShadow:
+                        "0 6px 20px rgba(0,0,0,0.28)",
+
                       transition:
-                        "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.06)";
+                        "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
 
-                      e.currentTarget.style.color =
-                        "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)";
-
-                      e.currentTarget.style.color =
-                        showSortMenu ||
-                          sortBy !== "newest"
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)";
+                      transform: showActions
+                        ? "translateX(2px)"
+                        : "translateX(0)",
                     }}
                   >
-                    <ArrowUpDown size={15} opacity={0.6} />
+                    {actionsPinned ? (
+                      <ArrowRight
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    ) : (
+                      <ArrowLeft
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    )}
                   </button>
 
-                  {showSortMenu && (
+                  {/* ACTIONS */}
+                  <div
+                    style={{
+                      width:
+                        showActions
+                          ? showSearchBar
+                            ? "500px"
+                            : "360px"
+                          : "0px",
+
+                      overflow: "visible",
+
+                      transition: "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                  >
                     <div
                       style={{
-                        position: "absolute",
+                        display: "flex",
+                        alignItems: "center",
 
-                        top: "52px",
-                        right: 0,
+                        gap: "8px",
 
-                        background:
-                          "rgba(20,20,20,0.95)",
+                        overflow: "visible",
 
-                        backdropFilter:
-                          "blur(20px)",
+                        width:
+                          showActions
+                            ? showSearchBar
+                              ? "500px"
+                              : "360px"
+                            : "0px",
 
-                        border:
-                          "1px solid rgba(255,255,255,0.08)",
+                        opacity: showActions
+                          ? 1
+                          : 0,
 
-                        minWidth: "140px",
+                        transform: showActions
+                          ? "translateX(0)"
+                          : "translateX(12px)",
 
-                        borderRadius: "16px",
-
-                        overflow: "hidden",
-
-                        zIndex: 100,
+                        transition:
+                          "all 340ms cubic-bezier(0.22, 1, 0.36, 1)",
                       }}
                     >
-                      {[
-                        "newest",
-                        "oldest",
-                        "priority",
-                        "dueDate",
-                        "alphabetical",
-                      ].map((option) => (
+                      {/* SEARCH / SORT / FILTER */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+
+                          gap: "6px",
+
+                          padding: "4px",
+
+                          borderRadius: "999px",
+
+                          background: "rgba(255,255,255,0.025)",
+
+                          backdropFilter: "blur(28px)",
+
+                          boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {/* search wrapper */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+
+                            overflow: "hidden",
+
+                            width: showSearchBar
+                              ? "170px"
+                              : "32px",
+
+                            minWidth: "32px",
+
+                            borderRadius: "999px",
+
+                            transition: "width 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+                          }}
+                        >
+                          {/* SEARCH ICON */}
+                          <button
+                            onClick={() => {
+                              if (!showSearchBar) {
+                                setShowSearchBar(true);
+
+                                setActionsPinned(true);
+
+                                setTimeout(() => {
+                                  searchInputRef.current?.focus();
+                                }, 50);
+                              }
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Search
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {/* INPUT */}
+                          {showSearchBar && (
+                            <input
+                              ref={searchInputRef}
+                              onFocus={() => {
+                                setActionsPinned(true);
+
+                                setShowSortMenu(false);
+
+                                setShowFilterMenu(false);
+
+                                setShowMoreMenu(false);
+                              }}
+                              value={searchTerm}
+                              onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                              }
+                              placeholder="Search reminders..."
+                              style={{
+                                background: "none",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                color:
+                                  "var(--text-primary)",
+
+                                fontSize: "0.82rem",
+
+                                fontWeight: "300",
+
+                                width: "100%",
+
+                                paddingRight: "12px",
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        {/* SORT BUTTON */}
+                        <div
+                          ref={sortRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowSortMenu(!showSortMenu);
+
+                              setShowFilterMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <ArrowUpDown
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showSortMenu && (
+                            <div
+                              style={{
+                                position: "fixed",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "170px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 9999999,
+                              }}
+                            >
+                              {[
+                                "newest",
+                                "oldest",
+                                "priority",
+                                "dueDate",
+                                "alphabetical",
+                              ].map((option) => (
+                                <button
+                                  key={option}
+                                  onClick={() => {
+                                    setSortBy(option);
+
+                                    setShowSortMenu(false);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      sortBy === option
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {option === "dueDate"
+                                    ? "Due Date"
+                                    : option === "alphabetical"
+                                      ? "A → Z"
+                                      : option.charAt(0).toUpperCase() +
+                                      option.slice(1)}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* FILTER BUTTON */}
+                        <div
+                          ref={filterRef}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setShowFilterMenu(!showFilterMenu);
+
+                              setShowSortMenu(false);
+
+                              setActionsPinned(true);
+
+                              setShowActions(true);
+
+                              setShowMoreMenu(false);
+                            }}
+                            style={actionIconStyle}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(-1px)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform =
+                                "translateY(0)";
+
+                              e.currentTarget.style.color =
+                                "var(--text-secondary)";
+                            }}
+                          >
+                            <Filter
+                              size={15}
+                              strokeWidth={1.6}
+                            />
+                          </button>
+
+                          {showFilterMenu && (
+                            <div
+                              style={{
+                                position: "absolute",
+
+                                top: "42px",
+                                right: 0,
+
+                                width: "200px",
+
+                                background:
+                                  "rgba(20,20,20,0.92)",
+
+                                backdropFilter:
+                                  "blur(24px)",
+
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
+
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
+
+                                padding: "8px",
+
+                                display: "flex",
+
+                                flexDirection: "column",
+
+                                gap: "4px",
+
+                                zIndex: 2001,
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Category
+                              </p>
+
+                              {[
+                                "All",
+                                "Work",
+                                "Study",
+                                "Personal",
+                                "Health",
+                              ].map((category) => (
+                                <button
+                                  key={category}
+                                  onClick={() => {
+                                    setSelectedCategory(category);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedCategory === category
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {category}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background: "rgba(255,255,255,0.06)",
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <p
+                                style={{
+                                  fontSize: "0.72rem",
+                                  opacity: 0.45,
+                                  padding: "8px 12px 4px",
+                                  margin: 0,
+                                }}
+                              >
+                                Priority
+                              </p>
+
+                              {[
+                                "All",
+                                "High",
+                                "Medium",
+                                "Low",
+                              ].map((priority) => (
+                                <button
+                                  key={priority}
+                                  onClick={() => {
+                                    setSelectedPriority(priority);
+
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+
+                                    border: "none",
+
+                                    color:
+                                      selectedPriority === priority
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                    padding: "10px 14px",
+
+                                    borderRadius: "12px",
+
+                                    cursor: "pointer",
+
+                                    textAlign: "left",
+
+                                    fontSize: "0.78rem",
+
+                                    fontWeight: "300",
+
+                                    transition:
+                                      "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+                                  }}
+                                >
+                                  {priority}
+                                </button>
+                              ))}
+
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.06)",
+
+                                  margin: "8px 0",
+                                }}
+                              />
+
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory("All");
+                                  setSelectedPriority("All");
+                                  setShowFilterMenu(false);
+                                }}
+                                style={{
+                                  background: "transparent",
+
+                                  border: "none",
+
+                                  color:
+                                    "var(--text-secondary)",
+
+                                  padding: "10px 14px",
+
+                                  borderRadius: "12px",
+
+                                  cursor: "pointer",
+
+                                  textAlign: "left",
+
+                                  fontSize: "0.78rem",
+
+                                  fontWeight: "300",
+
+                                  transition:
+                                    "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.06)";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
+
+                                  e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                                }}
+                              >
+                                Clear Filters
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* ALARMS / ALL REMINDERS */}
+                      {/* TABS */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+
+                          gap: "6px",
+
+                          padding: "4px",
+
+                          borderRadius: "999px",
+
+                          background:
+                            "rgba(255,255,255,0.025)",
+
+                          backdropFilter: "blur(28px)",
+
+                          boxShadow:
+                            "0 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {reminderTabs.map((tab) => {
+                          const Icon = tab.icon;
+
+                          const active =
+                            activeTab === tab.key;
+
+                          return (
+                            <button
+                              key={tab.key}
+                              onClick={() => {
+                                setActiveTab(tab.key);
+
+                                setShowSortMenu(false);
+
+                                setShowFilterMenu(false);
+
+                                setShowMoreMenu(false);
+                              }}
+                              style={{
+                                ...actionIconStyle,
+
+                                background: active
+                                  ? "rgba(255,255,255,0.025)"
+                                  : "transparent",
+
+                                boxShadow: active
+                                  ? "0 4px 10px rgba(0,0,0,0.18)"
+                                  : "none",
+
+                                color: active
+                                  ? "rgba(255,255,255,0.85)"
+                                  : "var(--text-secondary)",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                  "translateY(-1px)";
+
+                                if (!active) {
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                  "translateY(0)";
+
+                                if (!active) {
+                                  e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                                }
+                              }}
+                            >
+                              <Icon
+                                size={15}
+                                strokeWidth={1.6}
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+
+
+                      {/* MORE */}
+                      <div
+                        ref={moreRef}
+                        style={{
+                          position: "relative",
+                        }}
+                      >
                         <button
-                          key={option}
                           onClick={() => {
-                            setSortBy(option);
+                            setShowMoreMenu(!showMoreMenu);
+
+                            setActionsPinned(true);
+
+                            setShowActions(true);
+
                             setShowSortMenu(false);
-                          }}
-                          style={{
-                            ...dropdownItemStyle,
 
-                            background:
-                              sortBy === option
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              sortBy === option
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
+                            setShowFilterMenu(false);
                           }}
+                          style={actionIconStyle}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
+                            e.currentTarget.style.transform =
+                              "translateY(-1px)";
 
                             e.currentTarget.style.color =
-                              "#F5F5F5";
+                              "var(--text-primary)";
                           }}
-
                           onMouseLeave={(e) => {
-                            if (sortBy !== option) {
-                              e.currentTarget.style.background =
-                                "transparent";
+                            e.currentTarget.style.transform =
+                              "translateY(0)";
 
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
+                            e.currentTarget.style.color =
+                              "var(--text-secondary)";
                           }}
                         >
-                          {option === "dueDate"
-                            ? "Due Date"
-                            : option ===
-                              "alphabetical"
-                              ? "A → Z"
-                              : option.charAt(0).toUpperCase() +
-                              option.slice(1)}
+                          <Ellipsis
+                            size={16}
+                            strokeWidth={1.6}
+                          />
                         </button>
-                      ))}
+
+                        {showMoreMenu && (
+                          <div
+                            style={{
+                              position: "fixed",
+
+                              top: "42px",
+                              right: 0,
+
+                              width: "180px",
+
+                              background: "rgba(20,20,20,0.92)",
+
+                              backdropFilter: "blur(24px)",
+                              WebkitBackdropFilter: "blur(24px)",
+
+                              border: "1px solid rgba(255,255,255,0.10)",
+
+                              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+
+                              borderRadius: "18px",
+
+                              overflow: "hidden",
+
+                              padding: "8px",
+
+                              display: "flex",
+                              flexDirection: "column",
+
+                              gap: "4px",
+
+                              zIndex: 2001,
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowReminderModal(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Create Reminder
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearCompleted(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear Completed
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                setShowClearActive(true);
+                              }}
+                              style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                color: "var(--text-secondary)",
+
+                                padding: "10px 14px",
+
+                                borderRadius: "12px",
+
+                                cursor: "pointer",
+
+                                textAlign: "left",
+
+                                fontSize: "0.78rem",
+
+                                fontWeight: "300",
+
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255,255,255,0.06)";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "transparent";
+
+                                e.currentTarget.style.color =
+                                  "var(--text-secondary)";
+                              }}
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  </div> {/* END ACTIONS CONTAINER */}
                 </div>
-
-                {/* FILTER */}
-                <div
-                  ref={filterRef}
-                  style={{
-                    position: "relative",
-                  }}
-                >
-                  <button
-                    onClick={() => {
-                      setShowSortMenu(false);
-
-                      setShowFilterMenu(
-                        !showFilterMenu
-                      );
-                    }}
-                    style={{
-                      padding: "12px 18px",
-
-                      borderRadius: "999px",
-
-                      border:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "1px solid rgba(87,112,122,0.45)"
-                          : "1px solid rgba(255,255,255,0.08)",
-
-                      background:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "rgba(87,112,122,0.16)"
-                          : "rgba(255,255,255,0.03)",
-
-                      color:
-                        showFilterMenu ||
-                          hasFilters
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.06)";
-
-                      e.currentTarget.style.color =
-                        "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        showFilterMenu ||
-                          hasFilters
-                          ? "rgba(87,112,122,0.10)"
-                          : "rgba(255,255,255,0.03)";
-
-                      e.currentTarget.style.color =
-                        showFilterMenu ||
-                          hasFilters
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)";
-                    }}
-                  >
-                    <Filter size={15} opacity={0.6} />
-                  </button>
-
-                  {showFilterMenu && (
-                    <div
-                      style={{
-                        position: "absolute",
-
-                        top: "52px",
-                        right: 0,
-
-                        width: "220px",
-
-                        background:
-                          "rgba(20,20,20,0.95)",
-
-                        backdropFilter:
-                          "blur(20px)",
-
-                        border:
-                          "1px solid rgba(255,255,255,0.08)",
-
-                        borderRadius: "16px",
-
-                        padding: "12px",
-
-                        zIndex: 100,
-                      }}
-                    >
-                      <p
-                        style={{
-                          fontSize: "0.75rem",
-                          opacity: 0.5,
-                          marginBottom: "10px",
-                        }}
-                      >
-                        Category
-                      </p>
-
-                      {/* CATEGORY OPTIONS */}
-                      {[
-                        "All",
-                        "Work",
-                        "Study",
-                        "Personal",
-                        "Health",
-                      ].map((category) => (
-                        <button
-                          key={category}
-                          onClick={() =>
-                            setSelectedCategory(category)
-                          }
-                          style={{
-                            ...dropdownItemStyle,
-
-                            background:
-                              selectedCategory === category
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              selectedCategory === category
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.color =
-                              "#F5F5F5";
-                          }}
-
-                          onMouseLeave={(e) => {
-                            if (
-                              selectedCategory !== category
-                            ) {
-                              e.currentTarget.style.background =
-                                "transparent";
-
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
-                          }}
-                        >
-                          {category}
-                        </button>
-                      ))}
-
-                      <div
-                        style={{
-                          height: "1px",
-                          background:
-                            "rgba(255,255,255,0.06)",
-                          margin: "14px 0",
-                        }}
-                      />
-
-                      <p
-                        style={{
-                          fontSize: "0.75rem",
-                          opacity: 0.5,
-                          marginBottom: "10px",
-                        }}
-                      >
-                        Priority
-                      </p>
-
-                      {[
-                        "All",
-                        "High",
-                        "Medium",
-                        "Low",
-                      ].map((priority) => (
-                        <button
-                          key={priority}
-                          onClick={() =>
-                            setSelectedPriority(
-                              priority
-                            )
-                          }
-                          style={{
-                            ...dropdownItemStyle,
-
-                            background:
-                              selectedPriority === priority
-                                ? "rgba(255,255,255,0.04)"
-                                : "transparent",
-
-                            color:
-                              selectedPriority === priority
-                                ? "#F5F5F5"
-                                : "var(--text-primary)",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.color =
-                              "#F5F5F5";
-                          }}
-
-                          onMouseLeave={(e) => {
-                            if (
-                              selectedPriority !== priority
-                            ) {
-                              e.currentTarget.style.background =
-                                "transparent";
-
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }
-                          }}
-                        >
-                          {priority}
-                        </button>
-                      ))}
-                      <div
-                        style={{
-                          height: "1px",
-                          background:
-                            "rgba(255,255,255,0.06)",
-
-                          margin: "14px 0",
-                        }}
-                      />
-
-                      <button
-                        onClick={() => {
-                          setSelectedCategory(
-                            "All"
-                          );
-
-                          setSelectedPriority(
-                            "All"
-                          );
-
-                          setShowFilterMenu(false);
-                        }}
-                        style={{
-                          width: "100%",
-
-                          background: "none",
-
-                          border: "none",
-
-                          color:
-                            "var(--text-secondary)",
-
-                          fontSize: "0.8rem",
-
-                          fontWeight: "300",
-
-                          cursor: "pointer",
-
-                          paddingTop: "6px",
-
-                          transition:
-                            "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color =
-                            "var(--text-primary)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color =
-                            "var(--text-secondary)";
-                        }}
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
-                  )}
-                </div>
-                {/* clear all */}
-                <div
-                  style={{
-                    position: "relative",
-                  }}
-                >
-                  <button
-                    style={{
-                      padding: "10px 16px",
-
-                      borderRadius: "999px",
-
-                      border: "1px solid rgba(255, 77, 77, 0.25)",
-
-                      background: "rgba(255, 77, 77, 0.12)",
-
-                      color: "var(--danger)",
-
-                      fontSize: "0.82rem",
-
-                      fontWeight: "300",
-
-                      cursor: "pointer",
-
-                      transition:
-                        "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255, 77, 77, 0.20)";
-
-                      e.currentTarget.style.transform =
-                        "translateY(-1px)";
-                    }}
-
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255, 77, 77, 0.12)";
-
-                      e.currentTarget.style.transform =
-                        "translateY(0)";
-                    }}
-                  >
-                    <Trash
-                      size={15}
-                      opacity={0.6}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
+              </div> {/* END TOP RIGHT */}
+            </div> {/* END WITHIN HEADER */}
 
             <p
               style={{
@@ -1237,8 +1677,6 @@ function Reminders() {
             </p>
           </div>
 
-          {/* AVATAR */}
-
           {/* DIVIDER */}
           <div
             style={{
@@ -1248,197 +1686,249 @@ function Reminders() {
             }}
           />
 
-          {/* ALL REMINDERS */}
-          <div
-            style={{
-              background: "var(--glass-bg)",
-
-              border:
-                "1px solid var(--glass-border)",
-
-              borderRadius:
-                "var(--radius-large)",
-
-              backdropFilter:
-                "blur(20px)",
-
-              WebkitBackdropFilter:
-                "blur(20px)",
-
-              height: "700px",
-
-              display: "flex",
-
-              flexDirection: "column",
-
-              overflow: "hidden",
-            }}
-          >
-            {/* HEADER */}
+          {/* ALARMS TAB */}
+          {activeTab === "alarms" && (
             <div
               style={{
-                padding: "20px 24px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
 
-                borderBottom:
-                  "1px solid rgba(255,255,255,0.06)",
+                minHeight: "300px",
+
+                borderRadius: "32px",
+
+                backdropFilter:
+                  "blur(20px)",
+              }}
+            >
+              <div
+                style={{
+                  textAlign: "center",
+                  opacity: 0.85,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <div
+                  style={{
+                    marginBottom: "8px",
+
+                  }}
+                >
+                  <AlarmClock
+                    size={60}
+                    strokeWidth={1.8}
+                    opacity={0.85}
+                  />
+                </div>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontWeight: "300",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  No Alarms
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ALL REMINDERS TAB */}
+          {activeTab === "all" && (
+            <div
+              style={{
+                background: "var(--glass-bg)",
+
+                border:
+                  "1px solid var(--glass-border)",
+
+                borderRadius:
+                  "var(--radius-large)",
+
+                backdropFilter:
+                  "blur(20px)",
+
+                WebkitBackdropFilter:
+                  "blur(20px)",
+
+                height: "700px",
 
                 display: "flex",
 
-                justifyContent:
-                  "space-between",
+                flexDirection: "column",
 
-                alignItems: "center",
-
-                flexShrink: 0,
+                overflow: "hidden",
               }}
             >
-              <div>
-                <div
-                  style={{
-                    fontSize: "1rem",
-                    fontWeight: "400",
-                  }}
-                >
-                  All Reminders
-                </div>
-
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-
-                    opacity: 0.45,
-
-                    marginTop: "4px",
-                  }}
-                >
-                  {reminders.length} reminders
-                </div>
-              </div>
-
-              <button
-                onClick={() =>
-                  setShowReminderModal(
-                    true
-                  )
-                }
+              {/* HEADER */}
+              <div
                 style={{
-                  width: "32px",
-                  height: "32px",
+                  padding: "20px 24px",
 
-                  borderRadius:
-                    "999px",
+                  borderBottom:
+                    "1px solid rgba(255,255,255,0.06)",
 
-                  border:
-                    "1px solid rgba(255,255,255,0.08)",
+                  display: "flex",
 
-                  background:
-                    "rgba(255,255,255,0.04)",
+                  justifyContent:
+                    "space-between",
 
-                  color:
-                    "var(--text-primary)",
+                  alignItems: "center",
 
-                  cursor: "pointer",
-
-                  fontSize: "1rem",
+                  flexShrink: 0,
                 }}
               >
-                +
-              </button>
-            </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "1rem",
+                      fontWeight: "400",
+                    }}
+                  >
+                    All Reminders
+                  </div>
 
-            {/* GRID */}
-            <div
-              style={{
-                flex: 1,
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
 
-                overflowY: "auto",
+                      opacity: 0.45,
 
-                padding: "24px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {reminders.length} reminders
+                  </div>
+                </div>
 
-                display: "grid",
-
-                gridTemplateColumns:
-                  "repeat(4, 1fr)",
-
-                gap: "18px",
-
-                alignContent: "start",
-              }}
-            >
-
-              {allReminders.length === 0 ? (
-                <div
+                <button
+                  onClick={() =>
+                    setShowReminderModal(
+                      true
+                    )
+                  }
                   style={{
-                    gridColumn: "1 / -1",
+                    width: "32px",
+                    height: "32px",
 
-                    display: "flex",
-                    flexDirection: "column",
+                    borderRadius:
+                      "999px",
 
-                    justifyContent: "center",
-                    alignItems: "center",
+                    border:
+                      "1px solid rgba(255,255,255,0.08)",
 
-                    minHeight: "500px",
+                    background:
+                      "rgba(255,255,255,0.04)",
 
-                    textAlign: "center",
+                    color:
+                      "var(--text-primary)",
 
-                    color: "var(--text-secondary)",
+                    cursor: "pointer",
 
-                    opacity: 0.45,
+                    fontSize: "1rem",
                   }}
                 >
-                  <p
+                  +
+                </button>
+              </div>
+
+              {/* GRID */}
+              <div
+                style={{
+                  flex: 1,
+
+                  overflowY: "auto",
+
+                  padding: "24px",
+
+                  display: "grid",
+
+                  gridTemplateColumns:
+                    "repeat(4, 1fr)",
+
+                  gap: "18px",
+
+                  alignContent: "start",
+                }}
+              >
+
+                {allReminders.length === 0 ? (
+                  <div
                     style={{
-                      margin: 0,
-                      fontSize: "0.9rem",
+                      gridColumn: "1 / -1",
+
+                      display: "flex",
+                      flexDirection: "column",
+
+                      justifyContent: "center",
+                      alignItems: "center",
+
+                      minHeight: "500px",
+
+                      textAlign: "center",
+
+                      color: "var(--text-secondary)",
+
+                      opacity: 0.45,
                     }}
                   >
-                    No reminders
-                  </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      No reminders
+                    </p>
 
-                  <p
-                    style={{
-                      marginTop: "6px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Click + to create one
-                    {/* or try searching a different term */}
-                  </p>
-                </div>
-              ) : (
-                allReminders.map((reminder) => (
-                  <ReminderCard
-                    key={reminder._id}
-                    reminder={reminder}
-                    onClick={setSelectedReminder}
+                    <p
+                      style={{
+                        marginTop: "6px",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      Click + to create one
+                      {/* or try searching a different term */}
+                    </p>
+                  </div>
+                ) : (
+                  allReminders.map((reminder) => (
+                    <ReminderCard
+                      key={reminder._id}
+                      reminder={reminder}
+                      onClick={setSelectedReminder}
 
-                    openReminderMenu={openReminderMenu}
-                    setOpenReminderMenu={setOpenReminderMenu}
+                      openReminderMenu={openReminderMenu}
+                      setOpenReminderMenu={setOpenReminderMenu}
 
-                    onView={setSelectedReminder}
-                    onEdit={setEditingReminder}
+                      onView={setSelectedReminder}
+                      onEdit={setEditingReminder}
 
-                    onDelete={handleDeleteReminder}
+                      onDelete={handleDeleteReminder}
 
-                    onComplete={handleCompleteReminder}
-                    onRestore={handleRestoreReminder}
+                      onComplete={handleCompleteReminder}
+                      onRestore={handleRestoreReminder}
 
-                    onToggleFlag={
-                      handleToggleFlag
-                    }
+                      onToggleFlag={
+                        handleToggleFlag
+                      }
 
-                    onToggleLike={
-                      handleToggleLike
-                    }
+                      onToggleLike={
+                        handleToggleLike
+                      }
 
-                    onAddComment={
-                      handleAddComment
-                    }
-                  />
-                ))
-              )}
+                      onAddComment={
+                        handleAddComment
+                      }
+                    />
+                  ))
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
       </div>
       {showReminderModal && (

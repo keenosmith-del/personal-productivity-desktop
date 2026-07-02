@@ -1,4 +1,4 @@
-import { X, Target, } from "lucide-react";
+import { X, Sprout, } from "lucide-react";
 import { useState } from "react";
 
 function GoalDetailsModal({
@@ -252,7 +252,7 @@ function GoalDetailsModal({
                                     "0 12px 30px rgba(0,0,0,0.18)",
                             }}
                         >
-                            <Target
+                            <Sprout
                                 size={28}
                                 strokeWidth={1.8}
                             />
