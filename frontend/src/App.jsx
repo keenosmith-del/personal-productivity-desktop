@@ -36,7 +36,7 @@ function App() {
         />
 
         <Route
-          path="/analytics"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />

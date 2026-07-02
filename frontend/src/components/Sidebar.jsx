@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "../services/authService";
 
 import {
-  BarChart3,
+  Grip,
   CheckSquare,
   Target,
   Calendar,
@@ -58,8 +58,8 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       label: "Dashboard",
-      path: "/analytics",
-      icon: BarChart3,
+      path: "/dashboard",
+      icon: Grip,
     },
     {
       label: "Tasks",

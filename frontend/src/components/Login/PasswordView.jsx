@@ -52,7 +52,7 @@ function PasswordView({
         loginData.token
       );
 
-      navigate("/analytics");
+      navigate("/dashboard");
     } catch (error) {
       setError(
         "Incorrect password"

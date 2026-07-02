@@ -3,6 +3,13 @@ import MainLayout from "../layouts/MainLayout";
 import { ArrowUpDown, Filter, Trash, Search } from "lucide-react";
 
 import {
+  LayoutGrid,
+  Sparkles,
+  Shapes,
+  ChartLine,
+} from "lucide-react";
+
+import {
   useState,
   useEffect,
   useRef,
@@ -17,6 +24,8 @@ import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
 import GoalModal from "../components/Goals/GoalModal";
 
 import Toast from "../components/Toast";
+
+import FloatingTabs from "../components/FloatingTabs";
 
 import {
   getGoals,
@@ -297,6 +306,25 @@ function Goals() {
       console.error(error);
     }
   };
+
+  const goalTabs = [
+    {
+      key: "overview",
+      icon: LayoutGrid,
+    },
+    {
+      key: "focus",
+      icon: Sparkles,
+    },
+    {
+      key: "categories",
+      icon: Shapes,
+    },
+    {
+      key: "insights",
+      icon: ChartLine,
+    },
+  ];
 
   const [activeTab, setActiveTab] =
     useState("overview");
@@ -1244,180 +1272,11 @@ function Goals() {
           </div>
 
           {/* TABS SECTION */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "36px",
-
-              position: "relative",
-            }}
-          >
-            <button
-              onClick={() =>
-                setActiveTab(
-                  "overview"
-                )
-              }
-              style={{
-                background: "none",
-
-                border: "none",
-
-                color:
-                  activeTab === "overview"
-                    ? "var(--text-primary)"
-                    : "var(--text-secondary)",
-
-                fontSize: "0.9rem",
-
-                fontWeight: "300",
-
-                cursor: "pointer",
-
-                paddingBottom: "12px",
-
-                borderBottom:
-                  activeTab === "overview"
-                    ? "1px none rgba(255,255,255,0.25)"
-                    : "1px none transparent",
-
-                transition:
-                  "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (
-                  activeTab !==
-                  "overview"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-                }
-              }}
-
-              onMouseLeave={(e) => {
-                if (
-                  activeTab !==
-                  "overview"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-                }
-              }}
-            >
-              Overview
-            </button>
-
-            <button
-              onClick={() =>
-                setActiveTab(
-                  "focus"
-                )
-              }
-              style={{
-                background: "none",
-
-                border: "none",
-
-                color:
-                  activeTab === "focus"
-                    ? "var(--text-primary)"
-                    : "var(--text-secondary)",
-
-                fontSize: "0.9rem",
-
-                fontWeight: "300",
-
-                cursor: "pointer",
-
-                paddingBottom: "12px",
-
-                borderBottom:
-                  activeTab === "focus"
-                    ? "1px none rgba(255,255,255,0.25)"
-                    : "1px none transparent",
-
-                transition:
-                  "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (
-                  activeTab !==
-                  "focus"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-                }
-              }}
-
-              onMouseLeave={(e) => {
-                if (
-                  activeTab !==
-                  "focus"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-                }
-              }}
-            >
-              Focus
-            </button>
-
-            <button
-              onClick={() =>
-                setActiveTab(
-                  "categories"
-                )
-              }
-              style={{
-                background: "none",
-
-                border: "none",
-
-                color:
-                  activeTab === "categories"
-                    ? "var(--text-primary)"
-                    : "var(--text-secondary)",
-
-                fontSize: "0.9rem",
-
-                fontWeight: "300",
-
-                cursor: "pointer",
-
-                paddingBottom: "12px",
-
-                borderBottom:
-                  activeTab === "categories"
-                    ? "1px none rgba(255,255,255,0.25)"
-                    : "1px none transparent",
-
-                transition:
-                  "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                if (
-                  activeTab !==
-                  "categories"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-                }
-              }}
-
-              onMouseLeave={(e) => {
-                if (
-                  activeTab !==
-                  "categories"
-                ) {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-                }
-              }}
-            >
-              Categories
-            </button>
-          </div>
+          <FloatingTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            tabs={goalTabs}
+          />
 
           {/* DIVIDER */}
           <div
@@ -3460,6 +3319,53 @@ function Goals() {
                   )}
 
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* INSIGHTS TAB */}
+          {activeTab === "insights" && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+
+                minHeight: "300px",
+
+                borderRadius: "32px",
+
+                backdropFilter:
+                  "blur(20px)",
+              }}
+            >
+              <div
+                style={{
+                  textAlign: "center",
+                  opacity: 0.85,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <h3
+                  style={{
+                    marginBottom: "8px",
+                    fontWeight: "300",
+                    fontSize: "1rem",
+
+                  }}
+                >
+                  Insights
+                </h3>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontWeight: "300",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  Analytics and trends coming soon.
+                </p>
               </div>
             </div>
           )}
