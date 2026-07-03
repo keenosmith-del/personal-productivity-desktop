@@ -1265,7 +1265,7 @@ function Notes() {
                         </div>
                       </div>
 
-                      {/* OVERVIEW / FOCUS / CATEGORIES / INSIGHTS */}
+                      {/* ALL / FOLDERS */}
                       {/* TABS */}
                       <div
                         style={{

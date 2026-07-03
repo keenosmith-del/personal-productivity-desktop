@@ -799,29 +799,7 @@ function CalendarModal({
                                     >
                                         {/* ICON */}
 
-                                        <div
-                                            style={{
-                                                width: "54px",
-                                                height: "54px",
-
-                                                borderRadius: "50%",
-
-                                                background:
-                                                    "rgba(255,255,255,0.08)",
-
-                                                border:
-                                                    "1px solid rgba(255,255,255,0.10)",
-
-                                                display: "flex",
-
-                                                alignItems: "center",
-
-                                                justifyContent: "center",
-
-                                                backdropFilter:
-                                                    "blur(20px)",
-                                            }}
-                                        >
+                                        <div>
                                             <Icon size={22} />
                                         </div>
 

@@ -115,6 +115,32 @@ function ProjectCard({
     const remainingLinks =
         (project.linkedItems?.length || 0) - 4;
 
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate =
+        project.dueDate
+            ? new Date(project.dueDate)
+            : null;
+
+    if (dueDate) {
+        dueDate.setHours(0, 0, 0, 0);
+    }
+
+    const isOverdue =
+        dueDate &&
+        dueDate < today;
+
+    const displayStatus =
+        project.completed
+            ? "Complete"
+            : project.status === "Paused"
+                ? "Paused"
+                : isOverdue
+                    ? "Overdue"
+                    : project.status;
+
     return (
         <div
             onClick={() =>
@@ -364,7 +390,7 @@ function ProjectCard({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        
+
                                         onComplete(project);
                                         setOpenProjectMenu(null);
                                     }}
@@ -485,25 +511,29 @@ function ProjectCard({
                             "0.68rem",
 
                         background:
-                            project.status === "Active"
+                            displayStatus === "Active"
                                 ? "#4d689333"
-                                : project.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "#45575b33"
-                                    : project.status === "In Progress"
-                                        ? "#a45d4433"
-                                        : "rgba(114,138,110,0.12)",
+                                    : displayStatus === "Overdue"
+                                        ? "#8b5a5a33"
+                                        : displayStatus === "In Progress"
+                                            ? "#5d766233"
+                                            : "rgba(114,138,110,0.12)",
 
                         border:
-                            project.status === "Active"
+                            displayStatus === "Active"
                                 ? "1px solid #4d689366"
-                                : project.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "1px solid #45575b66"
-                                    : project.status === "In Progress"
-                                        ? "1px solid #a45d4466"
-                                        : "1px solid rgba(114,138,110,0.25)",
+                                    : displayStatus === "Overdue"
+                                        ? "1px solid #8b5a5a66"
+                                        : displayStatus === "In Progress"
+                                            ? "1px solid #5d766266"
+                                            : "1px solid rgba(114,138,110,0.25)",
                     }}
                 >
-                    {project.status}
+                    {displayStatus}
                 </span>
             </div>
 
@@ -651,9 +681,9 @@ function ProjectCard({
                         "14px",
                 }}
             >
-                {project.createdAt
-                    ? new Date(
-                        project.createdAt
+                {project.dueDate
+                    ? `Due ${new Date(
+                        project.dueDate
                     ).toLocaleDateString(
                         "en-US",
                         {
@@ -661,8 +691,8 @@ function ProjectCard({
                             day: "numeric",
                             year: "numeric",
                         }
-                    )
-                    : "Today"}
+                    )}`
+                    : "No due date"}
             </div>
 
             {/* ICONS ROW 7 */}

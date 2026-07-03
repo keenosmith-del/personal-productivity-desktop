@@ -115,6 +115,32 @@ function ReminderCard({
     const remainingLinks =
         (reminder.linkedItems?.length || 0) - 2;
 
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate =
+        reminder.dueDate
+            ? new Date(reminder.dueDate)
+            : null;
+
+    if (dueDate) {
+        dueDate.setHours(0, 0, 0, 0);
+    }
+
+    const isOverdue =
+        dueDate &&
+        dueDate < today;
+
+    const displayStatus =
+        reminder.completed
+            ? "Complete"
+            : reminder.status === "Paused"
+                ? "Paused"
+                : isOverdue
+                    ? "Overdue"
+                    : reminder.status;
+
     return (
         <div
             onClick={() =>
@@ -338,7 +364,7 @@ function ReminderCard({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        
+
                                         onRestore(reminder);
                                         setOpenReminderMenu(null);
                                     }}
@@ -485,25 +511,29 @@ function ReminderCard({
                             "0.68rem",
 
                         background:
-                            reminder.status === "Active"
+                            displayStatus === "Active"
                                 ? "#4d689333"
-                                : reminder.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "#45575b33"
-                                    : reminder.status === "In Progress"
-                                        ? "#a45d4433"
-                                        : "rgba(114,138,110,0.12)",
+                                    : displayStatus === "Overdue"
+                                        ? "#8b5a5a33"
+                                        : displayStatus === "In Progress"
+                                            ? "#5d766233"
+                                            : "rgba(114,138,110,0.12)",
 
                         border:
-                            reminder.status === "Active"
+                            displayStatus === "Active"
                                 ? "1px solid #4d689366"
-                                : reminder.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "1px solid #45575b66"
-                                    : reminder.status === "In Progress"
-                                        ? "1px solid #a45d4466"
-                                        : "1px solid rgba(114,138,110,0.25)",
+                                    : displayStatus === "Overdue"
+                                        ? "1px solid #8b5a5a66"
+                                        : displayStatus === "In Progress"
+                                            ? "1px solid #5d766266"
+                                            : "1px solid rgba(114,138,110,0.25)",
                     }}
                 >
-                    {reminder.status}
+                    {displayStatus}
                 </span>
             </div>
 
@@ -652,9 +682,9 @@ function ReminderCard({
                         "14px",
                 }}
             >
-                {reminder.createdAt
-                    ? new Date(
-                        reminder.createdAt
+                {reminder.dueDate
+                    ? `Due ${new Date(
+                        reminder.dueDate
                     ).toLocaleDateString(
                         "en-US",
                         {
@@ -662,8 +692,8 @@ function ReminderCard({
                             day: "numeric",
                             year: "numeric",
                         }
-                    )
-                    : "Today"}
+                    )}`
+                    : "No due date"}
             </div>
 
             {/* ICONS ROW 7 */}

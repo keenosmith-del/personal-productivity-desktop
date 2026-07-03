@@ -115,6 +115,32 @@ function TaskCard({
     const remainingLinks =
         (task.linkedItems?.length || 0) - 2;
 
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate =
+        task.dueDate
+            ? new Date(task.dueDate)
+            : null;
+
+    if (dueDate) {
+        dueDate.setHours(0, 0, 0, 0);
+    }
+
+    const isOverdue =
+        dueDate &&
+        dueDate < today;
+
+    const displayStatus =
+        task.completed
+            ? "Complete"
+            : task.status === "Paused"
+                ? "Paused"
+                : isOverdue
+                    ? "Overdue"
+                    : task.status;
+
     return (
         <div
             onClick={() =>
@@ -485,25 +511,29 @@ function TaskCard({
                             "0.68rem",
 
                         background:
-                            task.status === "Active"
+                            displayStatus === "Active"
                                 ? "#4d689333"
-                                : task.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "#45575b33"
-                                    : task.status === "In Progress"
-                                        ? "#a45d4433"
-                                        : "rgba(114,138,110,0.12)",
+                                    : displayStatus === "Overdue"
+                                        ? "#8b5a5a33"
+                                        : displayStatus === "In Progress"
+                                            ? "#5d766233"
+                                            : "rgba(114,138,110,0.12)",
 
                         border:
-                            task.status === "Active"
+                            displayStatus === "Active"
                                 ? "1px solid #4d689366"
-                                : task.status === "Paused"
+                                : displayStatus === "Paused"
                                     ? "1px solid #45575b66"
-                                    : task.status === "In Progress"
-                                        ? "1px solid #a45d4466"
-                                        : "1px solid rgba(114,138,110,0.25)",
+                                    : displayStatus === "Overdue"
+                                        ? "1px solid #8b5a5a66"
+                                        : displayStatus === "In Progress"
+                                            ? "1px solid #5d766266"
+                                            : "1px solid rgba(114,138,110,0.25)",
                     }}
                 >
-                    {task.status}
+                    {displayStatus}
                 </span>
             </div>
 
@@ -678,9 +708,9 @@ function TaskCard({
                         "14px",
                 }}
             >
-                {task.createdAt
-                    ? new Date(
-                        task.createdAt
+                {task.dueDate
+                    ? `Due ${new Date(
+                        task.dueDate
                     ).toLocaleDateString(
                         "en-US",
                         {
@@ -688,8 +718,8 @@ function TaskCard({
                             day: "numeric",
                             year: "numeric",
                         }
-                    )
-                    : "Today"}
+                    )}`
+                    : "No due date"}
             </div>
 
             {/* ICONS ROW 7 */}
