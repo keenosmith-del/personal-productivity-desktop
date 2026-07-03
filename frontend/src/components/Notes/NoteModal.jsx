@@ -1,3 +1,6 @@
+// create note ONLY (no edit)
+// test
+
 import {
     useState,
     useRef,
@@ -5,19 +8,20 @@ import {
 } from "react";
 
 import {
+    NotebookPen,
+    Pause,
+    Shield,
+    LoaderCircle,
+    Archive,
     X,
     Calendar,
-    NotebookPen,
 } from "lucide-react";
-
-import MiniCalendarModal from "../MiniCalendarModal";
 
 function NoteModal({
     onClose,
     mode = "create",
     note = null,
     onSave,
-    onCompleteNote,
 }) {
     const noteInputRef = useRef(null);
 
@@ -71,6 +75,10 @@ function NoteModal({
         setContentFocused] =
         useState(false);
 
+    const [titleError, setTitleError] =
+        useState(false);
+
+
     const [selectedDate, setSelectedDate] =
         useState(
             note?.dueDate || new Date().toISOString()
@@ -78,7 +86,9 @@ function NoteModal({
 
     const [linkedItems, setLinkedItems] =
         useState(
-            note?.linkedItems || []
+            note?.linkedItems?.length
+                ? note.linkedItems
+                : ["NL"]
         );
 
     useEffect(() => {
@@ -147,19 +157,6 @@ function NoteModal({
             )
             : null;
 
-    const formattedCompletedDate =
-        note?.completedDate
-            ? new Date(note.completedDate)
-                .toLocaleDateString(
-                    "en-US",
-                    {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                    }
-                )
-            : null;
-
     const handleModalOverlayClick = () => {
         if (showCalendarModal) {
             return;
@@ -178,8 +175,17 @@ function NoteModal({
     ];
 
     const handleSave = () => {
-        if (!noteName.trim())
+        if (!noteName.trim()) {
+            setTitleError(true);
+
+            noteInputRef.current?.focus();
+
+            setTimeout(() => {
+                setTitleError(false);
+            }, 400);
+
             return;
+        }
 
         onSave({
             id:
@@ -199,17 +205,6 @@ function NoteModal({
             dueDate: selectedDate,
 
             linkedItems,
-
-            completed:
-                note?.completed ||
-                false,
-
-            pendingCompletion:
-                false,
-
-            completedDate:
-                note?.completedDate ||
-                null,
         });
 
         onClose();
@@ -235,6 +230,42 @@ function NoteModal({
 
         outline: "none",
     };
+
+    const statusConfig = {
+        Active: {
+            icon: Shield,
+            label: "Active",
+
+            background: "#4d689333",
+            border: "#4d689366",
+            color: "#8faec0",
+        },
+
+        "In Progress": {
+            icon: LoaderCircle,
+            label: "In Progress",
+
+            background: "#5d766233",
+            border: "#5d766266",
+            color: "#a8bf9f",
+        },
+
+        // paused takes priority over overdue
+        Archived: {
+            icon: Archive,
+            label: "Archived",
+
+            background: "#45575b33",
+            border: "#45575b66",
+            color: "#9ca9ad",
+        },
+    };
+
+    const currentStatus =
+        statusConfig[status];
+
+    const StatusIcon =
+        currentStatus.icon;
 
     return (
         <div
@@ -359,7 +390,21 @@ function NoteModal({
                     </button>
                 </div>
 
+                {/* icon */}
 
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginBottom: "20px",
+                        opacity: 0.55,
+                    }}
+                >
+                    <NotebookPen
+                        size={28}
+                        strokeWidth={1.8}
+                    />
+                </div>
 
                 <div
                     style={{
@@ -388,26 +433,6 @@ function NoteModal({
                                 Created on {formattedCreatedDate}
                             </p>
                         )}
-
-                    {formattedCompletedDate && (
-                        <p
-                            style={{
-                                marginTop: 0,
-
-                                marginBottom: "20px",
-
-                                textAlign: "center",
-
-                                fontSize: "0.72rem",
-
-                                fontWeight: "300",
-
-                                opacity: 0.4,
-                            }}
-                        >
-                            Completed on{formattedCompletedDate}
-                        </p>
-                    )}
 
                     {/* CHIPS */}
                     <div
@@ -717,6 +742,7 @@ function NoteModal({
                         {/* end priority button and dropdown */}
 
                         {/* start status button and dropdown wrapper */}
+                        {/* Notes don't have due date should just be active, in progress, and archived */}
                         <div
                             ref={statusRef}
                             style={{
@@ -743,23 +769,15 @@ function NoteModal({
                                     cursor: "pointer",
 
                                     background:
-                                        status === "Active"
-                                            ? "#4d689333"
-                                            : status === "Paused"
-                                                ? "#45575b33"
-                                                : "#728a6e33",
+                                        currentStatus.background,
 
-                                    border:
-                                        status === "Active"
-                                            ? "1px solid #4d689366"
-                                            : status === "Paused"
-                                                ? "1px solid #45575b66"
-                                                : "1px solid #728a6e66",
+                                    border: `1px solid ${currentStatus.border}`,
 
-                                    color: "var(--text-primary)",
+                                    color:
+                                        currentStatus.color,
                                 }}
                             >
-                                {status}
+                                {currentStatus.label}
                             </button>
 
                             {activeSelector === "status" && (
@@ -800,7 +818,7 @@ function NoteModal({
                                     {[
                                         "Active",
                                         "In Progress",
-                                        "Paused",
+                                        "Archived",
                                     ].map((option) => (
                                         <button
                                             key={option}
@@ -964,79 +982,51 @@ function NoteModal({
                         )}
                     </div>
 
-                    {/* MARK COMPLETE PILL */}
-                    {/* COMPLETION */}
-
+                    {/* STATUS */}
                     {mode === "edit" && (
                         <div
                             style={{
                                 display: "flex",
                                 justifyContent: "center",
+
                                 marginBottom: "24px",
                             }}
                         >
-                            {!note?.completed ? (
-                                <button
-                                    onClick={() =>
-                                        onCompleteNote?.(note)
-                                    }
-                                    style={{
-                                        padding: "10px 18px",
+                            <button
+                                style={{
+                                    padding: "10px 18px",
 
-                                        borderRadius: "999px",
+                                    borderRadius: "999px",
 
-                                        background:
-                                            "rgba(114,138,110,0.12)",
+                                    background:
+                                        currentStatus.background,
 
-                                        border:
-                                            "1px solid rgba(114,138,110,0.25)",
+                                    border:
+                                        `1px solid ${currentStatus.border}`,
 
-                                        color: "#9bc091",
+                                    color:
+                                        currentStatus.color,
 
-                                        fontSize: "0.8rem",
+                                    fontSize: "0.8rem",
 
-                                        fontWeight: "300",
+                                    fontWeight: "300",
 
-                                        cursor: "pointer",
+                                    cursor: "default",
 
-                                        transition:
-                                            "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                    }}
-                                >
-                                    Mark Complete
-                                </button>
-                            ) : (
-                                <button
-                                    style={{
-                                        padding: "10px 18px",
+                                    display: "flex",
 
-                                        borderRadius: "999px",
+                                    alignItems: "center",
 
-                                        background: "rgba(114,138,110,0.12)",
+                                    gap: "8px",
+                                }}
+                            >
+                                <StatusIcon
+                                    size={14}
+                                    strokeWidth={1.8}
+                                />
 
-                                        border:
-                                            "1px solid rgba(114,138,110,0.25)",
-
-                                        color: "#9bc091",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                >
-                                    ✓ Completed
-                                </button>
-                            )}
+                                {currentStatus.label}
+                            </button>
                         </div>
                     )}
 
@@ -1277,19 +1267,6 @@ function NoteModal({
                     </button>
                 </div>
             </div>
-            {
-                showCalendarModal && (
-                    <MiniCalendarModal
-                        selectedDate={selectedDate}
-                        onSelectDate={(date) =>
-                            setSelectedDate(date)
-                        }
-                        onClose={() =>
-                            setShowCalendarModal(false)
-                        }
-                    />
-                )
-            }
         </div >
     );
 }

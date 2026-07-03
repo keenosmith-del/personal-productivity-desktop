@@ -86,8 +86,11 @@ function MiniCalendarModal({
         days.push(i);
     }
 
-    const today =
-        new Date().toDateString();
+    const todayDate = new Date();
+
+    todayDate.setHours(0, 0, 0, 0);
+
+    const today = todayDate.toDateString();
 
     const selected =
         selectedDate
@@ -369,16 +372,19 @@ function MiniCalendarModal({
                                 date.toDateString() ===
                                 selected;
 
+                            const isPast =
+                                date < todayDate;
+
                             return (
                                 <button
                                     key={
                                         day
                                     }
-                                    onClick={() =>
-                                        handleDateSelect(
-                                            day
-                                        )
-                                    }
+                                    onClick={() => {
+                                        if (isPast) return;
+
+                                        handleDateSelect(day);
+                                    }}
                                     style={{
                                         width:
                                             "36px",
@@ -402,8 +408,9 @@ function MiniCalendarModal({
                                                 ? "rgba(255,255,255,0.12)"
                                                 : "transparent",
 
-                                        color:
-                                            isToday
+                                        color: isPast
+                                            ? "rgba(255,255,255,0.18)"
+                                            : isToday
                                                 ? "#ff6b6b"
                                                 : "var(--text-primary)",
 
@@ -414,7 +421,14 @@ function MiniCalendarModal({
                                             "300",
 
                                         cursor:
-                                            "pointer",
+                                            isPast
+                                                ? "default"
+                                                : "pointer",
+
+                                        opacity:
+                                            isPast
+                                                ? 0.4
+                                                : 1,
 
                                         transition:
                                             "all 0.2s ease",
@@ -423,7 +437,8 @@ function MiniCalendarModal({
                                         e
                                     ) => {
                                         if (
-                                            !isSelected
+                                            !isSelected &&
+                                            !isPast
                                         ) {
                                             e.currentTarget.style.background =
                                                 "rgba(255,255,255,0.05)";
@@ -433,7 +448,8 @@ function MiniCalendarModal({
                                         e
                                     ) => {
                                         if (
-                                            !isSelected
+                                            !isSelected &&
+                                            !isPast
                                         ) {
                                             e.currentTarget.style.background =
                                                 "transparent";

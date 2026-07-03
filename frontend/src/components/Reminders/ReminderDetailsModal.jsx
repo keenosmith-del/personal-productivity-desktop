@@ -1,5 +1,16 @@
-import { X, Bell, } from "lucide-react";
+// view modal
+
 import { useState } from "react";
+
+import {
+    Bell,
+    Pause,
+    Shield,
+    LoaderCircle,
+    CircleAlert,
+    X,
+    Check,
+} from "lucide-react";
 
 function ReminderDetailsModal({
     reminder,
@@ -89,6 +100,83 @@ function ReminderDetailsModal({
     const [showDeleteConfirm,
         setShowDeleteConfirm] =
         useState(false);
+
+    // THESE ARE THE CORRECT COLORS AND ICONS 
+    const statusConfig = {
+        Active: {
+            icon: Shield,
+            label: "Active",
+
+            background: "#4d689333",
+            border: "#4d689366",
+            color: "#8faec0",
+        },
+
+        "In Progress": {
+            icon: LoaderCircle,
+            label: "In Progress",
+
+            background: "#5d766233",
+            border: "#5d766266",
+            color: "#a8bf9f",
+        },
+
+        // paused takes priority over overdue
+        Paused: {
+            icon: Pause,
+            label: "Paused",
+
+            background: "#45575b33",
+            border: "#45575b66",
+            color: "#9ca9ad",
+        },
+
+        // overdue is system generated 
+        Overdue: {
+            icon: CircleAlert,
+            label: "Overdue",
+
+            background: "#8b5a5a33",
+            border: "#8b5a5a66",
+            color: "#c79a9a",
+        },
+
+        // complete or completed? needs to be consistent
+        Complete: {
+            icon: Check,
+            label: "Complete",
+
+            background: "#728a6e33",
+            border: "#728a6e66",
+            color: "#9bc091",
+        },
+    };
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate = new Date(reminder.dueDate);
+
+    dueDate.setHours(0, 0, 0, 0);
+
+    const isOverdue =
+        dueDate < today;
+
+    const displayStatus =
+        reminder.completed
+            ? "Complete"
+            : reminder.status === "Paused"
+                ? "Paused"
+                : isOverdue
+                    ? "Overdue"
+                    : reminder.status;
+
+    const currentStatus =
+        statusConfig[displayStatus];
+
+    const StatusIcon =
+        currentStatus.icon;
 
     return (
         <div
@@ -216,47 +304,20 @@ function ReminderDetailsModal({
                         flexDirection: "column",
                     }}
                 >
-                    {/* Avatar */}
+                    {/* icon */}
+
                     <div
                         style={{
                             display: "flex",
                             justifyContent: "center",
-
-                            marginBottom: "18px",
+                            marginBottom: "20px",
+                            opacity: 0.55,
                         }}
                     >
-                        <div
-                            style={{
-                                width: "72px",
-                                height: "72px",
-
-                                borderRadius: "50%",
-
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-
-                                background:
-                                    "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.12)",
-
-                                backdropFilter:
-                                    "blur(24px)",
-
-                                WebkitBackdropFilter:
-                                    "blur(24px)",
-
-                                boxShadow:
-                                    "0 12px 30px rgba(0,0,0,0.18)",
-                            }}
-                        >
-                            <Bell
-                                size={28}
-                                strokeWidth={1.8}
-                            />
-                        </div>
+                        <Bell
+                            size={28}
+                            strokeWidth={1.8}
+                        />
                     </div>
 
                     {formattedCreatedDate && (
@@ -395,38 +456,71 @@ function ReminderDetailsModal({
                             {reminder.priority}
                         </span>
 
-                        {!reminder.completed && (
-                            <span
+                        {!reminder.completed ? (
+                            <button
+                                onClick={() =>
+                                    onCompleteReminder(reminder)
+                                }
                                 style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
+                                    padding: "10px 18px",
 
                                     borderRadius: "999px",
 
-                                    fontSize: "0.7rem",
-
                                     background:
-                                        reminder.status === "Active"
-                                            ? "#4d689333"
-                                            : reminder.status === "Paused"
-                                                ? "#45575b33"
-                                                : "#728a6e33",
+                                        "rgba(114,138,110,0.12)",
 
                                     border:
-                                        reminder.status === "Active"
-                                            ? "1px solid #4d689366"
-                                            : reminder.status === "Paused"
-                                                ? "1px solid #45575b66"
-                                                : "1px solid #728a6e66",
+                                        "1px solid rgba(114,138,110,0.25)",
+
+                                    color: "#9bc091",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition:
+                                        "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                {reminder.status}
-                            </span>
+                                Mark Complete
+                            </button>
+                        ) : (
+                            <button
+                                style={{
+                                    padding: "10px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background: "rgba(114,138,110,0.12)",
+
+                                    border:
+                                        "1px solid rgba(114,138,110,0.25)",
+
+                                    color: "#9bc091",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                            >
+                                ✓ Completed
+                            </button>
                         )}
                     </div>
 
-
+                    {/* ASSOCIATIONS */}
                     {reminder.linkedItems?.length > 0 && (
                         <>
                             <div
@@ -513,7 +607,7 @@ function ReminderDetailsModal({
                         </>
                     )}
 
-                    {/* Completion */}
+                    {/* STATUS */}
 
                     <div
                         style={{
@@ -523,68 +617,52 @@ function ReminderDetailsModal({
                             marginBottom: "24px",
                         }}
                     >
-                        {!reminder.completed ? (
-                            <button
-                                onClick={() =>
-                                    onCompleteReminder(reminder)
-                                }
-                                style={{
-                                    padding: "10px 18px",
+                        <button
+                            style={{
+                                padding: "10px 18px",
 
-                                    borderRadius: "999px",
+                                borderRadius: "999px",
 
-                                    background:
-                                        "rgba(114,138,110,0.12)",
+                                background:
+                                    currentStatus.background,
 
-                                    border:
-                                        "1px solid rgba(114,138,110,0.25)",
+                                border:
+                                    `1px solid ${currentStatus.border}`,
 
-                                    color: "#9bc091",
+                                color:
+                                    currentStatus.color,
 
-                                    fontSize: "0.8rem",
+                                fontSize: "0.8rem",
 
-                                    fontWeight: "300",
+                                fontWeight: "300",
 
-                                    cursor: "pointer",
+                                cursor: "pointer",
 
-                                    transition:
-                                        "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-                                }}
-                            >
-                                Mark Complete
-                            </button>
-                        ) : (
-                            <button
-                                style={{
-                                    padding: "10px 18px",
+                                transition:
+                                    "all 0.2s ease",
 
-                                    borderRadius: "999px",
+                                display: "flex",
 
-                                    background: "rgba(114,138,110,0.12)",
+                                alignItems: "center",
 
-                                    border:
-                                        "1px solid rgba(114,138,110,0.25)",
+                                gap: "8px",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+                            }}
+                        >
+                            <StatusIcon
+                                size={14}
+                                strokeWidth={1.8}
+                            />
 
-                                    color: "#9bc091",
-
-                                    fontSize: "0.8rem",
-
-                                    fontWeight: "300",
-
-                                    transition: "all 0.2s ease",
-                                }}
-                            >
-                                ✓ Completed
-                            </button>
-                        )}
+                            {currentStatus.label}
+                        </button>
                     </div>
 
                     {/* DIVIDER */}

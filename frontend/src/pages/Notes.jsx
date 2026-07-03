@@ -21,7 +21,6 @@ import {
 
 import NoteModal from "../components/Notes/NoteModal";
 import NoteCard from "../components/Notes/NoteCard";
-import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
 
 import {
   getNotes,
@@ -51,9 +50,6 @@ function Notes() {
   const [openNoteMenu, setOpenNoteMenu] =
     useState(null);
 
-  const [selectedNote, setSelectedNote] =
-    useState(null);
-
   const [editingNote,
     setEditingNote] =
     useState(null);
@@ -64,16 +60,12 @@ function Notes() {
   const [toast, setToast] =
     useState("");
 
-  const [completionTimeout,
-    setCompletionTimeout] =
-    useState(null);
-
-  const [showClearCompleted,
-    setShowClearCompleted] =
+  const [showClearAll,
+    setShowClearAll] =
     useState(false);
 
-  const [showClearActive,
-    setShowClearActive] =
+  const [showClearArchived,
+    setShowClearArchived] =
     useState(false);
 
   const [searchTerm, setSearchTerm] =
@@ -158,12 +150,6 @@ function Notes() {
             );
           }
 
-          case "dueDate":
-            return (
-              new Date(a.dueDate || 0) -
-              new Date(b.dueDate || 0)
-            );
-
           case "alphabetical":
             return a.title.localeCompare(
               b.title
@@ -193,7 +179,6 @@ function Notes() {
   const activeNotes = sortNotes(
     notes.filter(
       (note) =>
-        !note.completed &&
         note.status === "Active" &&
         matchesSearch(note) &&
         matchesFilters(note)
@@ -203,7 +188,6 @@ function Notes() {
   const inProgressNotes = sortNotes(
     notes.filter(
       (note) =>
-        !note.completed &&
         note.status ===
         "In Progress" &&
         matchesSearch(note) &&
@@ -211,21 +195,10 @@ function Notes() {
     )
   );
 
-  const pausedNotes = sortNotes(
+  const archivedNotes = sortNotes(
     notes.filter(
       (note) =>
-        !note.completed &&
-        note.status === "Paused" &&
-        matchesSearch(note) &&
-        matchesFilters(note)
-    )
-  );
-
-  const completedNotes = sortNotes(
-    notes.filter(
-      (note) =>
-        note.status ===
-        "Completed" &&
+        note.status === "Archived" &&
         matchesSearch(note) &&
         matchesFilters(note)
     )
@@ -426,129 +399,45 @@ function Notes() {
       }
     };
 
-  const handleCompleteNote =
-    async (note) => {
-      try {
-        const updatedNote =
-          await updateNote(
-            note._id,
-            {
-              completed: true,
-              status: "Completed",
-              completedDate:
-                new Date().toLocaleDateString(),
-            }
-          );
-
-        setNotes((prev) =>
-          prev.map((t) =>
-            t._id === updatedNote._id
-              ? updatedNote
-              : t
-          )
-        );
-
-        setSelectedNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-        setEditingNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to complete note"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleRestoreNote =
-    async (note) => {
-      try {
-        const updatedNote =
-          await updateNote(
-            note._id,
-            {
-              completed: false,
-              completedDate: null,
-              status: "Active",
-            }
-          );
-
-        setNotes((prev) =>
-          prev.map((t) =>
-            t._id === updatedNote._id
-              ? updatedNote
-              : t
-          )
-        );
-
-        setSelectedNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-        setEditingNote((prev) =>
-          prev?._id === updatedNote._id
-            ? updatedNote
-            : prev
-        );
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to restore note"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
-    };
-
-  const handleClearCompletedNotes =
+  const handleClearArchivedNotes =
     async () => {
       try {
-        await clearCompletedNotes();
-
         setNotes((prev) =>
           prev.filter(
             (note) =>
-              !note.completed
+              note.status !==
+              "Archived"
           )
         );
 
         setToast(
-          "Completed notes cleared"
+          "Archived notes cleared"
         );
 
         setTimeout(() => {
           setToast("");
         }, 3000);
-
       } catch (error) {
         console.error(error);
+      }
+    };
+
+  const handleClearAllNotes =
+    async () => {
+      try {
+        await clearAllNotes();
+
+        setNotes([]);
 
         setToast(
-          "Failed to clear completed notes"
+          "All notes cleared"
         );
 
         setTimeout(() => {
           setToast("");
         }, 3000);
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -1051,7 +940,6 @@ function Notes() {
                                 "newest",
                                 "oldest",
                                 "priority",
-                                "dueDate",
                                 "alphabetical",
                               ].map((option) => (
                                 <button
@@ -1097,12 +985,10 @@ function Notes() {
                                       "transparent";
                                   }}
                                 >
-                                  {option === "dueDate"
-                                    ? "Due Date"
-                                    : option === "alphabetical"
-                                      ? "A → Z"
-                                      : option.charAt(0).toUpperCase() +
-                                      option.slice(1)}
+                                  {option === "alphabetical"
+                                    ? "A → Z"
+                                    : option.charAt(0).toUpperCase() +
+                                    option.slice(1)}
                                 </button>
                               ))}
                             </div>
@@ -1584,7 +1470,7 @@ function Notes() {
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowClearCompleted(true);
+                                setShowClearArchived(true);
                               }}
                               style={{
                                 background: "transparent",
@@ -1622,13 +1508,13 @@ function Notes() {
                                   "var(--text-secondary)";
                               }}
                             >
-                              Clear Completed
+                              Clear Archived
                             </button>
 
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowClearActive(true);
+                                setShowClearAll(true);
                               }}
                               style={{
                                 background: "transparent",
@@ -1806,18 +1692,15 @@ function Notes() {
                     <NoteCard
                       key={note._id}
                       note={note}
-                      onClick={setSelectedNote}
+                      onClick={setEditingNote}
 
                       openNoteMenu={openNoteMenu}
                       setOpenNoteMenu={setOpenNoteMenu}
 
-                      onView={setSelectedNote}
+                      onView={setEditingNote}
                       onEdit={setEditingNote}
 
                       onDelete={handleDeleteNote}
-
-                      onComplete={handleCompleteNote}
-                      onRestore={handleRestoreNote}
 
                       onToggleFlag={
                         handleToggleFlag
@@ -1980,31 +1863,10 @@ function Notes() {
           }}
         />
       )}
-
-      {selectedNote && (
-        <NoteDetailsModal
-          note={selectedNote}
-          onClose={() =>
-            setSelectedNote(null)
-          }
-          onDeleteNote={handleDeleteNote}
-          setToast={setToast}
-          onEditNote={setEditingNote}
-          onCompleteNote={
-            handleCompleteNote
-          }
-          onRestoreNote={
-            handleRestoreNote
-          }
-        />
-      )}
       {editingNote && (
         <NoteModal
           mode="edit"
           note={editingNote}
-          onCompleteNote={
-            handleCompleteNote
-          }
           onClose={() =>
             setEditingNote(null)
           }
@@ -2047,164 +1909,11 @@ function Notes() {
           }}
         />
       )}
-
-      {showClearCompleted && (
+      {/* show clear all */}
+      {showClearAll && (
         <div
           onClick={() =>
-            setShowClearCompleted(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius:
-                "24px",
-              background:
-                "rgba(20,20,20,0.85)",
-              border:
-                "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear completed notes?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearCompleted(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={async () => {
-                  await handleClearCompletedNotes();
-
-                  setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
+            setShowClearAll(
               false
             )
           }
@@ -2221,9 +1930,9 @@ function Notes() {
         >
           <div
             onClick={async () => {
-              await handleClearActiveNotes();
+              await handleClearAllNotes();
 
-              setShowClearActive(
+              setShowClearAll(
                 false
               );
             }}
@@ -2241,7 +1950,7 @@ function Notes() {
                 fontWeight: "400",
               }}
             >
-              Clear active notes?
+              Clear all notes?
             </h3>
 
             <p
@@ -2264,7 +1973,7 @@ function Notes() {
             >
               <button
                 onClick={() =>
-                  setShowClearActive(
+                  setShowClearAll(
                     false
                   )
                 }
@@ -2314,13 +2023,13 @@ function Notes() {
                     )
                   );
 
-                  setToast("Active notes cleared");
+                  setToast("All notes cleared");
 
                   setTimeout(() => {
                     setToast("");
                   }, 3000);
 
-                  setShowClearActive(
+                  setShowClearAll(
                     false
                   );
                 }}

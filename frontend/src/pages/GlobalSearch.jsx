@@ -35,8 +35,10 @@ import { getReminders } from "../services/reminderService";
 import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
 import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
 import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
-import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
+// import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
 import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
+
+import NoteModal from "../components/Notes/NoteModal";
 
 import Toast from "../components/Toast";
 
@@ -1398,7 +1400,7 @@ function GlobalSearch() {
             )}
 
             {selectedNote && (
-                <NoteDetailsModal
+                <NoteModal
                     note={selectedNote}
                     onClose={() =>
                         setSelectedNote(null)

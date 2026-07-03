@@ -1,3 +1,5 @@
+// create and edit reminder
+
 import {
   useState,
   useRef,
@@ -5,9 +7,14 @@ import {
 } from "react";
 
 import {
-  X,
-  Calendar,
   Bell,
+  Pause,
+  Shield,
+  LoaderCircle,
+  CircleAlert,
+  X,
+  Check,
+  Calendar,
 } from "lucide-react";
 
 import MiniCalendarModal from "../MiniCalendarModal";
@@ -74,6 +81,9 @@ function ReminderModal({
     setDescriptionFocused] =
     useState(false);
 
+  const [titleError, setTitleError] =
+    useState(false);
+
   const [selectedDate, setSelectedDate] =
     useState(
       reminder?.dueDate ||
@@ -83,7 +93,9 @@ function ReminderModal({
 
   const [linkedItems, setLinkedItems] =
     useState(
-      reminder?.linkedItems || []
+      reminder?.linkedItems?.length
+        ? reminder.linkedItems
+        : ["NL"]
     );
 
   useEffect(() => {
@@ -165,6 +177,27 @@ function ReminderModal({
         )
       : null;
 
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  const dueDate = new Date(selectedDate);
+
+  dueDate.setHours(0, 0, 0, 0);
+
+  const isOverdue =
+    dueDate < today;
+
+  const displayStatus =
+    reminder?.completed
+      ? "Complete"
+      : status === "Paused"
+        ? "Paused"
+        : isOverdue
+          ? "Overdue"
+          : status;
+
+
   const handleModalOverlayClick = () => {
     if (showCalendarModal) {
       return;
@@ -183,8 +216,17 @@ function ReminderModal({
   ];
 
   const handleSave = () => {
-    if (!reminderName.trim())
+    if (!reminderName.trim()) {
+      setTitleError(true);
+
+      reminderInputRef.current?.focus();
+
+      setTimeout(() => {
+        setTitleError(false);
+      }, 400);
+
       return;
+    }
 
     onSave({
       id:
@@ -375,47 +417,20 @@ function ReminderModal({
           }}
         >
 
-          {/* Avatar */}
+          {/* icon */}
+
           <div
             style={{
               display: "flex",
               justifyContent: "center",
-
-              marginBottom: "18px",
+              marginBottom: "20px",
+              opacity: 0.55,
             }}
           >
-            <div
-              style={{
-                width: "72px",
-                height: "72px",
-
-                borderRadius: "50%",
-
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-
-                background:
-                  "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
-
-                border:
-                  "1px solid rgba(255,255,255,0.12)",
-
-                backdropFilter:
-                  "blur(24px)",
-
-                WebkitBackdropFilter:
-                  "blur(24px)",
-
-                boxShadow:
-                  "0 12px 30px rgba(0,0,0,0.18)",
-              }}
-            >
-              <Bell
-                size={28}
-                strokeWidth={1.8}
-              />
-            </div>
+            <Bell
+              size={28}
+              strokeWidth={1.8}
+            />
           </div>
 
           {mode === "edit" &&
@@ -792,23 +807,31 @@ function ReminderModal({
                   cursor: "pointer",
 
                   background:
-                    status === "Active"
+                    displayStatus === "Active"
                       ? "#4d689333"
-                      : status === "Paused"
-                        ? "#45575b33"
-                        : "#728a6e33",
+                      : displayStatus === "In Progress"
+                        ? "#5d766233"
+                        : displayStatus === "Paused"
+                          ? "#45575b33"
+                          : displayStatus === "Overdue"
+                            ? "#8b5a5a33"
+                            : "#728a6e33",
 
                   border:
-                    status === "Active"
+                    displayStatus === "Active"
                       ? "1px solid #4d689366"
-                      : status === "Paused"
-                        ? "1px solid #45575b66"
-                        : "1px solid #728a6e66",
+                      : displayStatus === "In Progress"
+                        ? "1px solid #5d766266"
+                        : displayStatus === "Paused"
+                          ? "1px solid #45575b66"
+                          : displayStatus === "Overdue"
+                            ? "1px solid #8b5a5a66"
+                            : "1px solid #728a6e66",
 
                   color: "var(--text-primary)",
                 }}
               >
-                {status}
+                {displayStatus}
               </button>
 
               {activeSelector === "status" && (
@@ -946,11 +969,15 @@ function ReminderModal({
                             (i) => i !== "NL"
                           );
 
-                        return selected
+                        const updated = selected
                           ? filtered.filter(
                             (i) => i !== item
                           )
                           : [...filtered, item];
+
+                        return updated.length
+                          ? updated
+                          : ["NL"];
                       });
                     }}
                     style={{
@@ -1014,82 +1041,6 @@ function ReminderModal({
             )}
           </div>
 
-          {/* MARK COMPLETE PILL */}
-          {/* COMPLETION */}
-
-          {mode === "edit" && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "24px",
-              }}
-            >
-              {!reminder?.completed ? (
-                <button
-                  onClick={() =>
-                    onCompleteReminder?.(reminder)
-                  }
-                  style={{
-                    padding: "10px 18px",
-
-                    borderRadius: "999px",
-
-                    background:
-                      "rgba(114,138,110,0.12)",
-
-                    border:
-                      "1px solid rgba(114,138,110,0.25)",
-
-                    color: "#9bc091",
-
-                    fontSize: "0.8rem",
-
-                    fontWeight: "300",
-
-                    cursor: "pointer",
-
-                    transition:
-                      "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform =
-                      "translateY(-1px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform =
-                      "translateY(0)";
-                  }}
-                >
-                  Mark Complete
-                </button>
-              ) : (
-                <button
-                  style={{
-                    padding: "10px 18px",
-
-                    borderRadius: "999px",
-
-                    background: "rgba(114,138,110,0.12)",
-
-                    border:
-                      "1px solid rgba(114,138,110,0.25)",
-
-                    color: "#9bc091",
-
-                    fontSize: "0.8rem",
-
-                    fontWeight: "300",
-
-                    transition: "all 0.2s ease",
-                  }}
-                >
-                  ✓ Completed
-                </button>
-              )}
-            </div>
-          )}
-
 
           {/* Reminder NAME */}
           <input
@@ -1133,13 +1084,14 @@ function ReminderModal({
 
               padding: "0 0 14px 0",
 
-              borderBottom:
-                titleFocused
+              borderBottom: titleError
+                ? "1px solid rgba(255,107,107,0.75)"
+                : titleFocused
                   ? "1px solid rgba(255,255,255,0.18)"
                   : "1px solid rgba(255,255,255,0.06)",
 
               transition:
-                "all 0.2s ease",
+                "border-color 200ms ease",
 
               marginBottom: "20px",
             }}

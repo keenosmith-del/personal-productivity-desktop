@@ -7,8 +7,10 @@ import {
 import TaskDetailsModal from "../Tasks/TaskDetailsModal";
 import ProjectDetailsModal from "../Projects/ProjectDetailsModal";
 import GoalDetailsModal from "../Goals/GoalDetailsModal";
-import NoteDetailsModal from "../Notes/NoteDetailsModal";
+//import NoteDetailsModal from "../Notes/NoteDetailsModal";
 import ReminderDetailsModal from "../Reminders/ReminderDetailsModal";
+
+import NoteModal from "../Notes/NoteModal";
 
 function SearchResultCard({
     item,

@@ -457,7 +457,7 @@ function Goals() {
     async (goal) => {
       try {
         const updatedGoal =
-          await updatedGoal(
+          await updateGoal(
             goal._id,
             {
               completed: false,
