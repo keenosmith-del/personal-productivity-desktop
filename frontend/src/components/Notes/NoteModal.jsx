@@ -7,6 +7,8 @@ import {
     useEffect
 } from "react";
 
+import DeleteConfirmModal from "../DeleteConfirmModal";
+
 import {
     NotebookPen,
     Pause,
@@ -15,6 +17,7 @@ import {
     Archive,
     X,
     Calendar,
+    Ellipsis,
 } from "lucide-react";
 
 function NoteModal({
@@ -22,6 +25,7 @@ function NoteModal({
     mode = "create",
     note = null,
     onSave,
+    onDelete,
 }) {
     const noteInputRef = useRef(null);
 
@@ -64,7 +68,14 @@ function NoteModal({
     const [activeSelector, setActiveSelector] =
         useState(null);
 
+    // why do I have a CalendarModal here? 
     const [showCalendarModal, setShowCalendarModal] =
+        useState(false);
+
+    const [showDeleteConfirm, setShowDeleteConfirm] =
+        useState(false);
+
+    const [showMoreMenu, setShowMoreMenu] =
         useState(false);
 
     const [titleFocused,
@@ -285,989 +296,1182 @@ function NoteModal({
                 zIndex: 1000,
             }}
         >
-            <div
-                onClick={(e) =>
-                    e.stopPropagation()
-                }
-                style={{
-                    width: "500px",
-
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border: "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
-
-                    backdropFilter: "blur(30px)",
-
-                    boxShadow:
-                        "0 30px 80px rgba(0,0,0,0.45)",
-
-                    padding: "36px",
-
-                    display: "flex",
-
-                    flexDirection: "column",
-
-                    // gap: "10px",
-                }}
-            >
+            {!showDeleteConfirm && (
                 <div
+                    onClick={(e) =>
+                        e.stopPropagation()
+                    }
                     style={{
+                        width: "500px",
+
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+
+                        border: "1px solid rgba(255,255,255,0.10)",
+
+                        borderRadius: "36px",
+
+                        backdropFilter: "blur(30px)",
+
+                        boxShadow:
+                            "0 30px 80px rgba(0,0,0,0.45)",
+
+                        padding: "36px",
+
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        marginBottom: "24px",
+
+                        flexDirection: "column",
+
+                        // gap: "10px",
                     }}
                 >
-                    <div>
-                        <h2
-                            style={{
-                                margin: 0,
-                                fontSize: "0.95rem",
-                                fontWeight: "400",
-                            }}
-                        >
-                            {mode === "edit"
-                                ? "Edit Note"
-                                : "New Note"}
-                        </h2>
-
-                        <p
-                            style={{
-                                marginTop: "4px",
-                                marginBottom: 0,
-                                fontSize: "0.8rem",
-                                fontWeight: "300",
-                                opacity: 0.55,
-                            }}
-                        >
-                            {mode === "edit"
-                                ? "Update note information"
-                                : "Create a new note"}
-                        </p>
-                    </div>
-
-                    <button
-                        onClick={onClose}
+                    <div
                         style={{
-                            width: "32px",
-                            height: "32px",
-
-                            borderRadius: "999px",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            background:
-                                "rgba(255,255,255,0.04)",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            cursor: "pointer",
-
-                            fontSize: "0.85rem",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.10)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1)";
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            marginBottom: "24px",
                         }}
                     >
-                        x
-                    </button>
-                </div>
+                        <div>
+                            <h2
+                                style={{
+                                    margin: 0,
+                                    fontSize: "0.95rem",
+                                    fontWeight: "400",
+                                }}
+                            >
+                                {mode === "edit"
+                                    ? "Edit Note"
+                                    : "New Note"}
+                            </h2>
 
-                {/* icon */}
-
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: "20px",
-                        opacity: 0.55,
-                    }}
-                >
-                    <NotebookPen
-                        size={28}
-                        strokeWidth={1.8}
-                    />
-                </div>
-
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-
-                    {mode === "edit" &&
-                        formattedCreatedDate && (
                             <p
                                 style={{
-                                    marginTop: "12px",
-
-                                    marginBottom: "10px",
-
-                                    textAlign: "center",
-
-                                    fontSize: "0.72rem",
-
+                                    marginTop: "4px",
+                                    marginBottom: 0,
+                                    fontSize: "0.8rem",
                                     fontWeight: "300",
-
-                                    opacity: 0.4,
+                                    opacity: 0.55,
                                 }}
                             >
-                                Created on {formattedCreatedDate}
+                                {mode === "edit"
+                                    ? "Update note information"
+                                    : "Create a new note"}
                             </p>
-                        )}
+                        </div>
 
-                    {/* CHIPS */}
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "8px",
-                            flexWrap: "wrap",
-                            marginBottom: "22px",
-                            fontWeight: "300",
-                            marginTop: "20px",
-                        }}
-                    >
-
-                        {/* Start wrapper category dropdown and button */}
+                        {/* add meatball with x pill */}
                         <div
-                            ref={categoryRef}
                             style={{
-                                position: "relative",
+                                display: "flex",
+                                alignItems: "center",
+
+                                gap: "6px",
+
+                                padding: "2px",
+
+                                borderRadius: "999px",
+
+                                background: "rgb(36, 36, 36)",
+
+                                backdropFilter: "blur(28px)",
+
+                                boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
                             }}
                         >
-                            <button
+                            {/* meatball */}
+                            {/* add to folder / archive / delete*/}
+                            <div
+                                style={{
+                                    position: "relative",
+                                }}
                                 onClick={() =>
-                                    setActiveSelector(
-                                        activeSelector === "category"
-                                            ? null
-                                            : "category"
+                                    setShowMoreMenu(
+                                        !showMoreMenu
                                     )
                                 }
-                                style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
-
-                                    fontWeight: "300",
-                                    fontSize: "0.75rem",
-
-                                    borderRadius: "999px",
-                                    cursor: "pointer",
-
-                                    background:
-                                        category === "Work"
-                                            ? "#466a6d33"
-                                            : category === "Study"
-                                                ? "#536b8333"
-                                                : category === "Personal"
-                                                    ? "#6f5f7a33"
-                                                    : "#57707a33",
-
-                                    border:
-                                        category === "Work"
-                                            ? "1px solid #466a6d66"
-                                            : category === "Study"
-                                                ? "1px solid #536b8366"
-                                                : category === "Personal"
-                                                    ? "1px solid #6f5f7a66"
-                                                    : "1px solid #57707a66",
-
-                                    color: "var(--text-primary)",
-                                }}
                             >
-                                {category}
-                            </button>
-
-                            {activeSelector === "category" && (
-                                <div
+                                <button
                                     style={{
-                                        width: "110px",
+                                        width: "32px",
 
+                                        height: "32px",
+
+                                        borderRadius: "999px",
+
+                                        border: "none",
+
+                                        background: "transparent",
+
+                                        color: "var(--text-secondary)",
+
+                                        display: "flex",
+
+                                        alignItems: "center",
+
+                                        justifyContent: "center",
+
+                                        cursor: "pointer",
+
+                                        transition:
+                                            "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-secondary)";
+                                    }}
+                                >
+                                    <Ellipsis
+                                        size={16}
+                                    />
+                                </button>
+                            </div>
+                            {/* meatball dropdown */}
+                            {showMoreMenu && (
+                                <div
+                                    onClick={(e) =>
+                                        e.stopPropagation()
+                                    }
+                                    style={{
                                         position: "absolute",
-                                        top: "calc(100% + 8px)",
-                                        left: 0,
+
+                                        top: "24px",
+                                        right: 0,
+
+                                        minWidth: "140px",
 
                                         background:
-                                            "rgba(20,20,20,0.92)",
+                                            "rgba(20,20,20,0.95)",
 
                                         backdropFilter:
-                                            "blur(24px)",
+                                            "blur(20px)",
 
                                         border:
-                                            "1px solid rgba(255,255,255,0.10)",
-
-                                        boxShadow:
-                                            "0 20px 50px rgba(0,0,0,0.35)",
+                                            "1px solid rgba(255,255,255,0.08)",
 
                                         borderRadius: "16px",
 
-                                        padding: "8px",
+                                        overflow: "hidden",
 
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "4px",
-
-                                        zIndex: 20,
+                                        zIndex: 100,
                                     }}
                                 >
-                                    {[
-                                        "Work",
-                                        "Study",
-                                        "Personal",
-                                        "Health",
-                                    ].map((option) => (
-                                        <button
-                                            key={option}
-                                            onClick={() => {
-                                                setCategory(option);
-                                                setActiveSelector(null);
-                                            }}
-                                            style={{
-                                                background:
-                                                    option === category
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent",
-
-                                                border: "none",
-
-                                                color:
-                                                    "var(--text-primary)",
-
-                                                padding: "8px 12px",
-
-                                                borderRadius: "10px",
-
-                                                cursor: "pointer",
-
-                                                textAlign: "left",
-
-                                                fontSize: "0.75rem",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                if (
-                                                    (activeSelector === "category" &&
-                                                        option !== category) ||
-                                                    (activeSelector === "priority" &&
-                                                        option !== priority) ||
-                                                    (activeSelector === "status" &&
-                                                        option !== status)
-                                                ) {
-                                                    e.currentTarget.style.background =
-                                                        "rgba(255,255,255,0.05)";
-                                                }
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                const isSelected =
-                                                    option === category ||
-                                                    option === priority ||
-                                                    option === status;
-
-                                                e.currentTarget.style.background =
-                                                    isSelected
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent";
-                                            }}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        {/* end category button and dropdown wrapper */}
-
-                        {/* start wrapper priority button and dropdown */}
-                        <div
-                            ref={priorityRef}
-                            style={{
-                                position: "relative",
-                            }}
-                        >
-                            <button
-                                onClick={() =>
-                                    setActiveSelector(
-                                        activeSelector === "priority"
-                                            ? null
-                                            : "priority"
-                                    )
-                                }
-                                style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
-
-                                    fontSize: "0.75rem",
-                                    fontWeight: "300",
-
-                                    borderRadius: "999px",
-                                    cursor: "pointer",
-
-                                    background:
-                                        priority === "Low"
-                                            ? "#273c4133"
-                                            : priority === "Medium"
-                                                ? "#5e687433"
-                                                : "#6b544733",
-
-                                    border:
-                                        priority === "Low"
-                                            ? "1px solid #273c4166"
-                                            : priority === "Medium"
-                                                ? "1px solid #5e687466"
-                                                : "1px solid #6b544766",
-
-                                    color: "var(--text-primary)",
-                                }}
-                            >
-                                {priority}
-                            </button>
-
-                            {activeSelector === "priority" && (
-                                <div
-                                    style={{
-                                        width: "110px",
-
-                                        position: "absolute",
-
-                                        top: "calc(100% + 8px)",
-
-                                        left: 0,
-
-                                        background:
-                                            "rgba(20,20,20,0.92)",
-
-                                        backdropFilter:
-                                            "blur(24px)",
-
-                                        border:
-                                            "1px solid rgba(255,255,255,0.10)",
-
-                                        boxShadow:
-                                            "0 20px 50px rgba(0,0,0,0.35)",
-
-                                        borderRadius: "16px",
-
-                                        padding: "8px",
-
-                                        display: "flex",
-                                        flexDirection: "column",
-
-                                        gap: "4px",
-
-                                        zIndex: 20,
-                                    }}
-                                >
-                                    {[
-                                        "Low",
-                                        "Medium",
-                                        "High",
-                                    ].map((option) => (
-                                        <button
-                                            key={option}
-                                            onClick={() => {
-                                                setPriority(option);
-                                                setActiveSelector(null);
-                                            }}
-                                            style={{
-                                                background:
-                                                    option === priority
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent",
-
-                                                border: "none",
-
-                                                color:
-                                                    "var(--text-primary)",
-
-                                                padding: "8px 12px",
-
-                                                borderRadius: "10px",
-
-                                                cursor: "pointer",
-
-                                                textAlign: "left",
-
-                                                fontSize: "0.75rem",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                if (
-                                                    (activeSelector === "category" &&
-                                                        option !== category) ||
-                                                    (activeSelector === "priority" &&
-                                                        option !== priority) ||
-                                                    (activeSelector === "status" &&
-                                                        option !== status)
-                                                ) {
-                                                    e.currentTarget.style.background =
-                                                        "rgba(255,255,255,0.05)";
-                                                }
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                const isSelected =
-                                                    option === category ||
-                                                    option === priority ||
-                                                    option === status;
-
-                                                e.currentTarget.style.background =
-                                                    isSelected
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent";
-                                            }}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        {/* end priority button and dropdown */}
-
-                        {/* start status button and dropdown wrapper */}
-                        {/* Notes don't have due date should just be active, in progress, and archived */}
-                        <div
-                            ref={statusRef}
-                            style={{
-                                position: "relative",
-                            }}
-                        >
-                            <button
-                                onClick={() =>
-                                    setActiveSelector(
-                                        activeSelector === "status"
-                                            ? null
-                                            : "status"
-                                    )
-                                }
-                                style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
-
-                                    fontSize: "0.75rem",
-                                    fontWeight: "300",
-
-                                    borderRadius: "999px",
-                                    cursor: "pointer",
-
-                                    background:
-                                        currentStatus.background,
-
-                                    border: `1px solid ${currentStatus.border}`,
-
-                                    color:
-                                        currentStatus.color,
-                                }}
-                            >
-                                {currentStatus.label}
-                            </button>
-
-                            {activeSelector === "status" && (
-                                <div
-                                    style={{
-                                        width: "110px",
-
-                                        position: "absolute",
-
-                                        top: "calc(100% + 8px)",
-
-                                        left: 0,
-
-                                        background:
-                                            "rgba(20,20,20,0.92)",
-
-                                        backdropFilter:
-                                            "blur(24px)",
-
-                                        border:
-                                            "1px solid rgba(255,255,255,0.10)",
-
-                                        boxShadow:
-                                            "0 20px 50px rgba(0,0,0,0.35)",
-
-                                        borderRadius: "16px",
-
-                                        padding: "8px",
-
-                                        display: "flex",
-                                        flexDirection: "column",
-
-                                        gap: "4px",
-
-                                        zIndex: 20,
-                                    }}
-                                >
-                                    {[
-                                        "Active",
-                                        "In Progress",
-                                        "Archived",
-                                    ].map((option) => (
-                                        <button
-                                            key={option}
-                                            onClick={() => {
-                                                setStatus(option);
-                                                setActiveSelector(null);
-                                            }}
-                                            style={{
-                                                background:
-                                                    option === status
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent",
-
-                                                border: "none",
-
-                                                color:
-                                                    "var(--text-primary)",
-
-                                                padding: "8px 12px",
-
-                                                borderRadius: "10px",
-
-                                                cursor: "pointer",
-
-                                                textAlign: "left",
-
-                                                fontSize: "0.75rem",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                if (
-                                                    (activeSelector === "category" &&
-                                                        option !== category) ||
-                                                    (activeSelector === "priority" &&
-                                                        option !== priority) ||
-                                                    (activeSelector === "status" &&
-                                                        option !== status)
-                                                ) {
-                                                    e.currentTarget.style.background =
-                                                        "rgba(255,255,255,0.05)";
-                                                }
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                const isSelected =
-                                                    option === category ||
-                                                    option === priority ||
-                                                    option === status;
-
-                                                e.currentTarget.style.background =
-                                                    isSelected
-                                                        ? "rgba(255,255,255,0.08)"
-                                                        : "transparent";
-                                            }}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        {/* end wrapper status and dropdown */}
-                    </div>
-
-                    <div
-                        style={{
-                            display: "flex",
-
-                            justifyContent: "center",
-
-                            gap: "8px",
-
-                            marginBottom: "22px",
-                        }}
-                    >
-                        {associationOptions.map(
-                            (item) => {
-                                const selected =
-                                    linkedItems.includes(
-                                        item
-                                    );
-
-                                return (
                                     <button
-                                        key={item}
                                         onClick={() => {
-                                            setLinkedItems((prev) => {
 
-                                                if (item === "NL") {
-                                                    return ["NL"];
-                                                }
+                                            setShowDeleteConfirm(true)
 
-                                                const filtered =
-                                                    prev.filter(
-                                                        (i) => i !== "NL"
-                                                    );
-
-                                                return selected
-                                                    ? filtered.filter(
-                                                        (i) => i !== item
-                                                    )
-                                                    : [...filtered, item];
-                                            });
+                                            setShowMoreMenu(
+                                                false
+                                            );
                                         }}
                                         style={{
-                                            width: "34px",
-                                            height: "34px",
+                                            width: "100%",
 
-                                            borderRadius:
-                                                "999px",
+                                            padding: "10px 12px",
 
-                                            border: selected
-                                                ? "1px solid rgba(255,255,255,0.14)"
-                                                : "1px solid rgba(255,255,255,0.06)",
+                                            background: "transparent",
 
-                                            background:
-                                                selected
-                                                    ? "rgba(255,255,255,0.08)"
-                                                    : "rgba(255,255,255,0.03)",
+                                            border: "none",
 
-                                            color:
-                                                selected
-                                                    ? "var(--text-primary)"
-                                                    : "var(--text-secondary)",
+                                            borderRadius: "10px",
 
-                                            fontSize:
-                                                "0.72rem",
+                                            color: "var(--text-primary)",
 
-                                            fontWeight:
-                                                "300",
+                                            textAlign: "left",
 
-                                            cursor:
-                                                "pointer",
+                                            fontSize: "0.8rem",
 
-                                            transition:
-                                                "all 0.2s ease",
+                                            fontWeight: "300",
+
+                                            cursor: "pointer",
+
+                                            transition: "all 0.2s ease",
+
+                                            color: "#ff6b6b",
                                         }}
-                                        onMouseEnter={(
-                                            e
-                                        ) => {
-                                            if (
-                                                !selected
-                                            ) {
-                                                e.currentTarget.style.background =
-                                                    "rgba(255,255,255,0.05)";
-                                            }
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.04)";
+
+                                            e.currentTarget.style.color =
+                                                "#ff6b6b";
                                         }}
-                                        onMouseLeave={(
-                                            e
-                                        ) => {
-                                            if (
-                                                !selected
-                                            ) {
-                                                e.currentTarget.style.background =
-                                                    "rgba(255,255,255,0.03)";
-                                            }
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "transparent";
+
+                                            e.currentTarget.style.color =
+                                                "#ff6b6b";
                                         }}
                                     >
-                                        {item}
+                                        Delete Note
                                     </button>
-                                );
-                            }
-                        )}
+                                </div>
+                            )}
+
+                            {/* close x */}
+                            <div
+                                style={{
+                                    position: "relative",
+                                }}
+                            >
+                                <button
+                                    onClick={onClose}
+                                    style={{
+                                        width: "32px",
+                                        height: "32px",
+
+                                        borderRadius: "999px",
+
+                                        border: "rgb(33, 33, 33)",
+
+                                        background:
+                                            "rgb(33, 33, 33)",
+
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        cursor: "pointer",
+
+                                        fontSize: "0.85rem",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgb(33, 33, 33)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgb(33, 33, 33)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-secondary)";
+                                    }}
+                                >
+                                    x
+                                </button>
+                            </div>
+                        </div> {/* end wrapper */}
                     </div>
 
-                    {/* STATUS */}
-                    {mode === "edit" && (
+                    {/* icon */}
+
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginBottom: "20px",
+                            opacity: 0.55,
+                        }}
+                    >
+                        <NotebookPen
+                            size={28}
+                            strokeWidth={1.8}
+                        />
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+
+                        {mode === "edit" &&
+                            formattedCreatedDate && (
+                                <p
+                                    style={{
+                                        marginTop: "12px",
+
+                                        marginBottom: "10px",
+
+                                        textAlign: "center",
+
+                                        fontSize: "0.72rem",
+
+                                        fontWeight: "300",
+
+                                        opacity: 0.4,
+                                    }}
+                                >
+                                    Created on {formattedCreatedDate}
+                                </p>
+                            )}
+
+                        {/* CHIPS */}
                         <div
                             style={{
                                 display: "flex",
                                 justifyContent: "center",
-
-                                marginBottom: "24px",
+                                gap: "8px",
+                                flexWrap: "wrap",
+                                marginBottom: "22px",
+                                fontWeight: "300",
+                                marginTop: "20px",
                             }}
                         >
-                            <button
+
+                            {/* Start wrapper category dropdown and button */}
+                            <div
+                                ref={categoryRef}
                                 style={{
-                                    padding: "10px 18px",
-
-                                    borderRadius: "999px",
-
-                                    background:
-                                        currentStatus.background,
-
-                                    border:
-                                        `1px solid ${currentStatus.border}`,
-
-                                    color:
-                                        currentStatus.color,
-
-                                    fontSize: "0.8rem",
-
-                                    fontWeight: "300",
-
-                                    cursor: "default",
-
-                                    display: "flex",
-
-                                    alignItems: "center",
-
-                                    gap: "8px",
+                                    position: "relative",
                                 }}
                             >
-                                <StatusIcon
-                                    size={14}
-                                    strokeWidth={1.8}
-                                />
+                                <button
+                                    onClick={() =>
+                                        setActiveSelector(
+                                            activeSelector === "category"
+                                                ? null
+                                                : "category"
+                                        )
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        minWidth: "78px",
+                                        textAlign: "center",
 
-                                {currentStatus.label}
-                            </button>
+                                        fontWeight: "300",
+                                        fontSize: "0.75rem",
+
+                                        borderRadius: "999px",
+                                        cursor: "pointer",
+
+                                        background:
+                                            category === "Work"
+                                                ? "#466a6d33"
+                                                : category === "Study"
+                                                    ? "#536b8333"
+                                                    : category === "Personal"
+                                                        ? "#6f5f7a33"
+                                                        : "#57707a33",
+
+                                        border:
+                                            category === "Work"
+                                                ? "1px solid #466a6d66"
+                                                : category === "Study"
+                                                    ? "1px solid #536b8366"
+                                                    : category === "Personal"
+                                                        ? "1px solid #6f5f7a66"
+                                                        : "1px solid #57707a66",
+
+                                        color: "var(--text-primary)",
+                                    }}
+                                >
+                                    {category}
+                                </button>
+
+                                {activeSelector === "category" && (
+                                    <div
+                                        style={{
+                                            width: "110px",
+
+                                            position: "absolute",
+                                            top: "calc(100% + 8px)",
+                                            left: 0,
+
+                                            background:
+                                                "rgba(20,20,20,0.92)",
+
+                                            backdropFilter:
+                                                "blur(24px)",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.10)",
+
+                                            boxShadow:
+                                                "0 20px 50px rgba(0,0,0,0.35)",
+
+                                            borderRadius: "16px",
+
+                                            padding: "8px",
+
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "4px",
+
+                                            zIndex: 20,
+                                        }}
+                                    >
+                                        {[
+                                            "Work",
+                                            "Study",
+                                            "Personal",
+                                            "Health",
+                                        ].map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => {
+                                                    setCategory(option);
+                                                    setActiveSelector(null);
+                                                }}
+                                                style={{
+                                                    background:
+                                                        option === category
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent",
+
+                                                    border: "none",
+
+                                                    color:
+                                                        "var(--text-primary)",
+
+                                                    padding: "8px 12px",
+
+                                                    borderRadius: "10px",
+
+                                                    cursor: "pointer",
+
+                                                    textAlign: "left",
+
+                                                    fontSize: "0.75rem",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (
+                                                        (activeSelector === "category" &&
+                                                            option !== category) ||
+                                                        (activeSelector === "priority" &&
+                                                            option !== priority) ||
+                                                        (activeSelector === "status" &&
+                                                            option !== status)
+                                                    ) {
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,255,255,0.05)";
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    const isSelected =
+                                                        option === category ||
+                                                        option === priority ||
+                                                        option === status;
+
+                                                    e.currentTarget.style.background =
+                                                        isSelected
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent";
+                                                }}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            {/* end category button and dropdown wrapper */}
+
+                            {/* start wrapper priority button and dropdown */}
+                            <div
+                                ref={priorityRef}
+                                style={{
+                                    position: "relative",
+                                }}
+                            >
+                                <button
+                                    onClick={() =>
+                                        setActiveSelector(
+                                            activeSelector === "priority"
+                                                ? null
+                                                : "priority"
+                                        )
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        minWidth: "78px",
+                                        textAlign: "center",
+
+                                        fontSize: "0.75rem",
+                                        fontWeight: "300",
+
+                                        borderRadius: "999px",
+                                        cursor: "pointer",
+
+                                        background:
+                                            priority === "Low"
+                                                ? "#273c4133"
+                                                : priority === "Medium"
+                                                    ? "#5e687433"
+                                                    : "#6b544733",
+
+                                        border:
+                                            priority === "Low"
+                                                ? "1px solid #273c4166"
+                                                : priority === "Medium"
+                                                    ? "1px solid #5e687466"
+                                                    : "1px solid #6b544766",
+
+                                        color: "var(--text-primary)",
+                                    }}
+                                >
+                                    {priority}
+                                </button>
+
+                                {activeSelector === "priority" && (
+                                    <div
+                                        style={{
+                                            width: "110px",
+
+                                            position: "absolute",
+
+                                            top: "calc(100% + 8px)",
+
+                                            left: 0,
+
+                                            background:
+                                                "rgba(20,20,20,0.92)",
+
+                                            backdropFilter:
+                                                "blur(24px)",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.10)",
+
+                                            boxShadow:
+                                                "0 20px 50px rgba(0,0,0,0.35)",
+
+                                            borderRadius: "16px",
+
+                                            padding: "8px",
+
+                                            display: "flex",
+                                            flexDirection: "column",
+
+                                            gap: "4px",
+
+                                            zIndex: 20,
+                                        }}
+                                    >
+                                        {[
+                                            "Low",
+                                            "Medium",
+                                            "High",
+                                        ].map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => {
+                                                    setPriority(option);
+                                                    setActiveSelector(null);
+                                                }}
+                                                style={{
+                                                    background:
+                                                        option === priority
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent",
+
+                                                    border: "none",
+
+                                                    color:
+                                                        "var(--text-primary)",
+
+                                                    padding: "8px 12px",
+
+                                                    borderRadius: "10px",
+
+                                                    cursor: "pointer",
+
+                                                    textAlign: "left",
+
+                                                    fontSize: "0.75rem",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (
+                                                        (activeSelector === "category" &&
+                                                            option !== category) ||
+                                                        (activeSelector === "priority" &&
+                                                            option !== priority) ||
+                                                        (activeSelector === "status" &&
+                                                            option !== status)
+                                                    ) {
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,255,255,0.05)";
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    const isSelected =
+                                                        option === category ||
+                                                        option === priority ||
+                                                        option === status;
+
+                                                    e.currentTarget.style.background =
+                                                        isSelected
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent";
+                                                }}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            {/* end priority button and dropdown */}
+
+                            {/* start status button and dropdown wrapper */}
+                            {/* Notes don't have due date should just be active, in progress, and archived */}
+                            <div
+                                ref={statusRef}
+                                style={{
+                                    position: "relative",
+                                }}
+                            >
+                                <button
+                                    onClick={() =>
+                                        setActiveSelector(
+                                            activeSelector === "status"
+                                                ? null
+                                                : "status"
+                                        )
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        minWidth: "78px",
+                                        textAlign: "center",
+
+                                        fontSize: "0.75rem",
+                                        fontWeight: "300",
+
+                                        borderRadius: "999px",
+                                        cursor: "pointer",
+
+                                        background:
+                                            currentStatus.background,
+
+                                        border: `1px solid ${currentStatus.border}`,
+
+                                        color:
+                                            currentStatus.color,
+                                    }}
+                                >
+                                    {currentStatus.label}
+                                </button>
+
+                                {activeSelector === "status" && (
+                                    <div
+                                        style={{
+                                            width: "110px",
+
+                                            position: "absolute",
+
+                                            top: "calc(100% + 8px)",
+
+                                            left: 0,
+
+                                            background:
+                                                "rgba(20,20,20,0.92)",
+
+                                            backdropFilter:
+                                                "blur(24px)",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.10)",
+
+                                            boxShadow:
+                                                "0 20px 50px rgba(0,0,0,0.35)",
+
+                                            borderRadius: "16px",
+
+                                            padding: "8px",
+
+                                            display: "flex",
+                                            flexDirection: "column",
+
+                                            gap: "4px",
+
+                                            zIndex: 20,
+                                        }}
+                                    >
+                                        {[
+                                            "Active",
+                                            "In Progress",
+                                            "Archived",
+                                        ].map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => {
+                                                    setStatus(option);
+                                                    setActiveSelector(null);
+                                                }}
+                                                style={{
+                                                    background:
+                                                        option === status
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent",
+
+                                                    border: "none",
+
+                                                    color:
+                                                        "var(--text-primary)",
+
+                                                    padding: "8px 12px",
+
+                                                    borderRadius: "10px",
+
+                                                    cursor: "pointer",
+
+                                                    textAlign: "left",
+
+                                                    fontSize: "0.75rem",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (
+                                                        (activeSelector === "category" &&
+                                                            option !== category) ||
+                                                        (activeSelector === "priority" &&
+                                                            option !== priority) ||
+                                                        (activeSelector === "status" &&
+                                                            option !== status)
+                                                    ) {
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,255,255,0.05)";
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    const isSelected =
+                                                        option === category ||
+                                                        option === priority ||
+                                                        option === status;
+
+                                                    e.currentTarget.style.background =
+                                                        isSelected
+                                                            ? "rgba(255,255,255,0.08)"
+                                                            : "transparent";
+                                                }}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            {/* end wrapper status and dropdown */}
                         </div>
-                    )}
 
-
-                    {/* Note NAME */}
-                    <input
-                        value={noteName}
-
-                        onChange={(e) =>
-                            setNoteName(
-                                e.target.value
-                            )
-                        }
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                handleSave();
-                            }
-                        }}
-                        onFocus={() =>
-                            setTitleFocused(true)
-                        }
-
-                        onBlur={() =>
-                            setTitleFocused(false)
-                        }
-                        ref={noteInputRef}
-                        placeholder="Note title"
-                        style={{
-                            width: "100%",
-
-                            background: "transparent",
-
-                            border: "none",
-
-                            outline: "none",
-
-                            color: "var(--text-primary)",
-
-                            fontSize: "1.05rem",
-
-                            fontWeight: "300",
-
-                            letterSpacing: "-0.02em",
-
-                            padding: "0 0 14px 0",
-
-                            borderBottom:
-                                titleFocused
-                                    ? "1px solid rgba(255,255,255,0.18)"
-                                    : "1px solid rgba(255,255,255,0.06)",
-
-                            transition:
-                                "all 0.2s ease",
-
-                            marginBottom: "20px",
-                        }}
-                    />
-
-                    {/* CONTENT */}
-                    <div
-                        style={{
-                            marginBottom: "20px",
-                        }}
-                    >
-                        <p
+                        <div
                             style={{
-                                fontSize: "0.8rem",
+                                display: "flex",
 
-                                opacity: 0.45,
+                                justifyContent: "center",
 
-                                fontWeight: "300",
+                                gap: "8px",
 
-                                marginBottom: "8px",
+                                marginBottom: "22px",
                             }}
                         >
-                            Notes
-                        </p>
+                            {associationOptions.map(
+                                (item) => {
+                                    const selected =
+                                        linkedItems.includes(
+                                            item
+                                        );
 
-                        <textarea
-                            value={content}
+                                    return (
+                                        <button
+                                            key={item}
+                                            onClick={() => {
+                                                setLinkedItems((prev) => {
+
+                                                    if (item === "NL") {
+                                                        return ["NL"];
+                                                    }
+
+                                                    const filtered =
+                                                        prev.filter(
+                                                            (i) => i !== "NL"
+                                                        );
+
+                                                    return selected
+                                                        ? filtered.filter(
+                                                            (i) => i !== item
+                                                        )
+                                                        : [...filtered, item];
+                                                });
+                                            }}
+                                            style={{
+                                                width: "34px",
+                                                height: "34px",
+
+                                                borderRadius:
+                                                    "999px",
+
+                                                border: selected
+                                                    ? "1px solid rgba(255,255,255,0.14)"
+                                                    : "1px solid rgba(255,255,255,0.06)",
+
+                                                background:
+                                                    selected
+                                                        ? "rgba(255,255,255,0.08)"
+                                                        : "rgba(255,255,255,0.03)",
+
+                                                color:
+                                                    selected
+                                                        ? "var(--text-primary)"
+                                                        : "var(--text-secondary)",
+
+                                                fontSize:
+                                                    "0.72rem",
+
+                                                fontWeight:
+                                                    "300",
+
+                                                cursor:
+                                                    "pointer",
+
+                                                transition:
+                                                    "all 0.2s ease",
+                                            }}
+                                            onMouseEnter={(
+                                                e
+                                            ) => {
+                                                if (
+                                                    !selected
+                                                ) {
+                                                    e.currentTarget.style.background =
+                                                        "rgba(255,255,255,0.05)";
+                                                }
+                                            }}
+                                            onMouseLeave={(
+                                                e
+                                            ) => {
+                                                if (
+                                                    !selected
+                                                ) {
+                                                    e.currentTarget.style.background =
+                                                        "rgba(255,255,255,0.03)";
+                                                }
+                                            }}
+                                        >
+                                            {item}
+                                        </button>
+                                    );
+                                }
+                            )}
+                        </div>
+
+                        {/* STATUS */}
+                        {mode === "edit" && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+
+                                    marginBottom: "24px",
+                                }}
+                            >
+                                <button
+                                    style={{
+                                        padding: "10px 18px",
+
+                                        borderRadius: "999px",
+
+                                        background:
+                                            currentStatus.background,
+
+                                        border:
+                                            `1px solid ${currentStatus.border}`,
+
+                                        color:
+                                            currentStatus.color,
+
+                                        fontSize: "0.8rem",
+
+                                        fontWeight: "300",
+
+                                        cursor: "default",
+
+                                        display: "flex",
+
+                                        alignItems: "center",
+
+                                        gap: "8px",
+                                    }}
+                                >
+                                    <StatusIcon
+                                        size={14}
+                                        strokeWidth={1.8}
+                                    />
+
+                                    {currentStatus.label}
+                                </button>
+                            </div>
+                        )}
+
+
+                        {/* Note NAME */}
+                        <input
+                            value={noteName}
 
                             onChange={(e) =>
-                                setContent(
+                                setNoteName(
                                     e.target.value
                                 )
                             }
-                            rows={3}
-                            placeholder="Start writing..."
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleSave();
+                                }
+                            }}
+                            onFocus={() =>
+                                setTitleFocused(true)
+                            }
+
+                            onBlur={() =>
+                                setTitleFocused(false)
+                            }
+                            ref={noteInputRef}
+                            placeholder="Note title"
                             style={{
                                 width: "100%",
 
-                                minHeight: "280px",
-
-                                background:
-                                    contentFocused
-                                        ? "rgba(255,255,255,0.02)"
-                                        : "transparent",
-
-                                borderRadius: "12px",
-
-                                padding: "10px 12px",
-
-                                transition:
-                                    "all 0.2s ease",
+                                background: "transparent",
 
                                 border: "none",
 
                                 outline: "none",
 
-                                resize: "none",
-
                                 color: "var(--text-primary)",
 
-                                fontFamily: "inherit",
-
-                                fontSize: "0.9rem",
+                                fontSize: "1.05rem",
 
                                 fontWeight: "300",
-                            }}
-                            onFocus={() =>
-                                setContentFocused(true)
-                            }
 
-                            onBlur={() =>
-                                setContentFocused(false)
-                            }
+                                letterSpacing: "-0.02em",
+
+                                padding: "0 0 14px 0",
+
+                                borderBottom:
+                                    titleFocused
+                                        ? "1px solid rgba(255,255,255,0.18)"
+                                        : "1px solid rgba(255,255,255,0.06)",
+
+                                transition:
+                                    "all 0.2s ease",
+
+                                marginBottom: "20px",
+                            }}
                         />
+
+                        {/* CONTENT */}
+                        <div
+                            style={{
+                                marginBottom: "20px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "0.8rem",
+
+                                    opacity: 0.45,
+
+                                    fontWeight: "300",
+
+                                    marginBottom: "8px",
+                                }}
+                            >
+                                Notes
+                            </p>
+
+                            <textarea
+                                value={content}
+
+                                onChange={(e) =>
+                                    setContent(
+                                        e.target.value
+                                    )
+                                }
+                                rows={3}
+                                placeholder="Start writing..."
+                                style={{
+                                    width: "100%",
+
+                                    minHeight: "200px",
+
+                                    background:
+                                        contentFocused
+                                            ? "rgba(255,255,255,0.02)"
+                                            : "transparent",
+
+                                    borderRadius: "12px",
+
+                                    padding: "10px 12px",
+
+                                    transition:
+                                        "all 0.2s ease",
+
+                                    border: "none",
+
+                                    outline: "none",
+
+                                    resize: "none",
+
+                                    color: "var(--text-primary)",
+
+                                    fontFamily: "inherit",
+
+                                    fontSize: "0.9rem",
+
+                                    fontWeight: "300",
+                                }}
+                                onFocus={() =>
+                                    setContentFocused(true)
+                                }
+
+                                onBlur={() =>
+                                    setContentFocused(false)
+                                }
+                            />
+                        </div>
+
+                        {/* DIVIDER */}
+                        <div
+                            style={{
+                                height: "1px",
+                                background: "rgba(255,255,255,0.06)",
+                                marginBottom: "20px",
+                            }}
+                        />
+
                     </div>
 
-                    {/* DIVIDER */}
                     <div
                         style={{
-                            height: "1px",
-                            background: "rgba(255,255,255,0.06)",
-                            marginBottom: "20px",
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: "10px",
+                            marginTop: "24px",
                         }}
-                    />
+                    >
+                        <button
+                            onClick={onClose}
+                            style={{
+                                padding: "11px 18px",
 
+                                borderRadius: "999px",
+
+                                background:
+                                    "rgba(255,77,77,0.12)",
+
+                                border:
+                                    "1px solid rgba(255,77,77,0.25)",
+
+                                color: "var(--danger)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,77,77,0.20)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,77,77,0.12)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+                            }}
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            onClick={handleSave}
+                            style={{
+                                padding: "11px 18px",
+
+                                borderRadius: "999px",
+
+                                background:
+                                    "rgba(255,255,255,0.08)",
+
+                                border:
+                                    "1px solid rgba(255,255,255,0.10)",
+
+                                color:
+                                    "var(--text-primary)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.14)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.18)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.08)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.10)";
+                            }}
+                        >
+                            {mode === "edit"
+                                ? "Save"
+                                : "Create"}
+                        </button>
+                    </div>
                 </div>
+            )}
+            {showDeleteConfirm && (
+                <DeleteConfirmModal
+                    title="Delete note?"
+                    message="This action cannot be undone."
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "10px",
-                        marginTop: "24px",
+                    onCancel={() => {
+                        setShowDeleteConfirm(false);
                     }}
-                >
-                    <button
-                        onClick={onClose}
-                        style={{
-                            padding: "11px 18px",
 
-                            borderRadius: "999px",
+                    onConfirm={() => {
+                        onDeleteNote(note._id);
 
-                            background:
-                                "rgba(255,77,77,0.12)",
+                        setShowDeleteConfirm(false);
 
-                            border:
-                                "1px solid rgba(255,77,77,0.25)",
-
-                            color: "var(--danger)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.20)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.12)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
-                        }}
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        onClick={handleSave}
-                        style={{
-                            padding: "11px 18px",
-
-                            borderRadius: "999px",
-
-                            background:
-                                "rgba(255,255,255,0.08)",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.10)",
-
-                            color:
-                                "var(--text-primary)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.14)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.18)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.08)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.10)";
-                        }}
-                    >
-                        {mode === "edit"
-                            ? "Save"
-                            : "Create"}
-                    </button>
-                </div>
-            </div>
-        </div >
+                        onClose();
+                    }}
+                />
+            )}
+        </div>
     );
 }
 

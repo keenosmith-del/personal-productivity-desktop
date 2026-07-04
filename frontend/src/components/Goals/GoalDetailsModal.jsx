@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import DeleteConfirmModal from "../DeleteConfirmModal";
+
 import {
     Sprout,
     Pause,
@@ -10,6 +12,7 @@ import {
     CircleAlert,
     X,
     Check,
+    Ellipsis,
 } from "lucide-react";
 
 function GoalDetailsModal({
@@ -20,8 +23,6 @@ function GoalDetailsModal({
     onCompleteGoal,
     onRestoreGoal,
     setToast,
-
-    dashboardMode = false,
 }) {
     const formattedCreatedDate =
         goal?.createdAt
@@ -185,13 +186,9 @@ function GoalDetailsModal({
                 position: "fixed",
                 inset: 0,
 
-                background: dashboardMode
-                    ? "rgba(0, 0, 0, 0.8)"
-                    : "rgba(0, 0, 0, 0.35)",
+                background: "rgba(0, 0, 0, 0.3)",
 
-                backdropFilter: dashboardMode
-                    ? "blur(40px)"
-                    : "blur(20px)",
+                backdropFilter: "blur(20px)",
 
                 display: "flex",
                 justifyContent: "center",
@@ -200,263 +197,348 @@ function GoalDetailsModal({
                 zIndex: 1000,
             }}
         >
-            <div
-                onClick={(e) =>
-                    e.stopPropagation()
-                }
-                style={{
-                    width: "500px",
-
-                    background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    boxShadow:
-                        "0 30px 80px rgba(0,0,0,0.45)",
-
-                    borderRadius: "36px",
-
-                    backdropFilter:
-                        "blur(30px)",
-
-                    padding: "36px",
-                }}
-            >
+            {!showDeleteConfirm && (
                 <div
+                    onClick={(e) =>
+                        e.stopPropagation()
+                    }
                     style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        marginBottom: "24px",
+                        width: "500px",
+
+                        background:
+                            "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+
+                        border:
+                            "1px solid rgba(255,255,255,0.10)",
+
+                        boxShadow:
+                            "0 30px 80px rgba(0,0,0,0.45)",
+
+                        borderRadius: "36px",
+
+                        backdropFilter:
+                            "blur(30px)",
+
+                        padding: "36px",
                     }}
                 >
-                    <div>
-                        <h2
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            marginBottom: "24px",
+                        }}
+                    >
+                        <div>
+                            <h2
+                                style={{
+                                    margin: 0,
+                                    fontSize: "0.95rem",
+                                    fontWeight: "400",
+                                }}
+                            >
+                                Goal Details
+                            </h2>
+
+                            <p
+                                style={{
+                                    marginTop: "4px",
+                                    marginBottom: 0,
+                                    fontSize: "0.8rem",
+                                    fontWeight: "300",
+                                    opacity: 0.55,
+                                }}
+                            >
+                                View goal information
+                            </p>
+                        </div>
+
+                        {/* meatball and x pill */}
+                        <div
                             style={{
-                                margin: 0,
-                                fontSize: "0.95rem",
-                                fontWeight: "400",
+                                display: "flex",
+                                alignItems: "center",
+
+                                gap: "6px",
+
+                                padding: "2px",
+
+                                borderRadius: "999px",
+
+                                background: "rgb(36, 36, 36)",
+
+                                backdropFilter: "blur(28px)",
+
+                                boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
                             }}
                         >
-                            Goal Details
-                        </h2>
+                            {/* meatball */}
+                            <div
+                                style={{
+                                    position: "relative",
+                                }}
+                            >
+                                <button
+                                    style={{
+                                        width: "32px",
 
-                        <p
+                                        height: "32px",
+
+                                        borderRadius: "999px",
+
+                                        border: "none",
+
+                                        background: "transparent",
+
+                                        color: "var(--text-secondary)",
+
+                                        display: "flex",
+
+                                        alignItems: "center",
+
+                                        justifyContent: "center",
+
+                                        cursor: "pointer",
+
+                                        transition:
+                                            "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-secondary)";
+                                    }}
+                                >
+                                    <Ellipsis
+                                        size={16}
+                                    />
+                                </button>
+                            </div>
+
+                            {/* close x */}
+                            <div
+                                style={{
+                                    position: "relative",
+                                }}
+                            >
+                                <button
+                                    onClick={onClose}
+                                    style={{
+                                        width: "32px",
+                                        height: "32px",
+
+                                        borderRadius: "999px",
+
+                                        border: "rgb(33, 33, 33)",
+
+                                        background:
+                                            "rgb(33, 33, 33)",
+
+                                        color:
+                                            "var(--text-secondary)",
+
+                                        cursor: "pointer",
+
+                                        fontSize: "0.85rem",
+
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgb(33, 33, 33)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgb(33, 33, 33)";
+
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-secondary)";
+                                    }}
+                                >
+                                    x
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        {/* icon */}
+
+                        <div
                             style={{
-                                marginTop: "4px",
-                                marginBottom: 0,
-                                fontSize: "0.8rem",
-                                fontWeight: "300",
+                                display: "flex",
+                                justifyContent: "center",
+                                marginBottom: "20px",
                                 opacity: 0.55,
                             }}
                         >
-                            View goal information
-                        </p>
-                    </div>
+                            <Sprout
+                                size={28}
+                                strokeWidth={1.8}
+                            />
+                        </div>
 
-                    <button
-                        onClick={onClose}
-                        style={{
-                            width: "32px",
-                            height: "32px",
+                        {formattedCreatedDate && (
+                            <p
+                                style={{
+                                    marginTop: "12px",
 
-                            borderRadius: "999px",
+                                    marginBottom: "5px",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
+                                    textAlign: "center",
 
-                            background:
-                                "rgba(255,255,255,0.04)",
+                                    fontSize: "0.72rem",
 
-                            color:
-                                "var(--text-secondary)",
+                                    fontWeight: "300",
 
-                            cursor: "pointer",
+                                    opacity: 0.4,
+                                }}
+                            >
+                                Created on {formattedCreatedDate}
+                            </p>
+                        )}
 
-                            fontSize: "0.85rem",
+                        {goal.completedDate && (
+                            <p
+                                style={{
+                                    marginTop: "2px",
 
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.10)";
+                                    marginBottom: "12px",
 
-                            e.currentTarget.style.transform =
-                                "scale(1.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
+                                    textAlign: "center",
 
-                            e.currentTarget.style.transform =
-                                "scale(1)";
-                        }}
-                    >
-                        x
-                    </button>
-                </div>
+                                    fontSize: "0.72rem",
 
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    {/* icon */}
+                                    fontWeight: "300",
 
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            marginBottom: "20px",
-                            opacity: 0.55,
-                        }}
-                    >
-                        <Sprout
-                            size={28}
-                            strokeWidth={1.8}
-                        />
-                    </div>
+                                    opacity: 0.4,
+                                }}
+                            >
+                                Completed on{" "}
+                                {formattedCompletedDate}
+                            </p>
+                        )}
 
-                    {formattedCreatedDate && (
-                        <p
+                        {/* Title */}
+                        <h3
                             style={{
-                                marginTop: "12px",
-
-                                marginBottom: "5px",
-
                                 textAlign: "center",
-
-                                fontSize: "0.72rem",
 
                                 fontWeight: "300",
 
-                                opacity: 0.4,
+                                fontSize: "1.05rem",
+
+                                letterSpacing: "-0.02em",
+
+                                margin: 0,
+
+                                marginBottom: "14px",
                             }}
                         >
-                            Created on {formattedCreatedDate}
-                        </p>
-                    )}
+                            {goal.title}
+                        </h3>
 
-                    {goal.completedDate && (
-                        <p
+                        {/* Chips */}
+                        <div
                             style={{
-                                marginTop: "2px",
+                                display: "flex",
 
-                                marginBottom: "12px",
+                                justifyContent: "center",
 
-                                textAlign: "center",
+                                gap: "8px",
 
-                                fontSize: "0.72rem",
+                                flexWrap: "wrap",
+
+                                marginBottom: "22px",
 
                                 fontWeight: "300",
-
-                                opacity: 0.4,
                             }}
                         >
-                            Completed on{" "}
-                            {formattedCompletedDate}
-                        </p>
-                    )}
+                            <span
+                                style={{
+                                    padding: "6px 12px",
+                                    minWidth: "78px",
+                                    textAlign: "center",
 
-                    {/* Title */}
-                    <h3
-                        style={{
-                            textAlign: "center",
+                                    borderRadius: "999px",
 
-                            fontWeight: "300",
+                                    fontSize: "0.7rem",
 
-                            fontSize: "1.05rem",
+                                    background:
+                                        goal.category === "Work"
+                                            ? "#466a6d33"
+                                            : goal.category === "Study"
+                                                ? "#536b8333"
+                                                : goal.category === "Personal"
+                                                    ? "#6f5f7a33"
+                                                    : "#57707a33",
 
-                            letterSpacing: "-0.02em",
+                                    border:
+                                        goal.category === "Work"
+                                            ? "1px solid #466a6d66"
+                                            : goal.category === "Study"
+                                                ? "1px solid #536b8366"
+                                                : goal.category === "Personal"
+                                                    ? "1px solid #6f5f7a66"
+                                                    : "1px solid #57707a66",
+                                }}
+                            >
+                                {goal.category}
+                            </span>
 
-                            margin: 0,
+                            <span
+                                style={{
+                                    padding: "6px 12px",
+                                    minWidth: "78px",
+                                    textAlign: "center",
 
-                            marginBottom: "14px",
-                        }}
-                    >
-                        {goal.title}
-                    </h3>
+                                    borderRadius: "999px",
 
-                    {/* Chips */}
-                    <div
-                        style={{
-                            display: "flex",
+                                    fontSize: "0.7rem",
 
-                            justifyContent: "center",
+                                    background:
+                                        goal.priority === "Low"
+                                            ? "#273c4133"
+                                            : goal.priority === "Medium"
+                                                ? "#5e687433"
+                                                : "#6b544733",
 
-                            gap: "8px",
+                                    border:
+                                        goal.priority === "Low"
+                                            ? "1px solid #273c4166"
+                                            : goal.priority === "Medium"
+                                                ? "1px solid #5e687466"
+                                                : "1px solid #6b544766",
+                                }}
+                            >
+                                {goal.priority}
+                            </span>
 
-                            flexWrap: "wrap",
-
-                            marginBottom: "22px",
-
-                            fontWeight: "300",
-                        }}
-                    >
-                        <span
-                            style={{
-                                padding: "6px 12px",
-                                minWidth: "78px",
-                                textAlign: "center",
-
-                                borderRadius: "999px",
-
-                                fontSize: "0.7rem",
-
-                                background:
-                                    goal.category === "Work"
-                                        ? "#466a6d33"
-                                        : goal.category === "Study"
-                                            ? "#536b8333"
-                                            : goal.category === "Personal"
-                                                ? "#6f5f7a33"
-                                                : "#57707a33",
-
-                                border:
-                                    goal.category === "Work"
-                                        ? "1px solid #466a6d66"
-                                        : goal.category === "Study"
-                                            ? "1px solid #536b8366"
-                                            : goal.category === "Personal"
-                                                ? "1px solid #6f5f7a66"
-                                                : "1px solid #57707a66",
-                            }}
-                        >
-                            {goal.category}
-                        </span>
-
-                        <span
-                            style={{
-                                padding: "6px 12px",
-                                minWidth: "78px",
-                                textAlign: "center",
-
-                                borderRadius: "999px",
-
-                                fontSize: "0.7rem",
-
-                                background:
-                                    goal.priority === "Low"
-                                        ? "#273c4133"
-                                        : goal.priority === "Medium"
-                                            ? "#5e687433"
-                                            : "#6b544733",
-
-                                border:
-                                    goal.priority === "Low"
-                                        ? "1px solid #273c4166"
-                                        : goal.priority === "Medium"
-                                            ? "1px solid #5e687466"
-                                            : "1px solid #6b544766",
-                            }}
-                        >
-                            {goal.priority}
-                        </span>
-
-                        {/*
+                            {/*
                         not necessaryy because status chip below
                         {!goal.completed && (
                             <span
@@ -489,663 +571,492 @@ function GoalDetailsModal({
                         )}
                             */}
 
-                        {/* MARK COMPLETED */}
-                        {!goal.completed ? (
-                            <button
-                                onClick={() =>
-                                    onCompleteGoal(goal)
-                                }
-                                style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
+                            {/* MARK COMPLETED */}
+                            {!goal.completed ? (
+                                <button
+                                    onClick={() =>
+                                        onCompleteGoal(goal)
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        minWidth: "78px",
+                                        textAlign: "center",
 
-                                    borderRadius: "999px",
+                                        borderRadius: "999px",
 
-                                    fontSize: "0.7rem",
+                                        fontSize: "0.7rem",
 
-                                    background: "rgba(114,138,110,0.12)",
+                                        background: "rgba(114,138,110,0.12)",
 
-                                    border: "1px solid rgba(114,138,110,0.25)",
+                                        border: "1px solid rgba(114,138,110,0.25)",
 
-                                    color: "#9bc091",
+                                        color: "#9bc091",
 
-                                    cursor: "pointer",
+                                        cursor: "pointer",
 
-                                    transition: "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-                                }}
-                            >
-                                Mark Complete
-                            </button>
-                        ) : (
-                            <button
-                                style={{
-                                    padding: "6px 12px",
-                                    minWidth: "78px",
-                                    textAlign: "center",
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    Mark Complete
+                                </button>
+                            ) : (
+                                <button
+                                    style={{
+                                        padding: "6px 12px",
+                                        minWidth: "78px",
+                                        textAlign: "center",
 
-                                    borderRadius: "999px",
+                                        borderRadius: "999px",
 
-                                    fontSize: "0.7rem",
+                                        fontSize: "0.7rem",
 
-                                    background: "rgba(114,138,110,0.12)",
+                                        background: "rgba(114,138,110,0.12)",
 
-                                    border: "1px solid rgba(114,138,110,0.25)",
+                                        border: "1px solid rgba(114,138,110,0.25)",
 
-                                    color: "#9bc091",
+                                        color: "#9bc091",
 
-                                    cursor: "pointer",
+                                        cursor: "pointer",
 
-                                    transition: "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-                                }}
-                            >
-                                ✓ Completed
-                            </button>
-                        )}
-                    </div>
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    ✓ Completed
+                                </button>
+                            )}
+                        </div>
 
 
-                    {/* ASSOCIATIONS */}
-                    {goal.linkedItems?.length > 0 && (
-                        <>
-                            <div
-                                style={{
-                                    display: "flex",
+                        {/* ASSOCIATIONS */}
+                        {goal.linkedItems?.length > 0 && (
+                            <>
+                                <div
+                                    style={{
+                                        display: "flex",
 
-                                    justifyContent: "center",
+                                        justifyContent: "center",
 
-                                    marginBottom: "20px",
-                                }}
-                            >
-                                {visibleLinks.map(
-                                    (item, index) => (
+                                        marginBottom: "20px",
+                                    }}
+                                >
+                                    {visibleLinks.map(
+                                        (item, index) => (
+                                            <div
+                                                key={item}
+                                                style={{
+                                                    ...linkedItemStyle,
+
+                                                    marginRight: "-6px",
+
+                                                    zIndex: index + 1,
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(-1px) scale(1.08)";
+
+                                                    e.currentTarget.style.border =
+                                                        "1px solid rgba(255,255,255,0.12)";
+
+                                                    e.currentTarget.style.boxShadow =
+                                                        "0 8px 20px rgba(0,0,0,0.25)";
+
+                                                    e.currentTarget.style.color =
+                                                        "var(--text-primary)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(0) scale(1)";
+
+                                                    e.currentTarget.style.border =
+                                                        "1px solid rgba(255,255,255,0.06)";
+
+                                                    e.currentTarget.style.boxShadow =
+                                                        "none";
+
+                                                    e.currentTarget.style.color =
+                                                        "var(--text-secondary)";
+                                                }}
+                                            >
+                                                {item}
+                                            </div>
+                                        )
+                                    )}
+
+                                    {remainingLinks > 0 && (
                                         <div
-                                            key={item}
                                             style={{
                                                 ...linkedItemStyle,
 
-                                                marginRight: "-6px",
+                                                background:
+                                                    "rgba(255,255,255,0.03)",
 
-                                                zIndex: index + 1,
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform =
-                                                    "translateY(-1px) scale(1.08)";
+                                                border:
+                                                    "1px solid rgba(255,255,255,0.08)",
 
-                                                e.currentTarget.style.border =
-                                                    "1px solid rgba(255,255,255,0.12)";
-
-                                                e.currentTarget.style.boxShadow =
-                                                    "0 8px 20px rgba(0,0,0,0.25)";
-
-                                                e.currentTarget.style.color =
-                                                    "var(--text-primary)";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform =
-                                                    "translateY(0) scale(1)";
-
-                                                e.currentTarget.style.border =
-                                                    "1px solid rgba(255,255,255,0.06)";
-
-                                                e.currentTarget.style.boxShadow =
-                                                    "none";
-
-                                                e.currentTarget.style.color =
-                                                    "var(--text-secondary)";
+                                                zIndex: 10,
                                             }}
                                         >
-                                            {item}
+                                            +{remainingLinks}
                                         </div>
-                                    )
-                                )}
+                                    )}
+                                </div>
 
-                                {remainingLinks > 0 && (
-                                    <div
-                                        style={{
-                                            ...linkedItemStyle,
+                                <div
+                                    style={{
+                                        height: "1px",
 
-                                            background:
-                                                "rgba(255,255,255,0.03)",
+                                        background:
+                                            "rgba(255,255,255,0.06)",
 
-                                            border:
-                                                "1px solid rgba(255,255,255,0.08)",
+                                        marginBottom: "20px",
+                                    }}
+                                />
+                            </>
+                        )}
 
-                                            zIndex: 10,
-                                        }}
-                                    >
-                                        +{remainingLinks}
-                                    </div>
-                                )}
-                            </div>
+                        {/* STATUS */}
 
-                            <div
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+
+                                marginBottom: "24px",
+                            }}
+                        >
+                            <button
                                 style={{
-                                    height: "1px",
+                                    padding: "10px 18px",
+
+                                    borderRadius: "999px",
 
                                     background:
-                                        "rgba(255,255,255,0.06)",
+                                        currentStatus.background,
 
-                                    marginBottom: "20px",
-                                }}
-                            />
-                        </>
-                    )}
+                                    border:
+                                        `1px solid ${currentStatus.border}`,
 
-                    {/* STATUS */}
-
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-
-                            marginBottom: "24px",
-                        }}
-                    >
-                        <button
-                            style={{
-                                padding: "10px 18px",
-
-                                borderRadius: "999px",
-
-                                background:
-                                    currentStatus.background,
-
-                                border:
-                                    `1px solid ${currentStatus.border}`,
-
-                                color:
-                                    currentStatus.color,
-
-                                fontSize: "0.8rem",
-
-                                fontWeight: "300",
-
-                                cursor: "pointer",
-
-                                transition:
-                                    "all 0.2s ease",
-
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                gap: "8px",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(-1px)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-                            }}
-                        >
-                            <StatusIcon
-                                size={14}
-                                strokeWidth={1.8}
-                            />
-
-                            {currentStatus.label}
-                        </button>
-                    </div>
-
-                    {/* DIVIDER */}
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginBottom: "20px",
-                        }}
-                    />
-
-                    {/* Description */}
-
-                    <div
-                        style={{
-                            marginBottom: "20px",
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontSize: "0.8rem",
-
-                                opacity: 0.45,
-
-                                fontWeight: "300",
-
-                                marginBottom: "8px",
-                            }}
-                        >
-                            Description
-                        </p>
-
-                        <p
-                            style={{
-                                fontSize: "0.85rem",
-
-                                fontWeight: "300",
-
-                                lineHeight: 1.6,
-
-                                margin: 0,
-                            }}
-                        >
-                            {goal.description ||
-                                "No description provided."}
-                        </p>
-                    </div>
-
-                    {/* Due Date */}
-
-                    <div>
-                        <p
-                            style={{
-                                fontSize: "0.8rem",
-
-                                opacity: 0.45,
-
-                                fontWeight: "300",
-
-                                marginBottom: "8px",
-                            }}
-                        >
-                            Due Date
-                        </p>
-
-                        <p
-                            style={{
-                                fontSize: "0.85rem",
-
-                                fontWeight: "300",
-
-                                margin: 0,
-                            }}
-                        >
-                            {goal.dueDate
-                                ? new Date(
-                                    goal.dueDate
-                                ).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                        month: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                    }
-                                )
-                                : "No due date"}
-                        </p>
-                    </div>
-                </div>
-
-
-                <div
-                    style={{
-                        display: "flex",
-
-                        justifyContent: "flex-end",
-
-                        gap: "10px",
-
-                        marginTop: "24px",
-                    }}
-                >
-                    <button
-                        onClick={() =>
-                            setShowDeleteConfirm(true)
-                        }
-                        style={{
-                            padding: "11px 18px",
-
-                            borderRadius: "999px",
-
-                            background:
-                                "rgba(255,77,77,0.12)",
-
-                            border:
-                                "1px solid rgba(255,77,77,0.25)",
-
-                            color: "var(--danger)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.20)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.12)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
-                        }}
-                    >
-                        Delete
-                    </button>
-
-                    {!goal.completed ? (
-                        <button
-                            onClick={() => {
-                                onEditGoal(goal);
-                                onClose();
-                            }}
-                            style={{
-                                padding: "11px 18px",
-
-                                borderRadius: "999px",
-
-                                background:
-                                    "rgba(255,255,255,0.08)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.10)",
-
-                                color:
-                                    "var(--text-primary)",
-
-                                fontSize: "0.8rem",
-
-                                fontWeight: "300",
-
-                                cursor: "pointer",
-
-                                transition: "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.14)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(-1px)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.18)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.08)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.10)";
-                            }}
-                        >
-                            Edit
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => {
-                                onRestoreGoal(goal);
-                            }}
-                            style={{
-                                padding: "11px 18px",
-
-                                borderRadius: "999px",
-
-                                background:
-                                    "rgba(255,255,255,0.08)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.10)",
-
-                                color:
-                                    "var(--text-primary)",
-
-                                fontSize: "0.8rem",
-
-                                fontWeight: "300",
-
-                                cursor: "pointer",
-
-                                transition: "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.14)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(-1px)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.18)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.08)";
-
-                                e.currentTarget.style.transform =
-                                    "translateY(0)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.10)";
-                            }}
-                        >
-                            Restore
-                        </button>
-                    )}
-                </div>
-            </div>
-            {
-                showDeleteConfirm && (
-                    <div
-                        onClick={() =>
-                            setShowDeleteConfirm(false)
-                        }
-                        style={{
-                            position: "fixed",
-                            inset: 0,
-
-                            background:
-                                "rgba(0,0,0,0.8)",
-
-                            backdropFilter:
-                                "blur(20px)",
-
-                            display: "flex",
-
-                            justifyContent:
-                                "center",
-
-                            alignItems:
-                                "center",
-
-                            zIndex: 3000,
-                        }}
-                    >
-                        <div
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
-                            style={{
-                                width: "400px",
-
-                                padding: "28px",
-
-                                borderRadius: "24px",
-
-                                background:
-                                    "rgba(20,20,20,0.90)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
-                            }}
-                        >
-                            <h3
-                                style={{
-                                    marginBottom: "12px",
-                                    fontWeight: "400",
-                                    fontSize: "0.95rem",
-                                }}
-                            >
-                                Delete goal?
-                            </h3>
-
-                            <p
-                                style={{
-                                    color: "var(--text-secondary)",
-
-                                    marginBottom: "24px",
+                                    color:
+                                        currentStatus.color,
 
                                     fontSize: "0.8rem",
 
                                     fontWeight: "300",
 
-                                    opacity: 0.55,
-                                }}
-                            >
-                                This action cannot be undone.
-                            </p>
+                                    cursor: "pointer",
 
-                            <div
-                                style={{
+                                    transition:
+                                        "all 0.2s ease",
+
                                     display: "flex",
 
-                                    justifyContent:
-                                        "flex-end",
+                                    alignItems: "center",
 
-                                    gap: "12px",
+                                    gap: "8px",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                 }}
                             >
-                                <button
-                                    onClick={() =>
-                                        setShowDeleteConfirm(false)
-                                    }
-                                    style={{
-                                        padding: "11px 18px",
+                                <StatusIcon
+                                    size={14}
+                                    strokeWidth={1.8}
+                                />
 
-                                        borderRadius: "999px",
+                                {currentStatus.label}
+                            </button>
+                        </div>
 
-                                        background:
-                                            "rgba(255,255,255,0.08)",
+                        {/* DIVIDER */}
+                        <div
+                            style={{
+                                height: "1px",
 
-                                        border:
-                                            "1px solid rgba(255,255,255,0.10)",
+                                background:
+                                    "rgba(255,255,255,0.06)",
 
-                                        color:
-                                            "var(--text-primary)",
+                                marginBottom: "20px",
+                            }}
+                        />
 
-                                        fontSize: "0.8rem",
+                        {/* Description */}
 
-                                        fontWeight: "300",
+                        <div
+                            style={{
+                                marginBottom: "20px",
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: "0.8rem",
 
-                                        cursor: "pointer",
+                                    opacity: 0.45,
 
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.14)";
+                                    fontWeight: "300",
 
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
+                                    marginBottom: "8px",
+                                }}
+                            >
+                                Description
+                            </p>
 
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.18)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.08)";
+                            <p
+                                style={{
+                                    fontSize: "0.85rem",
 
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
+                                    fontWeight: "300",
 
-                                        e.currentTarget.style.border =
-                                            "1px solid rgba(255,255,255,0.10)";
-                                    }}
-                                >
-                                    Cancel
-                                </button>
+                                    lineHeight: 1.6,
 
-                                <button
-                                    onClick={() => {
-                                        onDeleteGoal(goal._id);
+                                    margin: 0,
+                                }}
+                            >
+                                {goal.description ||
+                                    "No description provided."}
+                            </p>
+                        </div>
 
-                                        setToast(
-                                            "Goal deleted"
-                                        );
+                        {/* Due Date */}
 
-                                        setTimeout(() => {
-                                            setToast("");
-                                        }, 4000);
+                        <div>
+                            <p
+                                style={{
+                                    fontSize: "0.8rem",
 
-                                        setShowDeleteConfirm(false);
+                                    opacity: 0.45,
 
-                                        onClose();
-                                    }}
-                                    style={{
-                                        padding: "11px 18px",
+                                    fontWeight: "300",
 
-                                        borderRadius: "999px",
+                                    marginBottom: "8px",
+                                }}
+                            >
+                                Due Date
+                            </p>
 
-                                        background:
-                                            "rgba(255,77,77,0.12)",
+                            <p
+                                style={{
+                                    fontSize: "0.85rem",
 
-                                        border:
-                                            "1px solid rgba(255,77,77,0.25)",
+                                    fontWeight: "300",
 
-                                        color: "var(--danger)",
-
-                                        fontSize: "0.8rem",
-
-                                        fontWeight: "300",
-
-                                        cursor: "pointer",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.20)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,77,77,0.12)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-                                    }}
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                                    margin: 0,
+                                }}
+                            >
+                                {goal.dueDate
+                                    ? new Date(
+                                        goal.dueDate
+                                    ).toLocaleDateString(
+                                        "en-US",
+                                        {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        }
+                                    )
+                                    : "No due date"}
+                            </p>
                         </div>
                     </div>
-                )
-            }
+
+
+                    <div
+                        style={{
+                            display: "flex",
+
+                            justifyContent: "flex-end",
+
+                            gap: "10px",
+
+                            marginTop: "24px",
+                        }}
+                    >
+                        <button
+                            onClick={() =>
+                                setShowDeleteConfirm(true)
+                            }
+                            style={{
+                                padding: "11px 18px",
+
+                                borderRadius: "999px",
+
+                                background:
+                                    "rgba(255,77,77,0.12)",
+
+                                border:
+                                    "1px solid rgba(255,77,77,0.25)",
+
+                                color: "var(--danger)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,77,77,0.20)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,77,77,0.12)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+                            }}
+                        >
+                            Delete
+                        </button>
+
+                        {!goal.completed ? (
+                            <button
+                                onClick={() => {
+                                    onEditGoal(goal);
+                                    // since onclose removed, we need to refresh details on detailsmodal or indtead return to main page NOT back to detailsmodal
+                                }}
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    color:
+                                        "var(--text-primary)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.14)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.18)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.08)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.10)";
+                                }}
+                            >
+                                Edit
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    onRestoreGoal(goal);
+                                }}
+                                style={{
+                                    padding: "11px 18px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,255,255,0.08)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    color:
+                                        "var(--text-primary)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.14)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.18)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.08)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.border =
+                                        "1px solid rgba(255,255,255,0.10)";
+                                }}
+                            >
+                                Restore
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+            {showDeleteConfirm && (
+                <DeleteConfirmModal
+                    title="Delete goal?"
+                    message="This action cannot be undone."
+
+                    onCancel={() => {
+                        setShowDeleteConfirm(false);
+                    }}
+
+                    onConfirm={() => {
+                        onDeleteGoal(goal._id);
+
+                        setShowDeleteConfirm(false);
+
+                        onClose();
+                    }}
+                />
+            )}
         </div>
     );
 }

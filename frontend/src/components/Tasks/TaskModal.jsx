@@ -15,6 +15,7 @@ import {
   X,
   Check,
   Calendar,
+  Ellipsis,
 } from "lucide-react";
 
 import MiniCalendarModal from "../MiniCalendarModal";
@@ -367,46 +368,129 @@ function TaskModal({
             </p>
           </div>
 
-          <button
-            onClick={onClose}
+          {/* meatball and x pill*/}
+          <div
             style={{
-              width: "32px",
-              height: "32px",
+              display: "flex",
+              alignItems: "center",
+
+              gap: "6px",
+
+              padding: "2px",
 
               borderRadius: "999px",
 
-              border:
-                "1px solid rgba(255,255,255,0.08)",
+              background: "rgb(36, 36, 36)",
 
-              background:
-                "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(28px)",
 
-              color:
-                "var(--text-secondary)",
-
-              cursor: "pointer",
-
-              fontSize: "0.85rem",
-
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background =
-                "rgba(255,255,255,0.10)";
-
-              e.currentTarget.style.transform =
-                "scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background =
-                "rgba(255,255,255,0.04)";
-
-              e.currentTarget.style.transform =
-                "scale(1)";
+              boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
             }}
           >
-            x
-          </button>
+            {/* meatball */}
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                style={{
+                  width: "32px",
+
+                  height: "32px",
+
+                  borderRadius: "999px",
+
+                  border: "none",
+
+                  background: "transparent",
+
+                  color: "var(--text-secondary)",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent: "center",
+
+                  cursor: "pointer",
+
+                  transition:
+                    "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(-1px)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(0)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-secondary)";
+                }}
+              >
+                <Ellipsis
+                  size={16}
+                />
+              </button>
+            </div>
+            {/* close x */}
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={onClose}
+                style={{
+                  width: "32px",
+                  height: "32px",
+
+                  borderRadius: "999px",
+
+                  border: "rgb(33, 33, 33)",
+
+                  background:
+                    "rgb(33, 33, 33)",
+
+                  color:
+                    "var(--text-secondary)",
+
+                  cursor: "pointer",
+
+                  fontSize: "0.85rem",
+
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background =
+                    "rgb(33, 33, 33)";
+
+                  e.currentTarget.style.transform =
+                    "translateY(-1px)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background =
+                    "rgb(33, 33, 33)";
+
+                  e.currentTarget.style.transform =
+                    "translateY(0)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-secondary)";
+                }}
+              >
+                x
+              </button>
+            </div>
+          </div>
         </div>
 
         <div

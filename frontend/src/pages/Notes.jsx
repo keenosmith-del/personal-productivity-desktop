@@ -1386,7 +1386,6 @@ function Notes() {
                         >
                           <Ellipsis
                             size={16}
-                            strokeWidth={1.6}
                           />
                         </button>
 

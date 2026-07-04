@@ -3,9 +3,16 @@ import DashboardNotePreviewCard from "./DashboardNotePreviewCard";
 function DashboardNotesCard({
     notes = [],
     onNoteClick,
+    onCreateNote,
 }) {
     const visibleNotes =
-        notes.slice(0, 2);
+        [...notes.slice(0, 2)];
+
+    while (
+        visibleNotes.length < 2
+    ) {
+        visibleNotes.push(null);
+    }
 
     const remainingNotes =
         notes.length - 2;
@@ -103,13 +110,25 @@ function DashboardNotesCard({
                 }}
             >
                 {visibleNotes.map(
-                    (note) => (
+                    (note, index) => (
                         <DashboardNotePreviewCard
-                            key={note._id}
-                            note={note}
-                            onClick={() =>
-                                onNoteClick?.(note)
+                            key={
+                                note?._id ||
+                                `placeholder-${index}`
                             }
+
+                            note={note}
+
+                            onClick={() => {
+
+                                if (note) {
+                                    onNoteClick?.(
+                                        note
+                                    );
+                                } else {
+                                    onCreateNote?.();
+                                }
+                            }}
                         />
                     )
                 )}

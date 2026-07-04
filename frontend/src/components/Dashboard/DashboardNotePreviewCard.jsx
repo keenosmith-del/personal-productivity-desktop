@@ -1,8 +1,10 @@
+import { NotebookPen } from "lucide-react";
 function DashboardNotePreviewCard({
     note,
     onClick,
 }) {
-    if (!note) return null;
+    const isPlaceholder =
+        !note;
 
     return (
         <div
@@ -51,64 +53,114 @@ function DashboardNotePreviewCard({
                     "rgba(255, 255, 255, 0.025)";
             }}
         >
-            {/* TITLE */}
 
-            <div
-                style={{
-                    fontSize: "0.82rem",
+            {isPlaceholder ? (
 
-                    fontWeight: "350",
+                <div
+                    style={{
+                        flex: 1,
 
-                    letterSpacing: "-0.02em",
+                        display: "flex",
 
-                    marginBottom: "10px",
+                        flexDirection: "column",
 
-                    display:
-                        "-webkit-box",
+                        justifyContent:
+                            "center",
 
-                    WebkitLineClamp: 2,
+                        alignItems:
+                            "center",
 
-                    WebkitBoxOrient:
-                        "vertical",
+                        textAlign: "center",
 
-                    overflow:
-                        "hidden",
-                }}
-            >
-                {note.title}
-            </div>
+                        gap: "10px",
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: "2rem",
 
-            {/* CONTENT */}
+                            opacity: 0.35,
+                        }}
+                    >
+                        <NotebookPen 
+                        size={18}
+                        />
+                    </div>
 
-            <div
-                style={{
-                    fontSize: "0.68rem",
+                    <div
+                        style={{
+                            fontSize: "0.72rem",
 
-                    lineHeight: 1.4,
+                            opacity: 0.45,
+                        }}
+                    >
+                        Create new note
+                    </div>
+                </div>
 
-                    opacity: 0.55,
+            ) : (
 
-                    display:
-                        "-webkit-box",
+                <>
+                    {/* TITLE */}
 
-                    WebkitLineClamp: 5,
+                    <div
+                        style={{
+                            fontSize: "0.82rem",
 
-                    WebkitBoxOrient:
-                        "vertical",
+                            fontWeight: "350",
 
-                    overflow:
-                        "hidden",
-                }}
-            >
-                {note.content ||
-                    "Empty note."}
-            </div>
+                            letterSpacing: "-0.02em",
 
-            <div
-                style={{
-                    flex: 1,
-                }}
-            />
+                            marginBottom: "10px",
+
+                            display:
+                                "-webkit-box",
+
+                            WebkitLineClamp: 2,
+
+                            WebkitBoxOrient:
+                                "vertical",
+
+                            overflow:
+                                "hidden",
+                        }}
+                    >
+                        {note.title}
+                    </div>
+
+                    {/* CONTENT */}
+
+                    <div
+                        style={{
+                            fontSize: "0.68rem",
+
+                            lineHeight: 1.4,
+
+                            opacity: 0.55,
+
+                            display:
+                                "-webkit-box",
+
+                            WebkitLineClamp: 5,
+
+                            WebkitBoxOrient:
+                                "vertical",
+
+                            overflow:
+                                "hidden",
+                        }}
+                    >
+                        {note.content ||
+                            "Empty note."}
+                    </div>
+
+                    <div
+                        style={{
+                            flex: 1,
+                        }}
+                    />
+                </>
+            )}
         </div>
     );
 }

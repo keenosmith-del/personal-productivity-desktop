@@ -2,11 +2,11 @@ import MainLayout from "../layouts/MainLayout";
 
 import { useState, useEffect } from "react";
 
-import { getProjects } from "../services/projectService";
-import { getTasks } from "../services/taskService";
-import { getGoals } from "../services/goalService";
-import { getReminders } from "../services/reminderService";
-import { getNotes } from "../services/noteService";
+import { getProjects, updateProject, deleteProject } from "../services/projectService";
+import { getTasks, updateTask, deleteTask } from "../services/taskService";
+import { getGoals, updateGoal, deleteGoal } from "../services/goalService";
+import { getReminders, updateReminder, deleteReminder } from "../services/reminderService";
+import { getNotes, updateNote, deleteNote, createNote } from "../services/noteService";
 
 import DashboardEntityCard from "../components/Dashboard/DashboardEntityCard";
 import DashboardWideCard from "../components/Dashboard/DashboardWideCard";
@@ -22,6 +22,13 @@ import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
 import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
 import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
 import NoteModal from "../components/Notes/NoteModal";
+
+import TaskModal from "../components/Tasks/TaskModal";
+import GoalModal from "../components/Goals/GoalModal";
+import ProjectModal from "../components/Projects/ProjectModal";
+import ReminderModal from "../components/Reminders/ReminderModal";
+
+import Toast from "../components/Toast";
 
 function Dashboard() {
 
@@ -40,10 +47,16 @@ function Dashboard() {
   const [notes, setNotes] =
     useState([]);
 
+  const [toast, setToast] =
+    useState("");
+
   const today = new Date();
 
-  today.setDate(
-    today.getDate()
+  today.setHours(
+    0,
+    0,
+    0,
+    0
   );
 
   const todayDate =
@@ -51,12 +64,19 @@ function Dashboard() {
       .toISOString()
       .split("T")[0];
 
-  const nextWeek = new Date();
+  const nextWeek =
+    new Date(today);
 
   nextWeek.setDate(
     nextWeek.getDate() + 7
   );
 
+  nextWeek.setHours(
+    23,
+    59,
+    59,
+    999
+  );
 
   // show modal functions
   // show urgent modal
@@ -105,8 +125,19 @@ function Dashboard() {
   const [selectedUpcomingItem, setSelectedUpcomingItem] =
     useState(null);
 
+  const [editingUpcomingItem,
+    setEditingUpcomingItem] =
+    useState(null);
+
+  const [previousUpcomingItem,
+    setPreviousUpcomingItem] =
+    useState(null);
+
   const [selectedNote, setSelectedNote] =
     useState(null);
+
+  const [showCreateNote, setShowCreateNote] =
+    useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -137,6 +168,169 @@ function Dashboard() {
       } catch (error) {
         console.error(error);
       }
+    };
+
+  const handleUpdateNote = async (
+    updatedNote
+  ) => {
+
+    await updateNote(
+      selectedNote._id,
+      updatedNote
+    );
+
+    await loadDashboardData();
+
+    setToast("Note updated");
+
+    setTimeout(() => {
+      setToast("");
+    }, 3000);
+
+    setSelectedNote(null);
+  };
+
+  const handleDeleteNote = async (
+    noteId
+  ) => {
+
+    await deleteNote(noteId);
+
+    await loadDashboardData();
+
+    setToast("Note deleted");
+
+    setTimeout(() => {
+      setToast("");
+    }, 3000);
+
+    setSelectedNote(null);
+  };
+
+  // upcoming handlers
+  const handleEditUpcoming = (
+    item
+  ) => {
+
+    setPreviousUpcomingItem(item);
+
+    setSelectedUpcomingItem(null);
+
+    setEditingUpcomingItem(item);
+  };
+
+  const handleCompleteUpcoming =
+    async (item) => {
+
+      const updateMap = {
+        task: updateTask,
+        project: updateProject,
+        goal: updateGoal,
+        reminder: updateReminder,
+      };
+
+      await updateMap[item.type](
+        item._id,
+        {
+          ...item,
+
+          completed: true,
+
+          status: "Complete",
+
+          completedDate:
+            new Date()
+              .toLocaleDateString(
+                "en-GB"
+              ),
+        }
+      );
+
+      await loadDashboardData();
+
+      setSelectedUpcomingItem({
+        ...item,
+
+        completed: true,
+
+        status: "Complete",
+
+        completedDate:
+          new Date()
+            .toLocaleDateString(
+              "en-GB"
+            ),
+      });
+    };
+
+  const handleRestoreUpcoming =
+    async (item) => {
+
+      const updateMap = {
+        task: updateTask,
+        project: updateProject,
+        goal: updateGoal,
+        reminder: updateReminder,
+      };
+
+      await updateMap[item.type](
+        item._id,
+        {
+          ...item,
+
+          completed: false,
+
+          status: "Active",
+
+          completedDate: null,
+        }
+      );
+
+      await loadDashboardData();
+
+      setSelectedUpcomingItem({
+        ...item,
+
+        completed: false,
+
+        status: "Active",
+
+        completedDate: null,
+      });
+    };
+
+  const handleDeleteUpcoming =
+    async (item) => {
+
+      const entityName = {
+        task: "Task",
+        project: "Project",
+        goal: "Goal",
+        reminder: "Reminder",
+      };
+
+      const deleteMap = {
+        task: deleteTask,
+        project: deleteProject,
+        goal: deleteGoal,
+        reminder: deleteReminder,
+      };
+
+      await deleteMap[item.type](
+        item._id
+      );
+
+      await loadDashboardData();
+
+      setToast(
+        `${entityName[item.type]} deleted`
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+      setSelectedUpcomingItem(null);
     };
 
   // why unique by ID?
@@ -299,6 +493,43 @@ function Dashboard() {
       return dateA - dateB;
     });
 
+  const isOverdue = (item) => {
+
+    if (item.completed) {
+      return false;
+    }
+
+    if (item.status === "Paused") {
+      return false;
+    }
+
+    if (!item.dueDate) {
+      return false;
+    }
+
+    const today =
+      new Date();
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    const dueDate =
+      new Date(item.dueDate);
+
+    dueDate.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    return dueDate < today;
+  };
+
   // upcoming items
   const upcomingItems = uniqueById([
     ...tasks.map((task) => ({
@@ -321,6 +552,15 @@ function Dashboard() {
       type: "reminder",
     })),
   ]).filter((item) => {
+
+    if (item.completed) {
+      return false;
+    }
+
+    if (item.status === "Paused") {
+      return false;
+    }
+
     if (!item.dueDate) {
       return false;
     }
@@ -328,8 +568,14 @@ function Dashboard() {
     const dueDate =
       new Date(item.dueDate);
 
+    dueDate.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
     return (
-      dueDate >= today &&
       dueDate <= nextWeek
     );
   }).sort((a, b) =>
@@ -339,46 +585,36 @@ function Dashboard() {
 
   // urgent items
   const urgentItems = uniqueById([
-    ...tasks
-      .filter(
-        (task) =>
-          task.priority === "High"
-      )
-      .map((task) => ({
-        ...task,
-        type: "task",
-      })),
+    ...tasks.map((task) => ({
+      ...task,
+      type: "task",
+    })),
 
-    ...goals
-      .filter(
-        (goal) =>
-          goal.priority === "High"
-      )
-      .map((goal) => ({
-        ...goal,
-        type: "goal",
-      })),
+    ...goals.map((goal) => ({
+      ...goal,
+      type: "goal",
+    })),
 
-    ...projects
-      .filter(
-        (project) =>
-          project.priority === "High"
-      )
-      .map((project) => ({
-        ...project,
-        type: "project",
-      })),
+    ...projects.map((project) => ({
+      ...project,
+      type: "project",
+    })),
 
-    ...reminders
-      .filter(
-        (reminder) =>
-          reminder.priority === "High"
-      )
-      .map((reminder) => ({
-        ...reminder,
-        type: "reminder",
-      })),
-  ]);
+    ...reminders.map((reminder) => ({
+      ...reminder,
+      type: "reminder",
+    })),
+  ]).filter((item) => {
+
+    if (item.completed) {
+      return false;
+    }
+
+    return (
+      item.priority === "High" ||
+      isOverdue(item)
+    );
+  });
 
   const sortedUrgentItems =
     [...urgentItems].sort(
@@ -495,7 +731,7 @@ function Dashboard() {
             <DashboardWideCard
               title="Upcoming"
               items={upcomingSortedItems}
-              placeholderTitle="Upcomming events will appear here"
+              placeholderTitle="Upcoming events will appear here"
               placeholderFooter=""
               chips={getUpcomingChips(
                 upcomingSortedItems
@@ -513,7 +749,12 @@ function Dashboard() {
           <div>
             <DashboardNotesCard
               notes={notes}
+
               onNoteClick={setSelectedNote}
+
+              onCreateNote={() =>
+                setShowCreateNote(true)
+              }
             />
           </div>
 
@@ -655,7 +896,7 @@ function Dashboard() {
             <DashboardEntityCard
               title="Projects"
               items={projectItems}
-              placeholderTitle="Create a project to see it heres"
+              placeholderTitle="Create a project to see it here"
               placeholderFooter=""
               chips={getPriorityChips(projectItems)}
               subtitle="All projects"
@@ -753,6 +994,8 @@ function Dashboard() {
             setShowAllUrgent(false)
           }
 
+          onRefresh={loadDashboardData}
+
           onClose={() => {
             setShowUrgentModal(false);
 
@@ -797,9 +1040,10 @@ function Dashboard() {
             setShowAllProjects(false)
           }
 
+          onRefresh={loadDashboardData}
+
           onClose={() => {
             setShowProjectsModal(false);
-
             setShowAllProjects(false);
           }}
         />
@@ -840,6 +1084,8 @@ function Dashboard() {
           onShowLess={() =>
             setShowAllTasks(false)
           }
+
+          onRefresh={loadDashboardData}
 
           onClose={() => {
             setShowTasksModal(false);
@@ -885,6 +1131,8 @@ function Dashboard() {
             setShowAllGoals(false)
           }
 
+          onRefresh={loadDashboardData}
+
           onClose={() => {
             setShowGoalsModal(false);
 
@@ -928,6 +1176,8 @@ function Dashboard() {
           onShowLess={() =>
             setShowAllReminders(false)
           }
+
+          onRefresh={loadDashboardData}
 
           onClose={() => {
             setShowRemindersModal(false);
@@ -973,6 +1223,8 @@ function Dashboard() {
             setShowAllUpcoming(false)
           }
 
+          onRefresh={loadDashboardData}
+
           onClose={() => {
             setShowUpcomingModal(false);
 
@@ -985,6 +1237,25 @@ function Dashboard() {
       {selectedUpcomingItem?.type === "task" && (
         <TaskDetailsModal
           task={selectedUpcomingItem}
+
+          onEditTask={
+            handleEditUpcoming
+          }
+
+          onDeleteTask={() =>
+            handleDeleteUpcoming(
+              selectedUpcomingItem
+            )
+          }
+
+          onCompleteTask={
+            handleCompleteUpcoming
+          }
+
+          onRestoreTask={
+            handleRestoreUpcoming
+          }
+
           onClose={() =>
             setSelectedUpcomingItem(null)
           }
@@ -994,6 +1265,25 @@ function Dashboard() {
       {selectedUpcomingItem?.type === "project" && (
         <ProjectDetailsModal
           project={selectedUpcomingItem}
+
+          onEditProject={
+            handleEditUpcoming
+          }
+
+          onDeleteProject={() =>
+            handleDeleteUpcoming(
+              selectedUpcomingItem
+            )
+          }
+
+          onCompleteProject={
+            handleCompleteUpcoming
+          }
+
+          onRestoreProject={
+            handleRestoreUpcoming
+          }
+
           onClose={() =>
             setSelectedUpcomingItem(null)
           }
@@ -1003,6 +1293,25 @@ function Dashboard() {
       {selectedUpcomingItem?.type === "goal" && (
         <GoalDetailsModal
           goal={selectedUpcomingItem}
+
+          onEditGoal={
+            handleEditUpcoming
+          }
+
+          onDeleteGoal={() =>
+            handleDeleteUpcoming(
+              selectedUpcomingItem
+            )
+          }
+
+          onCompleteGoal={
+            handleCompleteUpcoming
+          }
+
+          onRestoreGoal={
+            handleRestoreUpcoming
+          }
+
           onClose={() =>
             setSelectedUpcomingItem(null)
           }
@@ -1012,22 +1321,269 @@ function Dashboard() {
       {selectedUpcomingItem?.type === "reminder" && (
         <ReminderDetailsModal
           reminder={selectedUpcomingItem}
+
+          onEditReminder={
+            handleEditUpcoming
+          }
+
+          onDeleteReminder={() =>
+            handleDeleteUpcoming(
+              selectedUpcomingItem
+            )
+          }
+
+          onCompleteReminder={
+            handleCompleteUpcoming
+          }
+
+          onRestoreReminder={
+            handleRestoreUpcoming
+          }
+
           onClose={() =>
             setSelectedUpcomingItem(null)
           }
         />
       )}
 
+      {/* edit preview card */}
+      {editingUpcomingItem?.type === "task" && (
+        <TaskModal
+          mode="edit"
+
+          task={editingUpcomingItem}
+
+          onClose={() => {
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem(
+              previousUpcomingItem
+            );
+          }}
+
+          onSave={async (
+            taskData
+          ) => {
+
+            await updateTask(
+              editingUpcomingItem._id,
+              taskData
+            );
+
+            await loadDashboardData();
+
+            setToast("Task updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem({
+              ...previousUpcomingItem,
+              ...taskData,
+            });
+          }}
+        />
+      )}
+
+      {editingUpcomingItem?.type === "project" && (
+        <ProjectModal
+          mode="edit"
+
+          project={editingUpcomingItem}
+
+          onClose={() => {
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem(
+              previousUpcomingItem
+            );
+          }}
+
+          onSave={async (
+            projectData
+          ) => {
+
+            await updateProject(
+              editingUpcomingItem._id,
+              projectData
+            );
+
+            await loadDashboardData();
+
+            setToast("Project updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem({
+              ...previousUpcomingItem,
+              ...projectData,
+            });
+          }}
+        />
+      )}
+
+      {editingUpcomingItem?.type === "goal" && (
+        <GoalModal
+          mode="edit"
+
+          goal={editingUpcomingItem}
+
+          onClose={() => {
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem(
+              previousUpcomingItem
+            );
+          }}
+
+          onSave={async (
+            goalData
+          ) => {
+
+            await updateGoal(
+              editingUpcomingItem._id,
+              goalData
+            );
+
+            await loadDashboardData();
+
+            setToast("Goal updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem({
+              ...previousUpcomingItem,
+              ...goalData,
+            });
+          }}
+        />
+      )}
+
+      {editingUpcomingItem?.type === "reminder" && (
+        <ReminderModal
+          mode="edit"
+
+          reminder={editingUpcomingItem}
+
+          onClose={() => {
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem(
+              previousUpcomingItem
+            );
+          }}
+
+          onSave={async (
+            reminderData
+          ) => {
+
+            await updateReminder(
+              editingUpcomingItem._id,
+              reminderData
+            );
+
+            await loadDashboardData();
+
+            setToast("Reminder updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setEditingUpcomingItem(
+              null
+            );
+
+            setSelectedUpcomingItem({
+              ...previousUpcomingItem,
+              ...reminderData,
+            });
+          }}
+        />
+      )}
+
       {/* open preview note */}
-        { selectedNote && (
-          <NoteModal
-            note={selectedNote}
-            onClose={() =>
-              setSelectedNote(null)
-            }
-            mode = "edit"
-          />
-        )}
+      {selectedNote && (
+        <NoteModal
+          note={selectedNote}
+
+          mode="edit"
+
+          onSave={handleUpdateNote}
+
+          onDelete={handleDeleteNote}
+
+          onClose={() =>
+            setSelectedNote(null)
+          }
+        />
+      )}
+      {showCreateNote && (
+        <NoteModal
+          mode="create"
+
+          onSave={async (
+            noteData
+          ) => {
+
+            await createNote(
+              noteData
+            );
+
+            await loadDashboardData();
+
+            setToast(
+              "Note created"
+            );
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setShowCreateNote(
+              false
+            );
+          }}
+
+          onClose={() =>
+            setShowCreateNote(
+              false
+            )
+          }
+        />
+      )}
+      <Toast
+        message={toast}
+      />
     </MainLayout>
   );
 }

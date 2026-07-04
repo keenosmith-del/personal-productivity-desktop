@@ -277,32 +277,6 @@ function NoteCard({
                                 onClick={(e) => {
                                     e.stopPropagation();
 
-                                    onView(note);
-                                    setOpenNoteMenu(null);
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                View
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
                                     onEdit(note);
                                     setOpenNoteMenu(null);
                                 }}
@@ -325,69 +299,53 @@ function NoteCard({
                                 Edit
                             </button>
 
-                            <div
-                                style={{
-                                    height: "1px",
-                                    background:
-                                        "rgba(255,255,255,0.05)",
-                                    margin: "4px 0",
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                 }}
-                            />
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
 
-                            {note.completed ? (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
+                                    e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "transparent";
 
-                                        onRestore(note);
-                                        setOpenNoteMenu(null);
-                                    }}
-                                    style={menuItemStyle}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
+                                }}
+                            >
+                                Add To Folder
+                            </button>
 
-                                        e.currentTarget.style.color =
-                                            "#F5F5F5";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "transparent";
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
 
-                                        e.currentTarget.style.color =
-                                            "var(--text-primary)";
-                                    }}
-                                >
-                                    Restore
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        
-                                        onComplete(note);
-                                        setOpenNoteMenu(null);
-                                    }}
-                                    style={menuItemStyle}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgba(255,255,255,0.04)";
+                                    e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "transparent";
 
-                                        e.currentTarget.style.color =
-                                            "#F5F5F5";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "transparent";
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
+                                }}
+                            >
+                                Archive
+                            </button>
 
-                                        e.currentTarget.style.color =
-                                            "var(--text-primary)";
-                                    }}
-                                >
-                                    Complete
-                                </button>
-                            )}
-
+                            {/* divider */}
                             <div
                                 style={{
                                     height: "1px",
