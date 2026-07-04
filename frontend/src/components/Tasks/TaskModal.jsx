@@ -27,8 +27,6 @@ function TaskModal({
   onSave,
   onCompleteTask,
   initialDate,
-
-  calendarMode = false,
 }) {
   const taskInputRef = useRef(null);
 
@@ -290,13 +288,9 @@ function TaskModal({
         position: "fixed",
         inset: 0,
 
-        background: calendarMode
-          ? "rgba(0,0,0,0.8)"
-          : "rgba(0,0,0,0.35)",
+        background: "rgba(0,0,0,0.35)",
 
-        backdropFilter: calendarMode
-          ? "blur(28px)"
-          : "blur(20px)",
+        backdropFilter: "blur(20px)",
 
         display: "flex",
         justifyContent: "center",

@@ -100,6 +100,7 @@ function DashboardModal({
     const [returnToDashboard, setReturnToDashboard] =
         useState(true);
 
+    // handle
     const handleEventClick = (event) => {
 
         setShowDashboardContent(false);

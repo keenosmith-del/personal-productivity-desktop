@@ -1,4 +1,5 @@
 import { NotebookPen } from "lucide-react";
+
 function DashboardNotePreviewCard({
     note,
     onClick,
