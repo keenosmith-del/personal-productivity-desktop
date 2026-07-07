@@ -3,14 +3,9 @@ import MainLayout from "../layouts/MainLayout";
 import {
   Search,
   ArrowUpDown,
-  Filter,
   Ellipsis,
   ArrowLeft,
   ArrowRight,
-  LayoutGrid,
-  Sparkles,
-  Shapes,
-  ChartLine,
   Plus,
   AlarmClock,
 } from "lucide-react";
@@ -21,18 +16,29 @@ import {
   useRef,
 } from "react";
 
+import AlarmModal from "../components/Alarms/AlarmModal";
+import AlarmCard from "../components/Alarms/AlarmCard";
+
+import Toast from "../components/Toast";
+
+import {
+  getAlarms,
+  createAlarm,
+  updateAlarm,
+  deleteAlarm,
+} from "../services/alarmService";
+
 function Alarms() {
   // REFS
   const sortRef = useRef(null);
-
-  const filterRef = useRef(null);
 
   const searchInputRef = useRef(null);
 
   const moreRef = useRef(null);
 
   // COMPONENT STATES
-  const allAlarms = []; // placeholder until data wired 
+  const [allAlarms, setAllAlarms] =
+    useState([]);
 
   const [searchTerm, setSearchTerm] =
     useState("");
@@ -42,15 +48,6 @@ function Alarms() {
 
   const [showSortMenu, setShowSortMenu] =
     useState(false);
-
-  const [showFilterMenu, setShowFilterMenu] =
-    useState(false);
-
-  const [selectedCategory, setSelectedCategory] =
-    useState("All");
-
-  const [selectedPriority, setSelectedPriority] =
-    useState("All");
 
   const [showActions, setShowActions] =
     useState(false);
@@ -64,6 +61,37 @@ function Alarms() {
   const [showMoreMenu, setShowMoreMenu] =
     useState(false);
 
+  const [showAlarmModal, setShowAlarmModal] =
+    useState(false);
+
+  const [selectedAlarm, setSelectedAlarm] =
+    useState(null);
+
+  const [toast, setToast] =
+    useState("");
+
+  const loadAlarms = async () => {
+    try {
+      const data =
+        await getAlarms();
+
+      setAllAlarms(data);
+
+    } catch {
+      setToast(
+        "Failed to load alarms"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    loadAlarms();
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (
       event
@@ -76,16 +104,6 @@ function Alarms() {
         )
       ) {
         setShowSortMenu(false);
-      }
-
-      if (
-        showFilterMenu &&
-        filterRef.current &&
-        !filterRef.current.contains(
-          event.target
-        )
-      ) {
-        setShowFilterMenu(false);
       }
 
       if (
@@ -200,7 +218,11 @@ function Alarms() {
               >
                 {/* CREATE */}
                 <button
-                  onClick={() => { }}
+                  onClick={() => {
+                    setSelectedAlarm(null);
+
+                    setShowAlarmModal(true);
+                  }}
                   style={{
                     width: "36px",
                     height: "36px",
@@ -247,7 +269,6 @@ function Alarms() {
                     if (
                       !actionsPinned &&
                       !showSortMenu &&
-                      !showFilterMenu &&
                       !showMoreMenu
                     ) {
                       setShowActions(false);
@@ -276,8 +297,6 @@ function Alarms() {
                         setSearchTerm("");
 
                         setShowSortMenu(false);
-
-                        setShowFilterMenu(false);
                       }
                     }}
                     style={{
@@ -451,8 +470,6 @@ function Alarms() {
 
                                 setShowSortMenu(false);
 
-                                setShowFilterMenu(false);
-
                                 setShowMoreMenu(false);
                               }}
                               value={searchTerm}
@@ -492,8 +509,6 @@ function Alarms() {
                           <button
                             onClick={() => {
                               setShowSortMenu(!showSortMenu);
-
-                              setShowFilterMenu(false);
 
                               setActionsPinned(true);
 
@@ -561,8 +576,7 @@ function Alarms() {
                               {[
                                 "newest",
                                 "oldest",
-                                "priority",
-                                "dueDate",
+                                "time",
                                 "alphabetical",
                               ].map((option) => (
                                 <button
@@ -571,8 +585,6 @@ function Alarms() {
                                     setSortBy(option);
 
                                     setShowSortMenu(false);
-
-                                    setShowFilterMenu(false);
                                   }}
                                   style={{
                                     background: "transparent",
@@ -608,8 +620,8 @@ function Alarms() {
                                       "transparent";
                                   }}
                                 >
-                                  {option === "dueDate"
-                                    ? "Due Date"
+                                  {option === "time"
+                                    ? "Time"
                                     : option === "alphabetical"
                                       ? "A → Z"
                                       : option.charAt(0).toUpperCase() +
@@ -619,275 +631,7 @@ function Alarms() {
                             </div>
                           )}
                         </div>
-
-                        {/* FILTER BUTTON */}
-                        <div
-                          ref={filterRef}
-                          style={{
-                            position: "relative",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              setShowFilterMenu(!showFilterMenu);
-
-                              setShowSortMenu(false);
-
-                              setActionsPinned(true);
-
-                              setShowActions(true);
-
-                              setShowMoreMenu(false);
-                            }}
-                            style={actionIconStyle}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform =
-                                "translateY(-1px)";
-
-                              e.currentTarget.style.color =
-                                "var(--text-primary)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform =
-                                "translateY(0)";
-
-                              e.currentTarget.style.color =
-                                "var(--text-secondary)";
-                            }}
-                          >
-                            <Filter
-                              size={15}
-                              strokeWidth={1.6}
-                            />
-                          </button>
-
-                          {showFilterMenu && (
-                            <div
-                              style={{
-                                position: "absolute",
-
-                                top: "42px",
-                                right: 0,
-
-                                width: "200px",
-
-                                background:
-                                  "rgba(20,20,20,0.92)",
-
-                                backdropFilter:
-                                  "blur(24px)",
-
-                                border:
-                                  "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                  "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                padding: "8px",
-
-                                display: "flex",
-
-                                flexDirection: "column",
-
-                                gap: "4px",
-
-                                zIndex: 2001,
-                              }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Category
-                              </p>
-
-                              {[
-                                "All",
-                                "Work",
-                                "Study",
-                                "Personal",
-                                "Health",
-                              ].map((category) => (
-                                <button
-                                  key={category}
-                                  onClick={() => {
-                                    setSelectedCategory(category);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedCategory === category
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {category}
-                                </button>
-                              ))}
-
-                              <div
-                                style={{
-                                  height: "1px",
-                                  background: "rgba(255,255,255,0.06)",
-                                  margin: "8px 0",
-                                }}
-                              />
-
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Priority
-                              </p>
-
-                              {[
-                                "All",
-                                "High",
-                                "Medium",
-                                "Low",
-                              ].map((priority) => (
-                                <button
-                                  key={priority}
-                                  onClick={() => {
-                                    setSelectedPriority(priority);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedPriority === priority
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {priority}
-                                </button>
-                              ))}
-
-                              <div
-                                style={{
-                                  height: "1px",
-                                  background:
-                                    "rgba(255,255,255,0.06)",
-
-                                  margin: "8px 0",
-                                }}
-                              />
-
-                              <button
-                                onClick={() => {
-                                  setSelectedCategory("All");
-                                  setSelectedPriority("All");
-                                  setShowFilterMenu(false);
-                                }}
-                                style={{
-                                  background: "transparent",
-
-                                  border: "none",
-
-                                  color:
-                                    "var(--text-secondary)",
-
-                                  padding: "10px 14px",
-
-                                  borderRadius: "12px",
-
-                                  cursor: "pointer",
-
-                                  textAlign: "left",
-
-                                  fontSize: "0.78rem",
-
-                                  fontWeight: "300",
-
-                                  transition:
-                                    "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.06)";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background =
-                                    "transparent";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
-                                }}
-                              >
-                                Clear Filters
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        {/* FILTER BUTTON REMOVED */}
                       </div>
 
                       {/* NO TABS */}
@@ -908,8 +652,6 @@ function Alarms() {
                             setShowActions(true);
 
                             setShowSortMenu(false);
-
-                            setShowFilterMenu(false);
                           }}
                           style={actionIconStyle}
                           onMouseEnter={(e) => {
@@ -969,7 +711,7 @@ function Alarms() {
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowReminderModal(true);
+                                setShowAlarmModal(true)
                               }}
                               style={{
                                 background: "transparent",
@@ -1013,51 +755,7 @@ function Alarms() {
                             <button
                               onClick={() => {
                                 setShowMoreMenu(false);
-                                setShowClearCompleted(true);
-                              }}
-                              style={{
-                                background: "transparent",
-
-                                border: "none",
-
-                                color: "var(--text-secondary)",
-
-                                padding: "10px 14px",
-
-                                borderRadius: "12px",
-
-                                cursor: "pointer",
-
-                                textAlign: "left",
-
-                                fontSize: "0.78rem",
-
-                                fontWeight: "300",
-
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear Completed
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearActive(true);
+                                // clear all implement later
                               }}
                               style={{
                                 background: "transparent",
@@ -1120,7 +818,8 @@ function Alarms() {
                 fontWeight: "300",
               }}
             >
-              Nothing here yet
+              {allAlarms.length + " Alarms" ||
+                "No alarms yet"}
             </p>
           </div> {/* END HEADER */}
 
@@ -1135,110 +834,261 @@ function Alarms() {
 
           {/* ALL ALARMS */}
           <div
+            style={{
+
+              borderRadius:
+                "var(--radius-large)",
+
+              backdropFilter:
+                "blur(20px)",
+
+              WebkitBackdropFilter:
+                "blur(20px)",
+
+              height: "700px",
+
+              display: "flex",
+
+              flexDirection: "column",
+
+              overflow: "hidden",
+            }}
+          >
+            {/* HEADER REMOVED */}
+
+            {/* GRID */}
+            <div
               style={{
+                flex: 1,
 
-                borderRadius:
-                  "var(--radius-large)",
+                overflowY: "auto",
 
-                backdropFilter:
-                  "blur(20px)",
+                padding: "24px",
 
-                WebkitBackdropFilter:
-                  "blur(20px)",
+                display: "grid",
 
-                height: "700px",
+                gridTemplateColumns:
+                  "repeat(4, 1fr)",
 
-                display: "flex",
+                // responsive design sweep later (ALL)
+                // gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
 
-                flexDirection: "column",
+                gap: "18px",
 
-                overflow: "hidden",
+                alignContent: "start",
               }}
             >
-              {/* HEADER REMOVED */}
 
-              {/* GRID */}
-              <div
-                style={{
-                  flex: 1,
+              {allAlarms.length === 0 ? (
+                <div
+                  style={{
+                    gridColumn: "1 / -1",
 
-                  overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
 
-                  padding: "24px",
+                    justifyContent: "center",
+                    alignItems: "center",
 
-                  display: "grid",
+                    minHeight: "500px",
 
-                  gridTemplateColumns:
-                    "repeat(4, 1fr)",
+                    textAlign: "center",
 
-                  gap: "18px",
+                    color: "var(--text-secondary)",
 
-                  alignContent: "start",
-                }}
-              >
+                    opacity: 0.85,
+                  }}
+                >
 
-                {allAlarms.length === 0 ? (
                   <div
                     style={{
-                      gridColumn: "1 / -1",
-
-                      display: "flex",
-                      flexDirection: "column",
-
-                      justifyContent: "center",
-                      alignItems: "center",
-
-                      minHeight: "500px",
-
-                      textAlign: "center",
-
-                      color: "var(--text-secondary)",
-
-                      opacity: 0.85,
+                      marginBottom: "8px",
                     }}
                   >
-
-                    <div
-                      style={{
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <AlarmClock
-                        size={60}
-                        strokeWidth={1.8}
-                        opacity={0.85}
-                      />
-                    </div>
-
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      No Alarms
-                    </p>
-
-                    <p
-                      style={{
-                        marginTop: "2px",
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Click + to create one
-                      {/* or try searching a different term */}
-                    </p>
+                    <AlarmClock
+                      size={60}
+                      strokeWidth={1.8}
+                      opacity={0.85}
+                    />
                   </div>
-                ) : (
-                  <p>
-                    map AlarmCard
+
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    No Alarms
                   </p>
-                )}
-              </div>
+
+                  <p
+                    style={{
+                      marginTop: "2px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Click + to create one
+                    {/* or try searching a different term */}
+                  </p>
+                </div>
+              ) : (
+                allAlarms.map((alarm) => (
+                  <AlarmCard
+                    key={alarm._id}
+                    alarm={alarm}
+
+                    onClick={(alarm) => {
+                      setSelectedAlarm(alarm);
+
+                      setShowAlarmModal(true);
+                    }}
+
+                    onDelete={(alarm) => {
+                      deleteAlarm(alarm._id)
+                        .then(() => {
+
+                          setAllAlarms((prev) =>
+                            prev.filter(
+                              (a) =>
+                                a._id !== alarm._id
+                            )
+                          );
+
+                          setToast(
+                            "Alarm deleted"
+                          );
+
+                          setTimeout(() => {
+                            setToast("");
+                          }, 3000);
+                        })
+                        .catch(() => {
+                          setToast(
+                            "Failed to delete alarm"
+                          );
+
+                          setTimeout(() => {
+                            setToast("");
+                          }, 3000);
+                        });
+                    }}
+
+                    onToggle={(alarm) => {
+                      updateAlarm(
+                        alarm._id,
+                        {
+                          ...alarm,
+
+                          enabled:
+                            !alarm.enabled,
+                        }
+                      )
+                        .then((updatedAlarm) => {
+
+                          setAllAlarms((prev) =>
+                            prev.map((a) =>
+                              a._id === updatedAlarm._id
+                                ? updatedAlarm
+                                : a
+                            )
+                          );
+                        })
+                        .catch(() => {
+                          setToast(
+                            "Failed to update alarm"
+                          );
+
+                          setTimeout(() => {
+                            setToast("");
+                          }, 3000);
+                        });
+                    }}
+                  />
+                ))
+              )}
             </div>
+          </div>
 
         </div>
       </div>
+      {showAlarmModal && (
+        <AlarmModal
+          alarm={selectedAlarm}
+
+          onClose={() => {
+            setSelectedAlarm(null);
+
+            setShowAlarmModal(false);
+          }}
+
+          onSave={(alarmData) => {
+
+            const request =
+              selectedAlarm
+                ? updateAlarm(
+                  selectedAlarm._id,
+                  alarmData
+                )
+                : createAlarm(
+                  alarmData
+                );
+
+            request
+              .then((savedAlarm) => {
+
+                if (selectedAlarm) {
+
+                  setAllAlarms((prev) =>
+                    prev.map((alarm) =>
+                      alarm._id ===
+                        savedAlarm._id
+                        ? savedAlarm
+                        : alarm
+                    )
+                  );
+
+                  setToast(
+                    "Alarm updated"
+                  );
+
+                } else {
+
+                  setAllAlarms((prev) => [
+                    savedAlarm,
+                    ...prev,
+                  ]);
+
+                  setToast(
+                    "Alarm created"
+                  );
+                }
+
+                setSelectedAlarm(null);
+
+                setShowAlarmModal(false);
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              })
+              .catch(() => {
+
+                setToast(
+                  selectedAlarm
+                    ? "Failed to update alarm"
+                    : "Failed to create alarm"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
+          }}
+        />
+      )}
+      <Toast
+        message={toast}
+      />
     </MainLayout>
   );
 }

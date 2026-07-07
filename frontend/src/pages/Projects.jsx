@@ -6,7 +6,6 @@ import {
   Filter,
   Ellipsis,
   ArrowLeft,
-  BarChart3,
   ArrowRight,
   LayoutGrid,
   Sparkles,
@@ -22,7 +21,6 @@ import {
   useRef,
 } from "react";
 
-import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
 import ProjectCard from "../components/Projects/ProjectCard";
 import ProjectModal from "../components/Projects/ProjectModal";
 
@@ -31,11 +29,8 @@ import Toast from "../components/Toast";
 import {
   getProjects,
   createProject,
-  deleteProject,
   updateProject,
-  clearAllProjects,
-  clearCompletedProjects,
-  unpinAllProjects,
+  deleteProject,
 } from "../services/projectService";
 
 function Projects() {
@@ -48,7 +43,7 @@ function Projects() {
 
   const moreRef = useRef(null);
 
-  //COMPONENT STATES
+  // COMPONENT STATES
   const [showProjectModal, setShowProjectModal] =
     useState(false);
 
@@ -191,6 +186,16 @@ function Projects() {
     )
   );
 
+  const activeProjects = sortProjects(
+    projects.filter(
+      (project) =>
+        !project.completed &&
+        project.status === "Active" &&
+        matchesSearch(project) &&
+        matchesFilters(project)
+    )
+  );
+
   const inProgressProjects = sortProjects(
     projects.filter(
       (project) =>
@@ -259,7 +264,7 @@ function Projects() {
     )
   )
 
-  {/* CATEGORIES TAB */ }
+  {/* CATEGORIES TAB*/ }
   {/* WORK */ }
   const workProjects = sortProjects(
     projects.filter(
@@ -417,10 +422,10 @@ function Projects() {
           );
 
         setProjects((prev) =>
-          prev.map((p) =>
-            p._id === updatedProject._id
+          prev.map((t) =>
+            t._id === updatedProject._id
               ? updatedProject
-              : p
+              : t
           )
         );
 
@@ -463,10 +468,10 @@ function Projects() {
           );
 
         setProjects((prev) =>
-          prev.map((p) =>
-            p._id === updatedProject._id
+          prev.map((t) =>
+            t._id === updatedProject._id
               ? updatedProject
-              : p
+              : t
           )
         );
 
@@ -605,7 +610,7 @@ function Projects() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
 
@@ -703,7 +708,7 @@ function Projects() {
                   />
                 </button>
 
-                {/*ALL */}
+                {/* ALL */}
                 <div
                   onMouseEnter={() =>
                     setShowActions(true)
@@ -1583,9 +1588,9 @@ function Projects() {
                 fontWeight: "300",
               }}
             >
-              {totalProjects + " Projects" || "No projects yet"}
+              {totalProjects + " Projects" || "No Projects yet"}
             </p>
-          </div>
+          </div> {/* END HEADER */}
 
           {/* DIVIDER */}
           <div
@@ -1693,12 +1698,21 @@ function Projects() {
                   <ProjectCard
                     key={project._id}
                     project={project}
-                    onClick={setSelectedProject}
+                    onClick={() => {
+                      setEditingProject(project);
+
+                      setShowProjectModal(true);
+                    }}
 
                     openProjectMenu={openProjectMenu}
                     setOpenProjectMenu={setOpenProjectMenu}
 
-                    onView={setSelectedProject}
+                    onView={(project) => {
+                      setEditingProject(project);
+
+                      setShowProjectModal(true);
+                    }}
+
                     onEdit={setEditingProject}
 
                     onDelete={handleDeleteProject}
@@ -1725,99 +1739,64 @@ function Projects() {
 
         </div>
       </div>
-      {showProjectModal && (
+      {(showProjectModal || editingProject) && (
         <ProjectModal
-          onClose={() =>
-            setShowProjectModal(false)
+          mode={
+            editingProject
+              ? "edit"
+              : "create"
           }
-          onSave={(projectData) => {
-            createProject(projectData)
-              .then((newProject) => {
-                setProjects((prev) => [
-                  newProject,
-                  ...prev,
-                ]);
+          project={editingProject || null}
+          onCompleteProject={
+            handleCompleteProject
+          }
+          onClose={() => {
+            setEditingProject(null);
 
-                setToast(
-                  "Project created"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to create project"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
+            setShowProjectModal(false);
           }}
-        />
-      )}
-
-      {selectedProject && (
-        <ProjectDetailsModal
-          project={selectedProject}
-          onClose={() =>
-            setSelectedProject(null)
-          }
-          onDeleteProject={handleDeleteProject}
-          setToast={setToast}
-          onEditProject={setEditingProject}
-          onCompleteProject={
-            handleCompleteProject
-          }
-          onRestoreProject={
-            handleRestoreProject
-          }
-        />
-      )}
-      {editingProject && (
-        <ProjectModal
-          mode="edit"
-          project={editingProject}
-          onCompleteProject={
-            handleCompleteProject
-          }
-          onClose={() =>
-            setEditingProject(null)
-          }
           onSave={(projectData) => {
-            updateProject(
-              editingProject._id,
-              projectData
-            )
-              .then((updatedProject) => {
-                setProjects((prev) =>
-                  prev.map((project) =>
-                    project._id ===
-                      updatedProject._id
-                      ? updatedProject
-                      : project
-                  )
-                );
+            const action = editingProject
+              ? updateProject(
+                editingProject._id,
+                projectData
+              )
+              : createProject(projectData);
 
-                setToast(
-                  "Project updated"
-                );
+            action
+              .then((savedProject) => {
+                if (editingProject) {
+                  setProjects((prev) =>
+                    prev.map((project) =>
+                      project._id === savedProject._id
+                        ? savedProject
+                        : project
+                    )
+                  );
+
+                  setToast("Project updated");
+                } else {
+                  setProjects((prev) => [
+                    savedProject,
+                    ...prev,
+                  ]);
+
+                  setToast("Project created");
+                }
 
                 setTimeout(() => {
                   setToast("");
                 }, 3000);
 
                 setEditingProject(null);
-              })
-              .catch((error) => {
-                console.error(error);
 
+                setShowProjectModal(false);
+              })
+              .catch(() => {
                 setToast(
-                  "Failed to update project"
+                  editingProject
+                    ? "Failed to update project"
+                    : "Failed to create project"
                 );
 
                 setTimeout(() => {
@@ -1825,6 +1804,7 @@ function Projects() {
                 }, 3000);
               });
           }}
+          onDelete={handleDeleteProject}
         />
       )}
 
@@ -1936,171 +1916,6 @@ function Projects() {
                   await handleClearCompletedProjects();
 
                   setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={async () => {
-              await handleClearActiveProjects();
-
-              setShowClearActive(
-                false
-              );
-            }}
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background: "rgba(20,20,20,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear active projects?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearActive(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setProjects((prev) =>
-                    prev.filter(
-                      (project) =>
-                        project.completed
-                    )
-                  );
-
-                  setToast("Active projects cleared");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
-
-                  setShowClearActive(
                     false
                   );
                 }}

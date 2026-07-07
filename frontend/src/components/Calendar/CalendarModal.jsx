@@ -1,22 +1,22 @@
 import {
     CheckSquare,
     Folder,
-    Sprout,
     AlarmClock,
+    Sprout,
+    Check,
+    CircleAlert,
+    Shield,
+    Pause,
+    LoaderCircle,
     Ellipsis,
+    Heart,
+    Flag,
 } from "lucide-react";
-
-// test 
 
 import { useState } from "react";
 
 import Toast from "../Toast";
 import DeleteConfirmModal from "../DeleteConfirmModal";
-
-import TaskDetailsModal from "../Tasks/TaskDetailsModal";
-import ProjectDetailsModal from "../Projects/ProjectDetailsModal";
-import GoalDetailsModal from "../Goals/GoalDetailsModal";
-import ReminderDetailsModal from "../Reminders/ReminderDetailsModal";
 
 import TaskModal from "../Tasks/TaskModal";
 import GoalModal from "../Goals/GoalModal";
@@ -56,15 +56,6 @@ function CalendarModal({
         {}
     );
 
-    // props
-    const [selectedTask, setSelectedTask] = useState(null);
-
-    const [selectedGoal, setSelectedGoal] = useState(null);
-
-    const [selectedProject, setSelectedProject] = useState(null);
-
-    const [selectedReminder, setSelectedReminder] = useState(null);
-
     // states
     const [editingTask, setEditingTask] =
         useState(null);
@@ -78,23 +69,14 @@ function CalendarModal({
     const [editingReminder, setEditingReminder] =
         useState(null);
 
-    const [previousTask, setPreviousTask] =
-        useState(null);
-
-    const [previousProject, setPreviousProject] =
-        useState(null);
-
-    const [previousGoal, setPreviousGoal] =
-        useState(null);
-
-    const [previousReminder, setPreviousReminder] =
-        useState(null);
-
     const [showCalendarContent, setShowCalendarContent] =
         useState(true);
 
     const [toast, setToast] =
         useState("");
+
+    const [hoveredCard, setHoveredCard] =
+        useState(null);
 
     const [returnToCalendar, setReturnToCalendar] =
         useState(true);
@@ -106,53 +88,24 @@ function CalendarModal({
 
         switch (event.type) {
             case "task":
-                setSelectedTask(event);
+                setEditingTask(event);
                 break;
 
             case "project":
-                setSelectedProject(event);
+                setEditingProject(event);
                 break;
 
             case "goal":
-                setSelectedGoal(event);
+                setEditingGoal(event);
                 break;
 
             case "reminder":
-                setSelectedReminder(event);
+                setEditingReminder(event);
                 break;
 
             default:
                 break;
         }
-    };
-
-    // edit
-    const handleEditTask = (task) => {
-        setSelectedTask(null);
-        setReturnToCalendar(false);
-        setPreviousTask(task);
-        setEditingTask(task);
-    };
-
-    const handleEditProject = (project) => {
-        setSelectedProject(null);
-        setReturnToCalendar(false);
-        setPreviousProject(project);
-        setEditingProject(project);
-    };
-
-    const handleEditGoal = (goal) => {
-        setSelectedGoal(null);
-        setReturnToCalendar(false);
-        setPreviousGoal(goal);
-        setEditingGoal(goal);
-    };
-
-    const handleEditReminder = (reminder) => {
-        setSelectedReminder(null);
-        setReturnToCalendar(false);
-        setPreviousReminder(reminder);
-        setEditingReminder(reminder);
     };
 
     // delete
@@ -168,11 +121,9 @@ function CalendarModal({
             setToast("");
         }, 3000);
 
-        setSelectedTask(null);
+        setEditingTask(null);
 
         setShowCalendarContent(true);
-
-        setReturnToCalendar(true);
     };
 
     const handleDeleteProject = async (projectId) => {
@@ -187,11 +138,9 @@ function CalendarModal({
             setToast("");
         }, 3000);
 
-        setSelectedProject(null);
+        setEditingProject(null);
 
         setShowCalendarContent(true);
-
-        setReturnToCalendar(true);
     };
 
     const handleDeleteGoal = async (goalId) => {
@@ -206,11 +155,9 @@ function CalendarModal({
             setToast("");
         }, 3000);
 
-        setSelectedGoal(null);
+        setEditingGoal(null);
 
         setShowCalendarContent(true);
-
-        setReturnToCalendar(true);
     };
 
     const handleDeleteReminder = async (reminderId) => {
@@ -225,11 +172,9 @@ function CalendarModal({
             setToast("");
         }, 3000);
 
-        setSelectedReminder(null);
+        setEditingReminder(null);
 
         setShowCalendarContent(true);
-
-        setReturnToCalendar(true);
     };
 
     // complete
@@ -251,7 +196,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedTask({
+        setEditingTask({
             ...task,
 
             completed: true,
@@ -284,7 +229,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedProject({
+        setEditingProject({
             ...project,
 
             completed: true,
@@ -317,7 +262,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedGoal({
+        setEditingGoal({
             ...goal,
 
             completed: true,
@@ -350,7 +295,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedReminder({
+        setEditingReminder({
             ...reminder,
 
             completed: true,
@@ -380,7 +325,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedTask({
+        setEditingTask({
             ...task,
 
             completed: false,
@@ -405,7 +350,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedProject({
+        setEditingProject({
             ...project,
 
             completed: false,
@@ -430,7 +375,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedGoal({
+        setEditingGoal({
             ...goal,
 
             completed: false,
@@ -455,7 +400,7 @@ function CalendarModal({
 
         await onRefresh();
 
-        setSelectedReminder({
+        setEditingReminder({
             ...reminder,
 
             completed: false,
@@ -496,6 +441,173 @@ function CalendarModal({
         showClearConfirm,
         setShowClearConfirm,
     ] = useState(false);
+
+    const formatDueDate = (dueDate) => {
+        if (!dueDate) return "";
+
+        const today = new Date();
+        const tomorrow = new Date();
+
+        tomorrow.setDate(
+            tomorrow.getDate() + 1
+        );
+
+        const eventDate =
+            new Date(dueDate);
+
+        const todayString =
+            today.toDateString();
+
+        const tomorrowString =
+            tomorrow.toDateString();
+
+        if (
+            eventDate.toDateString() ===
+            todayString
+        ) {
+            return "Today";
+        }
+
+        if (
+            eventDate.toDateString() ===
+            tomorrowString
+        ) {
+            return "Tomorrow";
+        }
+
+        return eventDate.toLocaleDateString(
+            "en-GB",
+            {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }
+        );
+    };
+
+    const formatCompletedDate = (completedDate) => {
+        if (!completedDate) {
+            return "";
+        }
+
+        let eventCompletedDate;
+
+        if (completedDate.includes("/")) {
+            const [day, month, year] =
+                completedDate.split("/");
+
+            eventCompletedDate = new Date(
+                year,
+                month - 1,
+                day
+            );
+        } else {
+            eventCompletedDate =
+                new Date(completedDate);
+        }
+
+        const today = new Date();
+        const tomorrow = new Date();
+
+        tomorrow.setDate(
+            tomorrow.getDate() + 1
+        );
+
+        if (
+            eventCompletedDate.toDateString() ===
+            today.toDateString()
+        ) {
+            return "Today";
+        }
+
+        if (
+            eventCompletedDate.toDateString() ===
+            tomorrow.toDateString()
+        ) {
+            return "Tomorrow";
+        }
+
+        return eventCompletedDate.toLocaleDateString(
+            "en-GB",
+            {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            }
+        );
+    };
+
+    const getDisplayStatus = (event) => {
+        if (event.completed) {
+            return "Complete";
+        }
+
+        if (event.status === "Paused") {
+            return "Paused";
+        }
+
+        const eventDate = new Date(event.dueDate);
+
+        eventDate.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        if (eventDate < today) {
+            return "Overdue";
+        }
+
+        return event.status || "Active";
+    };
+
+    const statusConfig = {
+        Active: {
+            icon: Shield,
+            label: "Active",
+
+            background: "#4d689333",
+            border: "#4d689366",
+            color: "#8faec0",
+        },
+
+        "In Progress": {
+            icon: LoaderCircle,
+            label: "In Progress",
+
+            background: "#5d766233",
+            border: "#5d766266",
+            color: "#a8bf9f",
+        },
+
+        Paused: {
+            icon: Pause,
+            label: "Paused",
+
+            background: "#45575b33",
+            border: "#45575b66",
+            color: "#9ca9ad",
+        },
+
+        Overdue: {
+            icon: CircleAlert,
+            label: "Overdue",
+
+            background: "#8b5a5a33",
+            border: "#8b5a5a66",
+            color: "#c79a9a",
+        },
+
+        // complete or completed? needs to be consistent
+        Complete: {
+            icon: Check,
+            label: "Complete",
+
+            background: "#728a6e33",
+            border: "#728a6e66",
+            color: "#9bc091",
+        },
+    };
 
     const linkedItemStyle = {
         width: "35px",
@@ -555,13 +667,6 @@ function CalendarModal({
         selectedDate.day
     );
 
-    const eventIcons = {
-        task: CheckSquare,
-        project: Folder,
-        goal: Sprout,
-        reminder: AlarmClock,
-    };
-
     // HANDLERS
     const handleClearAll =
         async () => {
@@ -596,10 +701,10 @@ function CalendarModal({
 
                 setShowCalendarContent(true);
 
-                setSelectedTask(null);
-                setSelectedGoal(null);
-                setSelectedProject(null);
-                setSelectedReminder(null);
+                setEditingTask(null);
+                setEditingGoal(null);
+                setEditingProject(null);
+                setEditingReminder(null);
 
             } catch (error) {
                 console.error(error);
@@ -1164,26 +1269,13 @@ function CalendarModal({
                         }}
                     />
 
-                    {/* STACKED CIRCLES REMOVED */}
 
                     {/* EVENTS */}
-
                     <div
                         style={{
                             marginBottom: "32px",
                         }}
                     >
-                        <div
-                            style={{
-                                fontSize: "0.82rem",
-
-                                opacity: 0.5,
-
-                                marginBottom: "12px",
-                            }}
-                        >
-                            Events
-                        </div>
 
                         {events.length === 0 ? (
                             <div
@@ -1218,82 +1310,287 @@ function CalendarModal({
                             >
                                 {events.map((event) => {
                                     const chipStyle =
-                                        chipStyles[event.type] ||
-                                        chipStyles.task;
+                                        chipStyles[event.type];
 
-                                    const Icon =
-                                        eventIcons[event.type];
+                                    const displayStatus =
+                                        getDisplayStatus(event);
+
+                                    const status =
+                                        statusConfig[displayStatus];
 
                                     return (
                                         <div
                                             key={event.title}
                                             onClick={() => handleEventClick(event)}
                                             style={{
-                                                background: `
-                                                linear-gradient(
-                                                    135deg,
-                                                    ${chipStyle.bg},
-                                                    rgba(255,255,255,0.02)
-                                                )
-                                            `,
+                                                position: "relative",
 
-                                                border: `1px solid ${chipStyle.border}`,
+                                                background: "rgba(255,255,255,0.035)",
 
-                                                borderRadius: "28px",
+                                                border: "1px solid rgba(255,255,255,0.08)",
 
-                                                minHeight: "190px",
+                                                borderRadius: "24px",
 
-                                                padding: "20px",
+                                                backdropFilter: "blur(24px)",
 
-                                                backdropFilter: "blur(30px)",
+                                                padding: "18px",
+
+                                                minHeight: "185px",
 
                                                 display: "flex",
 
                                                 flexDirection: "column",
 
-                                                alignItems: "center",
-
-                                                justifyContent: "space-between",
-
-                                                transition: "all 0.2s ease",
+                                                transition: "all 0.25s ease",
 
                                                 cursor: "pointer",
+
+                                                overflow: "hidden",
                                             }}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.transform =
-                                                    "translateY(-2px) scale(1.01)";
+                                                    "translateY(-2px)";
 
-                                                e.currentTarget.style.boxShadow =
-                                                    "0 16px 32px rgba(0,0,0,0.18)";
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.12)";
                                             }}
+
                                             onMouseLeave={(e) => {
                                                 e.currentTarget.style.transform =
-                                                    "translateY(0) scale(1)";
+                                                    "translateY(0)";
 
-                                                e.currentTarget.style.boxShadow =
-                                                    "none";
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.08)";
                                             }}
                                         >
-                                            {/* top row meatball */}
-                                            {/* HOW DO I MAKE THESE DAMN MEATBALLS GO TO THE RIGHT!! */}
+                                            {/* TOP ROW */}
                                             <div
                                                 style={{
-                                                    position: "right",
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "flex-start",
+                                                    marginBottom: "10px",
+                                                }}
+                                                onMouseEnter={() => {
+                                                    setHoveredCard(event._id);
+
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(-2px)";
+
+                                                    e.currentTarget.style.border =
+                                                        "1px solid rgba(255,255,255,0.12)";
+
+                                                }}
+
+                                                onMouseLeave={() => {
+                                                    setHoveredCard(null);
+                                                    e.currentTarget.style.transform =
+                                                        "translateY(0)";
+
+                                                    e.currentTarget.style.border =
+                                                        "1px solid rgba(255,255,255,0.08)";
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        ...chipStyle,
+
+                                                        padding: "5px 10px",
+
+                                                        fontSize: "0.68rem",
+
+                                                        borderRadius: "999px",
+
+                                                        fontWeight: "300",
+
+                                                        background:
+                                                            status.background,
+
+                                                        border:
+                                                            `1px solid ${status.border}`,
+
+                                                        color:
+                                                            status.color,
+                                                    }}
+                                                >
+                                                    {event.type.charAt(0).toUpperCase() +
+                                                        event.type.slice(1)}
+                                                </span>
+
+                                                <div
+                                                    style={{
+                                                        transition: "opacity 0.2s ease",
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.color =
+                                                            "var(--text-primary)";
+
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(-1px) scale(1.08)";
+                                                    }}
+
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.color =
+                                                            "var(--text-secondary)";
+
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(0) scale(1)";
+                                                    }}
+                                                >
+                                                    <Ellipsis
+                                                        size={18}
+                                                        strokeWidth={1.6}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* ROW 2 STATUS / PRIORITY */}
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    gap: "8px",
+                                                    marginBottom: "12px",
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        ...chipStyle,
+
+                                                        padding: "5px 10px",
+
+                                                        fontSize: "0.68rem",
+
+                                                        borderRadius: "999px",
+
+                                                        fontWeight: "300",
+
+                                                        background:
+                                                            status.background,
+
+                                                        border:
+                                                            `1px solid ${status.border}`,
+
+                                                        color:
+                                                            status.color,
+                                                    }}
+                                                >
+                                                    {event.priority}
+                                                </span>
+
+                                                <span
+                                                    style={{
+                                                        padding: "5px 10px",
+
+                                                        fontSize: "0.68rem",
+
+                                                        borderRadius: "999px",
+
+                                                        fontWeight: "300",
+
+                                                        background:
+                                                            status.background,
+
+                                                        border:
+                                                            `1px solid ${status.border}`,
+
+                                                        color:
+                                                            status.color,
+                                                    }}
+                                                >
+                                                    {displayStatus}
+                                                </span>
+                                            </div>
+
+                                            {/* TITLE */}
+                                            <div
+                                                style={{
+                                                    fontSize: "0.94rem",
+
+                                                    fontWeight: "320",
+
+                                                    letterSpacing: "-0.02em",
+
+                                                    marginBottom: "18px",
+
+                                                    whiteSpace: "nowrap",
+
+                                                    overflow: "hidden",
+
+                                                    textOverflow: "ellipsis",
+                                                }}
+                                            >
+                                                {event.title}
+                                            </div>
+
+                                            {/* DUE */}
+                                            <div
+                                                style={{
+                                                    fontSize: "0.72rem",
+
+                                                    opacity: 0.55,
+
+                                                    marginBottom: "6px",
+                                                }}
+                                            >
+                                                Due {formatDueDate(event.dueDate)}
+                                            </div>
+
+                                            {/* COMPLETED */}
+                                            <div
+                                                style={{
+                                                    fontSize: "0.72rem",
+
+                                                    opacity: event.completed
+                                                        ? 0.45
+                                                        : 0,
+
+                                                    minHeight: "18px",
+
+                                                    marginBottom: "18px",
+                                                }}
+                                            >
+                                                {event.completed
+                                                    ? `Completed ${formatCompletedDate(
+                                                        event.completedDate
+                                                    )}`
+                                                    : "Completed"}
+                                            </div>
+
+                                            {/* HOVER ACTIONS */}
+
+                                            <div
+                                                style={{
+                                                    marginTop: "auto",
 
                                                     display: "flex",
-                                                    justifyItems: "right",
-                                                    alignItems: "right",
+
+                                                    justifyContent: "space-between",
+
+                                                    alignItems: "center",
+
+                                                    transition:
+                                                        "opacity 0.2s ease",
                                                 }}
                                             >
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
+
+                                                        // existing flag logic
                                                     }}
                                                     style={{
-                                                        background: "none",
                                                         border: "none",
 
-                                                        color: "var(--text-secondary)",
+                                                        background:
+                                                            "transparent",
+
+                                                        color:
+                                                            event.flagged
+                                                                ? "#a45d44"
+                                                                : "var(--text-secondary)",
 
                                                         cursor: "pointer",
 
@@ -1306,146 +1603,94 @@ function CalendarModal({
                                                         padding: 0,
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.currentTarget.style.color =
-                                                            "var(--text-primary)";
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(-1px) scale(1.08)";
+
+                                                        if (!event.flagged) {
+                                                            e.currentTarget.style.color =
+                                                                "white";
+                                                        }
                                                     }}
 
                                                     onMouseLeave={(e) => {
-                                                        e.currentTarget.style.color =
-                                                            "var(--text-secondary)";
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(0) scale(1)";
+
+                                                        if (!event.flagged) {
+                                                            e.currentTarget.style.color =
+                                                                "var(--text-secondary)";
+                                                        }
                                                     }}
                                                 >
-                                                    <Ellipsis size={18} />
+                                                    <Flag
+                                                        size={16}
+                                                        strokeWidth={1.6}
+                                                        fill={
+                                                            event.flagged
+                                                                ? "currentColor"
+                                                                : "none"
+                                                        }
+                                                    />
+                                                </button>
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+
+                                                        // existing like logic
+                                                    }}
+                                                    style={{
+                                                        border: "none",
+
+                                                        background:
+                                                            "transparent",
+
+                                                        color:
+                                                            event.liked
+                                                                ? "#ff6b6b"
+                                                                : "var(--text-secondary)",
+
+                                                        cursor: "pointer",
+
+                                                        display: "flex",
+
+                                                        alignItems: "center",
+
+                                                        justifyContent: "center",
+
+                                                        padding: 0,
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(-1px) scale(1.08)";
+
+                                                        if (!event.liked) {
+                                                            e.currentTarget.style.color =
+                                                                "#ff6b6b";
+                                                        }
+                                                    }}
+
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(0) scale(1)";
+
+                                                        if (!event.liked) {
+                                                            e.currentTarget.style.color =
+                                                                "var(--text-secondary)";
+                                                        }
+                                                    }}
+                                                >
+                                                    <Heart
+                                                        size={16}
+                                                        strokeWidth={1.6}
+                                                        fill={
+                                                            event.liked
+                                                                ? "currentColor"
+                                                                : "none"
+                                                        }
+                                                    />
                                                 </button>
                                             </div>
-
-                                            {/* ICON */}
-                                            <div
-                                                style={{
-                                                    width: "54px",
-                                                    height: "54px",
-
-                                                    borderRadius: "50%",
-
-                                                    display: "flex",
-
-                                                    alignItems: "center",
-
-                                                    justifyContent: "center",
-
-                                                }}
-                                            >
-                                                <Icon size={22} />
-                                            </div>
-
-                                            {/* TITLE */}
-
-                                            <div
-                                                style={{
-                                                    textAlign: "center",
-
-                                                    marginTop: "18px",
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: "0.92rem",
-
-                                                        fontWeight: "350",
-
-                                                        letterSpacing: "-0.02em",
-
-                                                        marginBottom: "8px",
-                                                    }}
-                                                >
-                                                    {event.title}
-                                                </div>
-
-                                                {event.completed ? (
-                                                    <div
-                                                        style={{
-                                                            display: "inline-flex",
-
-                                                            alignItems: "center",
-
-                                                            gap: "6px",
-
-                                                            padding: "6px 12px",
-
-                                                            borderRadius: "999px",
-
-                                                            background:
-                                                                "rgba(93,118,98,0.16)",
-
-                                                            border:
-                                                                "1px solid rgba(93,118,98,0.28)",
-
-                                                            fontSize: "0.7rem",
-
-                                                            fontWeight: "300",
-
-                                                            opacity: 0.9,
-                                                        }}
-                                                    >
-                                                        ✓ Completed
-                                                    </div>
-                                                ) : (
-                                                    <div
-                                                        style={{
-                                                            fontSize: "0.72rem",
-
-                                                            opacity: 0.55,
-                                                        }}
-                                                    >
-                                                        {event.category} · {event.priority}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* ASSOCIATIONS */}
-
-                                            {!event.completed &&
-                                                event.linkedItems?.length > 0 && (
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-
-                                                            marginTop: "18px",
-                                                        }}
-                                                    >
-                                                        {event.linkedItems
-                                                            .slice(0, 3)
-                                                            .map(
-                                                                (
-                                                                    item,
-                                                                    index
-                                                                ) => (
-                                                                    <div
-                                                                        key={item}
-                                                                        style={{
-                                                                            ...linkedItemStyle,
-
-                                                                            marginRight:
-                                                                                "-6px",
-
-                                                                            zIndex:
-                                                                                index + 1,
-
-                                                                            width: "30px",
-
-                                                                            height: "30px",
-
-                                                                            fontSize:
-                                                                                "0.62rem",
-                                                                        }}
-                                                                    >
-                                                                        {item}
-                                                                    </div>
-                                                                )
-                                                            )}
-                                                    </div>
-                                                )}
-
                                         </div>
                                     );
                                 })}
@@ -1572,86 +1817,21 @@ function CalendarModal({
                     </div>
                 </div>
             )}
-            {selectedTask && (
-                <TaskDetailsModal
-                    task={selectedTask}
-                    onEditTask={handleEditTask}
-                    onDeleteTask={handleDeleteTask}
-                    onCompleteTask={handleCompleteTask}
-                    onRestoreTask={handleRestoreTask}
-                    onClose={() => {
-                        setSelectedTask(null);
-
-                        if (returnToCalendar) {
-                            setShowCalendarContent(true);
-                        }
-
-                        setShowCalendarContent(true);
-                    }}
-                />
-            )}
-            {selectedProject && (
-                <ProjectDetailsModal
-                    project={selectedProject}
-                    onEditProject={handleEditProject}
-                    onDeleteProject={handleDeleteProject}
-                    onCompleteProject={handleCompleteProject}
-                    onRestoreProject={handleRestoreProject}
-                    onClose={() => {
-                        setSelectedProject(null);
-
-                        if (returnToCalendar) {
-                            setShowCalendarContent(true);
-                        }
-
-                        setShowCalendarContent(true);
-                    }}
-                />
-            )}
-            {selectedGoal && (
-                <GoalDetailsModal
-                    goal={selectedGoal}
-                    onEditGoal={handleEditGoal}
-                    onDeleteGoal={handleDeleteGoal}
-                    onCompleteGoal={handleCompleteGoal}
-                    onRestoreGoal={handleRestoreGoal}
-                    onClose={() => {
-                        setSelectedGoal(null);
-
-                        if (returnToCalendar) {
-                            setShowCalendarContent(true);
-                        }
-
-                        setShowCalendarContent(true);
-                    }}
-                />
-            )}
-            {selectedReminder && (
-                <ReminderDetailsModal
-                    reminder={selectedReminder}
-                    onEditReminder={handleEditReminder}
-                    onDeleteReminder={handleDeleteReminder}
-                    onCompleteReminder={handleCompleteReminder}
-                    onRestoreReminder={handleRestoreReminder}
-                    onClose={() => {
-                        setSelectedReminder(null);
-
-                        if (returnToCalendar) {
-                            setShowCalendarContent(true);
-                        }
-
-                        setShowCalendarContent(true);
-                    }}
-                />
-            )}
+            {/* edit / view */}
             {editingTask && (
                 <TaskModal
                     mode="edit"
                     task={editingTask}
                     onClose={() => {
                         setEditingTask(null);
-                        setSelectedTask(previousTask);
+                        setShowCalendarContent(true);
                     }}
+                    onCompleteTask={
+                        handleCompleteTask
+                    }
+                    onRestoreTask={
+                        handleRestoreTask
+                    }
                     onSave={async (taskData) => {
                         await updateTask(
                             editingTask._id,
@@ -1668,10 +1848,7 @@ function CalendarModal({
 
                         setEditingTask(null);
 
-                        setSelectedTask({
-                            ...previousTask,
-                            ...taskData,
-                        });
+                        setShowCalendarContent(true);
                     }}
                 />
             )}
@@ -1681,8 +1858,15 @@ function CalendarModal({
                     project={editingProject}
                     onClose={() => {
                         setEditingProject(null);
-                        setSelectedProject(previousProject);
+                        setShowCalendarContent(true);
                     }}
+                    onCompleteProject={
+                        handleCompleteProject
+                    }
+
+                    onRestoreProject={
+                        handleRestoreProject
+                    }
                     onSave={async (projectData) => {
                         await updateProject(
                             editingProject._id,
@@ -1699,10 +1883,7 @@ function CalendarModal({
 
                         setEditingProject(null);
 
-                        setSelectedProject({
-                            ...previousProject,
-                            ...projectData,
-                        });
+                        setShowCalendarContent(true);
                     }}
                 />
             )}
@@ -1712,8 +1893,15 @@ function CalendarModal({
                     goal={editingGoal}
                     onClose={() => {
                         setEditingGoal(null);
-                        setSelectedGoal(previousGoal);
+                        setShowCalendarContent(true);
                     }}
+                    onCompleteGoal={
+                        handleCompleteGoal
+                    }
+
+                    onRestoreGoal={
+                        handleRestoreGoal
+                    }
                     onSave={async (goalData) => {
                         await updateGoal(
                             editingGoal._id,
@@ -1730,24 +1918,25 @@ function CalendarModal({
 
                         setEditingGoal(null);
 
-                        setSelectedGoal({
-                            ...previousGoal,
-                            ...goalData,
-                        });
+                        setShowCalendarContent(true);
                     }}
                 />
             )}
             {editingReminder && (
                 <ReminderModal
                     mode="edit"
-
                     reminder={editingReminder}
-
                     onClose={() => {
                         setEditingReminder(null);
-                        setSelectedReminder(previousReminder);
+                        setShowCalendarContent(true);
                     }}
+                    onCompleteReminder={
+                        handleCompleteReminder
+                    }
 
+                    onRestoreReminder={
+                        handleRestoreReminder
+                    }
                     onSave={async (reminderData) => {
                         await updateReminder(
                             editingReminder._id,
@@ -1764,13 +1953,12 @@ function CalendarModal({
 
                         setEditingReminder(null);
 
-                        setSelectedReminder({
-                            ...previousReminder,
-                            ...reminderData,
-                        });
+                        setShowCalendarContent(true);
                     }}
                 />
             )}
+
+            {/* create events */}
             {showTaskModal && (
                 <TaskModal
                     mode="create"
@@ -1825,6 +2013,7 @@ function CalendarModal({
                     onSave={handleCreateReminder}
                 />
             )}
+            {/* clear day */}
             {showClearConfirm && (
                 <DeleteConfirmModal
                     title="Clear all events?"

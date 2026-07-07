@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from "react";
 
 import { deleteAccount } from "../../services/authService";
 
+const API_BASE_URL =
+    "http://localhost:5050";
+
 function DeleteUserModal({
     user,
     onClose,
@@ -256,12 +259,25 @@ function DeleteUserModal({
                             fontWeight: "300",
                         }}
                     >
-                        {user?.name
-                            ?.split(" ")
-                            .map((part) => part[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
+                        {user?.avatar ? (
+                            <img
+                                src={`${API_BASE_URL}${user.avatar}`}
+                                alt="Profile"
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "50%",
+                                }}
+                            />
+                        ) : (
+                            user?.name
+                                ?.split(" ")
+                                .map((part) => part[0])
+                                .join("")
+                                .slice(0, 2)
+                                .toUpperCase()
+                        )}
                     </div>
                 </div>
 

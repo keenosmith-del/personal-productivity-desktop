@@ -74,6 +74,7 @@ function UserSelection({
           key={user._id}
           name={user.name}
           initials={user.initials}
+          avatar={user.avatar}
           onClick={() => onUserSelect(user)}
         />
       ))}

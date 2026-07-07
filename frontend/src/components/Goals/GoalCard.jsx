@@ -110,10 +110,10 @@ function GoalCard({
     }, [setOpenGoalMenu]);
 
     const visibleLinks =
-        goal.linkedItems?.slice(0, 3) || [];
+        goal.linkedItems?.slice(0, 2) || [];
 
     const remainingLinks =
-        (goal.linkedItems?.length || 0) - 3;
+        (goal.linkedItems?.length || 0) - 2;
 
     const today = new Date();
 
@@ -469,11 +469,14 @@ function GoalCard({
             >
                 <span
                     style={{
-                        padding: "4px 10px",
+                        padding:
+                            "4px 10px",
 
-                        borderRadius: "999px",
+                        borderRadius:
+                            "999px",
 
-                        fontSize: "0.68rem",
+                        fontSize:
+                            "0.68rem",
 
                         background:
                             goal.category === "Work"
@@ -538,9 +541,11 @@ function GoalCard({
 
             <div
                 style={{
-                    fontSize: "1rem",
+                    fontSize:
+                        "1rem",
 
-                    fontWeight: "350",
+                    fontWeight:
+                        "350",
 
                     letterSpacing: "-0.02em",
 
@@ -571,9 +576,11 @@ function GoalCard({
             </div>
 
             <div
+
                 style={{
                     flex: 1,
                 }}
+
             />
 
             {/* DIVIDER */}
@@ -582,12 +589,14 @@ function GoalCard({
                 style={{
                     height: "1px",
 
-                    background: "rgba(255,255,255,0.05)",
+                    background:
+                        "rgba(255,255,255,0.05)",
 
                     marginBottom: "20px",
                 }}
             />
 
+            {/* AVATARS */}
 
             {/* ASSOCIATIONS */}
 
@@ -653,6 +662,32 @@ function GoalCard({
                                 "1px solid rgba(255,255,255,0.08)",
 
                             zIndex: 10,
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.12)";
+
+                            e.currentTarget.style.boxShadow =
+                                "0 8px 20px rgba(0,0,0,0.25)";
+
+                            e.currentTarget.style.color =
+                                "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.border =
+                                "1px solid rgba(255,255,255,0.06)";
+
+                            e.currentTarget.style.boxShadow =
+                                "none";
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
                         }}
                     >
                         +{remainingLinks}
@@ -749,7 +784,8 @@ function GoalCard({
                     style={{
                         display: "flex",
 
-                        alignItems: "center",
+                        alignItems:
+                            "center",
 
                         gap: "12px",
                     }}

@@ -5,8 +5,12 @@ import {
   ArrowUpDown,
   Filter,
   Ellipsis,
-  ArrowRight,
   ArrowLeft,
+  ArrowRight,
+  LayoutGrid,
+  Sparkles,
+  Shapes,
+  ChartLine,
   Plus,
   Bell,
 } from "lucide-react";
@@ -19,7 +23,6 @@ import {
 
 import ReminderCard from "../components/Reminders/ReminderCard";
 import ReminderModal from "../components/Reminders/ReminderModal";
-import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
 
 import Toast from "../components/Toast";
 
@@ -28,7 +31,6 @@ import {
   createReminder,
   updateReminder,
   deleteReminder,
-  clearAllReminders,
 } from "../services/reminderService";
 
 function Reminders() {
@@ -41,7 +43,7 @@ function Reminders() {
 
   const moreRef = useRef(null);
 
-  //COMPONENT STATES
+  // COMPONENT STATES
   const [showReminderModal, setShowReminderModal] =
     useState(false);
 
@@ -173,6 +175,7 @@ function Reminders() {
     );
   };
 
+
   {/* ALL REMINDERS */ }
   {/* NO COLS */ }
   const allReminders = sortReminders(
@@ -224,10 +227,11 @@ function Reminders() {
     )
   );
 
+  {/* FOCUS TAB REMINDER SORT */ }
   const urgentReminders = sortReminders(
     reminders.filter(
       (reminder) =>
-        reminder.priority === "High" && //
+        reminder.priority === "High" &&
         matchesSearch(reminder) &&
         matchesFilters(reminder)
     )
@@ -260,7 +264,8 @@ function Reminders() {
     )
   )
 
-  {/* CATEGORIES SORT */ }
+  {/* CATEGORIES TAB*/ }
+  {/* WORK */ }
   const workReminders = sortReminders(
     reminders.filter(
       (reminder) =>
@@ -560,7 +565,7 @@ function Reminders() {
 
   const handleAddComment =
     async (reminder) => {
-      await updateReminder(
+      await updatereminder(
         reminder._id,
         {
           ...reminder,
@@ -572,39 +577,6 @@ function Reminders() {
       );
 
       loadReminders();
-    };
-
-  const handleClearActiveReminders =
-    async () => {
-      try {
-        await clearActiveReminders();
-
-        setReminders((prev) =>
-          prev.filter(
-            (reminder) =>
-              reminder.completed
-          )
-        );
-
-        setToast(
-          "Active reminders cleared"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
-
-        setToast(
-          "Failed to clear active reminders"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-      }
     };
 
   const actionIconStyle = {
@@ -638,7 +610,7 @@ function Reminders() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
 
@@ -1388,8 +1360,6 @@ function Reminders() {
                         </div>
                       </div>
 
-                      {/* NO TABS */}
-
                       {/* MORE */}
                       <div
                         ref={moreRef}
@@ -1618,7 +1588,7 @@ function Reminders() {
                 fontWeight: "300",
               }}
             >
-              {totalReminders + " Reminders" || " "} {/* blank because page will show no reminders OR 1 reminder cs reminder(s) */}
+              {totalReminders + " Reminders" || "No reminders yet"}
             </p>
           </div> {/* END HEADER */}
 
@@ -1728,12 +1698,21 @@ function Reminders() {
                   <ReminderCard
                     key={reminder._id}
                     reminder={reminder}
-                    onClick={setSelectedReminder}
+                    onClick={() => {
+                      setEditingReminder(reminder);
+
+                      setShowReminderModal(true);
+                    }}
 
                     openReminderMenu={openReminderMenu}
                     setOpenReminderMenu={setOpenReminderMenu}
 
-                    onView={setSelectedReminder}
+                    onView={(reminder) => {
+                      setEditingReminder(reminder);
+
+                      setShowReminderModal(true);
+                    }}
+
                     onEdit={setEditingReminder}
 
                     onDelete={handleDeleteReminder}
@@ -1760,44 +1739,8 @@ function Reminders() {
 
         </div>
       </div>
-      {showReminderModal && (
-        <ReminderModal
-          onClose={() =>
-            setShowReminderModal(false)
-          }
-          onSave={(reminderData) => {
-            createReminder(reminderData)
-              .then((newReminder) => {
-                setReminders((prev) => [
-                  newReminder,
-                  ...prev,
-                ]);
-
-                setToast(
-                  "Reminder created"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to create reminder"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
-          }}
-        />
-      )}
-
       {selectedReminder && (
-        <ReminderDetailsModal
+        <ReminderModal
           reminder={selectedReminder}
           onClose={() =>
             setSelectedReminder(null)
@@ -1813,46 +1756,64 @@ function Reminders() {
           }
         />
       )}
-      {editingReminder && (
+      {(showReminderModal || editingReminder) && (
         <ReminderModal
-          mode="edit"
-          reminder={editingReminder}
+          mode={
+            editingReminder
+              ? "edit"
+              : "create"
+          }
+          reminder={editingReminder || null}
           onCompleteReminder={
             handleCompleteReminder
           }
-          onClose={() =>
-            setEditingReminder(null)
-          }
-          onSave={(reminderData) => {
-            updateReminder(
-              editingReminder._id,
-              reminderData
-            )
-              .then((updatedReminder) => {
-                setReminders((prev) =>
-                  prev.map((reminder) =>
-                    reminder._id ===
-                      updatedReminder._id
-                      ? updatedReminder
-                      : reminder
-                  )
-                );
+          onClose={() => {
+            setEditingReminder(null);
 
-                setToast(
-                  "Reminder updated"
-                );
+            setShowReminderModal(false);
+          }}
+          onSave={(reminderData) => {
+            const action = editingReminder
+              ? updateReminder(
+                editingReminder._id,
+                reminderData
+              )
+              : createReminder(reminderData);
+
+            action
+              .then((savedReminder) => {
+                if (editingReminder) {
+                  setReminders((prev) =>
+                    prev.map((reminder) =>
+                      reminder._id === savedReminder._id
+                        ? savedReminder
+                        : reminder
+                    )
+                  );
+
+                  setToast("Reminder updated");
+                } else {
+                  setReminders((prev) => [
+                    savedReminder,
+                    ...prev,
+                  ]);
+
+                  setToast("Reminder created");
+                }
 
                 setTimeout(() => {
                   setToast("");
                 }, 3000);
 
                 setEditingReminder(null);
-              })
-              .catch((error) => {
-                console.error(error);
 
+                setShowReminderModal(false);
+              })
+              .catch(() => {
                 setToast(
-                  "Failed to update reminder"
+                  editingReminder
+                    ? "Failed to update reminder"
+                    : "Failed to create reminder"
                 );
 
                 setTimeout(() => {
@@ -1860,6 +1821,7 @@ function Reminders() {
                 }, 3000);
               });
           }}
+          onDelete={handleDeleteReminder}
         />
       )}
 
@@ -1971,171 +1933,6 @@ function Reminders() {
                   await handleClearCompletedReminders();
 
                   setShowClearCompleted(
-                    false
-                  );
-                }}
-
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "var(--text-secondary)",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-primary)";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "var(--text-secondary)";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* showClearActive */}
-      {showClearActive && (
-        <div
-          onClick={() =>
-            setShowClearActive(
-              false
-            )
-          }
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(12px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            onClick={async () => {
-              await handleClearActiveReminders();
-
-              setShowClearActive(
-                false
-              );
-            }}
-            style={{
-              width: "400px",
-              padding: "28px",
-              borderRadius: "24px",
-              background: "rgba(20,20,20,0.85)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <h3
-              style={{
-                marginBottom: "12px",
-                fontWeight: "400",
-              }}
-            >
-              Clear active reminders?
-            </h3>
-
-            <p
-              style={{
-                color:
-                  "var(--text-secondary)",
-                marginBottom: "24px",
-              }}
-            >
-              This action cannot be undone.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "12px",
-              }}
-            >
-              <button
-                onClick={() =>
-                  setShowClearActive(
-                    false
-                  )
-                }
-                style={{
-                  background: "transparent",
-
-                  border: "1px solid rgba(255,255,255,0.08)",
-
-                  borderRadius: "999px",
-
-                  padding: "8px 14px",
-
-                  color: "#ff6b6b",
-
-                  fontSize: "0.85rem",
-
-                  fontWeight: "400",
-
-                  cursor: "pointer",
-
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "rgba(255,255,255,0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color =
-                    "#ff6b6b";
-
-                  e.currentTarget.style.background =
-                    "transparent";
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setReminders((prev) =>
-                    prev.filter(
-                      (reminder) =>
-                        reminder.completed
-                    )
-                  );
-
-                  setToast("Active reminders cleared");
-
-                  setTimeout(() => {
-                    setToast("");
-                  }, 3000);
-
-                  setShowClearActive(
                     false
                   );
                 }}

@@ -21,7 +21,6 @@ import {
   useRef,
 } from "react";
 
-import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
 import TaskCard from "../components/Tasks/TaskCard";
 import TaskModal from "../components/Tasks/TaskModal";
 
@@ -1701,12 +1700,21 @@ function Tasks() {
                   <TaskCard
                     key={task._id}
                     task={task}
-                    onClick={setSelectedTask}
+                    onClick={() => {
+                      setEditingTask(task);
+
+                      setShowTaskModal(true);
+                    }}
 
                     openTaskMenu={openTaskMenu}
                     setOpenTaskMenu={setOpenTaskMenu}
 
-                    onView={setSelectedTask}
+                    onView={(task) => {
+                      setEditingTask(task);
+
+                      setShowTaskModal(true);
+                    }}
+
                     onEdit={setEditingTask}
 
                     onDelete={handleDeleteTask}
@@ -1733,99 +1741,64 @@ function Tasks() {
 
         </div>
       </div>
-      {showTaskModal && (
+      {(showTaskModal || editingTask) && (
         <TaskModal
-          onClose={() =>
-            setShowTaskModal(false)
+          mode={
+            editingTask
+              ? "edit"
+              : "create"
           }
-          onSave={(taskData) => {
-            createTask(taskData)
-              .then((newTask) => {
-                setTasks((prev) => [
-                  newTask,
-                  ...prev,
-                ]);
+          task={editingTask || null}
+          onCompleteTask={
+            handleCompleteTask
+          }
+          onClose={() => {
+            setEditingTask(null);
 
-                setToast(
-                  "Task created"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              })
-              .catch((error) => {
-                console.error(error);
-
-                setToast(
-                  "Failed to create task"
-                );
-
-                setTimeout(() => {
-                  setToast("");
-                }, 3000);
-              });
+            setShowTaskModal(false);
           }}
-        />
-      )}
-
-      {selectedTask && (
-        <TaskDetailsModal
-          task={selectedTask}
-          onClose={() =>
-            setSelectedTask(null)
-          }
-          onDeleteTask={handleDeleteTask}
-          setToast={setToast}
-          onEditTask={setEditingTask}
-          onCompleteTask={
-            handleCompleteTask
-          }
-          onRestoreTask={
-            handleRestoreTask
-          }
-        />
-      )}
-      {editingTask && (
-        <TaskModal
-          mode="edit"
-          task={editingTask}
-          onCompleteTask={
-            handleCompleteTask
-          }
-          onClose={() =>
-            setEditingTask(null)
-          }
           onSave={(taskData) => {
-            updateTask(
-              editingTask._id,
-              taskData
-            )
-              .then((updatedTask) => {
-                setTasks((prev) =>
-                  prev.map((task) =>
-                    task._id ===
-                      updatedTask._id
-                      ? updatedTask
-                      : task
-                  )
-                );
+            const action = editingTask
+              ? updateTask(
+                editingTask._id,
+                taskData
+              )
+              : createTask(taskData);
 
-                setToast(
-                  "Task updated"
-                );
+            action
+              .then((savedTask) => {
+                if (editingTask) {
+                  setTasks((prev) =>
+                    prev.map((task) =>
+                      task._id === savedTask._id
+                        ? savedTask
+                        : task
+                    )
+                  );
+
+                  setToast("Task updated");
+                } else {
+                  setTasks((prev) => [
+                    savedTask,
+                    ...prev,
+                  ]);
+
+                  setToast("Task created");
+                }
 
                 setTimeout(() => {
                   setToast("");
                 }, 3000);
 
                 setEditingTask(null);
-              })
-              .catch((error) => {
-                console.error(error);
 
+                setShowTaskModal(false);
+              })
+              .catch(() => {
                 setToast(
-                  "Failed to update task"
+                  editingTask
+                    ? "Failed to update task"
+                    : "Failed to create task"
                 );
 
                 setTimeout(() => {
@@ -1833,6 +1806,7 @@ function Tasks() {
                 }, 3000);
               });
           }}
+          onDelete={handleDeleteTask}
         />
       )}
 

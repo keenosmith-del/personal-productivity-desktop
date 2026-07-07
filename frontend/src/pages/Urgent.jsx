@@ -45,16 +45,9 @@ import {
   deleteReminder,
 } from "../services/reminderService";
 
-import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
 import TaskModal from "../components/Tasks/TaskModal";
-
-import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
 import ProjectModal from "../components/Projects/ProjectModal";
-
-import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
 import GoalModal from "../components/Goals/GoalModal";
-
-import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
 import ReminderModal from "../components/Reminders/ReminderModal";
 
 import Toast from "../components/Toast";
@@ -2002,7 +1995,7 @@ function Urgent() {
       </div>
       {/* show modals */}
       {selectedTask && (
-        <TaskDetailsModal
+        <TaskModal
           task={selectedTask}
           onClose={() =>
             setSelectedTask(null)
@@ -2050,7 +2043,7 @@ function Urgent() {
         />
       )}
       {selectedProject && (
-        <ProjectDetailsModal
+        <ProjectModal
           project={selectedProject}
           onClose={() =>
             setSelectedProject(null)
@@ -2098,7 +2091,7 @@ function Urgent() {
         />
       )}
       {selectedGoal && (
-        <GoalDetailsModal
+        <GoalModal
           goal={selectedGoal}
           onClose={() =>
             setSelectedGoal(null)
@@ -2146,7 +2139,7 @@ function Urgent() {
         />
       )}
       {selectedReminder && (
-        <ReminderDetailsModal
+        <ReminderModal
           reminder={selectedReminder}
           onClose={() =>
             setSelectedReminder(null)

@@ -17,16 +17,11 @@ import ClockWidget from "../components/Dashboard/ClockWidget";
 
 import DashboardModal from "../components/Dashboard/DashboardModal";
 
-import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
-import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
-import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
-import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
-import NoteModal from "../components/Notes/NoteModal";
-
 import TaskModal from "../components/Tasks/TaskModal";
 import GoalModal from "../components/Goals/GoalModal";
 import ProjectModal from "../components/Projects/ProjectModal";
 import ReminderModal from "../components/Reminders/ReminderModal";
+import NoteModal from "../components/Notes/NoteModal";
 
 import Toast from "../components/Toast";
 
@@ -1235,9 +1230,26 @@ function Dashboard() {
 
       {/* show preview item on wide card */}
       {selectedUpcomingItem?.type === "task" && (
-        <TaskDetailsModal
+        <TaskModal
+          mode="edit"
           task={selectedUpcomingItem}
+          onSave={async (taskData) => {
 
+            await updateTask(
+              selectedUpcomingItem._id,
+              taskData
+            );
+
+            await loadDashboardData();
+
+            setToast("Task updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setSelectedUpcomingItem(null);
+          }}
           onEditTask={
             handleEditUpcoming
           }
@@ -1263,8 +1275,26 @@ function Dashboard() {
       )}
 
       {selectedUpcomingItem?.type === "project" && (
-        <ProjectDetailsModal
+        <ProjectModal
+          mode="edit"
           project={selectedUpcomingItem}
+          onSave={async (projectData) => {
+
+            await updateProject(
+              selectedUpcomingItem._id,
+              projectData
+            );
+
+            await loadDashboardData();
+
+            setToast("Project updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setSelectedUpcomingItem(null);
+          }}
 
           onEditProject={
             handleEditUpcoming
@@ -1291,8 +1321,26 @@ function Dashboard() {
       )}
 
       {selectedUpcomingItem?.type === "goal" && (
-        <GoalDetailsModal
+        <GoalModal
+          mode="edit"
           goal={selectedUpcomingItem}
+          onSave={async (goalData) => {
+
+            await updateGoal(
+              selectedUpcomingItem._id,
+              goalData
+            );
+
+            await loadDashboardData();
+
+            setToast("Goal updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setSelectedUpcomingItem(null);
+          }}
 
           onEditGoal={
             handleEditUpcoming
@@ -1319,8 +1367,26 @@ function Dashboard() {
       )}
 
       {selectedUpcomingItem?.type === "reminder" && (
-        <ReminderDetailsModal
+        <ReminderModal
+          mode="edit"
           reminder={selectedUpcomingItem}
+          onSave={async (taskData) => {
+
+            await updateReminder(
+              selectedUpcomingItem._id,
+              reminderData
+            );
+
+            await loadDashboardData();
+
+            setToast("Reminder updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            setSelectedUpcomingItem(null);
+          }}
 
           onEditReminder={
             handleEditUpcoming

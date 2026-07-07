@@ -43,6 +43,8 @@ function Notes() {
 
   const moreRef = useRef(null);
 
+  const noteFolders = []; // placeholder until real data
+
   //COMPONENT STATES
   const [showNoteModal, setShowNoteModal] =
     useState(false);
@@ -378,6 +380,8 @@ function Notes() {
               note._id !== noteId
           )
         );
+
+        setEditingNote(null);
 
         setToast(
           "Note deleted"
@@ -1764,7 +1768,7 @@ function Notes() {
                 }}
               >
 
-                {allNotes.length === 0 ? (
+                {noteFolders.length === 0 ? (
                   <div
                     style={{
                       gridColumn: "1 / -1",
@@ -1906,6 +1910,7 @@ function Notes() {
                 }, 3000);
               });
           }}
+          onDelete={handleDeleteNote}
         />
       )}
       {/* show clear all */}

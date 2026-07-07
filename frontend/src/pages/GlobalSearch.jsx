@@ -23,21 +23,15 @@ import {
 import SearchResultCard from "../components/Search/SearchResultCard";
 
 import { getProjects } from "../services/projectService";
-
 import { getTasks } from "../services/taskService";
-
 import { getGoals } from "../services/goalService";
-
 import { getNotes } from "../services/noteService";
-
 import { getReminders } from "../services/reminderService";
 
-import TaskDetailsModal from "../components/Tasks/TaskDetailsModal";
-import ProjectDetailsModal from "../components/Projects/ProjectDetailsModal";
-import GoalDetailsModal from "../components/Goals/GoalDetailsModal";
-// import NoteDetailsModal from "../components/Notes/NoteDetailsModal";
-import ReminderDetailsModal from "../components/Reminders/ReminderDetailsModal";
-
+import TaskModal from "../components/Tasks/TaskModal";
+import ProjectModal from "../components/Projects/ProjectModal";
+import GoaModal from "../components/Goals/GoalModal";
+import ReminderModal from "../components/Reminders/ReminderModal";
 import NoteModal from "../components/Notes/NoteModal";
 
 import Toast from "../components/Toast";
@@ -1364,7 +1358,7 @@ function GlobalSearch() {
                 </div>
             </div>
             {selectedTask && (
-                <TaskDetailsModal
+                <TaskModal
                     task={selectedTask}
                     onClose={() =>
                         setSelectedTask(null)
@@ -1373,7 +1367,7 @@ function GlobalSearch() {
             )}
 
             {selectedProject && (
-                <ProjectDetailsModal
+                <ProjectModal
                     project={selectedProject}
                     onClose={() =>
                         setSelectedProject(null)
@@ -1382,7 +1376,7 @@ function GlobalSearch() {
             )}
 
             {selectedGoal && (
-                <GoalDetailsModal
+                <GoalModal
                     goal={selectedGoal}
                     onClose={() =>
                         setSelectedGoal(null)
@@ -1391,7 +1385,7 @@ function GlobalSearch() {
             )}
 
             {selectedReminder && (
-                <ReminderDetailsModal
+                <ReminderModal
                     reminder={selectedReminder}
                     onClose={() =>
                         setSelectedReminder(null)

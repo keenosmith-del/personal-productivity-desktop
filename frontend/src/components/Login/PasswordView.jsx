@@ -6,6 +6,9 @@ import DeleteUserModal from "./DeleteUserModal";
 
 import { loginUser } from "../../services/authService";
 
+const API_BASE_URL =
+  "http://localhost:5050";
+
 function PasswordView({
   user,
   onBack,
@@ -118,7 +121,20 @@ function PasswordView({
             fontWeight: "300",
           }}
         >
-          {user.initials}
+          {user?.avatar?.startsWith("/uploads/") ? (
+            <img
+              src={`${API_BASE_URL}${user.avatar}`}
+              alt={user.name}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+          ) : (
+            user.initials
+          )}
         </div>
 
         <h2

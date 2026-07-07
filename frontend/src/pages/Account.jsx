@@ -26,6 +26,9 @@ import {
     exportData,
 } from "../services/authService";
 
+const API_BASE_URL =
+    "http://localhost:5050";
+
 function Account() {
     const {
         user,
@@ -255,7 +258,7 @@ function Account() {
                                     fontWeight: "300",
                                 }}
                             >
-                                {user?.theme || "Dark"} Mode
+                                {settings.theme} Mode
                             </span>
                         </div>
 
@@ -270,6 +273,9 @@ function Account() {
                             }}
                         >
                             <div
+                                onClick={() =>
+                                    setShowEditUser(true)
+                                }
                                 style={{
                                     position: "relative",
 
@@ -343,12 +349,25 @@ function Account() {
                                             "all 0.2s ease",
                                     }}
                                 >
-                                    {user?.name
-                                        ?.split(" ")
-                                        .map((part) => part[0])
-                                        .join("")
-                                        .slice(0, 2)
-                                        .toUpperCase() || "U"}
+                                    {user?.avatar ? (
+                                        <img
+                                            src={`${API_BASE_URL}${user.avatar}`}
+                                            alt="Profile"
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                                borderRadius: "50%",
+                                            }}
+                                        />
+                                    ) : (
+                                        user?.name
+                                            ?.split(" ")
+                                            .map((part) => part[0])
+                                            .join("")
+                                            .slice(0, 2)
+                                            .toUpperCase() || "U"
+                                    )}
                                 </div>
                                 <div
                                     className="avatar-edit"
@@ -798,7 +817,6 @@ function Account() {
                                 }}
                             >
                                 <Sun size={14} />
-                                Light
                             </button>
 
                             <button
@@ -840,7 +858,6 @@ function Account() {
                                 }}
                             >
                                 <Moon size={14} />
-                                Dark
                             </button>
                         </div>
                     </div>

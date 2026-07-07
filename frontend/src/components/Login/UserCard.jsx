@@ -1,6 +1,10 @@
+const API_BASE_URL =
+  "http://localhost:5050";
+
 function UserCard({
   name,
   initials,
+  avatar,
   isAddUser = false,
   onClick,
 }) {
@@ -64,7 +68,22 @@ function UserCard({
             "0 16px 40px rgba(0,0,0,0.45)";
         }}
       >
-        {isAddUser ? "+" : initials}
+        {isAddUser ? (
+          "+"
+        ) : avatar ? (
+          <img
+            src={`${API_BASE_URL}${avatar}`}
+            alt={name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+          />
+        ) : (
+          initials
+        )}
       </div>
 
       <p

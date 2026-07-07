@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
 
-import { useEffect, useState } from "react";
-import { getCurrentUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
+
+const API_BASE_URL =
+  "http://localhost:5050";
 
 import {
   Grip,
@@ -23,26 +25,7 @@ import {
 } from "lucide-react";
 
 function Sidebar({ collapsed, setCollapsed }) {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const currentUser =
-          await getCurrentUser();
-
-        setUser(currentUser);
-
-      } catch (error) {
-        console.error(
-          "Failed to load user",
-          error
-        );
-      }
-    };
-
-    loadUser();
-  }, []);
+  const { user } = useAuth();
 
   const initials =
     user?.name
@@ -333,7 +316,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         {/* User Section */}
 
         <NavLink
-          to="/profile"
+          to="/account"
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -377,7 +360,20 @@ function Sidebar({ collapsed, setCollapsed }) {
                 fontSize: "1rem",
               }}
             >
-              {initials}
+              {user?.avatar ? (
+                <img
+                  src={`${API_BASE_URL}${user.avatar}`}
+                  alt="Profile"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />
+              ) : (
+                initials
+              )}
             </div>
 
             {!collapsed && (

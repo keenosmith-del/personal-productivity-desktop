@@ -4,12 +4,10 @@ import {
     MessageCircle,
 } from "lucide-react";
 
-import TaskDetailsModal from "../Tasks/TaskDetailsModal";
-import ProjectDetailsModal from "../Projects/ProjectDetailsModal";
-import GoalDetailsModal from "../Goals/GoalDetailsModal";
-//import NoteDetailsModal from "../Notes/NoteDetailsModal";
-import ReminderDetailsModal from "../Reminders/ReminderDetailsModal";
-
+import TaskModal from "../Tasks/TaskModal";
+import ProjectModal from "../Projects/ProjectModal";
+import GoalModal from "../Goals/GoalModal";
+import ReminderModal from "../Reminders/ReminderModal";
 import NoteModal from "../Notes/NoteModal";
 
 function SearchResultCard({

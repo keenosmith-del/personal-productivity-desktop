@@ -8,8 +8,6 @@ import Projects from "./pages/Projects";
 import Notes from "./pages/Notes";
 import Goals from "./pages/Goals";
 import Calendar from "./pages/Calendar";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
 import Reminders from "./pages/Reminders";
 import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
@@ -141,15 +139,6 @@ function App() {
           element={
             <ProtectedRoute>
               <Break />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
             </ProtectedRoute>
           }
         />

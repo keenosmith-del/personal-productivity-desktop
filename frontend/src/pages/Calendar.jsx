@@ -6,14 +6,12 @@ import {
 
 import CalendarGrid from "../components/Calendar/CalendarGrid";
 import CalendarModal from "../components/Calendar/CalendarModal";
+
 import Toast from "../components/Toast";
 
 import { getProjects } from "../services/projectService";
-
 import { getTasks } from "../services/taskService";
-
 import { getGoals } from "../services/goalService";
-
 import { getReminders } from "../services/reminderService";
 
 function Calendar() {

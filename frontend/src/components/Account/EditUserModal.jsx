@@ -1,6 +1,7 @@
 import {
     useState,
     useRef,
+    useEffect,
 } from "react";
 
 import {
@@ -11,6 +12,9 @@ import {
 import {
     updateProfile,
 } from "../../services/authService";
+
+const API_BASE_URL =
+    "http://localhost:5050";
 
 function EditUserModal({
     user,
@@ -37,6 +41,35 @@ function EditUserModal({
 
     const errorTimeoutRef =
         useRef(null);
+
+    const fileInputRef =
+        useRef(null);
+
+    const [avatar, setAvatar] =
+        useState(null);
+
+    const [avatarPreview, setAvatarPreview] =
+        useState(
+            user?.avatar
+                ? `${API_BASE_URL}${user.avatar}`
+                : ""
+        );
+
+    const [removeAvatar, setRemoveAvatar] =
+        useState(false);
+
+    const hasExistingAvatar =
+        !!user?.avatar && !removeAvatar;
+
+    useEffect(() => {
+        if (removeAvatar) return;
+
+        setAvatarPreview(
+            user?.avatar
+                ? `${API_BASE_URL}${user.avatar}`
+                : ""
+        );
+    }, [user, removeAvatar]);
 
     const inputStyle = {
         width: "100%",
@@ -244,6 +277,9 @@ function EditUserModal({
                     }}
                 >
                     <div
+                        onClick={() =>
+                            fileInputRef.current?.click()
+                        }
                         style={{
                             position: "relative",
 
@@ -257,6 +293,15 @@ function EditUserModal({
                                 e.currentTarget.querySelector(
                                     ".avatar-edit"
                                 );
+
+                            const remove =
+                                e.currentTarget.querySelector(
+                                    ".avatar-remove"
+                                );
+
+                            if (remove) {
+                                remove.style.opacity = 1;
+                            }
 
                             const avatar =
                                 e.currentTarget
@@ -278,6 +323,15 @@ function EditUserModal({
                                 e.currentTarget.querySelector(
                                     ".avatar-edit"
                                 );
+
+                            const remove =
+                                e.currentTarget.querySelector(
+                                    ".avatar-remove"
+                                );
+
+                            if (remove) {
+                                remove.style.opacity = 0;
+                            }
 
                             const avatar =
                                 e.currentTarget
@@ -323,15 +377,93 @@ function EditUserModal({
                                     "all 0.2s ease",
                             }}
                         >
-                            {name
-                                .split(" ")
-                                .map(
-                                    (part) => part[0]
-                                )
-                                .join("")
-                                .slice(0, 2)
-                                .toUpperCase() || "U"}
+                            {avatarPreview ? (
+                                <img
+                                    src={avatarPreview}
+                                    alt="Profile"
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                        borderRadius: "50%",
+                                    }}
+                                />
+                            ) : (
+                                name
+                                    .split(" ")
+                                    .map((part) => part[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase() || "U"
+                            )}
                         </div>
+
+                        {hasExistingAvatar && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    setAvatar(null);
+                                    setAvatarPreview("");
+                                    setRemoveAvatar(true);
+                                }}
+                                style={{
+                                    position: "absolute",
+                                    top: "-2px",
+                                    right: "-2px",
+
+                                    width: "24px",
+                                    height: "24px",
+
+                                    borderRadius: "50%",
+
+                                    border: "1px solid rgba(255,255,255,0.08)",
+
+                                    background:
+                                        "rgba(18,18,18,0.75)",
+
+                                    backdropFilter: "blur(10px)",
+
+                                    color: "rgba(255,255,255,0.75)",
+
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+
+                                    cursor: "pointer",
+
+                                    opacity: 0,
+
+                                    transition: "all 0.2s ease",
+
+                                    zIndex: 5,
+                                }}
+                                className="avatar-remove"
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(170,60,60,0.85)";
+
+                                    e.currentTarget.style.color =
+                                        "white";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1.05)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(18,18,18,0.75)";
+
+                                    e.currentTarget.style.color =
+                                        "rgba(255,255,255,0.75)";
+
+                                    e.currentTarget.style.transform =
+                                        "scale(1)";
+                                }}
+                            >
+                                <X size={12} />
+                            </button>
+                        )}
 
                         <div
                             className="avatar-edit"
@@ -371,6 +503,28 @@ function EditUserModal({
                         </div>
                     </div>
                 </div>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{
+                        display: "none",
+                    }}
+                    onChange={(e) => {
+                        const file =
+                            e.target.files?.[0];
+
+                        if (!file) return;
+
+                        setRemoveAvatar(false);
+
+                        setAvatar(file);
+
+                        setAvatarPreview(
+                            URL.createObjectURL(file)
+                        );
+                    }}
+                />
 
                 <div
                     style={{
@@ -803,6 +957,8 @@ function EditUserModal({
                                     name,
                                     email,
                                     job,
+                                    avatar,
+                                    removeAvatar,
                                 });
 
                                 await refreshUser();

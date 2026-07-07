@@ -161,7 +161,7 @@ function NoteCard({
                 style={{
                     display: "flex",
                     justifyContent:
-                        "space-between",
+                        "flex-end",
                     alignItems:
                         "center",
 
@@ -169,35 +169,6 @@ function NoteCard({
                         "10px",
                 }}
             >
-                <span
-                    style={{
-                        padding:
-                            "4px 10px",
-
-                        borderRadius:
-                            "999px",
-
-                        fontSize:
-                            "0.68rem",
-
-                        background:
-                            note.priority === "Low"
-                                ? "#273c4133"
-                                : note.priority === "Medium"
-                                    ? "#5e687433"
-                                    : "#6b544733",
-
-                        border:
-                            note.priority === "Low"
-                                ? "1px solid #273c4166"
-                                : note.priority === "Medium"
-                                    ? "1px solid #5e687466"
-                                    : "1px solid #6b544766",
-                    }}
-                >
-                    {note.priority}
-                </span>
-
                 {/* MEATBALL DROPDOWN */}
                 <div
                     ref={menuRef}
@@ -388,83 +359,6 @@ function NoteCard({
                 </div>
             </div>
 
-            {/* ROW 2 */}
-
-            <div
-                style={{
-                    display: "flex",
-                    gap: "6px",
-
-                    marginBottom:
-                        "16px",
-                }}
-            >
-                <span
-                    style={{
-                        padding:
-                            "4px 10px",
-
-                        borderRadius:
-                            "999px",
-
-                        fontSize:
-                            "0.68rem",
-
-                        background:
-                            note.category === "Work"
-                                ? "#466a6d33"
-                                : note.category === "Study"
-                                    ? "#536b8333"
-                                    : note.category === "Personal"
-                                        ? "#6f5f7a33"
-                                        : "#57707a33",
-
-                        border:
-                            note.category === "Work"
-                                ? "1px solid #466a6d66"
-                                : note.category === "Study"
-                                    ? "1px solid #536b8366"
-                                    : note.category === "Personal"
-                                        ? "1px solid #6f5f7a66"
-                                        : "1px solid #57707a66",
-                    }}
-                >
-                    {note.category}
-                </span>
-
-                <span
-                    style={{
-                        padding: "4px 10px",
-
-                        borderRadius:
-                            "999px",
-
-                        fontSize:
-                            "0.68rem",
-
-                        background:
-                            note.status === "Active"
-                                ? "#4d689333"
-                                : note.status === "Paused"
-                                    ? "#45575b33"
-                                    : note.status === "In Progress"
-                                        ? "#a45d4433"
-                                        : "rgba(114,138,110,0.12)",
-
-                        border:
-                            note.status === "Active"
-                                ? "1px solid #4d689366"
-                                : note.status === "Paused"
-                                    ? "1px solid #45575b66"
-                                    : note.status === "In Progress"
-                                        ? "1px solid #a45d4466"
-                                        : "1px solid rgba(114,138,110,0.25)",
-                    }}
-                >
-                    {note.status}
-                </span>
-            </div>
-
             {/* ROW 3 TITLE */}
 
             <div
@@ -523,78 +417,6 @@ function NoteCard({
                     marginBottom: "20px",
                 }}
             />
-
-
-            {/* ASSOCIATIONS */}
-
-            <div
-                style={{
-                    display: "flex",
-
-                    marginBottom: "20px",
-                }}
-            >
-                {visibleLinks.map(
-                    (item, index) => (
-                        <div
-                            key={item}
-                            style={{
-                                ...linkedItemStyle,
-
-                                marginRight: "-6px",
-
-                                zIndex: index + 1,
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(-1px) scale(1.08)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.12)";
-
-                                e.currentTarget.style.boxShadow =
-                                    "0 8px 20px rgba(0,0,0,0.25)";
-
-                                e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform =
-                                    "translateY(0) scale(1)";
-
-                                e.currentTarget.style.border =
-                                    "1px solid rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.boxShadow =
-                                    "none";
-
-                                e.currentTarget.style.color =
-                                    "var(--text-secondary)";
-                            }}
-                        >
-                            {item}
-                        </div>
-                    )
-                )}
-
-                {remainingLinks > 0 && (
-                    <div
-                        style={{
-                            ...linkedItemStyle,
-
-                            background:
-                                "rgba(255,255,255,0.03)",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            zIndex: 10,
-                        }}
-                    >
-                        +{remainingLinks}
-                    </div>
-                )}
-            </div>
 
             {/* ROW 6 */}
 

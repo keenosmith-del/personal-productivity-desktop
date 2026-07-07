@@ -159,22 +159,41 @@ export async function updateProfile(
             "token"
         );
 
+    const hasAvatar =
+        profileData.avatar instanceof File;
+
+    let body;
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    };
+
+    if (hasAvatar) {
+        body = new FormData();
+
+        body.append("name", profileData.name);
+        body.append("email", profileData.email);
+        body.append("job", profileData.job);
+        body.append("avatar", profileData.avatar);
+
+        body.append(
+            "removeAvatar",
+            profileData.removeAvatar
+        );
+    } else {
+        headers["Content-Type"] =
+            "application/json";
+
+        body = JSON.stringify(
+            profileData
+        );
+    }
+
     const response = await fetch(
         `${API_URL}/profile`,
         {
             method: "PUT",
-
-            headers: {
-                "Content-Type":
-                    "application/json",
-
-                Authorization:
-                    `Bearer ${token}`,
-            },
-
-            body: JSON.stringify(
-                profileData
-            ),
+            headers,
+            body,
         }
     );
 
