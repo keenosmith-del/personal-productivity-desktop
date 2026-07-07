@@ -3,6 +3,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import uploadAvatar from "../middleware/uploadAvatar.js";
+import fs from "fs";
 
 const router = express.Router();
 
@@ -129,6 +131,21 @@ router.post(
                     name: user.name,
                     email: user.email,
                     job: user.job,
+                    avatar: user.avatar,
+
+                    theme: user.theme,
+                    dailySummary: user.dailySummary,
+                    goalNotifications:
+                        user.goalNotifications,
+                    reminderNotifications:
+                        user.reminderNotifications,
+                    compactView:
+                        user.compactView,
+                    showCompletedItems:
+                        user.showCompletedItems,
+
+                    createdAt:
+                        user.createdAt,
                 },
             });
         } catch (error) {
@@ -255,6 +272,7 @@ router.put(
 router.put(
     "/profile",
     authMiddleware,
+    uploadAvatar.single("avatar"),
     async (req, res) => {
         try {
             const user =
@@ -273,7 +291,7 @@ router.put(
                 name,
                 email,
                 job,
-                avatar,
+                removeAvatar,
             } = req.body;
 
             if (name !== undefined) {
@@ -303,8 +321,33 @@ router.put(
                 user.job = job;
             }
 
-            if (avatar !== undefined) {
-                user.avatar = avatar;
+            if (
+                removeAvatar === true ||
+                removeAvatar === "true"
+            ) {
+
+                if (user.avatar) {
+
+                    const oldPath = `.${user.avatar}`;
+
+                    if (fs.existsSync(oldPath)) {
+                        fs.unlinkSync(oldPath);
+                    }
+                }
+
+                user.avatar = "";
+            }
+
+            if (req.file) {
+                if (user.avatar) {
+                    const oldPath = `.${user.avatar}`;
+
+                    if (fs.existsSync(oldPath)) {
+                        fs.unlinkSync(oldPath);
+                    }
+                }
+
+                user.avatar = `/uploads/avatars/${req.file.filename}`;
             }
 
             await user.save();
