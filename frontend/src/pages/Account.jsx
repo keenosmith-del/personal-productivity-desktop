@@ -232,8 +232,7 @@ function Account() {
                             style={{
                                 display: "flex",
 
-                                justifyContent:
-                                    "flex-end",
+                                justifyContent: "flex-end",
 
                                 marginBottom: "20px",
                             }}
@@ -265,10 +264,7 @@ function Account() {
                         <div
                             style={{
                                 display: "flex",
-
-                                justifyContent:
-                                    "center",
-
+                                justifyContent: "center",
                                 marginBottom: "22px",
                             }}
                         >
@@ -299,8 +295,7 @@ function Account() {
 
                                     avatar.style.opacity = 0.55;
 
-                                    avatar.style.border =
-                                        "1px solid rgba(255,255,255,0.12)";
+                                    // avatar.style.border = "1px solid rgba(255,255,255,0.12)";
                                 }}
                                 onMouseLeave={(e) => {
                                     const overlay =
@@ -318,8 +313,7 @@ function Account() {
 
                                     avatar.style.opacity = 1;
 
-                                    avatar.style.border =
-                                        "1px solid rgba(255,255,255,0.08)";
+                                    // avatar.style.border = "1px solid rgba(255,255,255,0.08)";
                                 }}
                             >
                                 <div
@@ -329,11 +323,9 @@ function Account() {
 
                                         borderRadius: "50%",
 
-                                        background:
-                                            "rgba(255,255,255,0.06)",
+                                        // background: "rgba(255,255,255,0.06)",
 
-                                        border:
-                                            "1px solid rgba(255,255,255,0.08)",
+                                        // border: "1px solid rgba(255,255,255,0.08)",
 
                                         display: "flex",
 
@@ -487,7 +479,7 @@ function Account() {
                                 marginBottom: "28px",
                             }}
                         >
-                            {["T", "P", "+2"].map(
+                            {["T", "P", "A", "+2"].map(
                                 (
                                     item,
                                     index
@@ -543,8 +535,7 @@ function Account() {
                             style={{
                                 width: "100%",
 
-                                padding:
-                                    "14px",
+                                padding: "12px",
 
                                 borderRadius:
                                     "999px",
@@ -601,7 +592,7 @@ function Account() {
                                 width: "100%",
 
                                 padding:
-                                    "14px",
+                                    "12px",
 
                                 borderRadius:
                                     "999px",
@@ -665,7 +656,7 @@ function Account() {
                         >
                             <div>TaskFlow v1.0.0</div>
 
-                            <div>Built with React & Express © 2026 Keeno Smith ♡ j</div>
+                            <div>Built with React & Express © 2026 Keeno Smith ♡ J</div>
                         </div>
                     </div>
                 </div>

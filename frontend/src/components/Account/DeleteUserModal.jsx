@@ -97,10 +97,10 @@ function DeleteUserModal({
                 inset: 0,
 
                 background:
-                    "rgba(0,0,0,0.55)",
+                    "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                    "blur(12px)",
+                    "blur(20px)",
 
                 display: "flex",
 
@@ -118,21 +118,22 @@ function DeleteUserModal({
                     event.stopPropagation()
                 }
                 style={{
-                    width: "460px",
+                    width: "500px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
+                        "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(30px)",
+                        "blur(12px)",
+
+                    // like this border
+                    border:
+                        "1px solid rgba(27, 27, 27, 0.1)",
 
                     boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.35)",
+                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "36px",
 
                     padding: "36px",
 
@@ -164,7 +165,7 @@ function DeleteUserModal({
 
                                 fontSize: "0.95rem",
 
-                                fontWeight: "400",
+                                fontWeight: "300",
                             }}
                         >
                             Delete Account
@@ -277,8 +278,7 @@ function DeleteUserModal({
                             background:
                                 "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.12)",
+                            // border: "1px solid rgba(255,255,255,0.12)",
 
                             fontSize: "1.8rem",
 
@@ -318,7 +318,7 @@ function DeleteUserModal({
                         style={{
                             fontSize: "0.95rem",
 
-                            fontWeight: "400px",
+                            fontWeight: "300px",
                         }}
                     >
                         {user.name}
@@ -352,7 +352,7 @@ function DeleteUserModal({
 
                             opacity: 0.45,
 
-                            fontWeight: "400",
+                            fontWeight: "300",
                         }}
                     >
                         Confirmation

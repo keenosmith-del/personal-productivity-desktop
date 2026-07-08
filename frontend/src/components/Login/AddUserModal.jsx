@@ -82,7 +82,7 @@ function AddUserModal({
 
     color: "var(--text-primary)",
 
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
 
     fontWeight: "300",
 
@@ -98,9 +98,11 @@ function AddUserModal({
         position: "fixed",
         inset: 0,
 
-        background: "rgba(0,0,0,0.55)",
+        background:
+          "rgba(20, 20, 20, 0)",
 
-        backdropFilter: "blur(12px)",
+        backdropFilter:
+          "blur(20px)",
 
         display: "flex",
         justifyContent: "center",
@@ -112,27 +114,28 @@ function AddUserModal({
       <div
         onClick={(event) => event.stopPropagation()}
         style={{
-          width: "460px",
+          width: "500px",
 
           background:
-            "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+            "rgba(20, 20, 20, 0)",
+
+          backdropFilter:
+            "blur(12px)",
 
           border:
-            "1px solid rgba(255,255,255,0.10)",
-
-          borderRadius: "36px",
-
-          backdropFilter: "blur(30px)",
+            "1px solid rgba(27, 27, 27, 0.1)",
 
           boxShadow:
-            "0 16px 40px rgba(0,0,0,0.45)",
+            "0 20px 50px rgba(0,0,0,0.35)",
+
+          borderRadius: "36px",
 
           padding: "36px",
 
           display: "flex",
           flexDirection: "column",
 
-          gap: "15px",
+          gap: "10px",
         }}
       >
         {/* HEADER */}
@@ -141,10 +144,9 @@ function AddUserModal({
             display: "flex",
             justifyContent: "flex-end",
             alignItems: "center",
-            marginBottom: "24px",
+            marginBottom: "18px",
           }}
         >
-          {/* meatball and x pill - changed to only x */}
           {/* close x */}
           <div
             style={{
@@ -212,68 +214,6 @@ function AddUserModal({
         </div>
 
         {/* Avatar Placeholder */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "110px",
-              height: "110px",
-
-              borderRadius: "50%",
-
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
-
-              border:
-                "1px solid rgba(255,255,255,0.12)",
-
-              fontSize: "2rem",
-
-              fontWeight: "300",
-
-              cursor: "pointer",
-
-              marginBottom: "20px",
-
-              transition:
-                "all 0.25s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform =
-                "translateY(-2px) scale(1.02)";
-
-              e.currentTarget.style.border =
-                "1px solid rgba(255,255,255,0.20)";
-
-              e.currentTarget.style.boxShadow =
-                "0 10px 30px rgba(255,255,255,0.08)";
-            }}
-
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform =
-                "translateY(0) scale(1)";
-
-              e.currentTarget.style.border =
-                "1px solid rgba(255,255,255,0.12)";
-
-              e.currentTarget.style.boxShadow =
-                "none";
-            }}
-          >
-            {name || surname
-              ? `${name.charAt(0)}${surname.charAt(0)}`
-                .toUpperCase()
-              : "+"}
-          </div>
-        </div>
 
         <div
           style={{
@@ -290,9 +230,25 @@ function AddUserModal({
         >
           <span
             style={{
-              fontSize: "0.95rem",
+              background: "transparent",
 
-              fontWeight: "400",
+              border: "none",
+
+              outline: "none",
+
+              textAlign: "center",
+
+              color: "var(--text-primary)",
+
+              fontSize: "2rem",
+
+              fontWeight: "300",
+
+              letterSpacing: "-0.04em",
+
+              marginBottom: "16px",
+
+              opacity: 0.75,
             }}
           >
             {name || surname
@@ -302,11 +258,25 @@ function AddUserModal({
 
           <span
             style={{
+              background: "transparent",
+
+              border: "none",
+
+              outline: "none",
+
+              resize: "none",
+
+              textAlign: "center",
+
+              color: "var(--text-secondary)",
+
               fontSize: "0.9rem",
 
-              opacity: 0.55,
-
               fontWeight: "300",
+
+              lineHeight: 1.5,
+
+              marginBottom: "28px",
             }}
           >
             {title || "Job Title"}

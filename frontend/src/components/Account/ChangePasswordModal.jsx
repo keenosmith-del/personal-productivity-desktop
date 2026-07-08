@@ -70,7 +70,7 @@ function ChangePasswordModal({
 
         color: "var(--text-primary)",
 
-        fontSize: "0.9rem",
+        fontSize: "0.85rem",
 
         fontWeight: "300",
 
@@ -183,10 +183,10 @@ function ChangePasswordModal({
                 inset: 0,
 
                 background:
-                    "rgba(0,0,0,0.55)",
+                    "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                    "blur(12px)",
+                    "blur(15px)",
 
                 display: "flex",
 
@@ -204,21 +204,22 @@ function ChangePasswordModal({
                     event.stopPropagation()
                 }
                 style={{
-                    width: "460px",
+                    width: "500px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
+                        "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(30px)",
+                        "blur(12px)",
+
+                    // like this border
+                    border:
+                        "1px solid rgba(27, 27, 27, 0.1)",
 
                     boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.35)",
+                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "36px",
 
                     padding: "36px",
 
@@ -227,7 +228,7 @@ function ChangePasswordModal({
                     flexDirection:
                         "column",
 
-                    gap: "20px",
+                    gap: "10px",
                 }}
             >
                 {/* Header */}
@@ -239,32 +240,9 @@ function ChangePasswordModal({
                     }}
                 >
                     <div>
-                        <h2
-                            style={{
-                                margin: 0,
-
-                                fontSize: "0.95rem",
-
-                                fontWeight: "400",
-                            }}
-                        >
-                            Change Password
-                        </h2>
-
-                        <p
-                            style={{
-                                marginTop: "4px",
-                                marginBottom: 0,
-                                fontSize: "0.8rem",
-                                fontWeight: "300",
-                                opacity: 0.55,
-                            }}
-                        >
-                            Verify your current password first
-                        </p>
+                    
                     </div>
 
-                    {/* meatball and x pill - changed to only x */}
                     {/* close x */}
                     <div
                         style={{
@@ -359,8 +337,7 @@ function ChangePasswordModal({
                             background:
                                 "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.12)",
+                            // border: "1px solid rgba(255,255,255,0.12)",
 
                             fontSize: "1.8rem",
 
@@ -394,13 +371,14 @@ function ChangePasswordModal({
                         textAlign: "center",
 
                         marginTop: "-10px",
+                        marginBottom: "15px",
                     }}
                 >
                     <div
                         style={{
                             fontSize: "0.95rem",
 
-                            fontWeight: "400px",
+                            fontWeight: "300px",
                         }}
                     >
                         {user.name}
@@ -410,7 +388,7 @@ function ChangePasswordModal({
                         style={{
                             fontSize: "0.9rem",
 
-                            fontWeight: "300",
+                            fontWeight: "280",
 
                             opacity: 0.55,
 
@@ -426,33 +404,18 @@ function ChangePasswordModal({
                 <div>
                     <div
                         style={{
-                            fontSize: "0.65rem",
-
-                            letterSpacing: "0.15em",
-
-                            textTransform: "uppercase",
-
-                            opacity: 0.45,
-
-                            fontWeight: "400",
-                        }}
-                    >
-                        Account
-                    </div>
-
-                    <div
-                        style={{
                             height: "1px",
 
                             background:
                                 "rgba(255,255,255,0.06)",
 
                             marginTop:
-                                "10px",
+                                "5px",
                         }}
                     />
                 </div>
 
+                {/* inputs */}
                 <div
                     style={{
                         display: "flex",
@@ -498,7 +461,7 @@ function ChangePasswordModal({
                             color:
                                 "var(--text-primary)",
 
-                            fontSize: "0.9rem",
+                            fontSize: "0.85rem",
 
                             fontWeight: "300",
                         }}
@@ -616,7 +579,7 @@ function ChangePasswordModal({
                             color:
                                 "var(--text-primary)",
 
-                            fontSize: "0.9rem",
+                            fontSize: "0.85rem",
 
                             fontWeight: "300",
                         }}

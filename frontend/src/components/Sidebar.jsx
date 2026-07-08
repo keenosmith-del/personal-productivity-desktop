@@ -565,8 +565,8 @@ function Sidebar({ collapsed, setCollapsed }) {
           >
             <div
               style={{
-                width: "52px",
-                height: "52px",
+                width: "40px",
+                height: "40px",
 
                 borderRadius: "50%",
 
@@ -577,7 +577,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                 alignItems: "center",
                 justifyContent: "center",
 
-                fontWeight: "400",
+                fontWeight: "300",
                 fontSize: "1rem",
               }}
             >

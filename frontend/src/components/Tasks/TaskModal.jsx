@@ -336,7 +336,7 @@ function TaskModal({
               "blur(12px)",
 
             border:
-              "1px solid rgba(255,255,255,0.10)",
+              "1px solid rgba(27, 27, 27, 0.1)",
 
             boxShadow:
               "0 20px 50px rgba(0,0,0,0.35)",

@@ -65,7 +65,7 @@ function ResetPasswordModal({
 
         color: "var(--text-primary)",
 
-        fontSize: "0.9rem",
+        fontSize: "0.85rem",
 
         fontWeight: "300",
 
@@ -169,10 +169,10 @@ function ResetPasswordModal({
                 inset: 0,
 
                 background:
-                    "rgba(0,0,0,0.55)",
+                    "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                    "blur(12px)",
+                    "blur(20px)",
 
                 display: "flex",
 
@@ -190,21 +190,21 @@ function ResetPasswordModal({
                     event.stopPropagation()
                 }
                 style={{
-                    width: "460px",
+                    width: "500px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
+                        "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(30px)",
+                        "blur(12px)",
+
+                    border:
+                        "1px solid rgba(27, 27, 27, 0.1)",
 
                     boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.35)",
+                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "36px",
 
                     padding: "36px",
 
@@ -213,7 +213,7 @@ function ResetPasswordModal({
                     flexDirection:
                         "column",
 
-                    gap: "20px",
+                    gap: "10px",
                 }}
             >
                 {/* Header */}
@@ -230,29 +230,7 @@ function ResetPasswordModal({
                     }}
                 >
                     <div>
-                        <h2
-                            style={{
-                                margin: 0,
-
-                                fontSize: "0.95rem",
-
-                                fontWeight: "400",
-                            }}
-                        >
-                            Reset Password
-                        </h2>
-
-                        <p
-                            style={{
-                                marginTop: "4px",
-                                marginBottom: 0,
-                                fontSize: "0.8rem",
-                                fontWeight: "300",
-                                opacity: 0.55,
-                            }}
-                        >
-                            Create a new password
-                        </p>
+                    
                     </div>
 
                     {/* close x */}
@@ -327,6 +305,7 @@ function ResetPasswordModal({
                         display: "flex",
 
                         justifyContent: "center",
+                        marginBottom: "20px",
                     }}
                 >
                     <div
@@ -349,8 +328,7 @@ function ResetPasswordModal({
                             background:
                                 "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.12)",
+                            // border: "1px solid rgba(255,255,255,0.12)",
 
                             fontSize: "1.8rem",
 
@@ -385,7 +363,7 @@ function ResetPasswordModal({
                         style={{
                             fontSize: "0.95rem",
 
-                            fontWeight: "400px",
+                            fontWeight: "300px",
                         }}
                     >
                         {user.name}
@@ -409,33 +387,7 @@ function ResetPasswordModal({
                 {/* Section */}
 
                 <div>
-                    <div
-                        style={{
-                            fontSize: "0.65rem",
 
-                            letterSpacing: "0.15em",
-
-                            textTransform: "uppercase",
-
-                            opacity: 0.45,
-
-                            fontWeight: "400",
-                        }}
-                    >
-                        Account
-                    </div>
-
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginTop:
-                                "10px",
-                        }}
-                    />
                 </div>
 
                 <input
@@ -534,7 +486,7 @@ function ResetPasswordModal({
                             color:
                                 "var(--text-primary)",
 
-                            fontSize: "0.9rem",
+                            fontSize: "0.85rem",
 
                             fontWeight: "300",
                         }}

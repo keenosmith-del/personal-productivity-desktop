@@ -30,9 +30,9 @@ function UserCard({
           alignItems: "center",
           justifyContent: "center",
 
-          background: "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
+          background: "linear-gradient(135deg, rgba(43, 43, 43, 0.1), rgba(42, 42, 42, 0.03))",
 
-          border: "1px solid rgba(255,255,255,0.12)",
+          // border: "1px solid rgba(255,255,255,0.12)",
 
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
@@ -40,7 +40,7 @@ function UserCard({
           boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
 
           fontSize: "1.8rem",
-          fontWeight: isAddUser ? "200" : "300",
+          fontWeight: isAddUser ? "200" : "200",
 
           color: "var(--text-primary)",
 
@@ -50,19 +50,17 @@ function UserCard({
           e.currentTarget.style.transform =
             "translateY(-2px) scale(1.02)";
 
-          e.currentTarget.style.border =
-            "1px solid rgba(255,255,255,0.20)";
+          // e.currentTarget.style.border = "1px solid rgba(255,255,255,0.20)";
 
           e.currentTarget.style.boxShadow =
-            "0 10px 30px rgba(255,255,255,0.08)";
+            "0 10px 30px rgba(31, 31, 31, 0.08)";
         }}
 
         onMouseLeave={(e) => {
           e.currentTarget.style.transform =
             "translateY(0) scale(1)";
 
-          e.currentTarget.style.border =
-            "1px solid rgba(255,255,255,0.12)";
+          // e.currentTarget.style.border = "1px solid rgba(255,255,255,0.12)";
 
           e.currentTarget.style.boxShadow =
             "0 16px 40px rgba(0,0,0,0.45)";

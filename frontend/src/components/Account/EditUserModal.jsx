@@ -48,6 +48,9 @@ function EditUserModal({
     const [avatar, setAvatar] =
         useState(null);
 
+    const [showCloseButton, setShowCloseButton] =
+        useState(false);
+
     const [avatarPreview, setAvatarPreview] =
         useState(
             user?.avatar
@@ -76,16 +79,13 @@ function EditUserModal({
 
         padding: "12px 16px",
 
-        background:
-            "rgba(255,255,255,0.04)",
+        background: "rgba(255,255,255,0.04)",
 
-        border:
-            "1px solid rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.06)",
 
         borderRadius: "999px",
 
-        color:
-            "var(--text-primary)",
+        color: "var(--text-primary)",
 
         fontSize: "0.9rem",
 
@@ -132,10 +132,10 @@ function EditUserModal({
                 inset: 0,
 
                 background:
-                    "rgba(0,0,0,0.55)",
+                    "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                    "blur(12px)",
+                    "blur(15px)",
 
                 display: "flex",
                 justifyContent:
@@ -153,18 +153,19 @@ function EditUserModal({
                     width: "500px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
+                        "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(30px)",
+                        "blur(12px)",
+
+                    // like this border
+                    border:
+                        "1px solid rgba(27, 27, 27, 0.1)",
 
                     boxShadow:
-                        "0 16px 40px rgba(0,0,0,0.45)",
+                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                    borderRadius: "36px",
 
                     padding: "36px",
 
@@ -172,7 +173,7 @@ function EditUserModal({
                     flexDirection:
                         "column",
 
-                    gap: "20px",
+                    gap: "10px",
                 }}
             >
                 {/* HEADER */}
@@ -194,7 +195,7 @@ function EditUserModal({
                                 fontSize:
                                     "0.95rem",
 
-                                fontWeight: "400",
+                                fontWeight: "300",
                             }}
                         >
                             Edit Profile
@@ -203,7 +204,7 @@ function EditUserModal({
                         <p
                             style={{
                                 marginTop: "4px",
-                                marginBottom: 0,
+                                marginBottom: "10px",
 
                                 fontSize:
                                     "0.8rem",
@@ -218,53 +219,70 @@ function EditUserModal({
                         </p>
                     </div>
 
-                    <button
-                        onClick={() => onClose()}
+                    {/* close x */}
+                    <div
                         style={{
-                            width: "32px",
-                            height: "32px",
-
-                            borderRadius:
-                                "999px",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            background:
-                                "rgba(255,255,255,0.04)",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            cursor:
-                                "pointer",
-
-                            display: "flex",
-                            alignItems:
-                                "center",
-                            justifyContent:
-                                "center",
-
-                            transition:
-                                "all 0.2s ease",
+                            position: "relative",
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.10)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1)";
-                        }}
+                        onMouseEnter={() =>
+                            setShowCloseButton(true)
+                        }
+                        onMouseLeave={() =>
+                            setShowCloseButton(false)
+                        }
                     >
-                        <X size={14} />
-                    </button>
+                        <button
+                            onClick={() => {
+                                onClose();
+                            }}
+                            style={{
+                                width: "30px",
+                                height: "30px",
+
+                                borderRadius: "999px",
+
+                                border: "none",
+
+                                background:
+                                    "rgba(255,255,255,0.04)",
+
+                                color:
+                                    "var(--text-secondary)",
+
+                                cursor: "pointer",
+
+                                fontSize: "0.8rem",
+
+                                transition: "all 0.2s ease",
+
+                                opacity: showCloseButton ? 1 : 0,
+
+                                transition: "opacity 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgb(33, 33, 33)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgb(33, 33, 33)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }}
+                        >
+                            x
+                        </button>
+                    </div>
                 </div>
 
                 {/* AVATAR */}
@@ -272,8 +290,8 @@ function EditUserModal({
                 <div
                     style={{
                         display: "flex",
-                        justifyContent:
-                            "center",
+                        justifyContent: "center",
+                        marginBottom: "20px",
                     }}
                 >
                     <div
@@ -285,8 +303,7 @@ function EditUserModal({
 
                             cursor: "pointer",
 
-                            transition:
-                                "all 0.2s ease",
+                            transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
                             const overlay =
@@ -315,8 +332,7 @@ function EditUserModal({
                             avatar.style.opacity =
                                 0.55;
 
-                            avatar.style.border =
-                                "1px solid rgba(255,255,255,0.12)";
+                            // avatar.style.border = "1px solid rgba(255,255,255,0.12)";
                         }}
                         onMouseLeave={(e) => {
                             const overlay =
@@ -344,8 +360,7 @@ function EditUserModal({
 
                             avatar.style.opacity = 1;
 
-                            avatar.style.border =
-                                "1px solid rgba(255,255,255,0.08)";
+                            // avatar.style.border = "1px solid rgba(255,255,255,0.08)";
                         }}
                     >
                         <div
@@ -355,19 +370,15 @@ function EditUserModal({
 
                                 borderRadius: "50%",
 
-                                background:
-                                    "rgba(255,255,255,0.06)",
+                                // background: "rgba(255,255,255,0.06)",
 
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                // border: "1px solid rgba(255,255,255,0.08)",
 
                                 display: "flex",
 
-                                alignItems:
-                                    "center",
+                                alignItems: "center",
 
-                                justifyContent:
-                                    "center",
+                                justifyContent: "center",
 
                                 fontSize: "2rem",
 
@@ -420,8 +431,7 @@ function EditUserModal({
 
                                     border: "1px solid rgba(255,255,255,0.08)",
 
-                                    background:
-                                        "rgba(18,18,18,0.75)",
+                                    background: "rgba(18,18,18,0.75)",
 
                                     backdropFilter: "blur(10px)",
 
@@ -461,7 +471,7 @@ function EditUserModal({
                                         "scale(1)";
                                 }}
                             >
-                                <X size={12} />
+                                x
                             </button>
                         )}
 
@@ -474,8 +484,7 @@ function EditUserModal({
 
                                 borderRadius: "50%",
 
-                                background:
-                                    "rgba(0,0,0,0.3)",
+                                background: "rgba(0,0,0,0.3)",
 
                                 backdropFilter:
                                     "blur(1px)",
@@ -503,6 +512,7 @@ function EditUserModal({
                         </div>
                     </div>
                 </div>
+
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -535,9 +545,10 @@ function EditUserModal({
                         flexDirection:
                             "column",
 
-                        gap: "4px",
+                        gap: "1px",
 
                         marginTop: "-10px",
+                        marginBottom: "10px",
                     }}
                 >
                     <span
@@ -545,7 +556,7 @@ function EditUserModal({
                             fontSize:
                                 "0.95rem",
 
-                            fontWeight: "400",
+                            fontWeight: "300",
                         }}
                     >
                         {name || "User"}
@@ -554,25 +565,24 @@ function EditUserModal({
                     <span
                         style={{
                             fontSize:
-                                "0.9rem",
+                                "0.85rem",
 
                             opacity: 0.55,
 
                             fontWeight: "300",
                         }}
                     >
-                        {job ||
-                            "No title set"}
+                        {job || "No title set"}
                     </span>
                 </div>
 
                 {/* TPG */}
+                {/* NEED TO MAP REAL ITEMS */}
 
                 <div
                     style={{
                         display: "flex",
-                        justifyContent:
-                            "center",
+                        justifyContent: "center",
 
                         marginTop: "-4px",
                     }}
@@ -587,12 +597,9 @@ function EditUserModal({
                                     marginRight:
                                         "-6px",
 
-                                    zIndex:
-                                        index + 1,
+                                    zIndex: index + 1,
                                 }}
-                                onMouseEnter={(
-                                    e
-                                ) => {
+                                onMouseEnter={(e) => {
                                     e.currentTarget.style.transform =
                                         "translateY(-1px) scale(1.08)";
 
@@ -605,9 +612,7 @@ function EditUserModal({
                                     e.currentTarget.style.color =
                                         "var(--text-primary)";
                                 }}
-                                onMouseLeave={(
-                                    e
-                                ) => {
+                                onMouseLeave={(e) => {
                                     e.currentTarget.style.transform =
                                         "translateY(0) scale(1)";
 
@@ -643,10 +648,10 @@ function EditUserModal({
 
                             opacity: 0.45,
 
-                            fontWeight: "400",
+                            fontWeight: "300",
                         }}
                     >
-                        Personal
+
                     </div>
 
                     <div
@@ -724,40 +729,6 @@ function EditUserModal({
                     }}
                 />
 
-                {/* ACCOUNT */}
-
-                <div>
-                    <div
-                        style={{
-                            fontSize:
-                                "0.65rem",
-
-                            letterSpacing:
-                                "0.15em",
-
-                            textTransform:
-                                "uppercase",
-
-                            opacity: 0.45,
-
-                            fontWeight: "400",
-                        }}
-                    >
-                        Account
-                    </div>
-
-                    <div
-                        style={{
-                            height: "1px",
-
-                            background:
-                                "rgba(255,255,255,0.06)",
-
-                            marginTop: "10px",
-                        }}
-                    />
-                </div>
-
                 <input
                     value={email}
                     onChange={(e) => {
@@ -833,7 +804,7 @@ function EditUserModal({
                         onClick={() => onClose()}
                         style={{
                             padding:
-                                "11px 18px",
+                                "8px 14px",
 
                             borderRadius:
                                 "999px",
@@ -992,7 +963,7 @@ function EditUserModal({
                         }}
                         style={{
                             padding:
-                                "11px 18px",
+                                "8px 14px",
 
                             borderRadius:
                                 "999px",

@@ -112,8 +112,7 @@ function PasswordView({
             background:
               "linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03))",
 
-            border:
-              "1px solid rgba(255,255,255,0.12)",
+            // border: "1px solid rgba(255,255,255,0.12)",
 
             backdropFilter: "blur(20px)",
 
@@ -185,7 +184,7 @@ function PasswordView({
             transition:
               "all 0.2s ease",
 
-            padding: "12px 16px",
+            padding: "10px 14px",
           }}
         >
           <input

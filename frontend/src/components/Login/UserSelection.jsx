@@ -1,11 +1,3 @@
-/**
- * User selection screen.
- *
- * Displays:
- * - Existing users
- * - Add User button (which opened up current AddUserModal)
- */
-
 import UserCard from "./UserCard";
 import { useEffect, useState } from "react";
 import { getUsers } from "../../services/authService";
