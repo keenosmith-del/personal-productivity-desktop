@@ -50,6 +50,9 @@ function ChangePasswordModal({
     const [showPasswords, setShowPasswords] =
         useState(false);
 
+    const [showCloseButton, setShowCloseButton] =
+        useState(false);
+
     useEffect(() => {
         passwordRef.current?.focus();
     }, []);
@@ -228,16 +231,11 @@ function ChangePasswordModal({
                 }}
             >
                 {/* Header */}
-
                 <div
                     style={{
                         display: "flex",
-
-                        justifyContent:
-                            "space-between",
-
-                        alignItems:
-                            "flex-start",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
                     }}
                 >
                     <div>
@@ -266,47 +264,71 @@ function ChangePasswordModal({
                         </p>
                     </div>
 
-                    <button
-                        onClick={() => onClose(false)}
+                    {/* meatball and x pill - changed to only x */}
+                    {/* close x */}
+                    <div
                         style={{
-                            width: "32px",
-                            height: "32px",
-
-                            borderRadius: "999px",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
-
-                            background:
-                                "rgba(255,255,255,0.04)",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            cursor: "pointer",
-
-                            fontSize: "0.85rem",
-
-                            transition: "all 0.2s ease",
+                            position: "relative",
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.10)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1.05)";
-                        }}
-
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.04)";
-
-                            e.currentTarget.style.transform =
-                                "scale(1)";
-                        }}
+                        onMouseEnter={() =>
+                            setShowCloseButton(true)
+                        }
+                        onMouseLeave={() =>
+                            setShowCloseButton(false)
+                        }
                     >
-                        ×
-                    </button>
+                        <button
+                            onClick={() => {
+                                onClose();
+                            }}
+                            style={{
+                                width: "30px",
+                                height: "30px",
+
+                                borderRadius: "999px",
+
+                                border: "none",
+
+                                background:
+                                    "rgba(255,255,255,0.04)",
+
+                                color:
+                                    "var(--text-secondary)",
+
+                                cursor: "pointer",
+
+                                fontSize: "0.8rem",
+
+                                transition: "all 0.2s ease",
+
+                                opacity: showCloseButton ? 1 : 0,
+
+                                transition: "opacity 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgb(33, 33, 33)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgb(33, 33, 33)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }}
+                        >
+                            x
+                        </button>
+                    </div>
                 </div>
 
                 {/* Avatar */}
@@ -617,7 +639,7 @@ function ChangePasswordModal({
 
                             cursor: "pointer",
 
-                            fontSize: "0.9rem",
+                            fontSize: "0.8rem",
 
                             opacity: 0.7,
                         }}
@@ -656,7 +678,7 @@ function ChangePasswordModal({
                     <button
                         onClick={() => onClose(false)}
                         style={{
-                            padding: "11px 18px",
+                            padding: "8px 14px",
 
                             borderRadius: "999px",
 
@@ -700,7 +722,7 @@ function ChangePasswordModal({
                             handleReset
                         }
                         style={{
-                            padding: "11px 18px",
+                            padding: "8px 14px",
 
                             borderRadius: "999px",
 
@@ -743,7 +765,7 @@ function ChangePasswordModal({
                                 "1px solid rgba(255,255,255,0.10)";
                         }}
                     >
-                        Change Password
+                        Confirm
                     </button>
                 </div>
             </div>

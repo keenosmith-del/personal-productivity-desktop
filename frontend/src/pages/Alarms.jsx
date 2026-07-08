@@ -3,11 +3,11 @@ import MainLayout from "../layouts/MainLayout";
 import {
   Search,
   ArrowUpDown,
-  Ellipsis,
   ArrowLeft,
   ArrowRight,
   Plus,
   AlarmClock,
+  Ellipsis,
 } from "lucide-react";
 
 import {
@@ -37,7 +37,7 @@ function Alarms() {
   const moreRef = useRef(null);
 
   // COMPONENT STATES
-  const [allAlarms, setAllAlarms] =
+  const [alarms, setAlarms] =
     useState([]);
 
   const [searchTerm, setSearchTerm] =
@@ -75,7 +75,7 @@ function Alarms() {
       const data =
         await getAlarms();
 
-      setAllAlarms(data);
+      setAlarms(data);
 
     } catch {
       setToast(
@@ -87,6 +87,39 @@ function Alarms() {
       }, 3000);
     }
   };
+
+  // HANDLERS
+  const handleDeleteAlarm =
+    async (alarmId) => {
+      try {
+        await deleteAlarm(alarmId);
+
+        setAlarms((prev) =>
+          prev.filter(
+            (alarm) =>
+              alarm._id !== alarmId
+          )
+        );
+
+        setToast(
+          "Alarm deleted"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      } catch (error) {
+        console.error(error);
+
+        setToast(
+          "Failed to delete alarm"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+      }
+    };
 
   useEffect(() => {
     loadAlarms();
@@ -818,7 +851,7 @@ function Alarms() {
                 fontWeight: "300",
               }}
             >
-              {allAlarms.length + " Alarms" ||
+              {alarms.length + " Alarms" ||
                 "No alarms yet"}
             </p>
           </div> {/* END HEADER */}
@@ -879,7 +912,7 @@ function Alarms() {
               }}
             >
 
-              {allAlarms.length === 0 ? (
+              {alarms.length === 0 ? (
                 <div
                   style={{
                     gridColumn: "1 / -1",
@@ -932,7 +965,7 @@ function Alarms() {
                   </p>
                 </div>
               ) : (
-                allAlarms.map((alarm) => (
+                alarms.map((alarm) => (
                   <AlarmCard
                     key={alarm._id}
                     alarm={alarm}
@@ -943,35 +976,7 @@ function Alarms() {
                       setShowAlarmModal(true);
                     }}
 
-                    onDelete={(alarm) => {
-                      deleteAlarm(alarm._id)
-                        .then(() => {
-
-                          setAllAlarms((prev) =>
-                            prev.filter(
-                              (a) =>
-                                a._id !== alarm._id
-                            )
-                          );
-
-                          setToast(
-                            "Alarm deleted"
-                          );
-
-                          setTimeout(() => {
-                            setToast("");
-                          }, 3000);
-                        })
-                        .catch(() => {
-                          setToast(
-                            "Failed to delete alarm"
-                          );
-
-                          setTimeout(() => {
-                            setToast("");
-                          }, 3000);
-                        });
-                    }}
+                    onDelete={handleDeleteAlarm}
 
                     onToggle={(alarm) => {
                       updateAlarm(
@@ -985,7 +990,7 @@ function Alarms() {
                       )
                         .then((updatedAlarm) => {
 
-                          setAllAlarms((prev) =>
+                          setAlarms((prev) =>
                             prev.map((a) =>
                               a._id === updatedAlarm._id
                                 ? updatedAlarm
@@ -1011,9 +1016,14 @@ function Alarms() {
 
         </div>
       </div>
-      {showAlarmModal && (
+      {(showAlarmModal || selectedAlarm) && (
         <AlarmModal
-          alarm={selectedAlarm}
+          mode={
+            selectedAlarm
+              ? "edit"
+              : "create"
+          }
+          alarm={selectedAlarm || null}
 
           onClose={() => {
             setSelectedAlarm(null);
@@ -1022,7 +1032,6 @@ function Alarms() {
           }}
 
           onSave={(alarmData) => {
-
             const request =
               selectedAlarm
                 ? updateAlarm(
@@ -1038,29 +1047,24 @@ function Alarms() {
 
                 if (selectedAlarm) {
 
-                  setAllAlarms((prev) =>
+                  setAlarms((prev) =>
                     prev.map((alarm) =>
-                      alarm._id ===
-                        savedAlarm._id
+                      alarm._id === savedAlarm._id
                         ? savedAlarm
                         : alarm
                     )
                   );
 
-                  setToast(
-                    "Alarm updated"
-                  );
+                  setToast("Alarm updated");
 
                 } else {
 
-                  setAllAlarms((prev) => [
+                  setAlarms((prev) => [
                     savedAlarm,
                     ...prev,
                   ]);
 
-                  setToast(
-                    "Alarm created"
-                  );
+                  setToast("Alarm created");
                 }
 
                 setSelectedAlarm(null);
@@ -1084,6 +1088,7 @@ function Alarms() {
                 }, 3000);
               });
           }}
+          onDelete={handleDeleteAlarm}
         />
       )}
       <Toast

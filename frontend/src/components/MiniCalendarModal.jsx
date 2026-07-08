@@ -473,7 +473,7 @@ function MiniCalendarModal({
                     <button
                         onClick={onClose}
                         style={{
-                            padding: "11px 18px",
+                            padding: "8px 14px",
 
                             borderRadius: "999px",
 

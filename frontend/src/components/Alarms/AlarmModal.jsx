@@ -1,23 +1,26 @@
-// create alarm
-// 
-import {
-    useState,
-} from "react";
+// create edit alarm
 
 import {
-    Ellipsis,
-} from "lucide-react";
+    useState,
+    useRef,
+    useEffect,
+} from "react";
+
+import DeleteConfirmModal from "../DeleteConfirmModal";
 
 function AlarmModal({
     onClose,
     alarm = null,
     onSave,
+    mode = "create",
+    onDelete,
 }) {
 
     const [label, setLabel] =
-        useState(
-            alarm?.label ?? "Alarm"
-        );
+        useState(alarm?.label ?? "");
+
+    const labelInputRef =
+        useRef(null);
 
     // repeat days
     const [repeatDays, setRepeatDays] =
@@ -103,14 +106,14 @@ function AlarmModal({
         backdropFilter: "blur(20px)",
     });
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const formattedHours =
             hours.padStart(2, "0");
 
         const formattedMinutes =
             minutes.padStart(2, "0");
 
-        onSave?.({
+        await onSave?.({
             ...alarm,
 
             label:
@@ -131,8 +134,19 @@ function AlarmModal({
         });
     };
 
+    const [showCloseButton, setShowCloseButton] =
+        useState(false);
+
+    const [showDeleteConfirm, setShowDeleteConfirm] =
+        useState(false);
+
+    useEffect(() => {
+        labelInputRef.current?.focus();
+    }, []);
+
     return (
         <div
+            onClick={onClose}
             style={{
                 position: "fixed",
                 inset: 0,
@@ -148,140 +162,82 @@ function AlarmModal({
                 zIndex: 1000,
             }}
         >
-            <div
-                onClick={(e) =>
-                    e.stopPropagation()
-                }
-                style={{
-                    width: "500px",
-
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-
-                    border: "1px solid rgba(255,255,255,0.10)",
-
-                    borderRadius: "36px",
-
-                    backdropFilter: "blur(30px)",
-
-                    boxShadow:
-                        "0 30px 80px rgba(0,0,0,0.45)",
-
-                    padding: "36px",
-
-                    display: "flex",
-
-                    flexDirection: "column",
-
-                    // gap: "10px",
-                }}
-            >
-                {/* ROW 1 FLOATING PILL ON RIGHT */}
+            {!showDeleteConfirm && (
                 <div
+                    onClick={(e) =>
+                        e.stopPropagation()
+                    }
                     style={{
+                        width: "500px",
+
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+
+                        border: "1px solid rgba(255,255,255,0.10)",
+
+                        borderRadius: "36px",
+
+                        backdropFilter: "blur(30px)",
+
+                        boxShadow:
+                            "0 30px 80px rgba(0,0,0,0.45)",
+
+                        padding: "36px",
+
                         display: "flex",
-                        justifyContent: "flex-end",
-                        alignItems: "flex-start",
-                        marginBottom: "24px",
+
+                        flexDirection: "column",
+
+                        // gap: "10px",
                     }}
                 >
-
-                    {/* meatball and x pill*/}
+                    {/* ROW 1 FLOATING PILL ON RIGHT */}
                     <div
                         style={{
                             display: "flex",
-                            alignItems: "center",
-
-                            gap: "6px",
-
-                            padding: "2px",
-
-                            borderRadius: "999px",
-
-                            background: "rgb(36, 36, 36)",
-
-                            backdropFilter: "blur(28px)",
-
-                            boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                            justifyContent: "flex-end",
+                            alignItems: "flex-start",
+                            marginBottom: "24px",
                         }}
                     >
-                        {/* meatball */}
-                        <div
-                            style={{
-                                position: "relative",
-                            }}
-                        >
-                            <button
-                                style={{
-                                    width: "32px",
 
-                                    height: "32px",
-
-                                    borderRadius: "999px",
-
-                                    border: "none",
-
-                                    background: "transparent",
-
-                                    color: "var(--text-secondary)",
-
-                                    display: "flex",
-
-                                    alignItems: "center",
-
-                                    justifyContent: "center",
-
-                                    cursor: "pointer",
-
-                                    transition:
-                                        "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px)";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-secondary)";
-                                }}
-                            >
-                                <Ellipsis
-                                    size={16}
-                                />
-                            </button>
-                        </div>
+                        {/* meatball and x pill - changed to only x */}
                         {/* close x */}
                         <div
                             style={{
                                 position: "relative",
                             }}
+                            onMouseEnter={() =>
+                                setShowCloseButton(true)
+                            }
+                            onMouseLeave={() =>
+                                setShowCloseButton(false)
+                            }
                         >
                             <button
-                                onClick={onClose}
+                                onClick={() => {
+                                    onClose();
+                                }}
                                 style={{
-                                    width: "32px",
-                                    height: "32px",
+                                    width: "30px",
+                                    height: "30px",
 
                                     borderRadius: "999px",
 
-                                    border: "rgb(33, 33, 33)",
+                                    border: "none",
 
                                     background:
-                                        "rgb(33, 33, 33)",
+                                        "rgba(255,255,255,0.04)",
 
                                     color:
                                         "var(--text-secondary)",
 
                                     cursor: "pointer",
 
-                                    fontSize: "0.85rem",
+                                    fontSize: "0.8rem",
 
-                                    transition: "all 0.2s ease",
+                                    opacity: showCloseButton ? 1 : 0,
+
+                                    transition: "opacity 0.2s ease",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.background =
@@ -308,478 +264,504 @@ function AlarmModal({
                             </button>
                         </div>
                     </div>
-                </div>
 
-                {/* ROW 2 TIME */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-
-                        gap: "12px",
-
-                        marginBottom: "36px",
-                    }}
-                >
-                    <input
-                        type="text"
-                        value={hours}
-                        maxLength={2}
-                        onChange={(e) => {
-                            let value =
-                                e.target.value.replace(
-                                    /\D/g,
-                                    ""
-                                );
-
-                            if (
-                                Number(value) > 23
-                            ) {
-                                value = "23";
-                            }
-
-                            setHours(value);
-                        }}
-                        style={{
-                            background:
-                                "transparent",
-
-                            border: "none",
-
-                            outline: "none",
-
-                            width: "110px",
-
-                            textAlign:
-                                "right",
-
-                            color:
-                                "var(--text-primary)",
-
-                            fontSize: "4rem",
-
-                            fontWeight: "200",
-
-                            letterSpacing:
-                                "-0.04em",
-
-                            overflow: "visible",
-                        }}
-                    />
-
-                    <span
-                        style={{
-                            fontSize: "4rem",
-
-                            fontWeight: "200",
-
-                            opacity: 0.7,
-                        }}
-                    >
-                        :
-                    </span>
-
-                    <input
-                        type="text"
-                        value={minutes}
-                        maxLength={2}
-                        onChange={(e) => {
-                            let value =
-                                e.target.value.replace(
-                                    /\D/g,
-                                    ""
-                                );
-
-                            if (
-                                Number(value) > 59
-                            ) {
-                                value = "59";
-                            }
-
-                            setMinutes(value);
-                        }}
-                        style={{
-                            background:
-                                "transparent",
-
-                            border: "none",
-
-                            outline: "none",
-
-                            width: "110px",
-
-                            textAlign:
-                                "left",
-
-                            color:
-                                "var(--text-primary)",
-
-                            fontSize: "4rem",
-
-                            fontWeight: "200",
-
-                            letterSpacing:
-                                "-0.04em",
-
-                            overflow: "visible",
-                        }}
-                    />
-                </div>
-
-                {/* LABEL */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-
-                        marginBottom: "28px",
-                    }}
-                >
-                    <input
-                        type="text"
-                        value={label}
-                        onChange={(e) =>
-                            setLabel(
-                                e.target.value
-                            )
-                        }
-                        placeholder="Alarm"
-
-                        maxLength={30}
-
-                        style={{
-                            background: "transparent",
-
-                            border: "none",
-
-                            outline: "none",
-
-                            color:
-                                "var(--text-secondary)",
-
-                            fontSize: "1rem",
-
-                            fontWeight: "300",
-
-                            textAlign: "center",
-
-                            width: "240px",
-                        }}
-                    />
-                </div>
-
-                {/* REPEAT DAYS PILLS */}
-                <div
-                    style={{
-                        display: "flex",
-
-                        justifyContent: "center",
-
-                        gap: "8px",
-
-                        marginBottom: "22px",
-                    }}
-                >
-                    {repeatOptions.map(
-                        (day) => {
-                            const selected =
-                                repeatDays.includes(
-                                    day.value
-                                );
-
-                            return (
-                                <button
-                                    key={day.value}
-                                    onClick={() => {
-                                        setRepeatDays((prev) =>
-                                            prev.includes(day.value)
-                                                ? prev.filter(
-                                                    (storedDay) =>
-                                                        storedDay !== day.value
-                                                )
-                                                : [...prev, day.value]
-                                        );
-                                    }}
-                                    style={{
-                                        width: "34px",
-                                        height: "34px",
-
-                                        borderRadius:
-                                            "999px",
-
-                                        border: selected
-                                            ? "1px solid rgba(255,255,255,0.14)"
-                                            : "1px solid rgba(255,255,255,0.06)",
-
-                                        background:
-                                            selected
-                                                ? "rgba(255,255,255,0.08)"
-                                                : "rgba(255,255,255,0.03)",
-
-                                        color:
-                                            selected
-                                                ? "var(--text-primary)"
-                                                : "var(--text-secondary)",
-
-                                        fontSize:
-                                            "0.72rem",
-
-                                        fontWeight:
-                                            "300",
-
-                                        cursor:
-                                            "pointer",
-
-                                        transition:
-                                            "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(
-                                        e
-                                    ) => {
-                                        if (
-                                            !selected
-                                        ) {
-                                            e.currentTarget.style.background =
-                                                "rgba(255,255,255,0.05)";
-                                        }
-                                    }}
-                                    onMouseLeave={(
-                                        e
-                                    ) => {
-                                        if (
-                                            !selected
-                                        ) {
-                                            e.currentTarget.style.background =
-                                                "rgba(255,255,255,0.03)";
-                                        }
-                                    }}
-                                >
-                                    {day.label}
-                                </button>
-                            );
-                        }
-                    )}
-                </div>
-
-                {/* SNOOZE */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-
-                        marginBottom: "20px",
-                    }}
-                >
-                    <span
-                        style={{
-                            fontSize: "0.9rem",
-                            fontWeight: "300",
-
-                            color: "var(--text-primary)",
-                        }}
-                    >
-                        Snooze
-                    </span>
-
-                    <div
-                        onClick={() =>
-                            setSnoozeEnabled(
-                                !snoozeEnabled
-                            )
-                        }
-                        style={toggleStyle(
-                            snoozeEnabled
-                        )}
-                    >
-                        <div
-                            style={{
-                                width: "18px",
-                                height: "18px",
-
-                                borderRadius: "50%",
-
-                                background:
-                                    "rgba(255,255,255,0.9)",
-
-                                position: "absolute",
-
-                                top: "3px",
-
-                                left: snoozeEnabled
-                                    ? "23px"
-                                    : "3px",
-
-                                transition:
-                                    "all 0.25s ease",
-
-                                boxShadow:
-                                    "0 4px 12px rgba(0,0,0,0.25)",
-                            }}
-                        />
-                    </div>
-                </div>
-                {snoozeEnabled && (
+                    {/* ROW 2 TIME */}
                     <div
                         style={{
                             display: "flex",
-                            gap: "8px",
+                            justifyContent: "center",
+                            alignItems: "center",
 
-                            flexWrap: "wrap",
+                            gap: "12px",
+
+                            marginBottom: "36px",
+                        }}
+                    >
+                        <input
+                            type="text"
+                            value={hours}
+                            maxLength={2}
+                            onChange={(e) => {
+                                let value =
+                                    e.target.value.replace(
+                                        /\D/g,
+                                        ""
+                                    );
+
+                                if (
+                                    Number(value) > 23
+                                ) {
+                                    value = "23";
+                                }
+
+                                setHours(value);
+                            }}
+                            style={{
+                                background:
+                                    "transparent",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                width: "110px",
+
+                                textAlign:
+                                    "right",
+
+                                color:
+                                    "var(--text-primary)",
+
+                                fontSize: "4rem",
+
+                                fontWeight: "200",
+
+                                letterSpacing:
+                                    "-0.04em",
+
+                                overflow: "visible",
+                            }}
+                        />
+
+                        <span
+                            style={{
+                                fontSize: "4rem",
+
+                                fontWeight: "200",
+
+                                opacity: 0.7,
+                            }}
+                        >
+                            :
+                        </span>
+
+                        <input
+                            type="text"
+                            value={minutes}
+                            maxLength={2}
+                            onChange={(e) => {
+                                let value =
+                                    e.target.value.replace(
+                                        /\D/g,
+                                        ""
+                                    );
+
+                                if (
+                                    Number(value) > 59
+                                ) {
+                                    value = "59";
+                                }
+
+                                setMinutes(value);
+                            }}
+                            style={{
+                                background:
+                                    "transparent",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                width: "110px",
+
+                                textAlign:
+                                    "left",
+
+                                color:
+                                    "var(--text-primary)",
+
+                                fontSize: "4rem",
+
+                                fontWeight: "200",
+
+                                letterSpacing:
+                                    "-0.04em",
+
+                                overflow: "visible",
+                            }}
+                        />
+                    </div>
+
+                    {/* LABEL */}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+
+                            marginBottom: "28px",
+                        }}
+                    >
+                        <input
+                            ref={labelInputRef}
+                            type="text"
+                            value={label}
+                            onChange={(e) =>
+                                setLabel(
+                                    e.target.value
+                                )
+                            }
+                            placeholder="Alarm"
+
+                            maxLength={30}
+
+                            style={{
+                                background: "transparent",
+
+                                border: "none",
+
+                                outline: "none",
+
+                                color:
+                                    label.trim()
+                                        ? "var(--text-primary)"
+                                        : "var(--text-secondary)",
+
+                                fontSize: "1rem",
+
+                                fontWeight: "300",
+
+                                textAlign: "center",
+
+                                width: "240px",
+                            }}
+                        />
+                    </div>
+
+                    {/* REPEAT DAYS PILLS */}
+                    <div
+                        style={{
+                            display: "flex",
+
+                            justifyContent: "center",
+
+                            gap: "8px",
 
                             marginBottom: "22px",
                         }}
                     >
-                        {[1, 2, 3, 5, 10].map(
-                            (minutes) => (
-                                <button
-                                    key={minutes}
-                                    onClick={() =>
-                                        setSnoozeDuration(
-                                            minutes
-                                        )
-                                    }
-                                    style={{
-                                        padding:
-                                            "8px 12px",
+                        {repeatOptions.map(
+                            (day) => {
+                                const selected =
+                                    repeatDays.includes(
+                                        day.value
+                                    );
 
-                                        borderRadius:
-                                            "999px",
+                                return (
+                                    <button
+                                        key={day.value}
+                                        onClick={() => {
+                                            setRepeatDays((prev) =>
+                                                prev.includes(day.value)
+                                                    ? prev.filter(
+                                                        (storedDay) =>
+                                                            storedDay !== day.value
+                                                    )
+                                                    : [...prev, day.value]
+                                            );
+                                        }}
+                                        style={{
+                                            width: "34px",
+                                            height: "34px",
 
-                                        border:
-                                            snoozeDuration === minutes
+                                            borderRadius:
+                                                "999px",
+
+                                            border: selected
                                                 ? "1px solid rgba(255,255,255,0.14)"
                                                 : "1px solid rgba(255,255,255,0.06)",
 
-                                        background:
-                                            snoozeDuration === minutes
-                                                ? "rgba(255,255,255,0.08)"
-                                                : "rgba(255,255,255,0.03)",
+                                            background:
+                                                selected
+                                                    ? "rgba(255,255,255,0.08)"
+                                                    : "rgba(255,255,255,0.03)",
 
-                                        color:
-                                            snoozeDuration === minutes
-                                                ? "var(--text-primary)"
-                                                : "var(--text-secondary)",
+                                            color:
+                                                selected
+                                                    ? "var(--text-primary)"
+                                                    : "var(--text-secondary)",
 
-                                        fontSize:
-                                            "0.75rem",
+                                            fontSize:
+                                                "0.72rem",
 
-                                        fontWeight:
-                                            "300",
+                                            fontWeight:
+                                                "300",
 
-                                        cursor:
-                                            "pointer",
+                                            cursor:
+                                                "pointer",
 
-                                        transition:
-                                            "all 0.2s ease",
-                                    }}
-                                >
-                                    {minutes} min
-                                </button>
-                            )
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(
+                                            e
+                                        ) => {
+                                            if (
+                                                !selected
+                                            ) {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.05)";
+                                            }
+                                        }}
+                                        onMouseLeave={(
+                                            e
+                                        ) => {
+                                            if (
+                                                !selected
+                                            ) {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.03)";
+                                            }
+                                        }}
+                                    >
+                                        {day.label}
+                                    </button>
+                                );
+                            }
                         )}
                     </div>
-                )}
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "10px",
-                        marginTop: "24px",
-                    }}
-                >
-                    <button
-                        onClick={onClose}
+                    {/* SNOOZE */}
+                    <div
                         style={{
-                            padding: "11px 18px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
 
-                            borderRadius: "999px",
-
-                            background:
-                                "rgba(255,77,77,0.12)",
-
-                            border:
-                                "1px solid rgba(255,77,77,0.25)",
-
-                            color: "var(--danger)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.20)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,77,77,0.12)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
+                            marginBottom: "20px",
                         }}
                     >
-                        Cancel
-                    </button>
+                        <span
+                            style={{
+                                fontSize: "0.9rem",
+                                fontWeight: "300",
 
-                    <button
-                        onClick={handleSave}
+                                color: "var(--text-primary)",
+                            }}
+                        >
+                            Snooze
+                        </span>
+
+                        <div
+                            onClick={() =>
+                                setSnoozeEnabled(
+                                    !snoozeEnabled
+                                )
+                            }
+                            style={toggleStyle(
+                                snoozeEnabled
+                            )}
+                        >
+                            <div
+                                style={{
+                                    width: "18px",
+                                    height: "18px",
+
+                                    borderRadius: "50%",
+
+                                    background:
+                                        "rgba(255,255,255,0.9)",
+
+                                    position: "absolute",
+
+                                    top: "3px",
+
+                                    left: snoozeEnabled
+                                        ? "23px"
+                                        : "3px",
+
+                                    transition:
+                                        "all 0.25s ease",
+
+                                    boxShadow:
+                                        "0 4px 12px rgba(0,0,0,0.25)",
+                                }}
+                            />
+                        </div>
+                    </div>
+                    {snoozeEnabled && (
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "8px",
+
+                                flexWrap: "wrap",
+
+                                marginBottom: "22px",
+                            }}
+                        >
+                            {[1, 2, 3, 5, 10].map(
+                                (minutes) => (
+                                    <button
+                                        key={minutes}
+                                        onClick={() =>
+                                            setSnoozeDuration(
+                                                minutes
+                                            )
+                                        }
+                                        style={{
+                                            padding:
+                                                "8px 12px",
+
+                                            borderRadius:
+                                                "999px",
+
+                                            border:
+                                                snoozeDuration === minutes
+                                                    ? "1px solid rgba(255,255,255,0.14)"
+                                                    : "1px solid rgba(255,255,255,0.06)",
+
+                                            background:
+                                                snoozeDuration === minutes
+                                                    ? "rgba(255,255,255,0.08)"
+                                                    : "rgba(255,255,255,0.03)",
+
+                                            color:
+                                                snoozeDuration === minutes
+                                                    ? "var(--text-primary)"
+                                                    : "var(--text-secondary)",
+
+                                            fontSize:
+                                                "0.75rem",
+
+                                            fontWeight:
+                                                "300",
+
+                                            cursor:
+                                                "pointer",
+
+                                            transition:
+                                                "all 0.2s ease",
+                                        }}
+                                    >
+                                        {minutes} min
+                                    </button>
+                                )
+                            )}
+                        </div>
+                    )}
+
+                    <div
                         style={{
-                            padding: "11px 18px",
-
-                            borderRadius: "999px",
-
-                            background:
-                                "rgba(255,255,255,0.08)",
-
-                            border:
-                                "1px solid rgba(255,255,255,0.10)",
-
-                            color:
-                                "var(--text-primary)",
-
-                            fontSize: "0.8rem",
-
-                            fontWeight: "300",
-
-                            cursor: "pointer",
-
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.14)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(-1px)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.18)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(255,255,255,0.08)";
-
-                            e.currentTarget.style.transform =
-                                "translateY(0)";
-
-                            e.currentTarget.style.border =
-                                "1px solid rgba(255,255,255,0.10)";
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: "10px",
+                            marginTop: "24px",
                         }}
                     >
-                        Save
-                    </button>
+                        {mode === "edit" && (
+                            <button
+                                onClick={() =>
+                                    setShowDeleteConfirm(true)
+                                }
+                                style={{
+                                    padding: "8px 14px",
+
+                                    borderRadius: "999px",
+
+                                    background:
+                                        "rgba(255,77,77,0.12)",
+
+                                    border:
+                                        "1px solid rgba(255,77,77,0.25)",
+
+                                    color: "var(--danger)",
+
+                                    fontSize: "0.8rem",
+
+                                    fontWeight: "300",
+
+                                    cursor: "pointer",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.20)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgba(255,77,77,0.12)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+                                }}
+                            >
+                                Delete
+                            </button>
+                        )}
+
+                        <button
+                            onClick={handleSave}
+                            style={{
+                                padding: "8px 14px",
+
+                                borderRadius: "999px",
+
+                                background: "rgba(255,255,255,0.08)",
+
+                                border: "1px solid rgba(255,255,255,0.10)",
+
+                                color:
+                                    "var(--text-primary)",
+
+                                fontSize: "0.8rem",
+
+                                fontWeight: "300",
+
+                                cursor: "pointer",
+
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.14)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.18)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.08)";
+
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
+
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.10)";
+                            }}
+                        >
+                            {mode === "edit"
+                                ? "Save"
+                                : "Create"}
+                            {/* ONLY SAVE OPTION OR CREATE INITIALLY THEN ONCLICK MODE === EDIT BUTTON CHANGED TO SAVE */}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
+            {showDeleteConfirm && (
+                <DeleteConfirmModal
+                    title="Delete alarm?"
+                    message="This action cannot be undone."
+
+                    onCancel={() => {
+                        setShowDeleteConfirm(false);
+                    }}
+
+                    onConfirm={async () => {
+                        await onDelete(alarm._id);
+
+                        setShowDeleteConfirm(false);
+
+                        onClose();
+                    }}
+                />
+            )}
         </div >
     );
 }

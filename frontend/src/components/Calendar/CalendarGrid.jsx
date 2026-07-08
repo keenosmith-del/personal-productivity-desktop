@@ -223,8 +223,10 @@ function CalendarGrid({
                 "6px 12px",
               color:
                 "var(--text-primary)",
-              cursor:
-                "pointer",
+              cursor: "pointer",
+
+              fontSize: "0.8rem",
+              fontWeight: "300",
             }}
           >
             Today

@@ -109,6 +109,9 @@ function ReminderModal({
         : ["NL"]
     );
 
+  const [showCloseButton, setShowCloseButton] =
+    useState(false);
+
   useEffect(() => {
     reminderInputRef.current?.focus();
   }, []);
@@ -357,262 +360,70 @@ function ReminderModal({
             }}
           >
 
-            {/* meatball and x pill*/}
+            {/* meatball and x pill - changed to only x */}
+            {/* close x */}
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-
-                gap: "6px",
-
-                padding: "2px",
-
-                borderRadius: "999px",
-
-                background: "rgb(36, 36, 36)",
-
-                backdropFilter: "blur(28px)",
-
-                boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                position: "relative",
               }}
+              onMouseEnter={() =>
+                setShowCloseButton(true)
+              }
+              onMouseLeave={() =>
+                setShowCloseButton(false)
+              }
             >
-              {/* meatball */}
-              <div
-                style={{
-                  position: "relative",
+              <button
+                onClick={() => {
+                  onClose();
                 }}
-                onClick={() =>
-                  setShowMoreMenu(
-                    !showMoreMenu
-                  )
-                }
-              >
-                <button
-                  style={{
-                    width: "32px",
-
-                    height: "32px",
-
-                    borderRadius: "999px",
-
-                    border: "none",
-
-                    background: "transparent",
-
-                    color: "var(--text-secondary)",
-
-                    display: "flex",
-
-                    alignItems: "center",
-
-                    justifyContent: "center",
-
-                    cursor: "pointer",
-
-                    transition:
-                      "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform =
-                      "translateY(-1px)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform =
-                      "translateY(0)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-secondary)";
-                  }}
-                >
-                  <Ellipsis
-                    size={16}
-                  />
-                </button>
-              </div>
-              {/* meatball drop down */}
-              {showMoreMenu && (
-                <div
-                  onClick={(e) =>
-                    e.stopPropagation()
-                  }
-                  style={{
-                    position: "absolute",
-
-                    top: "24px",
-                    right: 0,
-
-                    minWidth: "140px",
-
-                    background:
-                      "rgba(20,20,20,0.95)",
-
-                    backdropFilter:
-                      "blur(20px)",
-
-                    border:
-                      "1px solid rgba(255,255,255,0.08)",
-
-                    borderRadius: "16px",
-
-                    overflow: "hidden",
-
-                    zIndex: 100,
-                  }}
-                >
-                  {mode === "edit" ? (
-                    <button
-                      onClick={() => {
-                        setShowDeleteConfirm(true)
-                        setShowMoreMenu(false);
-                      }}
-                      style={{
-                        width: "100%",
-
-                        padding: "10px 12px",
-
-                        background: "transparent",
-
-                        border: "none",
-
-                        borderRadius: "10px",
-
-                        color: "var(--text-primary)",
-
-                        textAlign: "left",
-
-                        fontSize: "0.8rem",
-
-                        fontWeight: "300",
-
-                        cursor: "pointer",
-
-                        transition: "all 0.2s ease",
-
-                        color: "#ff6b6b",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          "rgba(255,255,255,0.04)";
-
-                        e.currentTarget.style.color =
-                          "#ff6b6b";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                          "transparent";
-
-                        e.currentTarget.style.color =
-                          "#ff6b6b";
-                      }}
-                    >
-                      Delete Reminder
-                    </button>
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-
-                        padding: "10px 12px",
-
-                        background: "transparent",
-
-                        border: "none",
-
-                        borderRadius: "10px",
-
-                        color: "var(--text-secondary)",
-
-                        textAlign: "left",
-
-                        fontSize: "0.8rem",
-
-                        fontWeight: "300",
-
-                        opacity: 0.45,
-
-                        cursor: "default",
-
-                        userSelect: "none",
-
-                        transition: "all 0.2s ease",
-
-                        color: "var(--text-secondary)",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          "rgba(255,255,255,0.04)";
-
-                        e.currentTarget.style.color =
-                          "var(--text-secondary)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                          "transparent";
-
-                        e.currentTarget.style.color =
-                          "var(--text-secondary)";
-                      }}
-                    >
-                      No actions
-                    </div>
-                  )}
-                </div>
-              )}
-              {/* close x */}
-              <div
                 style={{
-                  position: "relative",
+                  width: "30px",
+                  height: "30px",
+
+                  borderRadius: "999px",
+
+                  border: "none",
+
+                  background:
+                    "rgba(255,255,255,0.04)",
+
+                  color:
+                    "var(--text-secondary)",
+
+                  cursor: "pointer",
+
+                  fontSize: "0.8rem",
+
+                  transition: "all 0.2s ease",
+
+                  opacity: showCloseButton ? 1 : 0,
+
+                  transition: "opacity 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background =
+                    "rgb(33, 33, 33)";
+
+                  e.currentTarget.style.transform =
+                    "translateY(-1px)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background =
+                    "rgb(33, 33, 33)";
+
+                  e.currentTarget.style.transform =
+                    "translateY(0)";
+
+                  e.currentTarget.style.color =
+                    "var(--text-secondary)";
                 }}
               >
-                <button
-                  onClick={onClose}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-
-                    borderRadius: "999px",
-
-                    border: "rgb(33, 33, 33)",
-
-                    background:
-                      "rgb(33, 33, 33)",
-
-                    color:
-                      "var(--text-secondary)",
-
-                    cursor: "pointer",
-
-                    fontSize: "0.85rem",
-
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgb(33, 33, 33)";
-
-                    e.currentTarget.style.transform =
-                      "translateY(-1px)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background =
-                      "rgb(33, 33, 33)";
-
-                    e.currentTarget.style.transform =
-                      "translateY(0)";
-
-                    e.currentTarget.style.color =
-                      "var(--text-secondary)";
-                  }}
-                >
-                  x
-                </button>
-              </div>
+                x
+              </button>
             </div>
           </div>
 
@@ -1390,51 +1201,55 @@ function ReminderModal({
               marginTop: "24px",
             }}
           >
-            <button
-              onClick={onClose}
-              style={{
-                padding: "11px 18px",
+            {mode === "edit" && (
+              <button
+                onClick={() =>
+                  setShowDeleteConfirm(true)
+                }
+                style={{
+                  padding: "8px 14px",
 
-                borderRadius: "999px",
+                  borderRadius: "999px",
 
-                background:
-                  "rgba(255,77,77,0.12)",
+                  background:
+                    "rgba(255,77,77,0.12)",
 
-                border:
-                  "1px solid rgba(255,77,77,0.25)",
+                  border:
+                    "1px solid rgba(255,77,77,0.25)",
 
-                color: "var(--danger)",
+                  color: "var(--danger)",
 
-                fontSize: "0.8rem",
+                  fontSize: "0.8rem",
 
-                fontWeight: "300",
+                  fontWeight: "300",
 
-                cursor: "pointer",
+                  cursor: "pointer",
 
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background =
-                  "rgba(255,77,77,0.20)";
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(255,77,77,0.20)";
 
-                e.currentTarget.style.transform =
-                  "translateY(-1px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background =
-                  "rgba(255,77,77,0.12)";
+                  e.currentTarget.style.transform =
+                    "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background =
+                    "rgba(255,77,77,0.12)";
 
-                e.currentTarget.style.transform =
-                  "translateY(0)";
-              }}
-            >
-              Cancel
-            </button>
+                  e.currentTarget.style.transform =
+                    "translateY(0)";
+                }}
+              >
+                Delete
+              </button>
+            )}
 
             <button
               onClick={handleSave}
               style={{
-                padding: "11px 18px",
+                padding: "8px 14px",
 
                 borderRadius: "999px",
 
@@ -1503,8 +1318,8 @@ function ReminderModal({
             setShowDeleteConfirm(false);
           }}
 
-          onConfirm={() => {
-            onDelete(reminder._id);
+          onConfirm={async () => {
+            await onDelete(reminder._id);
 
             setShowDeleteConfirm(false);
 

@@ -163,6 +163,17 @@ function Calendar() {
 
   useEffect(() => {
     loadCalendarData();
+
+    window.addEventListener(
+      "data-changed",
+      loadCalendarData
+    );
+
+    return () =>
+      window.removeEventListener(
+        "data-changed",
+        loadCalendarData
+      );
   }, []);
 
   const selectedEventKey =

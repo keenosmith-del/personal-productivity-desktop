@@ -91,26 +91,30 @@ export const updateAlarm =
 
 
 // DELETE
-export const deleteAlarm =
-    async (id) => {
-        const response =
-            await fetch(
-                `${API_URL}/${id}`,
-                {
-                    method: "DELETE",
+export async function deleteAlarm(
+    alarmId
+) {
+    const response = await fetch(
+        `${API_URL}/${alarmId}`,
+        {
+            method: "DELETE",
 
-                    headers: {
-                        Authorization:
-                            `Bearer ${getToken()}`,
-                    },
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to delete alarm."
-            );
+            headers: {
+                Authorization:
+                    `Bearer ${getToken()}`,
+            },
         }
+    );
 
-        return response.json();
-    };
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to delete alarm"
+        );
+    }
+
+    return data;
+}

@@ -1409,7 +1409,7 @@ function Tasks() {
                               position: "fixed",
 
                               top: "42px",
-                              right: 0,
+                              right: "200px", // only way to get more menu on screen
 
                               width: "180px",
 
@@ -1809,7 +1809,7 @@ function Tasks() {
           onDelete={handleDeleteTask}
         />
       )}
-
+      {/* deprecated? */}
       {showClearCompleted && (
         <div
           onClick={() =>

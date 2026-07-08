@@ -136,6 +136,17 @@ function Dashboard() {
 
   useEffect(() => {
     loadDashboardData();
+
+    window.addEventListener(
+      "data-changed",
+      loadDashboardData
+    );
+
+    return () =>
+      window.removeEventListener(
+        "data-changed",
+        loadDashboardData
+      );
   }, []);
 
   const loadDashboardData =
@@ -1254,7 +1265,7 @@ function Dashboard() {
             handleEditUpcoming
           }
 
-          onDeleteTask={() =>
+          onDelete={() =>
             handleDeleteUpcoming(
               selectedUpcomingItem
             )
@@ -1300,7 +1311,7 @@ function Dashboard() {
             handleEditUpcoming
           }
 
-          onDeleteProject={() =>
+          onDelete={() =>
             handleDeleteUpcoming(
               selectedUpcomingItem
             )
@@ -1346,7 +1357,7 @@ function Dashboard() {
             handleEditUpcoming
           }
 
-          onDeleteGoal={() =>
+          onDelete={() =>
             handleDeleteUpcoming(
               selectedUpcomingItem
             )
@@ -1392,7 +1403,7 @@ function Dashboard() {
             handleEditUpcoming
           }
 
-          onDeleteReminder={() =>
+          onDelete={() =>
             handleDeleteUpcoming(
               selectedUpcomingItem
             )

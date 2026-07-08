@@ -105,8 +105,7 @@ function AlarmCard({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-
-                            onDelete?.(alarm);
+                            onDelete?.(alarm._id);
                         }}
                         style={{
                             width: "26px",
@@ -126,8 +125,7 @@ function AlarmCard({
 
                             fontSize: "0.8rem",
 
-                            transition:
-                                "all 0.2s ease",
+                            transition: "all 0.2s ease",
                         }}
                     >
                         ×
@@ -182,19 +180,6 @@ function AlarmCard({
                     {alarm?.label || "Alarm"}
                 </p>
             </div>
-
-            {/* DIVIDER */}
-
-            <div
-                style={{
-                    height: "1px",
-
-                    background:
-                        "rgba(255,255,255,0.05)",
-
-                    marginBottom: "20px",
-                }}
-            />
 
             {/* ROW 4 REPEATDAYS STACKED AVATARS */}
 

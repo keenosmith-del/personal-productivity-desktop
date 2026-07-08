@@ -12,9 +12,17 @@ function DeleteConfirmModal({
                 inset: 0,
 
                 // background needs to be more glass / frosty not heavy and dark 
-                background: "rgba(47, 47, 47, 0.18)",
+                background:
+                    "rgba(20, 20, 20, 0)",
 
-                backdropFilter: "blur(20px)",
+                backdropFilter:
+                    "blur(20px)",
+
+                border:
+                    "1px solid rgba(255,255,255,0.10)",
+
+                boxShadow:
+                    "0 20px 50px rgba(0,0,0,0.35)",
 
                 display: "flex",
 
@@ -37,7 +45,7 @@ function DeleteConfirmModal({
                     borderRadius: "24px",
 
                     background:
-                        "rgba(28, 28, 28, 0.22)",
+                        "rgba(0, 0, 0, 0.15)",
 
                     border:
                         "1px solid rgba(255,255,255,0.08)",
@@ -85,7 +93,7 @@ function DeleteConfirmModal({
                     <button
                         onClick={onCancel}
                         style={{
-                            padding: "11px 18px",
+                            padding: "8px 14px",
 
                             borderRadius: "999px",
 
@@ -133,7 +141,7 @@ function DeleteConfirmModal({
                     <button
                         onClick={onConfirm}
                         style={{
-                            padding: "11px 18px",
+                            padding: "8px 14px",
 
                             borderRadius: "999px",
 

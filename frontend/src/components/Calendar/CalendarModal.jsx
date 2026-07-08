@@ -81,8 +81,12 @@ function CalendarModal({
     const [returnToCalendar, setReturnToCalendar] =
         useState(true);
 
+    const [openEventMenu, setOpenEventMenu] =
+        useState(null);
+
     // handle
     const handleEventClick = (event) => {
+        setOpenEventMenu(null);
 
         setShowCalendarContent(false);
 
@@ -442,6 +446,9 @@ function CalendarModal({
         setShowClearConfirm,
     ] = useState(false);
 
+    const [showCloseButton, setShowCloseButton] =
+        useState(false);
+
     const formatDueDate = (dueDate) => {
         if (!dueDate) return "";
 
@@ -483,6 +490,90 @@ function CalendarModal({
                 year: "numeric",
             }
         );
+    };
+
+    // handle toggle flag
+    const handleToggleFlag = async (event) => {
+        try {
+            switch (event.type) {
+                case "task":
+                    await updateTask(event._id, {
+                        ...event,
+                        flagged: !event.flagged,
+                    });
+                    break;
+
+                case "project":
+                    await updateProject(event._id, {
+                        ...event,
+                        flagged: !event.flagged,
+                    });
+                    break;
+
+                case "goal":
+                    await updateGoal(event._id, {
+                        ...event,
+                        flagged: !event.flagged,
+                    });
+                    break;
+
+                case "reminder":
+                    await updateReminder(event._id, {
+                        ...event,
+                        flagged: !event.flagged,
+                    });
+                    break;
+
+                default:
+                    return;
+            }
+
+            onRefresh();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // handle toggle like
+    const handleToggleLike = async (event) => {
+        try {
+            switch (event.type) {
+                case "task":
+                    await updateTask(event._id, {
+                        ...event,
+                        liked: !event.liked,
+                    });
+                    break;
+
+                case "project":
+                    await updateProject(event._id, {
+                        ...event,
+                        liked: !event.liked,
+                    });
+                    break;
+
+                case "goal":
+                    await updateGoal(event._id, {
+                        ...event,
+                        liked: !event.liked,
+                    });
+                    break;
+
+                case "reminder":
+                    await updateReminder(event._id, {
+                        ...event,
+                        liked: !event.liked,
+                    });
+                    break;
+
+                default:
+                    return;
+            }
+
+            onRefresh();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const formatCompletedDate = (completedDate) => {
@@ -780,6 +871,28 @@ function CalendarModal({
             }, 3000);
         };
 
+    const menuItemStyle = {
+        width: "100%",
+
+        padding: "10px 12px",
+
+        background: "transparent",
+
+        border: "none",
+
+        color: "var(--text-primary)",
+
+        textAlign: "left",
+
+        fontSize: "0.8rem",
+
+        fontWeight: "300",
+
+        cursor: "pointer",
+
+        transition: "all 0.2s ease",
+    };
+
     return (
         <div
             onClick={onClose}
@@ -837,8 +950,7 @@ function CalendarModal({
                         style={{
                             display: "flex",
 
-                            justifyContent:
-                                "space-between",
+                            justifyContent: "space-between",
 
                             alignItems: "center",
 
@@ -874,133 +986,74 @@ function CalendarModal({
                             </p>
                         </div>
 
-                        {/* meatball and x pill*/}
+                        {/* meatball and x pill - changed to only x */}
+                        {/* close x */}
                         <div
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-
-                                gap: "6px",
-
-                                padding: "2px",
-
-                                borderRadius: "999px",
-
-                                background: "rgb(36, 36, 36)",
-
-                                backdropFilter: "blur(28px)",
-
-                                boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                                position: "relative",
                             }}
+                            onMouseEnter={() =>
+                                setShowCloseButton(true)
+                            }
+                            onMouseLeave={() =>
+                                setShowCloseButton(false)
+                            }
                         >
-                            {/* meatball */}
-                            <div
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                }}
                                 style={{
-                                    position: "relative",
+                                    width: "30px",
+                                    height: "30px",
+
+                                    borderRadius: "999px",
+
+                                    border: "none",
+
+                                    background:
+                                        "rgba(255,255,255,0.04)",
+
+                                    color:
+                                        "var(--text-secondary)",
+
+                                    cursor: "pointer",
+
+                                    fontSize: "0.8rem",
+
+                                    transition: "all 0.2s ease",
+
+                                    opacity: showCloseButton ? 1 : 0,
+
+                                    transition: "opacity 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgb(33, 33, 33)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                        "rgb(33, 33, 33)";
+
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.color =
+                                        "var(--text-secondary)";
                                 }}
                             >
-                                <button
-                                    style={{
-                                        width: "32px",
-
-                                        height: "32px",
-
-                                        borderRadius: "999px",
-
-                                        border: "none",
-
-                                        background: "transparent",
-
-                                        color: "var(--text-secondary)",
-
-                                        display: "flex",
-
-                                        alignItems: "center",
-
-                                        justifyContent: "center",
-
-                                        cursor: "pointer",
-
-                                        transition:
-                                            "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-
-                                        e.currentTarget.style.color =
-                                            "var(--text-primary)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-
-                                        e.currentTarget.style.color =
-                                            "var(--text-secondary)";
-                                    }}
-                                >
-                                    <Ellipsis
-                                        size={16}
-                                    />
-                                </button>
-                            </div>
-                            {/* close x */}
-                            <div
-                                style={{
-                                    position: "relative",
-                                }}
-                            >
-                                <button
-                                    onClick={onClose}
-                                    style={{
-                                        width: "32px",
-                                        height: "32px",
-
-                                        borderRadius: "999px",
-
-                                        border: "rgb(33, 33, 33)",
-
-                                        background:
-                                            "rgb(33, 33, 33)",
-
-                                        color:
-                                            "var(--text-secondary)",
-
-                                        cursor: "pointer",
-
-                                        fontSize: "0.85rem",
-
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgb(33, 33, 33)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(-1px)";
-
-                                        e.currentTarget.style.color =
-                                            "var(--text-primary)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background =
-                                            "rgb(33, 33, 33)";
-
-                                        e.currentTarget.style.transform =
-                                            "translateY(0)";
-
-                                        e.currentTarget.style.color =
-                                            "var(--text-secondary)";
-                                    }}
-                                >
-                                    x
-                                </button>
-                            </div>
+                                x
+                            </button>
                         </div>
                     </div>
 
                     {/* DATE */}
-
                     <div
                         style={{
                             textAlign: "center",
@@ -1085,39 +1138,44 @@ function CalendarModal({
                                     )
                                 }
                                 style={{
-                                    width: "32px",
-                                    height: "32px",
+                                    width: "30px",
+                                    height: "30px",
 
                                     borderRadius: "999px",
 
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
+                                    border: "none",
 
                                     background:
                                         "rgba(255,255,255,0.04)",
 
-                                    color:
-                                        "var(--text-secondary)",
+                                    color: "var(--text-secondary)",
 
                                     cursor: "pointer",
 
-                                    fontSize: "0.85rem",
+                                    fontSize: "0.8rem",
 
                                     transition: "all 0.2s ease",
+
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.10)";
+                                        "rgb(33, 33, 33)";
 
                                     e.currentTarget.style.transform =
-                                        "scale(1.05)";
+                                        "translateY(-1px)";
+
+                                    e.currentTarget.style.color =
+                                        "var(--text-primary)";
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
+                                        "rgb(33, 33, 33)";
 
                                     e.currentTarget.style.transform =
-                                        "scale(1)";
+                                        "translateY(0)";
+
+                                    e.currentTarget.style.color =
+                                        "var(--text-secondary)";
                                 }}
                             >
                                 +
@@ -1320,7 +1378,7 @@ function CalendarModal({
 
                                     return (
                                         <div
-                                            key={event.title}
+                                            key={event._id}
                                             onClick={() => handleEventClick(event)}
                                             style={{
                                                 position: "relative",
@@ -1371,25 +1429,6 @@ function CalendarModal({
                                                     alignItems: "flex-start",
                                                     marginBottom: "10px",
                                                 }}
-                                                onMouseEnter={() => {
-                                                    setHoveredCard(event._id);
-
-                                                    e.currentTarget.style.transform =
-                                                        "translateY(-2px)";
-
-                                                    e.currentTarget.style.border =
-                                                        "1px solid rgba(255,255,255,0.12)";
-
-                                                }}
-
-                                                onMouseLeave={() => {
-                                                    setHoveredCard(null);
-                                                    e.currentTarget.style.transform =
-                                                        "translateY(0)";
-
-                                                    e.currentTarget.style.border =
-                                                        "1px solid rgba(255,255,255,0.08)";
-                                                }}
                                             >
                                                 <span
                                                     style={{
@@ -1423,27 +1462,110 @@ function CalendarModal({
                                                     }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
+
+                                                        setOpenEventMenu(
+                                                            openEventMenu === event._id
+                                                                ? null
+                                                                : event._id
+                                                        );
                                                     }}
                                                     onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(-1px)";
+
                                                         e.currentTarget.style.color =
                                                             "var(--text-primary)";
-
-                                                        e.currentTarget.style.transform =
-                                                            "translateY(-1px) scale(1.08)";
                                                     }}
-
                                                     onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform =
+                                                            "translateY(0)";
+
                                                         e.currentTarget.style.color =
                                                             "var(--text-secondary)";
-
-                                                        e.currentTarget.style.transform =
-                                                            "translateY(0) scale(1)";
                                                     }}
                                                 >
                                                     <Ellipsis
                                                         size={18}
                                                         strokeWidth={1.6}
                                                     />
+                                                    {openEventMenu === event._id && (
+                                                        <div
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                position: "absolute",
+
+                                                                top: "26px",
+                                                                right: 0,
+
+                                                                width: "165px",
+
+                                                                background:
+                                                                    "rgba(20,20,20,0.96)",
+
+                                                                backdropFilter:
+                                                                    "blur(20px)",
+
+                                                                border:
+                                                                    "1px solid rgba(255,255,255,0.08)",
+
+                                                                borderRadius: "16px",
+
+                                                                overflow: "hidden",
+
+                                                                zIndex: 1000,
+                                                            }}
+                                                        >
+
+                                                            <div
+                                                                style={{
+                                                                    height: "1px",
+                                                                    background:
+                                                                        "rgba(255,255,255,0.06)",
+                                                                }}
+                                                            />
+
+                                                            <button
+                                                                onClick={async () => {
+                                                                    switch (event.type) {
+                                                                        case "task":
+                                                                            await handleDeleteTask(event._id);
+                                                                            break;
+
+                                                                        case "project":
+                                                                            await handleDeleteProject(event._id);
+                                                                            break;
+
+                                                                        case "goal":
+                                                                            await handleDeleteGoal(event._id);
+                                                                            break;
+
+                                                                        case "reminder":
+                                                                            await handleDeleteReminder(event._id);
+                                                                            break;
+
+                                                                        default:
+                                                                            break;
+                                                                    }
+
+                                                                    setOpenEventMenu(null);
+                                                                }}
+                                                                style={{
+                                                                    ...menuItemStyle,
+                                                                    color: "#ff6b6b",
+                                                                }}
+                                                                onMouseEnter={(e) => {
+                                                                    e.currentTarget.style.background =
+                                                                        "rgba(255,255,255,0.04)";
+                                                                }}
+                                                                onMouseLeave={(e) => {
+                                                                    e.currentTarget.style.background =
+                                                                        "transparent";
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -1578,8 +1700,7 @@ function CalendarModal({
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-
-                                                        // existing flag logic
+                                                        handleToggleFlag(event);
                                                     }}
                                                     style={{
                                                         border: "none",
@@ -1636,8 +1757,7 @@ function CalendarModal({
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-
-                                                        // existing like logic
+                                                        handleToggleLike(event);
                                                     }}
                                                     style={{
                                                         border: "none",
@@ -1714,7 +1834,7 @@ function CalendarModal({
                         <button
                             onClick={onClose}
                             style={{
-                                padding: "11px 18px",
+                                padding: "8px 14px",
 
                                 borderRadius: "999px",
 
@@ -1764,7 +1884,7 @@ function CalendarModal({
                                 setShowClearConfirm(true);
                             }}
                             style={{
-                                padding: "11px 18px",
+                                padding: "8px 14px",
 
                                 borderRadius: "999px",
 

@@ -62,6 +62,9 @@ function AddUserModal({
   const errorTimeoutRef =
     useRef(null);
 
+  const [showCloseButton, setShowCloseButton] =
+    useState(false);
+
   useEffect(() => {
     nameInputRef.current?.focus();
   }, []);
@@ -129,81 +132,83 @@ function AddUserModal({
           display: "flex",
           flexDirection: "column",
 
-          gap: "20px",
+          gap: "15px",
         }}
       >
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            marginBottom: "24px",
           }}
         >
-          <div>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: "0.95rem",
-                fontWeight: "400",
-              }}
-            >
-              Create User
-            </h2>
-
-            <p
-              style={{
-                marginTop: "4px",
-                marginBottom: 0,
-                fontSize: "0.8rem",
-                fontWeight: "300",
-                opacity: 0.55,
-              }}
-            >
-              Invite a new team member
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
+          {/* meatball and x pill - changed to only x */}
+          {/* close x */}
+          <div
             style={{
-              width: "32px",
-              height: "32px",
-
-              borderRadius: "999px",
-
-              border:
-                "1px solid rgba(255,255,255,0.08)",
-
-              background:
-                "rgba(255,255,255,0.04)",
-
-              color:
-                "var(--text-secondary)",
-
-              cursor: "pointer",
-
-              fontSize: "0.85rem",
-
-              transition: "all 0.2s ease",
+              position: "relative",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background =
-                "rgba(255,255,255,0.10)";
-
-              e.currentTarget.style.transform =
-                "scale(1.05)";
-            }}
-
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background =
-                "rgba(255,255,255,0.04)";
-
-              e.currentTarget.style.transform =
-                "scale(1)";
-            }}
+            onMouseEnter={() =>
+              setShowCloseButton(true)
+            }
+            onMouseLeave={() =>
+              setShowCloseButton(false)
+            }
           >
-            x
-          </button>
+            <button
+              onClick={() => {
+                onClose();
+              }}
+              style={{
+                width: "30px",
+                height: "30px",
+
+                borderRadius: "999px",
+
+                border: "none",
+
+                background:
+                  "rgba(255,255,255,0.04)",
+
+                color:
+                  "var(--text-secondary)",
+
+                cursor: "pointer",
+
+                fontSize: "0.8rem",
+
+                transition: "all 0.2s ease",
+
+                opacity: showCloseButton ? 1 : 0,
+
+                transition: "opacity 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background =
+                  "rgb(33, 33, 33)";
+
+                e.currentTarget.style.transform =
+                  "translateY(-1px)";
+
+                e.currentTarget.style.color =
+                  "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background =
+                  "rgb(33, 33, 33)";
+
+                e.currentTarget.style.transform =
+                  "translateY(0)";
+
+                e.currentTarget.style.color =
+                  "var(--text-secondary)";
+              }}
+            >
+              x
+            </button>
+          </div>
         </div>
 
         {/* Avatar Placeholder */}
@@ -622,7 +627,7 @@ function AddUserModal({
 
               cursor: "pointer",
 
-              fontSize: "0.9rem",
+              fontSize: "0.8rem",
 
               opacity: 0.7,
             }}
@@ -662,7 +667,7 @@ function AddUserModal({
           <button
             onClick={onClose}
             style={{
-              padding: "11px 18px",
+              padding: "8px 14px",
 
               borderRadius: "999px",
 
@@ -857,7 +862,7 @@ function AddUserModal({
               }
             }}
             style={{
-              padding: "11px 18px",
+              padding: "8px 14px",
 
               borderRadius: "999px",
 
@@ -900,7 +905,7 @@ function AddUserModal({
                 "1px solid rgba(255,255,255,0.10)";
             }}
           >
-            Create User
+            Create
           </button>
         </div>
       </div>

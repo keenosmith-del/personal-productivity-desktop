@@ -224,7 +224,7 @@ function Account() {
                         justifyContent:
                             "space-between",
 
-                        height: "860px",
+                        height: "780px",
                     }}
                 >
                     <div>
@@ -677,7 +677,7 @@ function Account() {
                         display: "grid",
 
                         gridTemplateRows:
-                            "0.65fr 0.9fr 0.9fr",
+                            "0.45fr 0.55fr 0.55fr",
 
                         gap: "20px",
                     }}
@@ -694,7 +694,7 @@ function Account() {
 
                                 gap: "10px",
 
-                                marginBottom: "24px",
+                                marginBottom: "20px",
 
                                 opacity: "0.6",
                             }}
@@ -721,22 +721,22 @@ function Account() {
 
                             }}
                         >
-                            Personalize your
-                            workspace experience.
+                            Personalize your workspace experience.
                         </p>
 
+                        {/* needs to be redesigned */}
                         <div
                             style={{
                                 position: "relative",
 
                                 display: "flex",
 
-                                width: "220px",
+                                width: "90px",
 
-                                padding: "6px",
+                                padding: "4px",
 
                                 background:
-                                    "rgba(255,255,255,0.03)",
+                                    "rgba(36, 36, 36, 0.03)",
 
                                 border:
                                     "1px solid rgba(255,255,255,0.06)",
@@ -752,16 +752,16 @@ function Account() {
                                 style={{
                                     position: "absolute",
 
-                                    top: "6px",
+                                    top: "4px",
 
                                     left:
                                         settings.theme === "Light"
-                                            ? "6px"
-                                            : "108px",
+                                            ? "4px"
+                                            : "30px",
 
-                                    width: "106px",
+                                    width: "30px",
 
-                                    height: "40px",
+                                    height: "30px",
 
                                     borderRadius: "999px",
 
@@ -788,7 +788,7 @@ function Account() {
                                 style={{
                                     flex: 1,
 
-                                    height: "40px",
+                                    height: "30px",
 
                                     display: "flex",
 
@@ -796,7 +796,7 @@ function Account() {
 
                                     justifyContent: "center",
 
-                                    gap: "8px",
+                                    gap: "4px",
 
                                     background: "transparent",
 
@@ -829,7 +829,7 @@ function Account() {
                                 style={{
                                     flex: 1,
 
-                                    height: "40px",
+                                    height: "30px",
 
                                     display: "flex",
 
@@ -837,7 +837,7 @@ function Account() {
 
                                     justifyContent: "center",
 
-                                    gap: "8px",
+                                    gap: "4px",
 
                                     background: "transparent",
 
