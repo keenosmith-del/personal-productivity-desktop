@@ -88,6 +88,30 @@ function Alarms() {
     }
   };
 
+  useEffect(() => {
+
+    const handleAlarmUpdated = () => {
+
+      loadAlarms();
+
+    };
+
+    window.addEventListener(
+      "alarmUpdated",
+      handleAlarmUpdated
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "alarmUpdated",
+        handleAlarmUpdated
+      );
+
+    };
+
+  }, []);
+
   // HANDLERS
   const handleDeleteAlarm =
     async (alarmId) => {
@@ -123,6 +147,30 @@ function Alarms() {
 
   useEffect(() => {
     loadAlarms();
+  }, []);
+
+  useEffect(() => {
+
+    const handleAlarmUpdated = () => {
+
+      loadAlarms();
+
+    };
+
+    window.addEventListener(
+      "alarmUpdated",
+      handleAlarmUpdated
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "alarmUpdated",
+        handleAlarmUpdated
+      );
+
+    };
+
   }, []);
 
   useEffect(() => {

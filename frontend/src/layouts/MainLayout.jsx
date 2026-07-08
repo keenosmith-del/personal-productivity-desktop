@@ -1,4 +1,6 @@
 import Sidebar from "../components/Sidebar";
+import AlarmWatcher from "../components/AlarmSystem/AlarmWatcher";
+
 import { useEffect, useState } from "react";
 
 function MainLayout({ children }) {
@@ -32,6 +34,8 @@ function MainLayout({ children }) {
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
+
+      <AlarmWatcher />
 
       <main
         style={{

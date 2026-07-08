@@ -4,8 +4,7 @@ import {
 } from "react";
 
 import { Bell } from "lucide-react";
-
-
+import BreakSlideout from "./BreakSlideout";
 
 function BreakTimer() {
     // STATES
@@ -13,6 +12,9 @@ function BreakTimer() {
         useState("30");
 
     const [isBreakActive, setIsBreakActive] =
+        useState(false);
+
+    const [showBreakSlideout, setShowBreakSlideout] =
         useState(false);
 
     const [isPaused, setIsPaused] =
@@ -64,13 +66,17 @@ function BreakTimer() {
 
                         setIsBreakComplete(true);
 
+                        setShowBreakSlideout(true);
+
                         setTimeout(() => {
+
                             setIsBreakComplete(false);
 
                             setSecondsLeft(
                                 (Number(customMinutes) || 15) * 60
                             );
-                        }, 4000);
+
+                        }, 30000);
 
                         return 0;
                     }
@@ -126,12 +132,12 @@ function BreakTimer() {
 
         borderRadius: "999px",
 
-        padding: "12px 18px",
+        padding: "8px 14px",
 
         color:
             "var(--text-secondary)",
 
-        fontSize: "0.9rem",
+        fontSize: "0.8rem",
 
         fontWeight: "300",
 
@@ -518,13 +524,13 @@ function BreakTimer() {
 
                         <button
                             onClick={() => {
-                                setIsBreakActive(
-                                    false
-                                );
+                                setIsBreakActive(false);
 
-                                setIsPaused(
-                                    false
-                                );
+                                setIsPaused(false);
+
+                                setIsBreakComplete(false);
+
+                                setShowBreakSlideout(false);
 
                                 setSecondsLeft(
                                     (Number(
@@ -582,6 +588,14 @@ function BreakTimer() {
                             : "Step away. Breathe. Reset."
                 }
             </div>
+            {showBreakSlideout && (
+                <BreakSlideout
+                    duration={customMinutes}
+                    onClose={() =>
+                        setShowBreakSlideout(false)
+                    }
+                />
+            )}
         </div>
     );
 }
