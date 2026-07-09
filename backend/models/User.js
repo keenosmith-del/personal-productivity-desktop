@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema(
             default: "",
         },
 
+        bio: {
+            type: String,
+            default: "",
+        },
+
         theme: {
             type: String,
             default: "Dark",

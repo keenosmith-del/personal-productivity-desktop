@@ -222,6 +222,7 @@ function TaskModal({
     "N", // note
     "R", // reminder
     "T", // task 
+    "A", // alarm 
     "NL", //none
   ];
 
@@ -505,6 +506,7 @@ function TaskModal({
               }}
             />
 
+            {/* ASSOCIATIONS */}
             <div
               style={{
                 display: "flex",
@@ -563,23 +565,59 @@ function TaskModal({
 
                         borderRadius: "999px",
 
-                        border: selected
-                          ? "1px solid rgba(255,255,255,0.12)"
-                          : "1px solid rgba(255,255,255,0.06)",
+                        border: "1px solid rgba(255,255,255,0.06)",
 
                         background:
                           selected
-                            ? "rgba(255,255,255,0.08)"
-                            : "rgba(255,255,255,0.03)",
+                            ? "rgba(87, 112, 122, 0.35)"
+                            : "rgba(87, 112, 112, 0.1)",
 
                         color:
                           "var(--text-secondary)",
 
                         cursor: "pointer",
 
-                        fontSize: "0.7rem",
+                        fontSize: "0.68rem",
 
                         fontWeight: "300",
+
+                        transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!selected) {
+                          e.currentTarget.style.background =
+                            "rgba(87, 112, 122, 0.35)";
+                        }
+
+                        e.currentTarget.style.transform =
+                          "translateY(-1px) scale(1.08)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                          "var(--text-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!selected) {
+                          e.currentTarget.style.background =
+                            "rgba(87, 112, 112, 0.1)";
+                        }
+
+                        e.currentTarget.style.transform =
+                          "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                          "none";
+
+                        e.currentTarget.style.color =
+                          "var(--text-secondary)";
                       }}
                     >
                       {item}
@@ -589,6 +627,7 @@ function TaskModal({
               )}
             </div>
 
+            {/* DETAILS */}
             <div
               onClick={() =>
                 setShowDetails(!showDetails)
@@ -666,11 +705,10 @@ function TaskModal({
 
                         borderRadius: "999px",
 
-                        border:
-                          "1px solid rgba(255,255,255,0.06)",
-
                         background:
-                          "rgba(255,255,255,0.03)",
+                          "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
+                        border: "1px solid rgba(255,255,255,0.06)",
 
                         color:
                           "var(--text-secondary)",
@@ -683,6 +721,32 @@ function TaskModal({
 
                         transition: "all 0.2s ease",
                       }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(-1px) scale(1.06)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                          "var(--text-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                          "none";
+
+                        e.currentTarget.style.color =
+                          "var(--text-secondary)";
+                      }}
                     >
                       {category}
                     </button>
@@ -690,17 +754,17 @@ function TaskModal({
                     {activeSelector === "category" && (
                       <div
                         style={{
-                          width: "110px",
+                          width: "150px",
 
                           position: "absolute",
                           top: "calc(100% + 8px)",
                           left: 0,
 
                           background:
-                            "rgba(20,20,20,0.92)",
+                            "rgba(20, 20, 20, 0)",
 
-                          backdropFilter:
-                            "blur(24px)",
+                          // needs to blur content behind drop down
+                          backdropFilter: "blur(20px)",
 
                           border:
                             "1px solid rgba(255,255,255,0.10)",
@@ -708,7 +772,7 @@ function TaskModal({
                           boxShadow:
                             "0 20px 50px rgba(0,0,0,0.35)",
 
-                          borderRadius: "16px",
+                          borderRadius: "18px",
 
                           padding: "8px",
 
@@ -716,7 +780,7 @@ function TaskModal({
                           flexDirection: "column",
                           gap: "4px",
 
-                          zIndex: 20,
+                          zIndex: 2001,
                         }}
                       >
                         {[
@@ -734,7 +798,7 @@ function TaskModal({
                             style={{
                               background:
                                 option === category
-                                  ? "rgba(255,255,255,0.08)"
+                                  ? "rgba(255,255,255,0.05)"
                                   : "transparent",
 
                               border: "none",
@@ -751,6 +815,24 @@ function TaskModal({
                               textAlign: "left",
 
                               fontSize: "0.75rem",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background =
+                                option === category
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(2px)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background =
+                                option === category
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(0)";
                             }}
                           >
                             {option}
@@ -780,11 +862,11 @@ function TaskModal({
 
                         borderRadius: "999px",
 
+                        background:
+                          "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
                         border:
                           "1px solid rgba(255,255,255,0.06)",
-
-                        background:
-                          "rgba(255,255,255,0.03)",
 
                         color:
                           "var(--text-secondary)",
@@ -797,6 +879,32 @@ function TaskModal({
 
                         transition: "all 0.2s ease",
                       }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(-1px) scale(1.06)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                          "var(--text-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                          "none";
+
+                        e.currentTarget.style.color =
+                          "var(--text-secondary)";
+                      }}
                     >
                       {priority}
                     </button>
@@ -804,19 +912,18 @@ function TaskModal({
                     {activeSelector === "priority" && (
                       <div
                         style={{
-                          width: "110px",
+                          width: "150px",
 
                           position: "absolute",
-
                           top: "calc(100% + 8px)",
-
                           left: 0,
 
                           background:
-                            "rgba(20,20,20,0.92)",
+                            "rgba(20, 20, 20, 0)",
 
+                          // needs to blur content behind drop down
                           backdropFilter:
-                            "blur(24px)",
+                            "blur(20px)",
 
                           border:
                             "1px solid rgba(255,255,255,0.10)",
@@ -824,16 +931,15 @@ function TaskModal({
                           boxShadow:
                             "0 20px 50px rgba(0,0,0,0.35)",
 
-                          borderRadius: "16px",
+                          borderRadius: "18px",
 
                           padding: "8px",
 
                           display: "flex",
                           flexDirection: "column",
-
                           gap: "4px",
 
-                          zIndex: 20,
+                          zIndex: 2001,
                         }}
                       >
                         {[
@@ -850,7 +956,7 @@ function TaskModal({
                             style={{
                               background:
                                 option === priority
-                                  ? "rgba(255,255,255,0.08)"
+                                  ? "rgba(255,255,255,0.05)"
                                   : "transparent",
 
                               border: "none",
@@ -858,7 +964,7 @@ function TaskModal({
                               color:
                                 "var(--text-primary)",
 
-                              padding: "8px 14px",
+                              padding: "8px 12px",
 
                               borderRadius: "10px",
 
@@ -867,6 +973,24 @@ function TaskModal({
                               textAlign: "left",
 
                               fontSize: "0.75rem",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background =
+                                option === priority
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(2px)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background =
+                                option === priority
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(0)";
                             }}
                           >
                             {option}
@@ -896,11 +1020,11 @@ function TaskModal({
 
                         borderRadius: "999px",
 
+                        background:
+                          "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))",
+
                         border:
                           "1px solid rgba(255,255,255,0.06)",
-
-                        background:
-                          "rgba(255,255,255,0.03)",
 
                         color:
                           "var(--text-secondary)",
@@ -913,6 +1037,32 @@ function TaskModal({
 
                         transition: "all 0.2s ease",
                       }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(-1px) scale(1.06)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.12)";
+
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(0,0,0,0.25)";
+
+                        e.currentTarget.style.color =
+                          "var(--text-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform =
+                          "translateY(0) scale(1)";
+
+                        e.currentTarget.style.border =
+                          "1px solid rgba(255,255,255,0.06)";
+
+                        e.currentTarget.style.boxShadow =
+                          "none";
+
+                        e.currentTarget.style.color =
+                          "var(--text-secondary)";
+                      }}
                     >
                       {displayStatus}
                     </button>
@@ -920,19 +1070,18 @@ function TaskModal({
                     {activeSelector === "status" && (
                       <div
                         style={{
-                          width: "110px",
+                          width: "150px",
 
                           position: "absolute",
-
                           top: "calc(100% + 8px)",
-
                           left: 0,
 
                           background:
-                            "rgba(20,20,20,0.92)",
+                            "rgba(20, 20, 20, 0)",
 
+                          // needs to blur content behind drop down
                           backdropFilter:
-                            "blur(24px)",
+                            "blur(20px)",
 
                           border:
                             "1px solid rgba(255,255,255,0.10)",
@@ -940,16 +1089,15 @@ function TaskModal({
                           boxShadow:
                             "0 20px 50px rgba(0,0,0,0.35)",
 
-                          borderRadius: "16px",
+                          borderRadius: "18px",
 
                           padding: "8px",
 
                           display: "flex",
                           flexDirection: "column",
-
                           gap: "4px",
 
-                          zIndex: 20,
+                          zIndex: 2001,
                         }}
                       >
                         {[
@@ -974,7 +1122,7 @@ function TaskModal({
                             style={{
                               background:
                                 option === status
-                                  ? "rgba(255,255,255,0.08)"
+                                  ? "rgba(255,255,255,0.05)"
                                   : "transparent",
 
                               border: "none",
@@ -991,6 +1139,24 @@ function TaskModal({
                               textAlign: "left",
 
                               fontSize: "0.75rem",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background =
+                                option === status
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(2px)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background =
+                                option === status
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "transparent",
+
+                                e.currentTarget.style.transform =
+                                "translateX(0)";
                             }}
                           >
                             {option}
@@ -1298,36 +1464,41 @@ function TaskModal({
             </button>
           </div>
         </div>
-      )}
-      {showCalendarModal && (
-        <MiniCalendarModal
-          selectedDate={selectedDate}
-          onSelectDate={(date) =>
-            setSelectedDate(date)
-          }
-          onClose={() =>
-            setShowCalendarModal(false)
-          }
-        />
-      )}
-      {showDeleteConfirm && (
-        <DeleteConfirmModal
-          title="Delete task?"
-          message="This action cannot be undone."
+      )
+      }
+      {
+        showCalendarModal && (
+          <MiniCalendarModal
+            selectedDate={selectedDate}
+            onSelectDate={(date) =>
+              setSelectedDate(date)
+            }
+            onClose={() =>
+              setShowCalendarModal(false)
+            }
+          />
+        )
+      }
+      {
+        showDeleteConfirm && (
+          <DeleteConfirmModal
+            title="Delete task?"
+            message="This action cannot be undone."
 
-          onCancel={() => {
-            setShowDeleteConfirm(false);
-          }}
+            onCancel={() => {
+              setShowDeleteConfirm(false);
+            }}
 
-          onConfirm={async () => {
-            await onDelete(task._id);
+            onConfirm={async () => {
+              await onDelete(task._id);
 
-            setShowDeleteConfirm(false);
+              setShowDeleteConfirm(false);
 
-            onClose();
-          }}
-        />
-      )}
+              onClose();
+            }}
+          />
+        )
+      }
     </div >
   );
 }

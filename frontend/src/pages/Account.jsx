@@ -5,6 +5,7 @@ import Toast from "../components/Toast";
 import ChangePasswordModal from "../components/Account/ChangePasswordModal";
 import DeleteUserModal from "../components/Account/DeleteUserModal";
 import ClearWorkspaceModal from "../components/Account/ClearWorkspaceModal";
+import BioModal from "../components/Account/BioModal";
 
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,11 @@ import {
     Pencil,
     Moon,
     Sun,
+    Info,
+    BriefcaseBusiness,
+    BellRing,
+    UserRound,
+    Megaphone,
 } from "lucide-react";
 
 import { useState, useEffect } from "react";
@@ -24,7 +30,15 @@ import { useState, useEffect } from "react";
 import {
     updatePreferences,
     exportData,
+    updateProfile,
 } from "../services/authService";
+
+import { getTasks } from "../services/taskService";
+import { getProjects } from "../services/projectService";
+import { getGoals } from "../services/goalService";
+import { getReminders } from "../services/reminderService";
+import { getNotes } from "../services/noteService";
+import { getAlarms } from "../services/alarmService";
 
 const API_BASE_URL =
     "http://localhost:5050";
@@ -37,6 +51,9 @@ function Account() {
     } = useAuth();
 
     const [showEditUser, setShowEditUser] =
+        useState(false);
+
+    const [showBioModal, setShowBioModal] =
         useState(false);
 
     const [toast, setToast] =
@@ -52,6 +69,21 @@ function Account() {
 
             reminderNotifications: true,
         });
+
+    const [tasks, setTasks] = useState([]);
+
+    const [projects, setProjects] = useState([]);
+
+    const [goals, setGoals] = useState([]);
+
+    const [reminders, setReminders] = useState([]);
+
+    const [notes, setNotes] = useState([]);
+
+    const [alarms, setAlarms] = useState([]);
+
+    const [showWorkspaceMenu, setShowWorkspaceMenu] =
+        useState(null);
 
     const [
         showChangePassword,
@@ -88,6 +120,51 @@ function Account() {
         });
     }, [user]);
 
+    useEffect(() => {
+
+        async function loadWorkspace() {
+
+            try {
+
+                const [
+                    taskData,
+                    projectData,
+                    goalData,
+                    reminderData,
+                    noteData,
+                    alarmData,
+                ] = await Promise.all([
+                    getTasks(),
+                    getProjects(),
+                    getGoals(),
+                    getReminders(),
+                    getNotes(),
+                    getAlarms(),
+                ]);
+
+                setTasks(taskData);
+
+                setProjects(projectData);
+
+                setGoals(goalData);
+
+                setReminders(reminderData);
+
+                setNotes(noteData);
+
+                setAlarms(alarmData);
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+        }
+
+        loadWorkspace();
+
+    }, []);
+
     const toggleStyle = (active) => ({
         width: "46px",
         height: "26px",
@@ -99,8 +176,8 @@ function Account() {
             : "rgba(255,255,255,0.03)",
 
         border: active
-            ? "1px solid rgba(255,255,255,0.12)"
-            : "1px solid rgba(255,255,255,0.06)",
+            ? "1px solid rgba(255, 255, 255, 0)"
+            : "1px solid rgba(255, 255, 255, 0)",
 
         position: "relative",
 
@@ -114,15 +191,13 @@ function Account() {
     const sectionStyle = {
         background: "var(--glass-bg)",
 
-        border:
-            "1px solid var(--glass-border)",
+        border: "1px solid var(--glass-border)",
 
         borderRadius: "32px",
 
         backdropFilter: "blur(20px)",
 
-        WebkitBackdropFilter:
-            "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
 
         padding: "28px",
     };
@@ -137,9 +212,6 @@ function Account() {
 
         padding: "8px 12px",
         borderRadius: "12px",
-
-        borderBottom:
-            "1px solid rgba(255,255,255,0.04)",
 
         fontWeight: "300",
 
@@ -173,6 +245,58 @@ function Account() {
             "all 0.2s ease",
     };
 
+    const workspaceEntities = [];
+
+    if (tasks.length)
+        workspaceEntities.push("T");
+
+    if (projects.length)
+        workspaceEntities.push("P");
+
+    if (goals.length)
+        workspaceEntities.push("G");
+
+    if (reminders.length)
+        workspaceEntities.push("R");
+
+    if (notes.length)
+        workspaceEntities.push("N");
+
+    if (alarms.length)
+        workspaceEntities.push("A");
+
+    const workspaceCounts = {
+        T: {
+            label: "Tasks",
+            count: tasks.length,
+        },
+
+        P: {
+            label: "Projects",
+            count: projects.length,
+        },
+
+        G: {
+            label: "Goals",
+            count: goals.length,
+        },
+
+        R: {
+            label: "Reminders",
+            count: reminders.length,
+        },
+
+        N: {
+            label: "Notes",
+            count: notes.length,
+        },
+
+        A: {
+            label: "Alarms",
+            count: alarms.length,
+        },
+    };
+
     // HELPER
     const updateSetting = async (
         key,
@@ -192,6 +316,34 @@ function Account() {
             );
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    // HANDLER
+    const handleSaveBio = async (
+        bio
+    ) => {
+        try {
+
+            await updateProfile({
+                bio,
+            });
+
+            await refreshUser();
+
+            setShowBioModal(false);
+
+            setToast(
+                "Bio updated."
+            );
+
+            setTimeout(() => {
+                setToast("");
+            }, 2500);
+
+        } catch (err) {
+
+            console.error(err);
         }
     };
 
@@ -237,8 +389,12 @@ function Account() {
                                 marginBottom: "20px",
                             }}
                         >
-                            <span
+                            <div
                                 style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+
                                     padding:
                                         "5px 10px",
 
@@ -257,8 +413,13 @@ function Account() {
                                     fontWeight: "300",
                                 }}
                             >
-                                {settings.theme} Mode
-                            </span>
+                                <Moon
+                                    size={15}
+                                    opacity={0.6}
+                                />
+
+                                Midnight
+                            </div>
                         </div>
 
                         <div
@@ -399,8 +560,7 @@ function Account() {
 
                         <div
                             style={{
-                                textAlign:
-                                    "center",
+                                textAlign: "center",
                             }}
                         >
                             <h2
@@ -479,51 +639,49 @@ function Account() {
                                 marginBottom: "28px",
                             }}
                         >
-                            {["T", "P", "A", "+2"].map(
-                                (
-                                    item,
-                                    index
-                                ) => (
-                                    <div
-                                        key={item}
-                                        style={{
-                                            ...linkedItemStyle,
+                            {(workspaceEntities.length
+                                ? workspaceEntities
+                                : ["0"]
+                            ).map((item, index) => (
+                                <div
+                                    key={item}
+                                    style={{
+                                        ...linkedItemStyle,
 
-                                            marginRight: "-6px",
+                                        marginRight: "-6px",
 
-                                            zIndex: index + 1,
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.transform =
-                                                "translateY(-1px) scale(1.08)";
+                                        zIndex: index + 1,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(-1px) scale(1.08)";
 
-                                            e.currentTarget.style.border =
-                                                "1px solid rgba(255,255,255,0.12)";
+                                        e.currentTarget.style.border =
+                                            "1px solid rgba(255,255,255,0.12)";
 
-                                            e.currentTarget.style.boxShadow =
-                                                "0 8px 20px rgba(0,0,0,0.25)";
+                                        e.currentTarget.style.boxShadow =
+                                            "0 8px 20px rgba(0,0,0,0.25)";
 
-                                            e.currentTarget.style.color =
-                                                "var(--text-primary)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.transform =
-                                                "translateY(0) scale(1)";
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                            "translateY(0) scale(1)";
 
-                                            e.currentTarget.style.border =
-                                                "1px solid rgba(255,255,255,0.06)";
+                                        e.currentTarget.style.border =
+                                            "1px solid rgba(255,255,255,0.06)";
 
-                                            e.currentTarget.style.boxShadow =
-                                                "none";
+                                        e.currentTarget.style.boxShadow =
+                                            "none";
 
-                                            e.currentTarget.style.color =
-                                                "var(--text-secondary)";
-                                        }}
-                                    >
-                                        {item}
-                                    </div>
-                                )
-                            )}
+                                        e.currentTarget.style.color =
+                                            "var(--text-secondary)";
+                                    }}
+                                >
+                                    {item}
+                                </div>
+                            ))}
                         </div>
 
                         <button
@@ -673,351 +831,574 @@ function Account() {
                         gap: "20px",
                     }}
                 >
-                    {/* APPEARANCE */}
+                    {/* TOP ROW */}
+                    <div
+                        style={{
+                            display: "grid",
 
-                    <div style={sectionStyle}>
+                            gridTemplateColumns: "1fr 1fr",
+
+                            gap: "20px",
+
+                            marginBottom: "20px",
+                        }}
+                    >
+                        {/* BIO */}
+                        {/* editable or defaul add a bio */}
+                        {/* onclick bring up BioModal */}
                         <div
                             style={{
-                                display: "flex",
-
-                                alignItems:
-                                    "center",
-
-                                gap: "10px",
-
-                                marginBottom: "20px",
-
-                                opacity: "0.6",
+                                ...sectionStyle,
+                                cursor: "pointer",
                             }}
-                        >
-                            <Palette
-                                size={15}
-                                opacity={0.6}
-                            />
 
-                            <span>
-                                Appearance
-                            </span>
-                        </div>
+                            onClick={() =>
+                                setShowBioModal(true)
+                            }
+                            onMouseEnter={(e) => {
 
-                        <p
-                            style={{
-                                opacity: 0.5,
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px)";
 
-                                fontSize:
-                                    "0.82rem",
-
-                                marginBottom:
-                                    "20px",
-
+                                e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.03)";
                             }}
-                        >
-                            Personalize your workspace experience.
-                        </p>
+                            onMouseLeave={(e) => {
 
-                        {/* needs to be redesigned */}
-                        <div
-                            style={{
-                                position: "relative",
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
 
-                                display: "flex",
-
-                                width: "90px",
-
-                                padding: "4px",
-
-                                background:
-                                    "rgba(36, 36, 36, 0.03)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.06)",
-
-                                borderRadius: "999px",
-
-                                overflow: "hidden",
-
-                                backdropFilter: "blur(20px)",
+                                e.currentTarget.style.background =
+                                    "var(--glass-bg)";
                             }}
                         >
                             <div
                                 style={{
-                                    position: "absolute",
-
-                                    top: "4px",
-
-                                    left:
-                                        settings.theme === "Light"
-                                            ? "4px"
-                                            : "30px",
-
-                                    width: "30px",
-
-                                    height: "30px",
-
-                                    borderRadius: "999px",
-
-                                    background:
-                                        "rgba(255,255,255,0.08)",
-
-                                    border:
-                                        "1px solid rgba(255,255,255,0.08)",
-
-                                    backdropFilter: "blur(30px)",
-
-                                    transition:
-                                        "all 0.3s cubic-bezier(0.22,1,0.36,1)",
-                                }}
-                            />
-
-                            <button
-                                onClick={() =>
-                                    updateSetting(
-                                        "theme",
-                                        "Light"
-                                    )
-                                }
-                                style={{
-                                    flex: 1,
-
-                                    height: "30px",
-
                                     display: "flex",
 
-                                    alignItems: "center",
+                                    gap: "10px",
 
-                                    justifyContent: "center",
+                                    alignItems:
+                                        "center",
 
-                                    gap: "4px",
+                                    marginBottom:
+                                        "20px",
 
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                        settings.theme === "Light"
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-
-                                    cursor: "pointer",
-
-                                    zIndex: 1,
-
-                                    fontWeight: "300",
-
-                                    transition: "all 0.2s ease",
+                                    opacity: "0.6",
                                 }}
                             >
-                                <Sun size={14} />
-                            </button>
+                                <UserRound
+                                    size={15}
+                                    opacity={0.6}
+                                />
 
-                            <button
-                                onClick={() =>
-                                    updateSetting(
-                                        "theme",
-                                        "Dark"
-                                    )
-                                }
+                                Bio
+                            </div>
+
+                            <div
                                 style={{
-                                    flex: 1,
+                                    textAlign: "justify",
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        marginTop: "8px",
 
-                                    height: "30px",
+                                        opacity: 0.45,
 
+                                        fontSize: "0.8rem",
+                                    }}
+                                >
+                                    {user?.bio || "Add a bio..."}
+                                </p>
+
+                                <div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* WORKSPACE */}
+                        <div style={sectionStyle} >
+                            <div
+                                style={{
                                     display: "flex",
 
-                                    alignItems: "center",
+                                    gap: "10px",
 
-                                    justifyContent: "center",
+                                    alignItems:
+                                        "center",
 
-                                    gap: "4px",
+                                    marginBottom:
+                                        "30px",
 
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                        settings.theme === "Dark"
-                                            ? "var(--text-primary)"
-                                            : "var(--text-secondary)",
-
-                                    cursor: "pointer",
-
-                                    zIndex: 1,
-
-                                    fontWeight: "300",
-
-                                    transition: "all 0.2s ease",
+                                    opacity: "0.6",
                                 }}
                             >
-                                <Moon size={14} />
-                            </button>
+                                <BriefcaseBusiness
+                                    size={15}
+                                    opacity={0.6}
+                                />
+
+                                Workspace
+                            </div>
+
+                            <div
+                                style={{
+                                    display: "flex",
+
+                                    justifyItems: "center",
+                                }}
+                            >
+                                {["T", "P", "G", "R", "N", "A"].map(
+                                    (
+                                        item,
+                                        index
+                                    ) => (
+                                        <div
+                                            key={item}
+                                            style={{
+                                                ...linkedItemStyle,
+
+                                                width: "42px",
+                                                height: "42px",
+
+                                                marginRight: "-6px",
+
+                                                zIndex: index + 1,
+
+                                                position: "relative",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                setShowWorkspaceMenu(item);
+
+                                                e.currentTarget.style.transform =
+                                                    "translateY(-1px) scale(1.08)";
+
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.12)";
+
+                                                e.currentTarget.style.boxShadow =
+                                                    "0 8px 20px rgba(0,0,0,0.25)";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-primary)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                setShowWorkspaceMenu(null);
+
+                                                e.currentTarget.style.transform =
+                                                    "translateY(0) scale(1)";
+
+                                                e.currentTarget.style.border =
+                                                    "1px solid rgba(255,255,255,0.06)";
+
+                                                e.currentTarget.style.boxShadow =
+                                                    "none";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-secondary)";
+                                            }}
+                                        >
+                                            {item}
+                                            {/* TOOLTIP GLASS STYLE INSTEAD OF NATIVE -- ADD TO (CHIP HOVER) */}
+                                            {showWorkspaceMenu === item && (
+                                                <div
+                                                    style={{
+                                                        position: "absolute",
+
+                                                        top: "40px",
+
+                                                        left: "50%",
+
+                                                        transform: "translateX(-50%)",
+
+                                                        minWidth: "120px",
+
+                                                        padding: "8px 14px",
+
+                                                        borderRadius: "36px",
+
+                                                        background:
+                                                            "rgba(18, 18, 18, 0.22)",
+
+                                                        backdropFilter:
+                                                            "blur(20px)",
+
+                                                        border:
+                                                            "1px solid rgba(255, 255, 255, 0.02)",
+
+                                                        boxShadow:
+                                                            "0 14px 40px rgba(0, 0, 0, 0.2)",
+
+                                                        textAlign: "center",
+
+                                                        zIndex: 5000,
+
+                                                        pointerEvents: "none",
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            fontSize: "0.6rem",
+
+                                                            fontWeight: "250",
+
+                                                            color:
+                                                                "var(--text-secondary)",
+                                                        }}
+                                                    >
+                                                        {workspaceCounts[item].count}
+                                                        {" "}
+                                                        {workspaceCounts[item].label}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* NOTIFICATIONS */}
 
-                    <div style={sectionStyle}>
-                        <div
-                            style={{
-                                display: "flex",
+                    <div
+                        style={{
+                            display: "grid",
 
-                                gap: "10px",
+                            gridTemplateColumns: "1fr 1fr",
 
-                                alignItems:
-                                    "center",
+                            gap: "20px",
 
-                                marginBottom:
-                                    "20px",
+                            marginBottom: "20px",
+                        }}
+                    >
+                        <div style={sectionStyle}>
+                            <div
+                                style={{
+                                    display: "flex",
 
-                                opacity: "0.6",
-                            }}
-                        >
-                            <Bell
-                                size={15}
-                                opacity={0.6}
-                            />
+                                    gap: "10px",
 
-                            Notifications
-                        </div>
+                                    alignItems:
+                                        "center",
 
-                        <div style={rowStyle}>
-                            <span>
-                                Push Notifications
-                            </span>
+                                    marginBottom: "20px",
+
+                                    opacity: "0.6",
+                                }}
+                            >
+                                <Megaphone
+                                    size={15}
+                                    opacity={0.6}
+                                />
+
+                                Notifications
+                            </div>
+
+                            <div style={rowStyle}>
+                                <span>
+                                    Push Notifications
+                                </span>
+
+                                <div
+                                    onClick={() =>
+                                        updateSetting(
+                                            "goalNotifications",
+                                            !settings.goalNotifications
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.goalNotifications
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background: "rgba(37, 37, 37, 0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left:
+                                                settings.goalNotifications
+                                                    ? "23px"
+                                                    : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={rowStyle}>
+                                <span>
+                                    Daily Summary
+                                </span>
+
+                                <div
+                                    onClick={() =>
+                                        updateSetting(
+                                            "reminderNotifications",
+                                            !settings.reminderNotifications
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.reminderNotifications
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background: "rgba(37, 37, 37, 0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left:
+                                                settings.reminderNotifications
+                                                    ? "23px"
+                                                    : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
 
                             <div
-                                onClick={() =>
-                                    updateSetting(
-                                        "goalNotifications",
-                                        !settings.goalNotifications
-                                    )
-                                }
-                                style={toggleStyle(
-                                    settings.goalNotifications
-                                )}
+                                style={{
+                                    ...rowStyle,
+
+                                    borderBottom:
+                                        "none",
+                                }}
                             >
+                                <span>
+                                    Weekly Summary
+                                </span>
+
                                 <div
-                                    style={{
-                                        width: "18px",
-                                        height: "18px",
+                                    onClick={() =>
+                                        updateSetting(
+                                            "dailySummary",
+                                            !settings.dailySummary
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.dailySummary
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
 
-                                        borderRadius: "50%",
+                                            borderRadius: "50%",
 
-                                        background:
-                                            "rgba(255,255,255,0.9)",
+                                            background: "rgba(37, 37, 37, 0.9)",
 
-                                        position: "absolute",
+                                            position: "absolute",
 
-                                        top: "3px",
+                                            top: "3px",
 
-                                        left:
-                                            settings.goalNotifications
-                                                ? "23px"
-                                                : "3px",
+                                            left:
+                                                settings.dailySummary
+                                                    ? "23px"
+                                                    : "3px",
 
-                                        transition:
-                                            "all 0.25s ease",
+                                            transition:
+                                                "all 0.25s ease",
 
-                                        boxShadow:
-                                            "0 4px 12px rgba(0,0,0,0.25)",
-                                    }}
-                                />
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div style={rowStyle}>
-                            <span>
-                                Reminder Alerts
-                            </span>
-
+                        {/* RIGHT COL */}
+                        <div style={sectionStyle}>
                             <div
-                                onClick={() =>
-                                    updateSetting(
-                                        "reminderNotifications",
-                                        !settings.reminderNotifications
-                                    )
-                                }
-                                style={toggleStyle(
-                                    settings.reminderNotifications
-                                )}
+                                style={{
+                                    display: "flex",
+
+                                    gap: "10px",
+
+                                    alignItems:
+                                        "center",
+
+                                    marginBottom: "20px",
+
+                                    opacity: "0.6",
+                                }}
                             >
-                                <div
-                                    style={{
-                                        width: "18px",
-                                        height: "18px",
-
-                                        borderRadius: "50%",
-
-                                        background:
-                                            "rgba(255,255,255,0.9)",
-
-                                        position: "absolute",
-
-                                        top: "3px",
-
-                                        left:
-                                            settings.reminderNotifications
-                                                ? "23px"
-                                                : "3px",
-
-                                        transition:
-                                            "all 0.25s ease",
-
-                                        boxShadow:
-                                            "0 4px 12px rgba(0,0,0,0.25)",
-                                    }}
+                                <BellRing
+                                    size={15}
+                                    opacity={0.6}
                                 />
+
+                                Alerts
                             </div>
-                        </div>
 
-                        <div
-                            style={{
-                                ...rowStyle,
+                            <div style={rowStyle}>
+                                <span>
+                                    Task Alerts
+                                </span>
 
-                                borderBottom:
-                                    "none",
-                            }}
-                        >
-                            <span>
-                                Weekly Summary
-                            </span>
+                                <div
+                                    onClick={() =>
+                                        updateSetting(
+                                            "goalNotifications",
+                                            !settings.goalNotifications
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.goalNotifications
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background: "rgba(37, 37, 37, 0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left:
+                                                settings.goalNotifications
+                                                    ? "23px"
+                                                    : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={rowStyle}>
+                                <span>
+                                    Reminder Alerts
+                                </span>
+
+                                <div
+                                    onClick={() =>
+                                        updateSetting(
+                                            "reminderNotifications",
+                                            !settings.reminderNotifications
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.reminderNotifications
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background: "rgba(37, 37, 37, 0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left:
+                                                settings.reminderNotifications
+                                                    ? "23px"
+                                                    : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
 
                             <div
-                                onClick={() =>
-                                    updateSetting(
-                                        "dailySummary",
-                                        !settings.dailySummary
-                                    )
-                                }
-                                style={toggleStyle(
-                                    settings.dailySummary
-                                )}
+                                style={{
+                                    ...rowStyle,
+
+                                    borderBottom:
+                                        "none",
+                                }}
                             >
+                                <span>
+                                    Project Alerts
+                                </span>
+
                                 <div
-                                    style={{
-                                        width: "18px",
-                                        height: "18px",
+                                    onClick={() =>
+                                        updateSetting(
+                                            "dailySummary",
+                                            !settings.dailySummary
+                                        )
+                                    }
+                                    style={toggleStyle(
+                                        settings.dailySummary
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
 
-                                        borderRadius: "50%",
+                                            borderRadius: "50%",
 
-                                        background:
-                                            "rgba(255,255,255,0.9)",
+                                            // toggle color 
+                                            background: "rgba(37, 37, 37, 0.9)",
 
-                                        position: "absolute",
+                                            position: "absolute",
 
-                                        top: "3px",
+                                            top: "3px",
 
-                                        left:
-                                            settings.dailySummary
-                                                ? "23px"
-                                                : "3px",
+                                            left:
+                                                settings.dailySummary
+                                                    ? "23px"
+                                                    : "3px",
 
-                                        transition:
-                                            "all 0.25s ease",
+                                            transition:
+                                                "all 0.25s ease",
 
-                                        boxShadow:
-                                            "0 4px 12px rgba(0,0,0,0.25)",
-                                    }}
-                                />
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1242,6 +1623,17 @@ function Account() {
                             }, 3000);
                         }
                     }}
+                />
+            )}
+            {showBioModal && (
+                <BioModal
+                    bio={user?.bio || ""}
+
+                    onClose={() =>
+                        setShowBioModal(false)
+                    }
+
+                    onSave={handleSaveBio}
                 />
             )}
             {showDeleteAccount && (

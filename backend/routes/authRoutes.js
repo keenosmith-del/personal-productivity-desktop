@@ -133,6 +133,8 @@ router.post(
                     job: user.job,
                     avatar: user.avatar,
 
+                    bio: user.bio,
+
                     theme: user.theme,
                     dailySummary: user.dailySummary,
                     goalNotifications:
@@ -291,6 +293,7 @@ router.put(
                 name,
                 email,
                 job,
+                bio,
                 removeAvatar,
             } = req.body;
 
@@ -319,6 +322,10 @@ router.put(
 
             if (job !== undefined) {
                 user.job = job;
+            }
+
+            if (bio !== undefined) {
+                user.bio = bio;
             }
 
             if (

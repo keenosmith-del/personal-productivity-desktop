@@ -463,54 +463,61 @@ function AlarmModal({
                                             width: "34px",
                                             height: "34px",
 
-                                            borderRadius:
-                                                "999px",
+                                            borderRadius: "999px",
 
-                                            border: selected
-                                                ? "1px solid rgba(255,255,255,0.14)"
-                                                : "1px solid rgba(255,255,255,0.06)",
+                                            border: "1px solid rgba(255,255,255,0.06)",
 
                                             background:
                                                 selected
-                                                    ? "rgba(255,255,255,0.08)"
-                                                    : "rgba(255,255,255,0.03)",
+                                                    ? "rgba(87, 112, 122, 0.35)"
+                                                    : "rgba(87, 112, 112, 0.1)",
 
                                             color:
-                                                selected
-                                                    ? "var(--text-primary)"
-                                                    : "var(--text-secondary)",
+                                                "var(--text-secondary)",
 
-                                            fontSize:
-                                                "0.72rem",
+                                            cursor: "pointer",
 
-                                            fontWeight:
-                                                "300",
+                                            fontSize: "0.68rem",
 
-                                            cursor:
-                                                "pointer",
+                                            fontWeight: "300",
 
-                                            transition:
-                                                "all 0.2s ease",
+                                            transition: "all 0.2s ease",
                                         }}
-                                        onMouseEnter={(
-                                            e
-                                        ) => {
-                                            if (
-                                                !selected
-                                            ) {
+                                        onMouseEnter={(e) => {
+                                            if (!selected) {
                                                 e.currentTarget.style.background =
-                                                    "rgba(255,255,255,0.05)";
+                                                    "rgba(87, 112, 122, 0.35)";
                                             }
+
+                                            e.currentTarget.style.transform =
+                                                "translateY(-1px) scale(1.08)";
+
+                                            e.currentTarget.style.border =
+                                                "1px solid rgba(255,255,255,0.12)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "0 8px 20px rgba(0,0,0,0.25)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
                                         }}
-                                        onMouseLeave={(
-                                            e
-                                        ) => {
-                                            if (
-                                                !selected
-                                            ) {
+                                        onMouseLeave={(e) => {
+                                            if (!selected) {
                                                 e.currentTarget.style.background =
-                                                    "rgba(255,255,255,0.03)";
+                                                    "rgba(87, 112, 112, 0.1)";
                                             }
+
+                                            e.currentTarget.style.transform =
+                                                "translateY(0) scale(1)";
+
+                                            e.currentTarget.style.border =
+                                                "1px solid rgba(255,255,255,0.06)";
+
+                                            e.currentTarget.style.boxShadow =
+                                                "none";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-secondary)";
                                         }}
                                     >
                                         {day.label}

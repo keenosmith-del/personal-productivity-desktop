@@ -13,6 +13,13 @@ import {
     updateProfile,
 } from "../../services/authService";
 
+import { getTasks } from "../../services/taskService";
+import { getProjects } from "../../services/projectService";
+import { getGoals } from "../../services/goalService";
+import { getReminders } from "../../services/reminderService";
+import { getNotes } from "../../services/noteService";
+import { getAlarms } from "../../services/alarmService";
+
 const API_BASE_URL =
     "http://localhost:5050";
 
@@ -61,6 +68,24 @@ function EditUserModal({
     const [removeAvatar, setRemoveAvatar] =
         useState(false);
 
+    const [tasks, setTasks] =
+        useState([]);
+
+    const [projects, setProjects] =
+        useState([]);
+
+    const [goals, setGoals] =
+        useState([]);
+
+    const [reminders, setReminders] =
+        useState([]);
+
+    const [notes, setNotes] =
+        useState([]);
+
+    const [alarms, setAlarms] =
+        useState([]);
+
     const hasExistingAvatar =
         !!user?.avatar && !removeAvatar;
 
@@ -73,6 +98,51 @@ function EditUserModal({
                 : ""
         );
     }, [user, removeAvatar]);
+
+    useEffect(() => {
+
+        async function loadWorkspace() {
+
+            try {
+
+                const [
+                    taskData,
+                    projectData,
+                    goalData,
+                    reminderData,
+                    noteData,
+                    alarmData,
+                ] = await Promise.all([
+                    getTasks(),
+                    getProjects(),
+                    getGoals(),
+                    getReminders(),
+                    getNotes(),
+                    getAlarms(),
+                ]);
+
+                setTasks(taskData);
+
+                setProjects(projectData);
+
+                setGoals(goalData);
+
+                setReminders(reminderData);
+
+                setNotes(noteData);
+
+                setAlarms(alarmData);
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+        }
+
+        loadWorkspace();
+
+    }, []);
 
     const inputStyle = {
         width: "100%",
@@ -123,6 +193,26 @@ function EditUserModal({
         transition:
             "all 0.2s ease",
     };
+
+    const workspaceEntities = [];
+
+    if (tasks.length)
+        workspaceEntities.push("T");
+
+    if (projects.length)
+        workspaceEntities.push("P");
+
+    if (goals.length)
+        workspaceEntities.push("G");
+
+    if (reminders.length)
+        workspaceEntities.push("R");
+
+    if (notes.length)
+        workspaceEntities.push("N");
+
+    if (alarms.length)
+        workspaceEntities.push("A");
 
     return (
         <div
@@ -587,49 +677,50 @@ function EditUserModal({
                         marginTop: "-4px",
                     }}
                 >
-                    {["T", "P", "G"].map(
-                        (item, index) => (
-                            <div
-                                key={item}
-                                style={{
-                                    ...linkedItemStyle,
+                    {(workspaceEntities.length
+                        ? workspaceEntities
+                        : ["0"]
+                    ).map((item, index) => (
+                        <div
+                            key={item}
+                            style={{
+                                ...linkedItemStyle,
 
-                                    marginRight:
-                                        "-6px",
+                                marginRight:
+                                    "-6px",
 
-                                    zIndex: index + 1,
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px) scale(1.08)";
+                                zIndex: index + 1,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(-1px) scale(1.08)";
 
-                                    e.currentTarget.style.border =
-                                        "1px solid rgba(255,255,255,0.12)";
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.12)";
 
-                                    e.currentTarget.style.boxShadow =
-                                        "0 8px 20px rgba(0,0,0,0.25)";
+                                e.currentTarget.style.boxShadow =
+                                    "0 8px 20px rgba(0,0,0,0.25)";
 
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform =
-                                        "translateY(0) scale(1)";
+                                e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform =
+                                    "translateY(0) scale(1)";
 
-                                    e.currentTarget.style.border =
-                                        "1px solid rgba(255,255,255,0.06)";
+                                e.currentTarget.style.border =
+                                    "1px solid rgba(255,255,255,0.06)";
 
-                                    e.currentTarget.style.boxShadow =
-                                        "none";
+                                e.currentTarget.style.boxShadow =
+                                    "none";
 
-                                    e.currentTarget.style.color =
-                                        "var(--text-secondary)";
-                                }}
-                            >
-                                {item}
-                            </div>
-                        )
-                    )}
+                                e.currentTarget.style.color =
+                                    "var(--text-secondary)";
+                            }}
+                        >
+                            {item}
+                        </div>
+                    ))}
                 </div>
 
                 {/* PERSONAL */}
