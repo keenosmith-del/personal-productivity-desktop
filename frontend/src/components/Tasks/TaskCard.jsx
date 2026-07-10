@@ -699,7 +699,6 @@ function TaskCard({
             </div>
 
             {/* ROW 6 */}
-
             <div
                 style={{
                     fontSize:

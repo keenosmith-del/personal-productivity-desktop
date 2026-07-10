@@ -12,6 +12,7 @@ import reminderRoutes from "./routes/reminderRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import alarmRoutes from "./routes/alarmRoutes.js";
+import folderRoutes from "./routes/folderRoutes.js";
 
 dotenv.config();
 
@@ -62,6 +63,11 @@ app.use(
 app.use(
     "/api/alarms",
     alarmRoutes
+);
+
+app.use(
+    "/api/folders",
+    folderRoutes
 );
 
 app.use(

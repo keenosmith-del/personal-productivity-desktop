@@ -8,7 +8,8 @@ import {
   ArrowLeft,
   ArrowRight,
   Folder,
-  Plus,
+  SquarePen,
+  FolderPlus,
   NotebookPen,
   Infinity,
 } from "lucide-react";
@@ -22,6 +23,9 @@ import {
 import NoteModal from "../components/Notes/NoteModal";
 import NoteCard from "../components/Notes/NoteCard";
 
+import NoteFolderCard from "../components/NoteFolder/NoteFolderCard";
+import NoteFolderCreateModal from "../components/NoteFolder/NoteFolderCreateModal";
+
 import {
   getNotes,
   createNote,
@@ -30,6 +34,13 @@ import {
   clearPinnedNotes,
   deleteNote,
 } from "../services/noteService";
+
+import {
+  getFolders,
+  createFolder,
+  updateFolder,
+  deleteFolder,
+} from "../services/folderService";
 
 import Toast from "../components/Toast";
 
@@ -43,20 +54,31 @@ function Notes() {
 
   const moreRef = useRef(null);
 
-  const noteFolders = []; // placeholder until real data
+  const noteFolders = 1; // placeholder until real data
 
   //COMPONENT STATES
   const [showNoteModal, setShowNoteModal] =
     useState(false);
 
+  const [showNoteFolderCreateModal, setShowNoteFolderCreateModal] =
+    useState(false);
+
   const [openNoteMenu, setOpenNoteMenu] =
     useState(null);
 
-  const [editingNote,
-    setEditingNote] =
+  const [openFolderMenu, setOpenFolderMenu] =
+    useState(null);
+
+  const [editingNote, setEditingNote] =
+    useState(null);
+
+  const [editingFolder, setEditingFolder] =
     useState(null);
 
   const [notes, setNotes] =
+    useState([]);
+
+  const [folders, setFolders] =
     useState([]);
 
   const [toast, setToast] =
@@ -303,10 +325,20 @@ function Notes() {
     }
   };
 
+  const loadFolders = async () => {
+    try {
+      const data = await getFolders();
+
+      setFolders(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const noteTabs = [
     {
-      key: "all",
-      icon: Infinity,
+      key: "notes",
+      icon: NotebookPen,
     },
     {
       key: "folders",
@@ -315,10 +347,11 @@ function Notes() {
   ];
 
   const [activeTab, setActiveTab] =
-    useState("all");
+    useState("notes");
 
   useEffect(() => {
     loadNotes();
+    loadFolders();
   }, []);
 
   useEffect(() => {
@@ -369,6 +402,149 @@ function Notes() {
   }, []);
 
   // HANDLERS
+  const handleCreateFolder = async (
+    folderData
+  ) => {
+    try {
+      const newFolder =
+        await createFolder(
+          folderData
+        );
+
+      setFolders((prev) => [
+        newFolder,
+        ...prev,
+      ]);
+
+      setShowNoteFolderCreateModal(false);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteFolder = async (
+    folderId
+  ) => {
+    try {
+
+      await deleteFolder(folderId);
+
+      setFolders((prev) =>
+        prev.filter(
+          (folder) =>
+            folder._id !== folderId
+        )
+      );
+
+      setEditingFolder(null);
+
+      setToast(
+        "Folder deleted"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+
+      console.error(error);
+
+      setToast(
+        "Failed to delete folder"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+    }
+  };
+
+  const handleToggleFolderPin = async (
+    folder
+  ) => {
+    try {
+
+      const updatedFolder =
+        await updateFolder(
+          folder._id,
+          {
+            pinned:
+              !folder.pinned,
+          }
+        );
+
+      setFolders((prev) =>
+        prev.map((item) =>
+          item._id ===
+            updatedFolder._id
+            ? updatedFolder
+            : item
+        )
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToggleFolderFlag = async (
+    folder
+  ) => {
+    try {
+
+      const updatedFolder =
+        await updateFolder(
+          folder._id,
+          {
+            flagged:
+              !folder.flagged,
+          }
+        );
+
+      setFolders((prev) =>
+        prev.map((item) =>
+          item._id ===
+            updatedFolder._id
+            ? updatedFolder
+            : item
+        )
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToggleFolderLike = async (
+    folder
+  ) => {
+    try {
+
+      const updatedFolder =
+        await updateFolder(
+          folder._id,
+          {
+            liked:
+              !folder.liked,
+          }
+        );
+
+      setFolders((prev) =>
+        prev.map((item) =>
+          item._id ===
+            updatedFolder._id
+            ? updatedFolder
+            : item
+        )
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleDeleteNote =
     async (noteId) => {
       try {
@@ -578,7 +754,7 @@ function Notes() {
                   gap: "12px",
                 }}
               >
-                {/* CREATE */}
+                {/* NEW NOTE */}
                 <button
                   onClick={() => {
                     setShowNoteModal(true);
@@ -614,7 +790,49 @@ function Notes() {
                     transform: "translateX(0)",
                   }}
                 >
-                  <Plus
+                  <SquarePen
+                    size={16}
+                    strokeWidth={1.5}
+                  />
+                </button>
+
+                {/* NEW FOLDER */}
+                <button
+                  onClick={() => {
+                    setShowNoteFolderCreateModal(true);
+                  }}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+
+                    borderRadius: "999px",
+
+                    border: "none",
+
+                    background:
+                      "rgba(255,255,255,0.025)",
+
+                    color:
+                      "var(--text-secondary)",
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                    cursor: "pointer",
+
+                    backdropFilter: "blur(28px)",
+
+                    boxShadow:
+                      "0 6px 20px rgba(0,0,0,0.28)",
+
+                    transition:
+                      "all 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+
+                    transform: "translateX(0)",
+                  }}
+                >
+                  <FolderPlus
                     size={16}
                     strokeWidth={1.5}
                   />
@@ -1594,7 +1812,7 @@ function Notes() {
           />
 
           {/* ALL NOTES ACTIVE TAB */}
-          {activeTab === "all" && (
+          {activeTab === "notes" && (
             <div
               style={{
 
@@ -1768,7 +1986,7 @@ function Notes() {
                 }}
               >
 
-                {noteFolders.length === 0 ? (
+                {folders.length === 0 ? (
                   <div
                     style={{
                       gridColumn: "1 / -1",
@@ -1821,9 +2039,25 @@ function Notes() {
                     </p>
                   </div>
                 ) : (
-                  <p>
-                    mapped folders
-                  </p>
+                  folders.map((folder) => (
+                    <NoteFolderCard
+                      key={folder._id}
+                      folder={folder}
+
+                      onEdit={setEditingFolder}
+
+                      onView={() => { }}
+
+                      onDelete={handleDeleteFolder}
+
+                      onToggleFolderPin={handleToggleFolderPin}
+                      onToggleFolderLike={handleToggleFolderLike}
+                      onToggleFolderFlag={handleToggleFolderFlag}
+
+                      openFolderMenu={openFolderMenu}
+                      setOpenFolderMenu={setOpenFolderMenu}
+                    />
+                  ))
                 )}
               </div>
             </div>
@@ -1911,6 +2145,67 @@ function Notes() {
               });
           }}
           onDelete={handleDeleteNote}
+        />
+      )}
+      {showNoteFolderCreateModal && (
+        <NoteFolderCreateModal
+          mode="create"
+
+          onCreate={handleCreateFolder}
+
+          onClose={() =>
+            setShowNoteFolderCreateModal(false)
+          }
+        />
+      )}
+      {editingFolder && (
+        <NoteFolderCreateModal
+          mode="edit"
+          folder={editingFolder}
+          onClose={() =>
+            setEditingFolder(null)
+          }
+          onUpdate={async (
+            folderId,
+            folderData
+          ) => {
+            updateFolder(
+              folderId,
+              folderData
+            )
+              .then((updatedFolder) => {
+                setFolders((prev) =>
+                  prev.map((folder) =>
+                    folder._id ===
+                      updatedFolder._id
+                      ? updatedFolder
+                      : folder
+                  )
+                );
+
+                setToast(
+                  "Folder updated"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+
+                setEditingFolder(null);
+              })
+              .catch((error) => {
+                console.error(error);
+
+                setToast(
+                  "Failed to update note"
+                );
+
+                setTimeout(() => {
+                  setToast("");
+                }, 3000);
+              });
+          }}
+          onDelete={handleDeleteFolder}
         />
       )}
       {/* show clear all */}
