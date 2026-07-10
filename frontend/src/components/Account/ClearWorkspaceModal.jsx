@@ -115,11 +115,9 @@ function ClearWorkspaceModal({
                 position: "fixed",
                 inset: 0,
 
-                background:
-                    "rgba(20, 20, 20, 0)",
+                // background: "rgba(20, 20, 20, 0)",
 
-                backdropFilter:
-                    "blur(15px)",
+                backdropFilter: "blur(12px)",
 
                 display: "flex",
 
@@ -143,11 +141,10 @@ function ClearWorkspaceModal({
                         "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(12px)",
+                        "blur(30px)",
 
-                    // like this border
                     border:
-                        "1px solid rgba(27, 27, 27, 0.1)",
+                        "1px solid rgba(255,255,255,0.10)",
 
                     boxShadow:
                         "0 20px 50px rgba(0,0,0,0.35)",
@@ -158,8 +155,7 @@ function ClearWorkspaceModal({
 
                     display: "flex",
 
-                    flexDirection:
-                        "column",
+                    flexDirection: "column",
 
                     gap: "20px",
                 }}
@@ -192,7 +188,7 @@ function ClearWorkspaceModal({
                             }}
                         >
                             All tasks, goals, projects,
-                            reminders and notes will be
+                            reminders, notes, alarms, and notifications will be
                             permanently removed.
                         </p>
                     </div>
@@ -452,7 +448,7 @@ function ClearWorkspaceModal({
 
                             fontWeight: "300",
                         }}
-                        
+
                     />
 
                     <button

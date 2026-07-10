@@ -83,6 +83,16 @@ function AlarmModal({
         },
     ];
 
+    const repeatLabels = {
+        sun: "Sunday",
+        mon: "Monday",
+        tue: "Tuesday",
+        wed: "Wednesday",
+        thu: "Thursday",
+        fri: "Friday",
+        sat: "Saturday",
+    };
+
     const toggleStyle = (active) => ({
         width: "46px",
         height: "26px",
@@ -140,6 +150,8 @@ function AlarmModal({
     const [showDeleteConfirm, setShowDeleteConfirm] =
         useState(false);
 
+    const [showTooltip, setShowTooltip] = useState(null);
+
     useEffect(() => {
         labelInputRef.current?.focus();
     }, []);
@@ -151,9 +163,17 @@ function AlarmModal({
                 position: "fixed",
                 inset: 0,
 
-                background: "rgba(0,0,0,0.35)",
+                background:
+                    "rgba(20, 20, 20, 0)",
 
-                backdropFilter: "blur(20px)",
+                backdropFilter:
+                    "blur(12px)",
+
+                border:
+                    "1px solid rgba(255,255,255,0.10)",
+
+                boxShadow:
+                    "0 20px 50px rgba(0,0,0,0.35)",
 
                 display: "flex",
                 justifyContent: "center",
@@ -170,13 +190,17 @@ function AlarmModal({
                     style={{
                         width: "500px",
 
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                        background:
+                            "rgba(0, 0, 0, 0.15)",
 
-                        border: "1px solid rgba(255,255,255,0.10)",
+                        border:
+                            "1px solid rgba(255,255,255,0.08)",
 
-                        borderRadius: "36px",
+                        borderRadius:
+                            "36px",
 
-                        backdropFilter: "blur(30px)",
+                        backdropFilter:
+                            "blur(30px)",
 
                         boxShadow:
                             "0 30px 80px rgba(0,0,0,0.45)",
@@ -484,6 +508,8 @@ function AlarmModal({
                                             transition: "all 0.2s ease",
                                         }}
                                         onMouseEnter={(e) => {
+                                            setShowTooltip(day.value);
+
                                             if (!selected) {
                                                 e.currentTarget.style.background =
                                                     "rgba(87, 112, 122, 0.35)";
@@ -502,6 +528,8 @@ function AlarmModal({
                                                 "var(--text-primary)";
                                         }}
                                         onMouseLeave={(e) => {
+                                            setShowTooltip(null);
+
                                             if (!selected) {
                                                 e.currentTarget.style.background =
                                                     "rgba(87, 112, 112, 0.1)";
@@ -521,6 +549,56 @@ function AlarmModal({
                                         }}
                                     >
                                         {day.label}
+                                        {showTooltip === day.value && (
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+
+                                                    top: "40px",
+
+                                                    left: "50%",
+
+                                                    transform: "translateX(-50%)",
+
+                                                    minWidth: "120px",
+
+                                                    padding: "8px 14px",
+
+                                                    borderRadius: "36px",
+
+                                                    background:
+                                                        "rgba(18, 18, 18, 0.22)",
+
+                                                    backdropFilter:
+                                                        "blur(20px)",
+
+                                                    border:
+                                                        "1px solid rgba(255, 255, 255, 0.02)",
+
+                                                    boxShadow:
+                                                        "0 14px 40px rgba(0, 0, 0, 0.2)",
+
+                                                    textAlign: "center",
+
+                                                    zIndex: 5000,
+
+                                                    pointerEvents: "none",
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        fontSize: "0.6rem",
+
+                                                        fontWeight: "250",
+
+                                                        color:
+                                                            "var(--text-secondary)",
+                                                    }}
+                                                >
+                                                    {repeatLabels[day.value]}
+                                                </div>
+                                            </div>
+                                        )}
                                     </button>
                                 );
                             }
@@ -619,7 +697,7 @@ function AlarmModal({
 
                                             background:
                                                 snoozeDuration === minutes
-                                                    ? "rgba(255,255,255,0.08)"
+                                                    ? "linear-gradient(135deg, rgba(87,112,122,0.35), rgba(39,60,65,0.15))"
                                                     : "rgba(255,255,255,0.03)",
 
                                             color:
@@ -638,6 +716,38 @@ function AlarmModal({
 
                                             transition:
                                                 "all 0.2s ease",
+                                        }}
+                                        onMouseEnter={(e) => {
+
+                                            e.currentTarget.style.transform =
+                                                "translateY(-1px) scale(1.06)";
+
+                                            e.currentTarget.style.border =
+                                                snoozeDuration === minutes
+                                                    ? "1px solid rgba(255,255,255,0.14)"
+                                                    : "1px solid rgba(255,255,255,0.06)",
+
+                                                e.currentTarget.style.boxShadow =
+                                                "0 8px 20px rgba(0,0,0,0.25)";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                        onMouseLeave={(e) => {
+
+                                            e.currentTarget.style.transform =
+                                                "translateY(0) scale(1)";
+
+                                            e.currentTarget.style.border =
+                                                snoozeDuration === minutes
+                                                    ? "1px solid rgba(255,255,255,0.14)"
+                                                    : "1px solid rgba(255,255,255,0.06)",
+
+                                                e.currentTarget.style.boxShadow =
+                                                "none";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-secondary)";
                                         }}
                                     >
                                         {minutes} min

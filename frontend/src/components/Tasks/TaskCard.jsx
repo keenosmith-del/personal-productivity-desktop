@@ -281,18 +281,21 @@ function TaskCard({
                                 top: "24px",
                                 right: 0,
 
-                                minWidth: "140px",
+                                minWidth: "180px",
 
                                 background:
-                                    "rgba(20,20,20,0.95)",
+                                    "rgba(20, 20, 20, 0)",
 
                                 backdropFilter:
-                                    "blur(20px)",
+                                    "blur(12px)",
 
                                 border:
-                                    "1px solid rgba(255,255,255,0.08)",
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                                borderRadius: "16px",
+                                boxShadow:
+                                    "0 20px 50px rgba(0,0,0,0.35)",
+
+                                borderRadius: "18px",
 
                                 overflow: "hidden",
 

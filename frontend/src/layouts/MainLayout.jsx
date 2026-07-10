@@ -1,5 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import AlarmWatcher from "../components/AlarmSystem/AlarmWatcher";
+import NotificationWatcher from "../components/NotificationSystem/NotificationWatcher";
 
 import { useEffect, useState } from "react";
 
@@ -36,6 +37,8 @@ function MainLayout({ children }) {
       />
 
       <AlarmWatcher />
+
+      <NotificationWatcher />
 
       <main
         style={{

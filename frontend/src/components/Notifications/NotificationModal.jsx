@@ -1,3 +1,5 @@
+// why do I have this???
+
 import { X } from "lucide-react";
 
 function NotificationModal({

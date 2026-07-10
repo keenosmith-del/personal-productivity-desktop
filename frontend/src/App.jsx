@@ -12,7 +12,6 @@ import Reminders from "./pages/Reminders";
 import Notifications from "./pages/Notifications";
 import Break from "./pages/Break";
 import GlobalSearch from "./pages/GlobalSearch";
-import QuickAdd from "./pages/QuickAdd";
 import Urgent from "./pages/Urgent";
 import Alarms from "./pages/Alarms";
 
@@ -25,15 +24,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-
-        <Route
-          path="/quickadd"
-          element={
-            <ProtectedRoute>
-              <QuickAdd />
-            </ProtectedRoute>
-          }
-        />
 
         <Route
           path="/dashboard"

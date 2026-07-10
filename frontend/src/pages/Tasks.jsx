@@ -627,7 +627,7 @@ function Tasks() {
           <div
             style={{
               position: "relative",
-              zIndex: 100,
+              zIndex: 2, // this fixes (+) quick add
             }}
           >
             {/* WITHIN HEADER */}

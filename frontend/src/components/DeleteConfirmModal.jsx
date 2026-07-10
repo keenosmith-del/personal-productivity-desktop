@@ -42,7 +42,7 @@ function DeleteConfirmModal({
 
                     padding: "28px",
 
-                    borderRadius: "24px",
+                    borderRadius: "36px",
 
                     background:
                         "rgba(0, 0, 0, 0.15)",

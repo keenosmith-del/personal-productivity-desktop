@@ -13,6 +13,8 @@ import Project from "../models/Project.js";
 import Goal from "../models/Goal.js";
 import Note from "../models/Note.js";
 import Reminder from "../models/Reminder.js";
+import Alarm from "../models/Alarm.js";
+import Notification from "../models/Notification.js";
 
 router.post(
     "/register",
@@ -136,11 +138,14 @@ router.post(
                     bio: user.bio,
 
                     theme: user.theme,
+
+                    pushNotifications: user.pushNotifications,
                     dailySummary: user.dailySummary,
-                    goalNotifications:
-                        user.goalNotifications,
-                    reminderNotifications:
-                        user.reminderNotifications,
+                    weeklySummary: user.weeklySummary,
+                    taskAlerts: user.taskAlerts,
+                    reminderAlerts: user.reminderAlerts,
+                    projectAlerts: user.projectAlerts,
+
                     compactView:
                         user.compactView,
                     showCompletedItems:
@@ -210,9 +215,12 @@ router.put(
 
             const {
                 theme,
+                pushNotifications,
                 dailySummary,
-                goalNotifications,
-                reminderNotifications,
+                weeklySummary,
+                taskAlerts,
+                reminderAlerts,
+                projectAlerts,
                 compactView,
                 showCompletedItems,
             } = req.body;
@@ -221,26 +229,28 @@ router.put(
                 user.theme = theme;
             }
 
-            if (
-                dailySummary !== undefined
-            ) {
-                user.dailySummary =
-                    dailySummary;
+            if (pushNotifications !== undefined) {
+                user.pushNotifications = pushNotifications;
             }
 
-            if (
-                goalNotifications !== undefined
-            ) {
-                user.goalNotifications =
-                    goalNotifications;
+            if (dailySummary !== undefined) {
+                user.dailySummary = dailySummary;
             }
 
-            if (
-                reminderNotifications !==
-                undefined
-            ) {
-                user.reminderNotifications =
-                    reminderNotifications;
+            if (weeklySummary !== undefined) {
+                user.weeklySummary = weeklySummary;
+            }
+
+            if (taskAlerts !== undefined) {
+                user.taskAlerts = taskAlerts;
+            }
+
+            if (reminderAlerts !== undefined) {
+                user.reminderAlerts = reminderAlerts;
+            }
+
+            if (projectAlerts !== undefined) {
+                user.projectAlerts = projectAlerts;
             }
 
             if (
@@ -597,6 +607,14 @@ router.delete(
                 }),
 
                 Reminder.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Alarm.deleteMany({
+                    user: req.user.id,
+                }),
+
+                Notification.deleteMany({
                     user: req.user.id,
                 }),
             ]);

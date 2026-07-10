@@ -151,3 +151,31 @@ export async function toggleArchiveNotification(
 
     return data;
 }
+
+export async function markSlideoutShown(
+    notificationId
+) {
+    const response = await fetch(
+        `${API_URL}/${notificationId}/slideout`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization:
+                    `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to update notification"
+        );
+    }
+
+    return data;
+}

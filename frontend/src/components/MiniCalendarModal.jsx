@@ -123,9 +123,17 @@ function MiniCalendarModal({
                 position: "fixed",
                 inset: 0,
 
-                background: "rgba(0,0,0,0.8)",
+                background:
+                    "rgba(20, 20, 20, 0)",
 
-                backdropFilter: "blur(20px)",
+                backdropFilter:
+                    "blur(20px)",
+
+                border:
+                    "1px solid rgba(255,255,255,0.10)",
+
+                boxShadow:
+                    "0 20px 50px rgba(0,0,0,0.35)",
 
                 display: "flex",
 
@@ -144,13 +152,13 @@ function MiniCalendarModal({
                     width: "320px",
 
                     background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                        "rgba(0, 0, 0, 0.15)",
 
                     border:
-                        "1px solid rgba(255,255,255,0.10)",
+                        "1px solid rgba(255,255,255,0.08)",
 
                     borderRadius:
-                        "28px",
+                        "36px",
 
                     backdropFilter:
                         "blur(30px)",

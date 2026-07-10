@@ -168,11 +168,9 @@ function ResetPasswordModal({
                 position: "fixed",
                 inset: 0,
 
-                background:
-                    "rgba(20, 20, 20, 0)",
+                // background: "rgba(20, 20, 20, 0)",
 
-                backdropFilter:
-                    "blur(20px)",
+                backdropFilter: "blur(12px)",
 
                 display: "flex",
 
@@ -196,10 +194,10 @@ function ResetPasswordModal({
                         "rgba(20, 20, 20, 0)",
 
                     backdropFilter:
-                        "blur(12px)",
+                        "blur(30px)",
 
                     border:
-                        "1px solid rgba(27, 27, 27, 0.1)",
+                        "1px solid rgba(255,255,255,0.10)",
 
                     boxShadow:
                         "0 20px 50px rgba(0,0,0,0.35)",
@@ -210,8 +208,7 @@ function ResetPasswordModal({
 
                     display: "flex",
 
-                    flexDirection:
-                        "column",
+                    flexDirection: "column",
 
                     gap: "10px",
                 }}
@@ -230,7 +227,7 @@ function ResetPasswordModal({
                     }}
                 >
                     <div>
-                    
+
                     </div>
 
                     {/* close x */}

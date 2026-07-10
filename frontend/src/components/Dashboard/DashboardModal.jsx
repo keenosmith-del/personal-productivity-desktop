@@ -758,19 +758,22 @@ function DashboardModal({
                 inset: 0,
 
                 background:
-                    "rgba(0,0,0,0.35)",
+                    "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                    "blur(20px)",
+                    "blur(12px)",
+
+                border:
+                    "1px solid rgba(255,255,255,0.10)",
+
+                boxShadow:
+                    "0 20px 50px rgba(0,0,0,0.35)",
 
                 display: "flex",
-
-                justifyContent:
-                    "center",
-
+                justifyContent: "center",
                 alignItems: "center",
 
-                zIndex: 2000,
+                zIndex: 1000,
             }}
         >
             {/* dashboard panel */}
@@ -787,14 +790,16 @@ function DashboardModal({
                         overflowY: "auto",
 
                         background:
-                            "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                            "rgba(0, 0, 0, 0.15)",
 
                         border:
-                            "1px solid rgba(255,255,255,0.10)",
+                            "1px solid rgba(255,255,255,0.08)",
 
-                        borderRadius: "36px",
+                        borderRadius:
+                            "36px",
 
-                        backdropFilter: "blur(30px)",
+                        backdropFilter:
+                            "blur(30px)",
 
                         boxShadow:
                             "0 30px 80px rgba(0,0,0,0.45)",
@@ -811,7 +816,6 @@ function DashboardModal({
                             marginBottom: "24px",
                         }}
                     >
-                        {/* meatball and x pill - changed to only x */}
                         {/* close x */}
                         <div
                             style={{
@@ -1154,8 +1158,7 @@ function DashboardModal({
                                                             <div
                                                                 style={{
                                                                     height: "1px",
-                                                                    background:
-                                                                        "rgba(255,255,255,0.06)",
+                                                                    background: "rgba(255,255,255,0.06)",
                                                                 }}
                                                             />
 

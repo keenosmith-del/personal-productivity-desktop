@@ -50,6 +50,11 @@ const notificationSchema =
                 type: Boolean,
                 default: false,
             },
+
+            slideoutShown: {
+                type: Boolean,
+                default: false,
+            },
         },
         {
             timestamps: true,

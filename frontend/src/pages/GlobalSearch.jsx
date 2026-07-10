@@ -299,7 +299,7 @@ function GlobalSearch() {
                     <div
                         style={{
                             position: "relative",
-                            zIndex: 100,
+                            zIndex: 2,
                         }}
                     >
                         {/* WITHIN HEADER */}

@@ -39,19 +39,34 @@ const userSchema = new mongoose.Schema(
             default: "Dark",
         },
 
+        pushNotifications: {
+            type: Boolean,
+            default: false,
+        },
+
         dailySummary: {
             type: Boolean,
-            default: true,
+            default: false,
         },
 
-        goalNotifications: {
+        weeklySummary: {
             type: Boolean,
-            default: true,
+            default: false,
         },
 
-        reminderNotifications: {
+        taskAlerts: {
             type: Boolean,
-            default: true,
+            default: false,
+        },
+
+        reminderAlerts: {
+            type: Boolean,
+            default: false,
+        },
+
+        projectAlerts: {
+            type: Boolean,
+            default: false,
         },
 
         compactView: {

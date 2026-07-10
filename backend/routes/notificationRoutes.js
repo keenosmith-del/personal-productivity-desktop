@@ -90,6 +90,39 @@ router.put(
 );
 
 router.put(
+    "/:id/slideout",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const notification =
+                await Notification.findOne({
+                    _id: req.params.id,
+                    user: req.user.id,
+                });
+
+            if (!notification) {
+                return res.status(404).json({
+                    message:
+                        "Notification not found",
+                });
+            }
+
+            notification.slideoutShown = true;
+
+            await notification.save();
+
+            res.json(notification);
+
+        } catch (error) {
+
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.put(
     "/:id/archive",
     authMiddleware,
     async (req, res) => {

@@ -63,11 +63,17 @@ function Account() {
         useState({
             theme: "Dark",
 
-            dailySummary: true,
+            pushNotifications: false,
 
-            goalNotifications: true,
+            dailySummary: false,
 
-            reminderNotifications: true,
+            weeklySummary: false,
+
+            taskAlerts: false,
+
+            reminderAlerts: false,
+
+            projectAlerts: false,
         });
 
     const [tasks, setTasks] = useState([]);
@@ -106,17 +112,25 @@ function Account() {
         if (!user) return;
 
         setSettings({
-            theme:
-                user.theme || "Dark",
+            theme: user.theme || "Dark",
+
+            pushNotifications:
+                user.pushNotifications,
 
             dailySummary:
                 user.dailySummary,
 
-            goalNotifications:
-                user.goalNotifications,
+            weeklySummary:
+                user.weeklySummary,
 
-            reminderNotifications:
-                user.reminderNotifications,
+            taskAlerts:
+                user.taskAlerts,
+
+            reminderAlerts:
+                user.reminderAlerts,
+
+            projectAlerts:
+                user.projectAlerts,
         });
     }, [user]);
 
@@ -176,16 +190,18 @@ function Account() {
             : "rgba(255,255,255,0.03)",
 
         border: active
-            ? "1px solid rgba(255, 255, 255, 0)"
-            : "1px solid rgba(255, 255, 255, 0)",
+            ? "1px solid rgba(255,255,255,0.12)"
+            : "1px solid rgba(255,255,255,0.06)",
 
         position: "relative",
 
         cursor: "pointer",
 
-        transition: "all 0.25s ease",
+        transition:
+            "all 0.25s ease",
 
-        backdropFilter: "blur(20px)",
+        backdropFilter:
+            "blur(20px)",
     });
 
     const sectionStyle = {
@@ -311,13 +327,23 @@ function Account() {
         setSettings(updated);
 
         try {
-            await updatePreferences(
-                updated
-            );
+            await updatePreferences(updated);
+
+            await refreshUser();
         } catch (error) {
             console.error(error);
         }
     };
+
+    const handlePushNotifications = async () => {
+        await updateSetting(
+            "pushNotifications",
+            !settings.pushNotifications
+        );
+    };
+
+    const notificationsDisabled =
+        !settings.pushNotifications;
 
     // HANDLER
     const handleSaveBio = async (
@@ -1103,16 +1129,10 @@ function Account() {
                                 </span>
 
                                 <div
-                                    onClick={() =>
-                                        updateSetting(
-                                            "goalNotifications",
-                                            !settings.goalNotifications
-                                        )
-                                    }
-                                    style={toggleStyle(
-                                        settings.goalNotifications
-                                    )}
+                                    onClick={handlePushNotifications}
+                                    style={toggleStyle(settings.pushNotifications)}
                                 >
+                                    {/* TOGGLE KNOB */}
                                     <div
                                         style={{
                                             width: "18px",
@@ -1120,60 +1140,16 @@ function Account() {
 
                                             borderRadius: "50%",
 
-                                            background: "rgba(37, 37, 37, 0.9)",
+                                            background:
+                                                "rgba(255,255,255,0.9)",
 
                                             position: "absolute",
 
                                             top: "3px",
 
-                                            left:
-                                                settings.goalNotifications
-                                                    ? "23px"
-                                                    : "3px",
-
-                                            transition:
-                                                "all 0.25s ease",
-
-                                            boxShadow:
-                                                "0 4px 12px rgba(0,0,0,0.25)",
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={rowStyle}>
-                                <span>
-                                    Daily Summary
-                                </span>
-
-                                <div
-                                    onClick={() =>
-                                        updateSetting(
-                                            "reminderNotifications",
-                                            !settings.reminderNotifications
-                                        )
-                                    }
-                                    style={toggleStyle(
-                                        settings.reminderNotifications
-                                    )}
-                                >
-                                    <div
-                                        style={{
-                                            width: "18px",
-                                            height: "18px",
-
-                                            borderRadius: "50%",
-
-                                            background: "rgba(37, 37, 37, 0.9)",
-
-                                            position: "absolute",
-
-                                            top: "3px",
-
-                                            left:
-                                                settings.reminderNotifications
-                                                    ? "23px"
-                                                    : "3px",
+                                            left: settings.pushNotifications
+                                                ? "23px"
+                                                : "3px",
 
                                             transition:
                                                 "all 0.25s ease",
@@ -1188,22 +1164,23 @@ function Account() {
                             <div
                                 style={{
                                     ...rowStyle,
-
-                                    borderBottom:
-                                        "none",
+                                    opacity: notificationsDisabled ? 0.35 : 1,
+                                    pointerEvents: notificationsDisabled ? "none" : "auto",
                                 }}
                             >
                                 <span>
-                                    Weekly Summary
+                                    Daily Summary
                                 </span>
 
                                 <div
-                                    onClick={() =>
+                                    onClick={() => {
+                                        if (notificationsDisabled) return;
+
                                         updateSetting(
                                             "dailySummary",
                                             !settings.dailySummary
-                                        )
-                                    }
+                                        );
+                                    }}
                                     style={toggleStyle(
                                         settings.dailySummary
                                     )}
@@ -1215,16 +1192,68 @@ function Account() {
 
                                             borderRadius: "50%",
 
-                                            background: "rgba(37, 37, 37, 0.9)",
+                                            background:
+                                                "rgba(255,255,255,0.9)",
 
                                             position: "absolute",
 
                                             top: "3px",
 
-                                            left:
-                                                settings.dailySummary
-                                                    ? "23px"
-                                                    : "3px",
+                                            left: settings.dailySummary
+                                                ? "23px"
+                                                : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div
+                                style={{
+                                    ...rowStyle,
+                                    opacity: notificationsDisabled ? 0.35 : 1,
+                                    pointerEvents: notificationsDisabled ? "none" : "auto",
+                                }}
+                            >
+                                <span>
+                                    Weekly Summary
+                                </span>
+
+                                <div
+                                    onClick={() => {
+                                        if (notificationsDisabled) return;
+
+                                        updateSetting(
+                                            "weeklySummary",
+                                            !settings.weeklySummary
+                                        );
+                                    }}
+                                    style={toggleStyle(
+                                        settings.weeklySummary
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background:
+                                                "rgba(255,255,255,0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left: settings.weeklySummary
+                                                ? "23px"
+                                                : "3px",
 
                                             transition:
                                                 "all 0.25s ease",
@@ -1261,20 +1290,28 @@ function Account() {
                                 Alerts
                             </div>
 
-                            <div style={rowStyle}>
+                            <div
+                                style={{
+                                    ...rowStyle,
+                                    opacity: notificationsDisabled ? 0.35 : 1,
+                                    pointerEvents: notificationsDisabled ? "none" : "auto",
+                                }}
+                            >
                                 <span>
                                     Task Alerts
                                 </span>
 
                                 <div
-                                    onClick={() =>
+                                    onClick={() => {
+                                        if (notificationsDisabled) return;
+
                                         updateSetting(
-                                            "goalNotifications",
-                                            !settings.goalNotifications
-                                        )
-                                    }
+                                            "taskAlerts",
+                                            !settings.taskAlerts
+                                        );
+                                    }}
                                     style={toggleStyle(
-                                        settings.goalNotifications
+                                        settings.taskAlerts
                                     )}
                                 >
                                     <div
@@ -1284,60 +1321,16 @@ function Account() {
 
                                             borderRadius: "50%",
 
-                                            background: "rgba(37, 37, 37, 0.9)",
+                                            background:
+                                                "rgba(255,255,255,0.9)",
 
                                             position: "absolute",
 
                                             top: "3px",
 
-                                            left:
-                                                settings.goalNotifications
-                                                    ? "23px"
-                                                    : "3px",
-
-                                            transition:
-                                                "all 0.25s ease",
-
-                                            boxShadow:
-                                                "0 4px 12px rgba(0,0,0,0.25)",
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={rowStyle}>
-                                <span>
-                                    Reminder Alerts
-                                </span>
-
-                                <div
-                                    onClick={() =>
-                                        updateSetting(
-                                            "reminderNotifications",
-                                            !settings.reminderNotifications
-                                        )
-                                    }
-                                    style={toggleStyle(
-                                        settings.reminderNotifications
-                                    )}
-                                >
-                                    <div
-                                        style={{
-                                            width: "18px",
-                                            height: "18px",
-
-                                            borderRadius: "50%",
-
-                                            background: "rgba(37, 37, 37, 0.9)",
-
-                                            position: "absolute",
-
-                                            top: "3px",
-
-                                            left:
-                                                settings.reminderNotifications
-                                                    ? "23px"
-                                                    : "3px",
+                                            left: settings.taskAlerts
+                                                ? "23px"
+                                                : "3px",
 
                                             transition:
                                                 "all 0.25s ease",
@@ -1352,24 +1345,25 @@ function Account() {
                             <div
                                 style={{
                                     ...rowStyle,
-
-                                    borderBottom:
-                                        "none",
+                                    opacity: notificationsDisabled ? 0.35 : 1,
+                                    pointerEvents: notificationsDisabled ? "none" : "auto",
                                 }}
                             >
                                 <span>
-                                    Project Alerts
+                                    Reminder Alerts
                                 </span>
 
                                 <div
-                                    onClick={() =>
+                                    onClick={() => {
+                                        if (notificationsDisabled) return;
+
                                         updateSetting(
-                                            "dailySummary",
-                                            !settings.dailySummary
-                                        )
-                                    }
+                                            "reminderAlerts",
+                                            !settings.reminderAlerts
+                                        );
+                                    }}
                                     style={toggleStyle(
-                                        settings.dailySummary
+                                        settings.reminderAlerts
                                     )}
                                 >
                                     <div
@@ -1379,17 +1373,68 @@ function Account() {
 
                                             borderRadius: "50%",
 
-                                            // toggle color 
-                                            background: "rgba(37, 37, 37, 0.9)",
+                                            background:
+                                                "rgba(255,255,255,0.9)",
 
                                             position: "absolute",
 
                                             top: "3px",
 
-                                            left:
-                                                settings.dailySummary
-                                                    ? "23px"
-                                                    : "3px",
+                                            left: settings.reminderAlerts
+                                                ? "23px"
+                                                : "3px",
+
+                                            transition:
+                                                "all 0.25s ease",
+
+                                            boxShadow:
+                                                "0 4px 12px rgba(0,0,0,0.25)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div
+                                style={{
+                                    ...rowStyle,
+                                    opacity: notificationsDisabled ? 0.35 : 1,
+                                    pointerEvents: notificationsDisabled ? "none" : "auto",
+                                }}
+                            >
+                                <span>
+                                    Project Alerts
+                                </span>
+
+                                <div
+                                    onClick={() => {
+                                        if (notificationsDisabled) return;
+
+                                        updateSetting(
+                                            "projectAlerts",
+                                            !settings.projectAlerts
+                                        );
+                                    }}
+                                    style={toggleStyle(
+                                        settings.projectAlerts
+                                    )}
+                                >
+                                    <div
+                                        style={{
+                                            width: "18px",
+                                            height: "18px",
+
+                                            borderRadius: "50%",
+
+                                            background:
+                                                "rgba(255,255,255,0.9)",
+
+                                            position: "absolute",
+
+                                            top: "3px",
+
+                                            left: settings.projectAlerts
+                                                ? "23px"
+                                                : "3px",
 
                                             transition:
                                                 "all 0.25s ease",

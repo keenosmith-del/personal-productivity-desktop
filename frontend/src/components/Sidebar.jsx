@@ -19,6 +19,7 @@ import { createNote } from "../services/noteService";
 import { createAlarm } from "../services/alarmService";
 
 import Toast from "../components/Toast";
+import FloatingLayer from "../components/FloatingLayer";
 
 const API_BASE_URL =
   "http://localhost:5050";
@@ -55,6 +56,8 @@ function Sidebar({ collapsed, setCollapsed }) {
   const quickAddRef =
     useRef(null);
 
+  const navItemRef = useRef(null);
+
   const [showQuickAdd, setShowQuickAdd] =
     useState(false);
 
@@ -75,6 +78,9 @@ function Sidebar({ collapsed, setCollapsed }) {
 
   const [showAlarmModal, setShowAlarmModal] =
     useState(false);
+
+  const [showTooltip, setShowTooltip] =
+    useState(null);
 
   const [toast, setToast] =
     useState("");
@@ -338,6 +344,9 @@ function Sidebar({ collapsed, setCollapsed }) {
       <NavLink
         key={item.path}
         to={item.path}
+        onClick={() =>
+          setShowTooltip(null)
+        }
         style={({ isActive }) => ({
           display: "flex",
           alignItems: "center",
@@ -370,6 +379,13 @@ function Sidebar({ collapsed, setCollapsed }) {
             "all 0.2s ease",
         })}
         onMouseEnter={(e) => {
+
+          if (collapsed) {
+            setShowTooltip(item.label);
+
+            setShowQuickAdd(false);
+          }
+
           const bg =
             window.getComputedStyle(
               e.currentTarget
@@ -384,6 +400,8 @@ function Sidebar({ collapsed, setCollapsed }) {
           }
         }}
         onMouseLeave={(e) => {
+          setShowTooltip(null);
+
           const bg =
             window.getComputedStyle(
               e.currentTarget
@@ -399,6 +417,11 @@ function Sidebar({ collapsed, setCollapsed }) {
         }}
       >
         <div
+          ref={
+            showTooltip === item.label
+              ? navItemRef
+              : null
+          }
           style={{
             width: "24px",
             height: "24px",
@@ -407,6 +430,8 @@ function Sidebar({ collapsed, setCollapsed }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+
+            position: "relative",
           }}
         >
           <Icon
@@ -628,11 +653,13 @@ function Sidebar({ collapsed, setCollapsed }) {
           }}
         >
           <button
-            onClick={() =>
+            onClick={() => {
+              setShowTooltip(false);
+
               setShowQuickAdd(
                 !showQuickAdd
-              )
-            }
+              );
+            }}
             style={{
               width: "100%",
 
@@ -721,7 +748,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   "rgba(20, 20, 20, 0)",
 
                 backdropFilter:
-                  "blur(12px)",
+                  "blur(8px)",
 
                 border:
                   "1px solid rgba(255,255,255,0.10)",
@@ -1141,6 +1168,54 @@ function Sidebar({ collapsed, setCollapsed }) {
           )}
         </div>
       </div>
+      {/* tooltips */}
+      <FloatingLayer
+        anchorRef={navItemRef}
+        open={collapsed && Boolean(showTooltip)}
+        placement="right"
+        offset={12}
+        refreshKey={showTooltip}
+      >
+        <div
+          style={{
+            minWidth: "120px",
+
+            padding: "8px 14px",
+
+            borderRadius: "36px",
+
+            background:
+              "rgba(18, 18, 18, 0)",
+
+            backdropFilter:
+              "blur(3px)",
+
+            border:
+              "1px solid rgba(255,255,255,0.02)",
+
+            boxShadow:
+              "0 14px 40px rgba(0,0,0,0.2)",
+
+            textAlign: "center",
+
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "0.6rem",
+
+              fontWeight: "250",
+
+              color:
+                "var(--text-secondary)",
+            }}
+          >
+            {showTooltip}
+          </div>
+        </div>
+      </FloatingLayer>
+
       {/* quick add modals */}
       {showTaskModal && (
         <TaskModal
