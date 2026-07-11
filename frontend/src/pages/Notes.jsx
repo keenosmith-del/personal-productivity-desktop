@@ -25,6 +25,7 @@ import NoteCard from "../components/Notes/NoteCard";
 
 import NoteFolderCard from "../components/NoteFolder/NoteFolderCard";
 import NoteFolderCreateModal from "../components/NoteFolder/NoteFolderCreateModal";
+import NoteFolderViewModal from "../components/NoteFolder/NoteFolderViewModal";
 
 import {
   getNotes,
@@ -40,6 +41,8 @@ import {
   createFolder,
   updateFolder,
   deleteFolder,
+  removeNoteFromFolder,
+  addNoteToFolder,
 } from "../services/folderService";
 
 import Toast from "../components/Toast";
@@ -73,6 +76,9 @@ function Notes() {
     useState(null);
 
   const [editingFolder, setEditingFolder] =
+    useState(null);
+
+  const [viewingFolder, setViewingFolder] =
     useState(null);
 
   const [notes, setNotes] =
@@ -121,6 +127,8 @@ function Notes() {
 
   const [showMoreMenu, setShowMoreMenu] =
     useState(false);
+
+  const [selectedFolder, setSelectedFolder] = useState(null);
 
   const matchesFilters = (note) => {
     const categoryMatch =
@@ -347,7 +355,17 @@ function Notes() {
   ];
 
   const [activeTab, setActiveTab] =
-    useState("notes");
+    useState(() =>
+      localStorage.getItem("notes-active-tab") ||
+      "notes"
+    );
+
+  useEffect(() => {
+    localStorage.setItem(
+      "notes-active-tab",
+      activeTab
+    );
+  }, [activeTab]);
 
   useEffect(() => {
     loadNotes();
@@ -545,6 +563,84 @@ function Notes() {
     }
   };
 
+  const handleRemoveNoteFromFolder =
+    async (folder, note) => {
+      try {
+        const updatedFolder =
+          await removeNoteFromFolder(
+            folder._id,
+            note._id
+          );
+
+        setFolders((prev) =>
+          prev.map((item) =>
+            item._id === updatedFolder._id
+              ? updatedFolder
+              : item
+          )
+        );
+
+        setViewingFolder((prev) =>
+          prev && prev._id === updatedFolder._id
+            ? updatedFolder
+            : prev
+        );
+
+        setToast(
+          "Note removed"
+        );
+
+        setTimeout(() => {
+          setToast("");
+        }, 3000);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  const handleAddExistingNoteToFolder = async (
+    folder,
+    note
+  ) => {
+    try {
+
+      const updatedFolder =
+        await addNoteToFolder(
+          folder._id,
+          note._id
+        );
+
+      setFolders((prev) =>
+        prev.map((item) =>
+          item._id === updatedFolder._id
+            ? updatedFolder
+            : {
+              ...item,
+              notes: item.notes?.filter(
+                (n) => n._id !== note._id
+              ),
+            }
+        )
+      );
+
+      setViewingFolder((prev) =>
+        prev && prev._id === updatedFolder._id
+          ? updatedFolder
+          : prev
+      );
+
+      setToast("Note added");
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleDeleteNote =
     async (noteId) => {
       try {
@@ -621,35 +717,89 @@ function Notes() {
       }
     };
 
-  const handleToggleFlag =
-    async (note) => {
-      await updateNote(
-        note._id,
-        {
-          ...note,
+  const handleToggleFlag = async (note) => {
+    const updatedNote = await updateNote(
+      note._id,
+      {
+        ...note,
+        flagged: !note.flagged,
+      }
+    );
 
-          flagged:
-            !note.flagged,
+    setNotes((prev) =>
+      prev.map((n) =>
+        n._id === updatedNote._id
+          ? updatedNote
+          : n
+      )
+    );
+
+    setFolders((prev) =>
+      prev.map((folder) => ({
+        ...folder,
+        notes: folder.notes?.map((n) =>
+          n._id === updatedNote._id
+            ? updatedNote
+            : n
+        ),
+      }))
+    );
+
+    setViewingFolder((prev) =>
+      prev
+        ? {
+          ...prev,
+          notes: prev.notes?.map((n) =>
+            n._id === updatedNote._id
+              ? updatedNote
+              : n
+          ),
         }
-      );
+        : prev
+    );
+  };
 
-      loadNotes();
-    };
+  const handleToggleLike = async (note) => {
+    const updatedNote = await updateNote(
+      note._id,
+      {
+        ...note,
+        liked: !note.liked,
+      }
+    );
 
-  const handleToggleLike =
-    async (note) => {
-      await updateNote(
-        note._id,
-        {
-          ...note,
+    setNotes((prev) =>
+      prev.map((n) =>
+        n._id === updatedNote._id
+          ? updatedNote
+          : n
+      )
+    );
 
-          liked:
-            !note.liked,
+    setFolders((prev) =>
+      prev.map((folder) => ({
+        ...folder,
+        notes: folder.notes?.map((n) =>
+          n._id === updatedNote._id
+            ? updatedNote
+            : n
+        ),
+      }))
+    );
+
+    setViewingFolder((prev) =>
+      prev
+        ? {
+          ...prev,
+          notes: prev.notes?.map((n) =>
+            n._id === updatedNote._id
+              ? updatedNote
+              : n
+          ),
         }
-      );
-
-      loadNotes();
-    };
+        : prev
+    );
+  };
 
   const handleAddComment =
     async (note) => {
@@ -1918,7 +2068,11 @@ function Notes() {
                       openNoteMenu={openNoteMenu}
                       setOpenNoteMenu={setOpenNoteMenu}
 
-                      onView={setEditingNote}
+                      onView={(folder) => {
+                        console.log("onView called", folder.title);
+                        setViewingFolder(folder);
+                      }}
+
                       onEdit={setEditingNote}
 
                       onDelete={handleDeleteNote}
@@ -1978,7 +2132,7 @@ function Notes() {
                   display: "grid",
 
                   gridTemplateColumns:
-                    "repeat(4, 1fr)",
+                    "repeat(3, 1fr)",
 
                   gap: "18px",
 
@@ -2046,9 +2200,29 @@ function Notes() {
 
                       onEdit={setEditingFolder}
 
-                      onView={() => { }}
+                      onView={setViewingFolder}
+
+                      onCreateNote={(folder) => {
+                        setSelectedFolder(folder);
+
+                        setShowNoteModal(true);
+                      }}
+
+                      onEditNote={(note) =>
+                        setEditingNote(note)
+                      }
+
+                      onRemoveNote={
+                        handleRemoveNoteFromFolder
+                      }
 
                       onDelete={handleDeleteFolder}
+
+                      notes={notes}
+
+                      onAddExistingNote={
+                        handleAddExistingNoteToFolder
+                      }
 
                       onToggleFolderPin={handleToggleFolderPin}
                       onToggleFolderLike={handleToggleFolderLike}
@@ -2067,24 +2241,56 @@ function Notes() {
       </div>
       {showNoteModal && (
         <NoteModal
+          folder={selectedFolder}
           onClose={() =>
             setShowNoteModal(false)
           }
           onSave={(noteData) => {
             createNote(noteData)
-              .then((newNote) => {
+
+              .then(async (newNote) => {
+
+                let updatedFolder = null;
+
+                if (selectedFolder) {
+                  updatedFolder =
+                    await addNoteToFolder(
+                      selectedFolder._id,
+                      newNote._id
+                    );
+                }
+
                 setNotes((prev) => [
                   newNote,
                   ...prev,
                 ]);
 
-                setToast(
-                  "Note created"
-                );
+                if (updatedFolder) {
+                  setFolders((prev) =>
+                    prev.map((folder) =>
+                      folder._id === updatedFolder._id
+                        ? updatedFolder
+                        : folder
+                    )
+                  );
+
+                  setViewingFolder((prev) =>
+                    prev?._id === updatedFolder._id
+                      ? updatedFolder
+                      : prev
+                  );
+                }
+
+                setToast("Note created");
 
                 setTimeout(() => {
                   setToast("");
                 }, 3000);
+
+                setShowNoteModal(false);
+
+                setSelectedFolder(null);
+
               })
               .catch((error) => {
                 console.error(error);
@@ -2115,16 +2321,37 @@ function Notes() {
               .then((updatedNote) => {
                 setNotes((prev) =>
                   prev.map((note) =>
-                    note._id ===
-                      updatedNote._id
+                    note._id === updatedNote._id
                       ? updatedNote
                       : note
                   )
                 );
 
-                setToast(
-                  "Note updated"
+                setFolders((prev) =>
+                  prev.map((folder) => ({
+                    ...folder,
+                    notes: folder.notes?.map((note) =>
+                      note._id === updatedNote._id
+                        ? updatedNote
+                        : note
+                    ),
+                  }))
                 );
+
+                setViewingFolder((prev) =>
+                  prev
+                    ? {
+                      ...prev,
+                      notes: prev.notes?.map((note) =>
+                        note._id === updatedNote._id
+                          ? updatedNote
+                          : note
+                      ),
+                    }
+                    : prev
+                );
+
+                setToast("Note updated");
 
                 setTimeout(() => {
                   setToast("");
@@ -2206,6 +2433,70 @@ function Notes() {
               });
           }}
           onDelete={handleDeleteFolder}
+        />
+      )}
+      {viewingFolder && (
+        <NoteFolderViewModal
+          folder={viewingFolder}
+
+          onClose={() =>
+            setViewingFolder(null)
+          }
+
+          onRemoveNote={
+            handleRemoveNoteFromFolder
+          }
+
+          onToggleLike={handleToggleLike}
+
+          onToggleFlag={handleToggleFlag}
+
+          onDeleteNote={handleDeleteNote}
+
+          onUpdateNote={async (
+            noteId,
+            noteData
+          ) => {
+            const updatedNote =
+              await updateNote(
+                noteId,
+                noteData
+              );
+
+            setNotes((prev) =>
+              prev.map((note) =>
+                note._id === updatedNote._id
+                  ? updatedNote
+                  : note
+              )
+            );
+
+            setFolders((prev) =>
+              prev.map((folder) => ({
+                ...folder,
+                notes: folder.notes?.map((note) =>
+                  note._id === updatedNote._id
+                    ? updatedNote
+                    : note
+                ),
+              }))
+            );
+
+            setViewingFolder((prev) =>
+              prev
+                ? {
+                  ...prev,
+                  notes: prev.notes?.map((note) =>
+                    note._id === updatedNote._id
+                      ? updatedNote
+                      : note
+                  ),
+                }
+                : prev
+            );
+
+            return updatedNote;
+          }}
         />
       )}
       {/* show clear all */}

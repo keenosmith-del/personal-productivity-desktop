@@ -65,6 +65,12 @@ const noteSchema =
                 default: 0,
             },
 
+            folder: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Folder",
+                default: null,
+            },
+
             linkedItems: {
                 type: [String],
                 default: [],

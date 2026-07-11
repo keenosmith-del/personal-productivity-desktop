@@ -83,7 +83,7 @@ export async function updateFolder(
     if (!response.ok) {
         throw new Error(
             data.message ||
-                "Failed to update folder"
+            "Failed to update folder"
         );
     }
 
@@ -111,7 +111,63 @@ export async function deleteFolder(
     if (!response.ok) {
         throw new Error(
             data.message ||
-                "Failed to delete folder"
+            "Failed to delete folder"
+        );
+    }
+
+    return data;
+}
+
+export async function addNoteToFolder(
+    folderId,
+    noteId
+) {
+    const response = await fetch(
+        `${API_URL}/${folderId}/notes/${noteId}`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to add note to folder"
+        );
+    }
+
+    return data;
+}
+
+export async function removeNoteFromFolder(
+    folderId,
+    noteId
+) {
+    const response = await fetch(
+        `${API_URL}/${folderId}/notes/${noteId}`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Failed to remove note from folder"
         );
     }
 

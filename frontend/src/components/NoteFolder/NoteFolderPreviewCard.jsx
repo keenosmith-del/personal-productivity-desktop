@@ -1,16 +1,32 @@
 import { NotebookPen } from "lucide-react";
 
+import { useState } from "react";
+
 function NoteFolderPreviewCard({
-    // build
+    note,
+    onClick,
+    onCreate,
+    onRemove,
 }) {
-    // const isPlaceholder = !note;
+    const isPlaceholder = !note;
+
+    const [hovered, setHovered] =
+        useState(false);
+
+    const [removing, setRemoving] = useState(false);
 
     return (
         <div
             onClick={(e) => {
                 e.stopPropagation();
 
-                // onClick?.();
+                if (removing) return;
+
+                if (isPlaceholder) {
+                    onCreate?.();
+                } else {
+                    onClick?.(note);
+                }
             }}
             style={{
                 width: "100%",
@@ -38,6 +54,8 @@ function NoteFolderPreviewCard({
                 transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
+                setHovered(true);
+
                 e.currentTarget.style.transform =
                     "translateY(-2px)";
 
@@ -45,6 +63,8 @@ function NoteFolderPreviewCard({
                     "rgba(15,15,15,0.2)";
             }}
             onMouseLeave={(e) => {
+                setHovered(false);
+
                 e.currentTarget.style.transform =
                     "translateY(0)";
 
@@ -52,8 +72,6 @@ function NoteFolderPreviewCard({
                     "rgba(255, 255, 255, 0.025)";
             }}
         >
-
-            {/*
             {isPlaceholder ? (
 
                 <div
@@ -82,8 +100,8 @@ function NoteFolderPreviewCard({
                             opacity: 0.35,
                         }}
                     >
-                        <NotebookPen 
-                        size={18}
+                        <NotebookPen
+                            size={18}
                         />
                     </div>
 
@@ -101,7 +119,51 @@ function NoteFolderPreviewCard({
             ) : (
 
                 <>
-                    {/* TITLE */}{/*
+                    {/* HOVER REMOVE */}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            minHeight: "22px",
+                        }}
+                    >
+                        {hovered && (
+                            <button
+                                onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    setRemoving(true);
+
+                                    await onRemove?.(note);
+                                }}
+                                style={{
+                                    width: "22px",
+                                    height: "22px",
+
+                                    borderRadius: "999px",
+
+                                    border: "none",
+
+                                    background:
+                                        "rgba(255,255,255,0.04)",
+
+                                    color:
+                                        "var(--text-secondary)",
+
+                                    cursor: "pointer",
+
+                                    fontSize: "0.7rem",
+
+                                    transition: "all 0.2s ease",
+                                }}
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+
+                    {/* TITLE */}
                     <div
                         style={{
                             fontSize: "0.82rem",
@@ -124,69 +186,7 @@ function NoteFolderPreviewCard({
                                 "hidden",
                         }}
                     >
-                        Note Title
-                    </div>
-
-                    {/* CONTENT */}{/*
-
-                    <div
-                        style={{
-                            fontSize: "0.68rem",
-
-                            lineHeight: 1.4,
-
-                            opacity: 0.55,
-
-                            display:
-                                "-webkit-box",
-
-                            WebkitLineClamp: 5,
-
-                            WebkitBoxOrient:
-                                "vertical",
-
-                            overflow:
-                                "hidden",
-                        }}
-                    >
-                        {/* {note.content || "Empty note."} */}{/*
-                        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. 
-                        The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English
-                    </div>
-
-                    <div
-                        style={{
-                            flex: 1,
-                        }}
-                    />
-                </>
-            )}
-            */}
-
-            {/* TITLE */}
-                    <div
-                        style={{
-                            fontSize: "0.82rem",
-
-                            fontWeight: "350",
-
-                            letterSpacing: "-0.02em",
-
-                            marginBottom: "10px",
-
-                            display:
-                                "-webkit-box",
-
-                            WebkitLineClamp: 2,
-
-                            WebkitBoxOrient:
-                                "vertical",
-
-                            overflow:
-                                "hidden",
-                        }}
-                    >
-                        Note Title
+                        {note.title}
                     </div>
 
                     {/* CONTENT */}
@@ -211,9 +211,7 @@ function NoteFolderPreviewCard({
                                 "hidden",
                         }}
                     >
-                        {/* {note.content || "Empty note."} */}
-                        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. 
-                        The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English
+                        {note.content || "Empty note."}
                     </div>
 
                     <div
@@ -221,6 +219,8 @@ function NoteFolderPreviewCard({
                             flex: 1,
                         }}
                     />
+                </>
+            )}
         </div>
     );
 }

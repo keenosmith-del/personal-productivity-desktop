@@ -52,6 +52,12 @@ const folderSchema = new mongoose.Schema(
 
             default: false,
         },
+        notes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Note",
+            },
+        ],
     },
     {
         timestamps: true,

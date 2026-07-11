@@ -1,6 +1,3 @@
-// create note ONLY (no edit)
-// test
-
 import {
     useState,
     useRef,
@@ -21,6 +18,7 @@ function NoteModal({
     onClose,
     mode = "create",
     note = null,
+    folder = null,
     onSave,
     onDelete,
 }) {
@@ -197,6 +195,8 @@ function NoteModal({
             status,
 
             linkedItems,
+
+            folder: note?.folder || folder?._id || null,
         });
 
         onClose();

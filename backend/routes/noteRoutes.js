@@ -4,6 +4,8 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 import createNotification from "../utils/createNotification.js";
 
+import Folder from "../models/Folder.js";
+
 const router = express.Router();
 
 router.get(
@@ -35,9 +37,22 @@ router.post(
             const note =
                 await Note.create({
                     ...req.body,
-
                     user: req.user.id,
                 });
+
+            if (note.folder) {
+                await Folder.findOneAndUpdate(
+                    {
+                        _id: note.folder,
+                        user: req.user.id,
+                    },
+                    {
+                        $addToSet: {
+                            notes: note._id,
+                        },
+                    }
+                );
+            }
 
             await createNotification({
                 user: req.user.id,
@@ -54,9 +69,8 @@ router.post(
                 relatedId: note._id,
             });
 
-            res.status(201).json(
-                note
-            );
+            res.status(201).json(note);
+
         } catch (error) {
             res.status(500).json({
                 message: "Server error",
