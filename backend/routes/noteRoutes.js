@@ -202,6 +202,19 @@ router.delete(
             const noteTitle =
                 note.title;
 
+            // Remove the note from every folder that contains it
+            await Folder.updateMany(
+                {
+                    user: req.user.id,
+                    notes: note._id,
+                },
+                {
+                    $pull: {
+                        notes: note._id,
+                    },
+                }
+            );
+
             await note.deleteOne();
 
             await createNotification({

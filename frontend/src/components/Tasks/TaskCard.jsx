@@ -10,6 +10,8 @@ import {
     useRef,
 } from "react";
 
+import FloatingLayer from "../FloatingLayer";
+
 function TaskCard({
     task,
     onClick,
@@ -30,27 +32,31 @@ function TaskCard({
     onAddComment,
 }) {
     const menuItemStyle = {
-        width: "100%",
-
-        padding: "10px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
 
         background: "transparent",
 
         border: "none",
 
-        borderRadius: "10px",
-
         color: "var(--text-primary)",
 
-        textAlign: "left",
+        padding: "10px 14px",
 
-        fontSize: "0.8rem",
-
-        fontWeight: "300",
+        borderRadius: "999px",
 
         cursor: "pointer",
 
+        textAlign: "left",
+
+        fontSize: "0.78rem",
+
+        fontWeight: "300",
+
         transition: "all 0.2s ease",
+
+        width: "100%",
     };
 
     const linkedItemStyle = {
@@ -83,6 +89,8 @@ function TaskCard({
     };
 
     const menuRef = useRef(null);
+
+    const menuButtonRef = useRef(null);
 
     useEffect(() => {
         const handleOutsideClick = (event) => {
@@ -232,6 +240,7 @@ function TaskCard({
                     }}
                 >
                     <button
+                        ref={menuButtonRef}
                         onClick={(e) => {
                             e.stopPropagation();
 
@@ -269,106 +278,52 @@ function TaskCard({
                     >
                         <Ellipsis size={18} />
                     </button>
-
                     {openTaskMenu === task._id && (
-                        <div
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
-                            style={{
-                                position: "absolute",
-
-                                top: "24px",
-                                right: 0,
-
-                                minWidth: "180px",
-
-                                background:
-                                    "rgba(20, 20, 20, 0)",
-
-                                backdropFilter:
-                                    "blur(12px)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                    "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                overflow: "hidden",
-
-                                zIndex: 100,
-                            }}
+                        <FloatingLayer
+                            anchorRef={menuButtonRef}
+                            open={true}
+                            placement="bottom"
+                            offset={8}
                         >
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    onView(task);
-                                    setOpenTaskMenu(null);
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                View
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    onEdit(task);
-                                    setOpenTaskMenu(null);
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                Edit
-                            </button>
-
                             <div
+                                onClick={(e) =>
+                                    e.stopPropagation()
+                                }
                                 style={{
-                                    height: "1px",
-                                    background:
-                                        "rgba(255,255,255,0.05)",
-                                    margin: "4px 0",
-                                }}
-                            />
+                                    minWidth: "180px",
 
-                            {task.completed ? (
+                                    background:
+                                        "rgba(20, 20, 20, 0)",
+
+                                    backdropFilter:
+                                        "blur(8px)",
+
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
+
+                                    boxShadow:
+                                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                                    borderRadius: "18px",
+
+                                    padding: "8px",
+
+                                    display: "flex",
+
+                                    overflow: "visible",
+
+                                    flexDirection: "column",
+
+                                    gap: "4px",
+
+                                    zIndex: 2001,
+                                }}
+                            >
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        onRestore(task);
+                                        onView(task);
                                         setOpenTaskMenu(null);
                                     }}
                                     style={menuItemStyle}
@@ -387,14 +342,14 @@ function TaskCard({
                                             "var(--text-primary)";
                                     }}
                                 >
-                                    Restore
+                                    View Task
                                 </button>
-                            ) : (
+
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
 
-                                        onComplete(task);
+                                        onEdit(task);
                                         setOpenTaskMenu(null);
                                     }}
                                     style={menuItemStyle}
@@ -413,48 +368,112 @@ function TaskCard({
                                             "var(--text-primary)";
                                     }}
                                 >
-                                    Complete
+                                    Edit Task
                                 </button>
-                            )}
 
-                            <div
-                                style={{
-                                    height: "1px",
-                                    background:
-                                        "rgba(255,255,255,0.05)",
-                                    margin: "4px 0",
-                                }}
-                            />
+                                <div
+                                    style={{
+                                        height: "1px",
+                                        background:
+                                            "rgba(255,255,255,0.05)",
+                                        margin: "4px 0",
+                                    }}
+                                />
 
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                                {/* complete */}
+                                {task.completed ? (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
 
-                                    onDelete(task._id);
-                                    setOpenTaskMenu(null);
-                                }}
-                                style={{
-                                    ...menuItemStyle,
-                                    color: "#ff6b6b",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
+                                            onRestore(task);
+                                            setOpenTaskMenu(null);
+                                        }}
+                                        style={menuItemStyle}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.04)";
 
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "transparent";
 
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                    >
+                                        Restore
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            onComplete(task);
+                                            setOpenTaskMenu(null);
+                                        }}
+                                        style={menuItemStyle}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.04)";
+
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "transparent";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                    >
+                                        Complete
+                                    </button>
+                                )}
+
+                                <div
+                                    style={{
+                                        height: "1px",
+                                        background:
+                                            "rgba(255,255,255,0.05)",
+                                        margin: "4px 0",
+                                    }}
+                                />
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        onDelete(task._id);
+                                        setOpenTaskMenu(null);
+                                    }}
+                                    style={{
+                                        ...menuItemStyle,
+                                        color: "#ff6b6b",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
+                                    }}
+                                >
+                                    Delete Task
+                                </button>
+                            </div>
+                        </FloatingLayer>
                     )}
                 </div>
             </div>

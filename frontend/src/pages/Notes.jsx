@@ -1,5 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
-// test 
+
 import {
   Search,
   ArrowUpDown,
@@ -354,11 +354,24 @@ function Notes() {
     },
   ];
 
+  const navigation =
+    performance.getEntriesByType("navigation")[0];
+
+  const wasReload =
+    sessionStorage.getItem("notes-page-reload") === "true";
+
+  const isReload =
+    navigation?.type === "reload";
+
   const [activeTab, setActiveTab] =
-    useState(() =>
-      localStorage.getItem("notes-active-tab") ||
-      "notes"
-    );
+    useState(() => {
+      const saved =
+        localStorage.getItem("notes-active-tab");
+
+      return wasReload
+        ? saved || "notes"
+        : "notes";
+    });
 
   useEffect(() => {
     localStorage.setItem(
@@ -366,6 +379,29 @@ function Notes() {
       activeTab
     );
   }, [activeTab]);
+
+  useEffect(() => {
+    sessionStorage.removeItem("notes-page-reload");
+
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem(
+        "notes-page-reload",
+        "true"
+      );
+    };
+
+    window.addEventListener(
+      "beforeunload",
+      handleBeforeUnload
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeunload",
+        handleBeforeUnload
+      );
+    };
+  }, []);
 
   useEffect(() => {
     loadNotes();
@@ -653,6 +689,26 @@ function Notes() {
           )
         );
 
+        setFolders((prev) =>
+          prev.map((folder) => ({
+            ...folder,
+            notes: folder.notes?.filter(
+              (note) => note._id !== noteId
+            ),
+          }))
+        );
+
+        setViewingFolder((prev) =>
+          prev
+            ? {
+              ...prev,
+              notes: prev.notes?.filter(
+                (note) => note._id !== noteId
+              ),
+            }
+            : prev
+        );
+
         setEditingNote(null);
 
         setToast(
@@ -842,6 +898,31 @@ function Notes() {
       "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
   };
 
+  const isNotesTab = activeTab === "notes";
+
+  const headerTitle = isNotesTab
+    ? "Notes"
+    : "Folders";
+
+  const headerDescription = isNotesTab
+    ? "Manage and organize your notes."
+    : "Manage and organize your folders.";
+
+  const itemCount = isNotesTab
+    ? totalNotes
+    : folders.length;
+
+  const itemLabel = isNotesTab
+    ? "Note"
+    : "Folder";
+
+  const headerCount =
+    itemCount === 0
+      ? `No ${itemLabel}s`
+      : itemCount === 1
+        ? `1 ${itemLabel}`
+        : `${itemCount} ${itemLabel}s`;
+
   return (
     <MainLayout>
       <div
@@ -882,7 +963,7 @@ function Notes() {
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  Notes
+                  {headerTitle}
                 </h1>
 
                 <p
@@ -892,7 +973,7 @@ function Notes() {
                     fontWeight: "300",
                   }}
                 >
-                  Manage and organize your notes.
+                  {headerDescription}
                 </p>
               </div>
 
@@ -1948,7 +2029,7 @@ function Notes() {
                 fontWeight: "300",
               }}
             >
-              {totalNotes + " Notes" || "No notes yet"}
+              {headerCount}
             </p>
           </div>
 

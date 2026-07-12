@@ -10,6 +10,9 @@ import {
     useRef,
 } from "react";
 
+import SubmenuTrigger from "../SubmenuTrigger";
+import FloatingLayer from "../FloatingLayer";
+
 function NoteCard({
     note,
     onClick,
@@ -30,30 +33,35 @@ function NoteCard({
     onAddComment,
 }) {
     const menuItemStyle = {
-        width: "100%",
-
-        padding: "10px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
 
         background: "transparent",
 
         border: "none",
 
-        borderRadius: "10px",
-
         color: "var(--text-primary)",
 
-        textAlign: "left",
+        padding: "10px 14px",
 
-        fontSize: "0.8rem",
-
-        fontWeight: "300",
+        borderRadius: "999px",
 
         cursor: "pointer",
 
+        textAlign: "left",
+
+        fontSize: "0.78rem",
+
+        fontWeight: "300",
+
         transition: "all 0.2s ease",
+
+        width: "100%",
     };
 
     const menuRef = useRef(null);
+    const menuButtonRef = useRef(null);
 
     useEffect(() => {
         const handleOutsideClick = (event) => {
@@ -142,6 +150,7 @@ function NoteCard({
                     }}
                 >
                     <button
+                        ref={menuButtonRef}
                         onClick={(e) => {
                             e.stopPropagation();
 
@@ -179,147 +188,303 @@ function NoteCard({
                     >
                         <Ellipsis size={18} />
                     </button>
-
                     {openNoteMenu === note._id && (
-                        <div
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
-                            style={{
-                                position: "absolute",
-
-                                top: "24px",
-                                right: 0,
-
-                                minWidth: "140px",
-
-                                background:
-                                    "rgba(20,20,20,0.95)",
-
-                                backdropFilter:
-                                    "blur(20px)",
-
-                                border:
-                                    "1px solid rgba(255,255,255,0.08)",
-
-                                borderRadius: "16px",
-
-                                overflow: "hidden",
-
-                                zIndex: 100,
-                            }}
+                        <FloatingLayer
+                            anchorRef={menuButtonRef}
+                            open={true}
+                            placement="bottom"
+                            offset={8}
                         >
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-
-                                    onEdit(note);
-                                    setOpenNoteMenu(null);
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                Edit
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                Add To Folder
-                            </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
-                                style={menuItemStyle}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
-
-                                    e.currentTarget.style.color =
-                                        "#F5F5F5";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
-
-                                    e.currentTarget.style.color =
-                                        "var(--text-primary)";
-                                }}
-                            >
-                                Archive
-                            </button>
-
-                            {/* divider */}
                             <div
+                                onClick={(e) =>
+                                    e.stopPropagation()
+                                }
                                 style={{
-                                    height: "1px",
+                                    minWidth: "180px",
+
                                     background:
-                                        "rgba(255,255,255,0.05)",
-                                    margin: "4px 0",
-                                }}
-                            />
+                                        "rgba(20, 20, 20, 0)",
 
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                                    backdropFilter:
+                                        "blur(8px)",
 
-                                    onDelete(note._id);
-                                    setOpenNoteMenu(null);
-                                }}
-                                style={{
-                                    ...menuItemStyle,
-                                    color: "#ff6b6b",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgba(255,255,255,0.04)";
+                                    border:
+                                        "1px solid rgba(255,255,255,0.10)",
 
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "transparent";
+                                    boxShadow:
+                                        "0 20px 50px rgba(0,0,0,0.35)",
 
-                                    e.currentTarget.style.color =
-                                        "#ff6b6b";
+                                    borderRadius: "18px",
+
+                                    padding: "8px",
+
+                                    display: "flex",
+
+                                    overflow: "visible",
+
+                                    flexDirection: "column",
+
+                                    gap: "4px",
+
+                                    zIndex: 2001,
                                 }}
                             >
-                                Delete
-                            </button>
-                        </div>
+                                {/* CURRENT FOLDER (IF ANY GREYED )*/}
+                                {/* add to folder */}
+                                {/* will eventually be a second glass panel that opens existing notes and add new note */}
+                                <SubmenuTrigger
+                                    trigger={
+                                        <button
+                                            style={menuItemStyle}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.04)";
+
+                                                e.currentTarget.style.color =
+                                                    "#F5F5F5";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "transparent";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-primary)";
+                                            }}
+                                        >
+                                            Add to Folder
+                                        </button>
+                                    }
+                                >
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            setOpenNoteMenu(null);
+                                        }}
+                                        style={{
+                                            ...menuItemStyle,
+                                            opacity: "0.45",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.04)";
+
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "transparent";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                    >
+                                        Current Folder
+                                    </button>
+
+                                    <div
+                                        style={{
+                                            height: "1px",
+                                            background:
+                                                "rgba(255,255,255,0.05)",
+                                            margin: "4px 0",
+                                        }}
+                                    />
+
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+
+                                            // onCreateFolder?.(note);
+
+                                            setOpenNoteMenu(null);
+                                        }}
+                                        style={menuItemStyle}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background =
+                                                "rgba(255,255,255,0.04)";
+
+                                            e.currentTarget.style.color =
+                                                "#F5F5F5";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background =
+                                                "transparent";
+
+                                            e.currentTarget.style.color =
+                                                "var(--text-primary)";
+                                        }}
+                                    >
+                                        + New Folder
+                                    </button>
+                                    <div
+                                        style={{
+                                            height: "1px",
+                                            background:
+                                                "rgba(255,255,255,0.05)",
+                                            margin: "4px 0",
+                                        }}
+                                    />
+
+                                    <div
+                                        style={{
+                                            maxHeight: "220px",
+                                            overflowY: "auto",
+                                        }}
+                                    >
+                                        <button
+                                            //key={note._id}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                // onAddExistingNote?.(folder, note);
+
+                                                setOpenNoteMenu(null);
+                                            }}
+                                            style={menuItemStyle}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.04)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "transparent";
+                                            }}
+                                        >
+                                            Existing folders (map)
+                                        </button>
+                                        {/*
+                                        {notes.map((note) => (
+                                            <button
+                                                key={note._id}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+
+                                                    onAddExistingNote?.(
+                                                        folder,
+                                                        note
+                                                    );
+
+                                                    setOpenFolderMenu(null);
+                                                }}
+                                                style={menuItemStyle}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background =
+                                                        "rgba(255,255,255,0.04)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background =
+                                                        "transparent";
+                                                }}
+                                            >
+                                                {note.title || "Untitled"}
+                                            </button>
+                                        ))}
+                                    */}
+                                    </div>
+                                </SubmenuTrigger>
+
+                                <div
+                                    style={{
+                                        height: "1px",
+                                        background:
+                                            "rgba(255,255,255,0.05)",
+                                        margin: "4px 0",
+                                    }}
+                                />
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        onEdit?.(note);
+                                        setOpenNoteMenu(null);
+                                    }}
+                                    style={menuItemStyle}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+
+                                        e.currentTarget.style.color =
+                                            "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                >
+                                    View Note
+                                </button>
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        onEdit(note);
+                                        setOpenNoteMenu(null);
+                                    }}
+                                    style={menuItemStyle}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+
+                                        e.currentTarget.style.color =
+                                            "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+
+                                        e.currentTarget.style.color =
+                                            "var(--text-primary)";
+                                    }}
+                                >
+                                    Edit Note
+                                </button>
+
+                                <div
+                                    style={{
+                                        height: "1px",
+                                        background:
+                                            "rgba(255,255,255,0.05)",
+                                        margin: "4px 0",
+                                    }}
+                                />
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        onDelete(note._id);
+                                        setOpenNoteMenu(null);
+                                    }}
+                                    style={{
+                                        ...menuItemStyle,
+                                        color: "#ff6b6b",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background =
+                                            "rgba(255,255,255,0.04)";
+
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background =
+                                            "transparent";
+
+                                        e.currentTarget.style.color =
+                                            "#ff6b6b";
+                                    }}
+                                >
+                                    Delete Note
+                                </button>
+                            </div>
+                        </FloatingLayer>
                     )}
                 </div>
             </div>

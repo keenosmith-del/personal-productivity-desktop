@@ -30,7 +30,7 @@ import { getReminders } from "../services/reminderService";
 
 import TaskModal from "../components/Tasks/TaskModal";
 import ProjectModal from "../components/Projects/ProjectModal";
-import GoaModal from "../components/Goals/GoalModal";
+import GoalModal from "../components/Goals/GoalModal";
 import ReminderModal from "../components/Reminders/ReminderModal";
 import NoteModal from "../components/Notes/NoteModal";
 
