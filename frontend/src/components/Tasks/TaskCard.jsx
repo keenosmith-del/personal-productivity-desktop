@@ -31,6 +31,7 @@ function TaskCard({
     onToggleLike,
     onAddComment,
 }) {
+
     const menuItemStyle = {
         display: "flex",
         alignItems: "center",
@@ -50,7 +51,7 @@ function TaskCard({
 
         textAlign: "left",
 
-        fontSize: "0.78rem",
+        fontSize: "0.7rem",
 
         fontWeight: "300",
 
@@ -276,7 +277,10 @@ function TaskCard({
                                 "var(--text-secondary)";
                         }}
                     >
-                        <Ellipsis size={18} />
+                        <Ellipsis
+                            size={18}
+                            strokeWidth={1}
+                        />
                     </button>
                     {openTaskMenu === task._id && (
                         <FloatingLayer
@@ -793,6 +797,7 @@ function TaskCard({
                 >
                     <Flag
                         size={18}
+                        strokeWidth={1}
                         fill={
                             task.flagged
                                 ? "currentColor"
@@ -846,6 +851,7 @@ function TaskCard({
                     >
                         <MessageCircle
                             size={18}
+                            strokeWidth={1}
                             opacity={0.95}
                         />
 
@@ -898,7 +904,8 @@ function TaskCard({
                         }}
                     >
                         <Heart
-                            size={18.5}
+                            size={18}
+                            strokeWidth={1}
                             fill={
                                 task.liked
                                     ? "currentColor"

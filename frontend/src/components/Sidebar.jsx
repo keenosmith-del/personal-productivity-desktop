@@ -85,6 +85,34 @@ function Sidebar({ collapsed, setCollapsed }) {
   const [toast, setToast] =
     useState("");
 
+  const menuItemStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+
+    background: "transparent",
+
+    border: "none",
+
+    color: "var(--text-primary)",
+
+    padding: "10px 14px",
+
+    borderRadius: "999px",
+
+    cursor: "pointer",
+
+    textAlign: "left",
+
+    fontSize: "0.7rem",
+
+    fontWeight: "300",
+
+    transition: "all 0.2s ease",
+
+    width: "100%",
+  };
+
   // HANDLERS
   // task
   const handleCreateTask = async (
@@ -774,31 +802,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowTaskModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
@@ -830,31 +834,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowGoalModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
@@ -886,31 +866,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowProjectModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
@@ -942,31 +898,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowReminderModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
@@ -998,31 +930,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowNoteModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";
@@ -1054,31 +962,7 @@ function Sidebar({ collapsed, setCollapsed }) {
                   setShowQuickAdd(false);
                   setShowAlarmModal(true);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-
-                  background: "transparent",
-
-                  border: "none",
-
-                  color: "var(--text-primary)",
-
-                  padding: "10px 14px",
-
-                  borderRadius: "999px",
-
-                  cursor: "pointer",
-
-                  textAlign: "left",
-
-                  fontSize: "0.78rem",
-
-                  fontWeight: "300",
-
-                  transition: "all 0.2s ease",
-                }}
+                style={menuItemStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background =
                     "rgba(255,255,255,0.05)";

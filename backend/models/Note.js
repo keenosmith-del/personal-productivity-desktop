@@ -60,6 +60,16 @@ const noteSchema =
                 default: false,
             },
 
+            hidden: {
+                type: Boolean,
+                default: false,
+            },
+
+            archived: {
+                type: Boolean,
+                default: false,
+            },
+
             commentCount: {
                 type: Number,
                 default: 0,

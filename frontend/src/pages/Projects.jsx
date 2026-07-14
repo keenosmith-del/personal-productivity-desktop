@@ -13,6 +13,9 @@ import {
   ChartLine,
   Plus,
   Folder,
+  CircleCheck,
+  CirclePlus,
+  Trash,
 } from "lucide-react";
 
 import {
@@ -23,6 +26,8 @@ import {
 
 import ProjectCard from "../components/Projects/ProjectCard";
 import ProjectModal from "../components/Projects/ProjectModal";
+
+import FloatingLayer from "../components/FloatingLayer";
 
 import Toast from "../components/Toast";
 
@@ -174,7 +179,6 @@ function Projects() {
       }
     );
   };
-
 
   {/* ALL PROJECTS */ }
   {/* NO COLS */ }
@@ -604,6 +608,34 @@ function Projects() {
       "all 260ms cubic-bezier(0.22, 1, 0.36, 1)",
   };
 
+  const menuItemStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+
+    background: "transparent",
+
+    border: "none",
+
+    color: "var(--text-primary)",
+
+    padding: "10px 14px",
+
+    borderRadius: "999px",
+
+    cursor: "pointer",
+
+    textAlign: "left",
+
+    fontSize: "0.7rem",
+
+    fontWeight: "300",
+
+    transition: "all 0.2s ease",
+
+    width: "100%",
+  };
+
   return (
     <MainLayout>
       <div
@@ -708,21 +740,8 @@ function Projects() {
                   />
                 </button>
 
-                {/* ALL */}
+                {/* ARROW */}
                 <div
-                  onMouseEnter={() =>
-                    setShowActions(true)
-                  }
-                  onMouseLeave={() => {
-                    if (
-                      !actionsPinned &&
-                      !showSortMenu &&
-                      !showFilterMenu &&
-                      !showMoreMenu
-                    ) {
-                      setShowActions(false);
-                    }
-                  }}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -736,7 +755,7 @@ function Projects() {
                   {/* EXPAND ARROW */}
                   <button
                     onClick={() => {
-                      if (showActions && actionsPinned) {
+                      if (showActions) {
                         setShowActions(false);
 
                         setActionsPinned(false);
@@ -748,6 +767,12 @@ function Projects() {
                         setShowSortMenu(false);
 
                         setShowFilterMenu(false);
+
+                        setShowMoreMenu(false);
+                      } else {
+                        setShowActions(true);
+
+                        setActionsPinned(true);
                       }
                     }}
                     style={{
@@ -783,7 +808,7 @@ function Projects() {
                         : "translateX(0)",
                     }}
                   >
-                    {actionsPinned ? (
+                    {showActions ? (
                       <ArrowRight
                         size={16}
                         strokeWidth={1.5}
@@ -802,9 +827,9 @@ function Projects() {
                       width:
                         showActions
                           ? showSearchBar
-                            ? "330px"
-                            : "200px"
-                          : "0px",
+                            ? "320px"
+                            : "180px"
+                          : "15px",
 
                       overflow: "visible",
 
@@ -992,101 +1017,100 @@ function Projects() {
                               strokeWidth={1.6}
                             />
                           </button>
-
                           {showSortMenu && (
-                            <div
-                              style={{
-                                position: "fixed",
-
-                                top: "42px",
-                                right: 0,
-
-                                width: "170px",
-
-                                background:
-                                  "rgba(20,20,20,0.92)",
-
-                                backdropFilter:
-                                  "blur(24px)",
-
-                                border:
-                                  "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                  "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                padding: "8px",
-
-                                display: "flex",
-
-                                flexDirection: "column",
-
-                                gap: "4px",
-
-                                zIndex: 9999999,
-                              }}
+                            <FloatingLayer
+                              anchorRef={sortRef}
+                              open={true}
+                              placement="bottom"
+                              offset={8}
                             >
-                              {[
-                                "newest",
-                                "oldest",
-                                "priority",
-                                "dueDate",
-                                "alphabetical",
-                              ].map((option) => (
-                                <button
-                                  key={option}
-                                  onClick={() => {
-                                    setSortBy(option);
+                              <div
+                                style={{
+                                  width: "170px",
 
-                                    setShowSortMenu(false);
+                                  background:
+                                    "rgba(20,20,20,0)",
 
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
+                                  backdropFilter:
+                                    "blur(8px)",
 
-                                    border: "none",
+                                  border:
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                                    color:
-                                      sortBy === option
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
+                                  boxShadow:
+                                    "0 20px 50px rgba(0,0,0,0.35)",
 
-                                    padding: "10px 14px",
+                                  borderRadius: "18px",
 
-                                    borderRadius: "12px",
+                                  padding: "8px",
 
-                                    cursor: "pointer",
+                                  display: "flex",
 
-                                    textAlign: "left",
+                                  flexDirection: "column",
 
-                                    fontSize: "0.78rem",
+                                  gap: "4px",
 
-                                    fontWeight: "300",
+                                  zIndex: 2001,
+                                }}
+                              >
+                                {[
+                                  "newest",
+                                  "oldest",
+                                  "priority",
+                                  "alphabetical",
+                                ].map((option) => (
+                                  <button
+                                    key={option}
+                                    onClick={() => {
+                                      setSortBy(option);
 
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {option === "dueDate"
-                                    ? "Due Date"
-                                    : option === "alphabetical"
+                                      setShowSortMenu(false);
+
+                                      setShowFilterMenu(false);
+                                    }}
+                                    style={{
+                                      ...menuItemStyle,
+
+                                      color:
+                                        sortBy === option
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)",
+
+                                      opacity:
+                                        sortBy === option
+                                          ? 1
+                                          : 0.55,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                      e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        "transparent";
+
+                                      e.currentTarget.style.color =
+                                        sortBy === option
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)";
+
+                                      e.currentTarget.style.opacity =
+                                        sortBy === option
+                                          ? "1"
+                                          : "0.55";
+                                    }}
+                                  >
+                                    {option === "alphabetical"
                                       ? "A → Z"
                                       : option.charAt(0).toUpperCase() +
                                       option.slice(1)}
-                                </button>
-                              ))}
-                            </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </FloatingLayer>
                           )}
                         </div>
 
@@ -1130,232 +1154,215 @@ function Projects() {
                               strokeWidth={1.6}
                             />
                           </button>
-
                           {showFilterMenu && (
-                            <div
-                              style={{
-                                position: "absolute",
-
-                                top: "42px",
-                                right: 0,
-
-                                width: "200px",
-
-                                background:
-                                  "rgba(20,20,20,0.92)",
-
-                                backdropFilter:
-                                  "blur(24px)",
-
-                                border:
-                                  "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                  "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                padding: "8px",
-
-                                display: "flex",
-
-                                flexDirection: "column",
-
-                                gap: "4px",
-
-                                zIndex: 2001,
-                              }}
+                            <FloatingLayer
+                              anchorRef={sortRef}
+                              open={true}
+                              placement="bottom"
+                              offset={8}
                             >
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Category
-                              </p>
-
-                              {[
-                                "All",
-                                "Work",
-                                "Study",
-                                "Personal",
-                                "Health",
-                              ].map((category) => (
-                                <button
-                                  key={category}
-                                  onClick={() => {
-                                    setSelectedCategory(category);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedCategory === category
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {category}
-                                </button>
-                              ))}
-
                               <div
                                 style={{
-                                  height: "1px",
-                                  background: "rgba(255,255,255,0.06)",
-                                  margin: "8px 0",
-                                }}
-                              />
+                                  width: "170px",
 
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Priority
-                              </p>
-
-                              {[
-                                "All",
-                                "High",
-                                "Medium",
-                                "Low",
-                              ].map((priority) => (
-                                <button
-                                  key={priority}
-                                  onClick={() => {
-                                    setSelectedPriority(priority);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedPriority === priority
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {priority}
-                                </button>
-                              ))}
-
-                              <div
-                                style={{
-                                  height: "1px",
                                   background:
-                                    "rgba(255,255,255,0.06)",
+                                    "rgba(20,20,20,0)",
 
-                                  margin: "8px 0",
-                                }}
-                              />
+                                  backdropFilter:
+                                    "blur(8px)",
 
-                              <button
-                                onClick={() => {
-                                  setSelectedCategory("All");
-                                  setSelectedPriority("All");
-                                  setShowFilterMenu(false);
-                                }}
-                                style={{
-                                  background: "transparent",
+                                  border:
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                                  border: "none",
+                                  boxShadow:
+                                    "0 20px 50px rgba(0,0,0,0.35)",
 
-                                  color:
-                                    "var(--text-secondary)",
+                                  borderRadius: "18px",
 
-                                  padding: "10px 14px",
+                                  padding: "8px",
 
-                                  borderRadius: "12px",
+                                  display: "flex",
 
-                                  cursor: "pointer",
+                                  flexDirection: "column",
 
-                                  textAlign: "left",
+                                  gap: "4px",
 
-                                  fontSize: "0.78rem",
-
-                                  fontWeight: "300",
-
-                                  transition:
-                                    "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.06)";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background =
-                                    "transparent";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
+                                  zIndex: 2001,
                                 }}
                               >
-                                Clear Filters
-                              </button>
-                            </div>
+                                <p
+                                  style={{
+                                    ...menuItemStyle,
+                                    fontSize: "0.72rem",
+                                    opacity: 0.45,
+                                    margin: 0,
+                                  }}
+                                >
+                                  Category
+                                </p>
+
+                                {[
+                                  "All",
+                                  "Work",
+                                  "Study",
+                                  "Personal",
+                                  "Health",
+                                ].map((category) => (
+                                  <button
+                                    key={category}
+                                    onClick={() => {
+                                      setSelectedCategory(category);
+
+                                      setShowSortMenu(false);
+
+                                      setShowFilterMenu(false);
+                                    }}
+                                    style={{
+                                      ...menuItemStyle,
+
+                                      color:
+                                        selectedCategory === category
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)",
+
+                                      opacity:
+                                        selectedCategory === category
+                                          ? 1
+                                          : 0.55,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                      e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        "transparent";
+
+                                      e.currentTarget.style.color =
+                                        selectedCategory === category
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)";
+
+                                      e.currentTarget.style.opacity =
+                                        selectedCategory === category
+                                          ? "1"
+                                          : "0.55";
+                                    }}
+                                  >
+                                    {category}
+                                  </button>
+                                ))}
+
+                                <div
+                                  style={{
+                                    height: "1px",
+                                    background: "rgba(255,255,255,0.06)",
+                                    margin: "8px 0",
+                                  }}
+                                />
+
+                                <p
+                                  style={{
+                                    ...menuItemStyle,
+                                    fontSize: "0.72rem",
+                                    opacity: 0.45,
+                                    margin: 0,
+                                  }}
+                                >
+                                  Priority
+                                </p>
+
+                                {[
+                                  "All",
+                                  "High",
+                                  "Medium",
+                                  "Low",
+                                ].map((priority) => (
+                                  <button
+                                    key={priority}
+                                    onClick={() => {
+                                      setSelectedPriority(priority);
+
+                                      setShowFilterMenu(false);
+                                    }}
+                                    style={{
+                                      ...menuItemStyle,
+
+                                      color:
+                                        selectedPriority === priority
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)",
+
+                                      opacity:
+                                        selectedPriority === priority
+                                          ? 1
+                                          : 0.55,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                      e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        "transparent";
+
+                                      e.currentTarget.style.color =
+                                        selectedPriority === priority
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)";
+
+                                      e.currentTarget.style.opacity =
+                                        selectedPriority === priority
+                                          ? "1"
+                                          : "0.55";
+                                    }}
+                                  >
+                                    {priority}
+                                  </button>
+                                ))}
+
+                                <div
+                                  style={{
+                                    height: "1px",
+                                    background:
+                                      "rgba(255,255,255,0.06)",
+
+                                    margin: "8px 0",
+                                  }}
+                                />
+
+                                <button
+                                  onClick={() => {
+                                    setSelectedCategory("All");
+                                    setSelectedPriority("All");
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={menuItemStyle}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.04)";
+
+                                    e.currentTarget.style.color =
+                                      "#f5f5f5";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+
+                                    e.currentTarget.style.color =
+                                      "var(--text-secondary)";
+                                  }}
+                                >
+                                  Clear Filters
+                                </button>
+                              </div>
+                            </FloatingLayer>
                           )}
                         </div>
                       </div>
@@ -1400,172 +1407,143 @@ function Projects() {
                             strokeWidth={1.6}
                           />
                         </button>
-
                         {showMoreMenu && (
-                          <div
-                            style={{
-                              position: "fixed",
-
-                              top: "42px",
-                              right: 0,
-
-                              width: "180px",
-
-                              background: "rgba(20,20,20,0.92)",
-
-                              backdropFilter: "blur(24px)",
-                              WebkitBackdropFilter: "blur(24px)",
-
-                              border: "1px solid rgba(255,255,255,0.10)",
-
-                              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-
-                              borderRadius: "18px",
-
-                              overflow: "hidden",
-
-                              padding: "8px",
-
-                              display: "flex",
-                              flexDirection: "column",
-
-                              gap: "4px",
-
-                              zIndex: 2001,
-                            }}
+                          <FloatingLayer
+                            anchorRef={moreRef}
+                            open={true}
+                            placement="bottom"
+                            offset={8}
                           >
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowProjectModal(true);
-                              }}
+                            <div
                               style={{
-                                background: "transparent",
+                                width: "180px",
 
-                                border: "none",
+                                background:
+                                  "rgba(20,20,20,0)",
 
-                                color: "var(--text-secondary)",
+                                backdropFilter:
+                                  "blur(8px)",
 
-                                padding: "10px 14px",
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
 
-                                borderRadius: "12px",
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
 
-                                cursor: "pointer",
+                                borderRadius: "18px",
 
-                                textAlign: "left",
+                                padding: "8px",
 
-                                fontSize: "0.78rem",
+                                display: "flex",
 
-                                fontWeight: "300",
+                                flexDirection: "column",
 
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
+                                gap: "4px",
 
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
+                                zIndex: 2001,
                               }}
                             >
-                              Create Project
-                            </button>
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowProjectModal(true);
+                                }}
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearCompleted(true);
-                              }}
-                              style={{
-                                background: "transparent",
+                                  e.currentTarget.style.color =
+                                    "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                border: "none",
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                              >
+                                <CirclePlus
+                                  size={13}
+                                  strokeWidth={1}
+                                />
+                                New Project
+                              </button>
 
-                                color: "var(--text-secondary)",
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.05)",
+                                  margin: "4px 0",
+                                }}
+                              />
 
-                                padding: "10px 14px",
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowClearCompleted(true);
+                                }}
+                                style={{
+                                  ...menuItemStyle,
+                                  color: "#728a6e",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                borderRadius: "12px",
+                                  e.currentTarget.style.color =
+                                    "#728a6e";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                cursor: "pointer",
+                                  e.currentTarget.style.color =
+                                    "#728a6e";
+                                }}
+                              >
+                                <CircleCheck
+                                  size={13}
+                                  strokeWidth={1}
+                                />
 
-                                textAlign: "left",
+                                Clear Completed
+                              </button>
 
-                                fontSize: "0.78rem",
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowClearActive(true);
+                                }}
+                                style={{
+                                  ...menuItemStyle,
+                                  color: "#ff6b6b",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                fontWeight: "300",
+                                  e.currentTarget.style.color =
+                                    "#ff6b6b";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear Completed
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearActive(true);
-                              }}
-                              style={{
-                                background: "transparent",
-
-                                border: "none",
-
-                                color: "var(--text-secondary)",
-
-                                padding: "10px 14px",
-
-                                borderRadius: "12px",
-
-                                cursor: "pointer",
-
-                                textAlign: "left",
-
-                                fontSize: "0.78rem",
-
-                                fontWeight: "300",
-
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear All
-                            </button>
-                          </div>
+                                  e.currentTarget.style.color =
+                                    "#ff6b6b";
+                                }}
+                              >
+                                <Trash
+                                  size={13}
+                                  strokeWidth={1}
+                                />
+                                Clear All
+                              </button>
+                            </div>
+                          </FloatingLayer>
                         )}
                       </div>
                     </div>

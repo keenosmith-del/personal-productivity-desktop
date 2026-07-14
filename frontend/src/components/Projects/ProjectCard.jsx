@@ -50,7 +50,7 @@ function ProjectCard({
 
         textAlign: "left",
 
-        fontSize: "0.78rem",
+        fontSize: "0.7rem",
 
         fontWeight: "300",
 
@@ -276,7 +276,10 @@ function ProjectCard({
                                 "var(--text-secondary)";
                         }}
                     >
-                        <Ellipsis size={18} />
+                        <Ellipsis
+                            size={18}
+                            strokeWidth={1}
+                        />
                     </button>
                     {openProjectMenu === project._id && (
                         <FloatingLayer
@@ -767,6 +770,7 @@ function ProjectCard({
                 >
                     <Flag
                         size={18}
+                        strokeWidth={1}
                         fill={
                             project.flagged
                                 ? "currentColor"
@@ -820,6 +824,7 @@ function ProjectCard({
                     >
                         <MessageCircle
                             size={18}
+                            strokeWidth={1}
                             opacity={0.95}
                         />
 
@@ -872,7 +877,8 @@ function ProjectCard({
                         }}
                     >
                         <Heart
-                            size={18.5}
+                            size={18}
+                            strokeWidth={1}
                             fill={
                                 project.liked
                                     ? "currentColor"

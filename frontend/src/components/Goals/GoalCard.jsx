@@ -50,7 +50,7 @@ function GoalCard({
 
         textAlign: "left",
 
-        fontSize: "0.78rem",
+        fontSize: "0.7rem",
 
         fontWeight: "300",
 
@@ -276,7 +276,10 @@ function GoalCard({
                                 "var(--text-secondary)";
                         }}
                     >
-                        <Ellipsis size={18} />
+                        <Ellipsis
+                            size={18}
+                            strokeWidth={1}
+                        />
                     </button>
                     {openGoalMenu === goal._id && (
                         <FloatingLayer
@@ -794,6 +797,7 @@ function GoalCard({
                 >
                     <Flag
                         size={18}
+                        strokeWidth={1}
                         fill={
                             goal.flagged
                                 ? "currentColor"
@@ -847,6 +851,7 @@ function GoalCard({
                     >
                         <MessageCircle
                             size={18}
+                            strokeWidth={1}
                             opacity={0.95}
                         />
 
@@ -899,7 +904,8 @@ function GoalCard({
                         }}
                     >
                         <Heart
-                            size={18.5}
+                            size={18}
+                            strokeWidth={1}
                             fill={
                                 goal.liked
                                     ? "currentColor"

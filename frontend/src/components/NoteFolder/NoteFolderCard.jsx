@@ -4,6 +4,8 @@ import {
     Heart,
     Pin,
     Folder,
+    Archive,
+    EyeOff,
 } from "lucide-react";
 
 import {
@@ -38,18 +40,41 @@ function NoteFolderCard({
 
     openFolderMenu,
     setOpenFolderMenu,
+
+    //added
+    showHidden,
 }) {
     // states
-    const previewNotes =
-        folder.notes?.slice(0, 2) || [];
+    const visibleNotes = showHidden
+        ? folder.notes || []
+        : (folder.notes || []).filter(
+            (note) => !note.hidden
+        );
 
-    const noteCount =
-        folder.notes?.length || 0;
+    const previewNotes = visibleNotes.slice(0, 2);
+
+    const noteCount = visibleNotes.length;
 
     const previewSlots = [
         previewNotes[0] || null,
         previewNotes[1] || null,
     ];
+
+    const tooltip =
+        `${noteCount} ${noteCount === 1
+            ? "Note"
+            : "Notes"
+        }`;
+
+    // tooltip
+    const [showTooltip, setShowTooltip] =
+        useState(false);
+
+    const [tooltipText, setTooltipText] =
+        useState("");
+
+    const chipRef = useRef(null);
+
 
     const menuButtonRef = useRef(null);
 
@@ -108,6 +133,15 @@ function NoteFolderCard({
         transition: "all 0.2s ease",
 
         width: "100%",
+
+        // added
+        overflow: "hidden",
+
+        whiteSpace: "nowrap",
+
+        textOverflow: "ellipsis",
+
+        display: "flex",
     };
 
     // refs
@@ -138,11 +172,18 @@ function NoteFolderCard({
         };
     }, [setOpenFolderMenu]);
 
-    // handlers
+    const availableNotes = notes.filter(
+        (note) =>
+            !folder.notes?.some(
+                (folderNote) =>
+                    folderNote._id.toString() ===
+                    note._id.toString()
+            )
+    );
+
     return (
         <div
             onClick={() => {
-                console.log("CARD CLICK", folder.title);
                 onView?.(folder);
             }}
             style={{
@@ -292,7 +333,8 @@ function NoteFolderCard({
                                     e.stopPropagation()
                                 }
                                 style={{
-                                    minWidth: "180px",
+                                    // change for width of dropdown
+                                    width: "196px",
 
                                     background:
                                         "rgba(20, 20, 20, 0)",
@@ -387,32 +429,46 @@ function NoteFolderCard({
                                             overflowY: "auto",
                                         }}
                                     >
-                                        {notes.map((note) => (
-                                            <button
-                                                key={note._id}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-
-                                                    onAddExistingNote?.(
-                                                        folder,
-                                                        note
-                                                    );
-
-                                                    setOpenFolderMenu(null);
-                                                }}
-                                                style={menuItemStyle}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.background =
-                                                        "rgba(255,255,255,0.04)";
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.background =
-                                                        "transparent";
+                                        {availableNotes.length === 0 ? (
+                                            <div
+                                                style={{
+                                                    padding: "8px 12px",
+                                                    fontSize: "0.72rem",
+                                                    color: "var(--text-secondary)",
+                                                    opacity: 0.55,
+                                                    textAlign: "center",
                                                 }}
                                             >
-                                                {note.title || "Untitled"}
-                                            </button>
-                                        ))}
+                                                No available notes
+                                            </div>
+                                        ) : (
+                                            availableNotes.map((note) => (
+                                                <button
+                                                    key={note._id}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+
+                                                        onAddExistingNote?.(
+                                                            folder,
+                                                            note
+                                                        );
+
+                                                        setOpenFolderMenu(null);
+                                                    }}
+                                                    style={menuItemStyle}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,255,255,0.04)";
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.background =
+                                                            "transparent";
+                                                    }}
+                                                >
+                                                    {note.title || "Untitled"}
+                                                </button>
+                                            ))
+                                        )}
                                     </div>
                                 </SubmenuTrigger>
 
@@ -597,17 +653,23 @@ function NoteFolderCard({
                 }}
             >
                 <div
+                    ref={chipRef}
                     style={{
                         ...linkedItemStyle,
 
                         marginRight: "-6px",
                     }}
                     onMouseEnter={(e) => {
+
+                        setShowTooltip(true);
+
+                        setTooltipText(tooltip);
+
                         e.currentTarget.style.transform =
                             "translateY(-1px) scale(1.08)";
 
                         e.currentTarget.style.border =
-                            "1px solid rgba(255,255,255,0.12)";
+                            "1px solid rgba(255, 255, 255, 0.08)";
 
                         e.currentTarget.style.boxShadow =
                             "0 8px 20px rgba(0,0,0,0.25)";
@@ -615,7 +677,11 @@ function NoteFolderCard({
                         e.currentTarget.style.color =
                             "var(--text-primary)";
                     }}
+
                     onMouseLeave={(e) => {
+
+                        setShowTooltip(false);
+
                         e.currentTarget.style.transform =
                             "translateY(0) scale(1)";
 
@@ -632,6 +698,54 @@ function NoteFolderCard({
                     N
                 </div>
             </div>
+            {showTooltip && (
+                <FloatingLayer
+                    anchorRef={chipRef}
+                    open={showTooltip}
+                    placement="bottom"
+                    offset={8}
+                    refreshKey={tooltipText}
+                >
+                    <div
+                        style={{
+                            width: "120px",
+
+                            padding: "8px 14px",
+
+                            borderRadius: "36px",
+
+                            background:
+                                "rgba(18,18,18,0)",
+
+                            backdropFilter:
+                                "blur(5px)",
+
+                            border:
+                                "1px solid rgba(255,255,255,0.02)",
+
+                            boxShadow:
+                                "0 14px 40px rgba(0,0,0,0.07)",
+
+                            textAlign: "center",
+
+                            pointerEvents: "none",
+                        }}
+                    >
+                        <div
+                            style={{
+                                fontSize: "0.6rem",
+
+                                fontWeight: "250",
+
+                                color:
+                                    "var(--text-secondary)",
+                            }}
+                        >
+                            {tooltipText}
+                        </div>
+                    </div>
+                </FloatingLayer>
+            )}
 
             {/* ROW 4 numNotes in folder */}
             <div
@@ -660,10 +774,13 @@ function NoteFolderCard({
                         "18px",
                 }}
             >
-                Created{" "}
                 {new Date(
                     folder.createdAt
-                ).toLocaleDateString()}
+                ).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                })}
             </div>
 
             {/* ROW 6 pin flag heart */}
@@ -715,6 +832,7 @@ function NoteFolderCard({
                 >
                     <Pin
                         size={18}
+                        strokeWidth={1}
                         fill={
                             folder.pinned
                                 ? "currentColor"
@@ -733,6 +851,72 @@ function NoteFolderCard({
                         gap: "12px",
                     }}
                 >
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                        style={{
+                            cursor: "pointer",
+
+                            color: "var(--text-secondary)",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.color = "var(--text-primary)";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                        }}
+                    >
+                        <EyeOff
+                            size={18}
+                            strokeWidth={1}
+                        />
+                    </div>
+
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                        style={{
+                            cursor: "pointer",
+
+                            color: "var(--text-secondary)",
+
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(-1px) scale(1.08)";
+
+                            e.currentTarget.style.color = "var(--text-primary)";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                                "translateY(0) scale(1)";
+
+                            e.currentTarget.style.color =
+                                "var(--text-secondary)";
+
+                        }}
+                    >
+                        <Archive
+                            size={18}
+                            strokeWidth={1}
+                        />
+                    </div>
+
                     <div
                         onClick={(e) => {
                             e.stopPropagation();
@@ -771,6 +955,7 @@ function NoteFolderCard({
                     >
                         <Flag
                             size={18}
+                            strokeWidth={1}
                             fill={
                                 folder.flagged
                                     ? "currentColor"
@@ -814,6 +999,7 @@ function NoteFolderCard({
                     >
                         <Heart
                             size={18.5}
+                            strokeWidth={1}
                             fill={
                                 folder.liked
                                     ? "currentColor"

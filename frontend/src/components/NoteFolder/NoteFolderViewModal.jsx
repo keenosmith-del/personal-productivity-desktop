@@ -3,14 +3,25 @@ import {
     Ellipsis,
     Heart,
     Flag,
+    EyeOff,
+    Archive,
 } from "lucide-react";
 
-import { useState, useEffect } from "react";
+// MAKING CHANGES
+
+import { useState, useEffect, useRef } from "react";
 
 import Toast from "../Toast";
 
 import NoteModal from "../Notes/NoteModal";
+import NoteFolderCreateModal from "../NoteFolder/NoteFolderCreateModal";
+
 import { updateNote, deleteNote } from "../../services/noteService";
+
+import FloatingLayer from "../FloatingLayer";
+import SubmenuTrigger from "../SubmenuTrigger";
+
+import DeleteConfirmModal from "../DeleteConfirmModal";
 
 function NoteFolderViewModal({
     folder,
@@ -20,6 +31,8 @@ function NoteFolderViewModal({
 
     onToggleLike,
     onToggleFlag,
+    onToggleHide,
+    onToggleArchive,
 
     onRemoveNote,
     onDeleteNote,
@@ -28,23 +41,60 @@ function NoteFolderViewModal({
 
     onClose,
 
+    onEditFolder,
+    onDeleteFolder,
+    onUpdateFolder,
+    onClearFolder,
+
+    onCreateNote,
+    onAddExistingNote,
+
+    notes,
+    showHidden,
+
     // expanded,
-    // remainingCouunt,
+    // remainingCount,
     // notes,
 }) {
-    // placeholder until folder-note relationship is wired
-    const notes =
-        folder.notes || [];
+    const folderNotes = showHidden
+        ? (folder.notes || [])
+        : (folder.notes || []).filter(
+            (note) => !note.hidden
+        );
 
-    const expanded = false;
+    const availableNotes = notes.filter(
+        (note) =>
+            !folderNotes.some(
+                (folderNote) =>
+                    folderNote._id.toString() ===
+                    note._id.toString()
+            )
+    );
 
-    const remainingCount = 0;
+    const [expanded, setExpanded] =
+        useState(false);
+
+    const visibleNotes = expanded
+        ? folderNotes
+        : folderNotes.slice(0, 4);
+
+    const remainingCount =
+        Math.max(folderNotes.length - 4, 0);
 
     const date = new Date();
 
     // states
     const [editingNote, setEditingNote] =
         useState(null);
+
+    const [editingFolder, setEditingFolder] =
+        useState(null);
+
+    const [creatingNote, setCreatingNote] =
+        useState(false);
+
+    const [showClearConfirm, setShowClearConfirm] =
+        useState(false);
 
     const [toast, setToast] =
         useState("");
@@ -56,6 +106,10 @@ function NoteFolderViewModal({
     const [openNoteMenu, setOpenNoteMenu] =
         useState(null);
 
+    // ellipsis on modal
+    const [openFolderMenu, setOpenFolderMenu] =
+        useState(null);
+
     // one modal open at a time
     const [showMainContent, setShowMainContent] = useState(true);
 
@@ -64,6 +118,25 @@ function NoteFolderViewModal({
 
     const [showDeleteConfirm, setShowDeleteConfirm] =
         useState(false);
+
+    const menuButtonRef = useRef(null);
+
+    const menuRef = useRef(null);
+
+    const [menuAnchorEl, setMenuAnchorEl] =
+        useState(null);
+
+    const menuRefCard = useRef(null);
+
+    const formatCreatedDate = (date) =>
+        new Date(date).toLocaleDateString(
+            "en-GB",
+            {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            }
+        );
 
     // handle
     const handleNoteClick = (note) => {
@@ -74,11 +147,11 @@ function NoteFolderViewModal({
     };
 
     const handleShowAll = () => {
-        // build
+        setExpanded(true);
     };
 
     const handleShowLess = () => {
-        // build
+        setExpanded(false);
     };
 
     useEffect(() => {
@@ -94,14 +167,62 @@ function NoteFolderViewModal({
         }
     }, [folder, editingNote]);
 
-    // need const formatCreatedDate
+    // outside click modal meatball 
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (
+                openFolderMenu &&
+                !menuRef.current?.contains(e.target) &&
+                !menuButtonRef.current?.contains(e.target)
+            ) {
+                setOpenFolderMenu(null);
+            }
+        }
+
+        document.addEventListener(
+            "mousedown",
+            handleClickOutside
+        );
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+        };
+    }, [openFolderMenu]);
+
+    // outside click individual meatball on card
+    useEffect(() => {
+        function handleCardMenuOutsideClick(e) {
+            if (
+                openNoteMenu &&
+                !menuRefCard.current?.contains(e.target) &&
+                !menuAnchorEl?.contains(e.target)
+            ) {
+                setOpenNoteMenu(null);
+                setMenuAnchorEl(null);
+            }
+        }
+
+        document.addEventListener(
+            "mousedown",
+            handleCardMenuOutsideClick
+        );
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleCardMenuOutsideClick
+            );
+        };
+    }, [openNoteMenu, menuAnchorEl]);
 
 
-    // glass drop down needs to be redesigned across app
     const menuItemStyle = {
-        width: "100%",
-
-        padding: "10px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
 
         background: "transparent",
 
@@ -109,15 +230,30 @@ function NoteFolderViewModal({
 
         color: "var(--text-primary)",
 
-        textAlign: "left",
+        padding: "10px 14px",
 
-        fontSize: "0.8rem",
-
-        fontWeight: "300",
+        borderRadius: "999px",
 
         cursor: "pointer",
 
+        textAlign: "left",
+
+        fontSize: "0.78rem",
+
+        fontWeight: "300",
+
         transition: "all 0.2s ease",
+
+        width: "100%",
+
+        // added
+        overflow: "hidden",
+
+        whiteSpace: "nowrap",
+
+        textOverflow: "ellipsis",
+
+        display: "flex",
     };
 
     return (
@@ -189,114 +325,328 @@ function NoteFolderViewModal({
                         }}
                     >
                         {/* close x */}
+
                         <div
                             style={{
                                 position: "relative",
                             }}
-                            onMouseEnter={() =>
-                                setShowCloseButton(true)
-                            }
-                            onMouseLeave={() =>
-                                setShowCloseButton(false)
-                            }
                         >
+                            {/* ellipsis */}
                             <button
-                                onClick={() => {
-                                    onClose();
+                                ref={menuButtonRef}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+
+                                    setOpenFolderMenu(
+                                        openFolderMenu === folder._id
+                                            ? null
+                                            : folder._id
+                                    );
                                 }}
                                 style={{
-                                    width: "30px",
-                                    height: "30px",
-
-                                    borderRadius: "999px",
-
+                                    background: "none",
                                     border: "none",
 
-                                    background:
-                                        "rgba(255,255,255,0.04)",
-
-                                    color:
-                                        "var(--text-secondary)",
+                                    color: "var(--text-secondary)",
 
                                     cursor: "pointer",
 
-                                    fontSize: "0.8rem",
+                                    display: "flex",
 
-                                    transition: "all 0.2s ease",
+                                    alignItems: "center",
 
-                                    opacity: showCloseButton ? 1 : 0,
+                                    justifyContent: "center",
 
-                                    transition: "opacity 0.2s ease",
+                                    padding: 0,
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgb(33, 33, 33)";
-
-                                    e.currentTarget.style.transform =
-                                        "translateY(-1px)";
-
                                     e.currentTarget.style.color =
                                         "var(--text-primary)";
                                 }}
+
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                        "rgb(33, 33, 33)";
-
-                                    e.currentTarget.style.transform =
-                                        "translateY(0)";
-
                                     e.currentTarget.style.color =
                                         "var(--text-secondary)";
                                 }}
                             >
-                                x
+                                <Ellipsis
+                                    size={18}
+                                    strokeWidth={1}
+                                />
                             </button>
+                            {openFolderMenu === folder._id && (
+                                <FloatingLayer
+                                    anchorRef={menuButtonRef}
+                                    open={true}
+                                    placement="bottom"
+                                    offset={8}
+                                >
+                                    <div
+                                        ref={menuRef}
+                                        onClick={(e) =>
+                                            e.stopPropagation()
+                                        }
+                                        style={{
+                                            // change for width of dropdown
+                                            width: "196px",
+
+                                            background:
+                                                "rgba(20, 20, 20, 0)",
+
+                                            backdropFilter:
+                                                "blur(8px)",
+
+                                            border:
+                                                "1px solid rgba(255,255,255,0.10)",
+
+                                            boxShadow:
+                                                "0 20px 50px rgba(0,0,0,0.35)",
+
+                                            borderRadius: "18px",
+
+                                            padding: "8px",
+
+                                            display: "flex",
+
+                                            overflow: "visible",
+
+                                            flexDirection: "column",
+
+                                            gap: "4px",
+
+                                            zIndex: 2001,
+                                        }}
+                                    >
+                                        {/* add note to folder */}
+                                        {/* will eventually be a second glass panel that opens existing notes and add new note */}
+                                        <SubmenuTrigger
+                                            trigger={
+                                                <button
+                                                    style={menuItemStyle}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,255,255,0.04)";
+
+                                                        e.currentTarget.style.color =
+                                                            "#F5F5F5";
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.background =
+                                                            "transparent";
+
+                                                        e.currentTarget.style.color =
+                                                            "var(--text-primary)";
+                                                    }}
+                                                >
+                                                    Add Note
+                                                </button>
+                                            }
+                                        >
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+
+                                                    setOpenFolderMenu(null);
+
+                                                    setShowMainContent(false);
+
+                                                    setCreatingNote(true);
+                                                }}
+                                                style={menuItemStyle}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background =
+                                                        "rgba(255,255,255,0.04)";
+
+                                                    e.currentTarget.style.color =
+                                                        "#F5F5F5";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background =
+                                                        "transparent";
+
+                                                    e.currentTarget.style.color =
+                                                        "var(--text-primary)";
+                                                }}
+                                            >
+                                                + New Note
+                                            </button>
+                                            <div
+                                                style={{
+                                                    height: "1px",
+                                                    background:
+                                                        "rgba(255,255,255,0.05)",
+                                                    margin: "4px 0",
+                                                }}
+                                            />
+
+                                            <div
+                                                style={{
+                                                    maxHeight: "220px",
+                                                    overflowY: "auto",
+                                                }}
+                                            >
+                                                {availableNotes.length === 0 ? (
+                                                    <div
+                                                        style={{
+                                                            padding: "8px 12px",
+                                                            fontSize: "0.72rem",
+                                                            color: "var(--text-secondary)",
+                                                            opacity: 0.55,
+                                                            textAlign: "center",
+                                                        }}
+                                                    >
+                                                        No available notes
+                                                    </div>
+                                                ) : (
+                                                    availableNotes.map((note) => (
+                                                        <button
+                                                            key={note._id}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+
+                                                                onAddExistingNote?.(
+                                                                    folder,
+                                                                    note
+                                                                );
+
+                                                                setOpenFolderMenu(null);
+                                                            }}
+                                                            style={menuItemStyle}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.background =
+                                                                    "rgba(255,255,255,0.04)";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.background =
+                                                                    "transparent";
+                                                            }}
+                                                        >
+                                                            {note.title || "Untitled"}
+                                                        </button>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </SubmenuTrigger>
+
+                                        <div
+                                            style={{
+                                                height: "1px",
+                                                background:
+                                                    "rgba(255,255,255,0.05)",
+                                                margin: "4px 0",
+                                            }}
+                                        />
+
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                setOpenFolderMenu(null);
+
+                                                setShowMainContent(false);
+
+                                                setEditingFolder(folder);
+                                            }}
+                                            style={menuItemStyle}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.04)";
+
+                                                e.currentTarget.style.color =
+                                                    "#F5F5F5";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "transparent";
+
+                                                e.currentTarget.style.color =
+                                                    "var(--text-primary)";
+                                            }}
+                                        >
+                                            Edit Folder
+                                        </button>
+
+                                        <div
+                                            style={{
+                                                height: "1px",
+                                                background:
+                                                    "rgba(255,255,255,0.05)",
+                                                margin: "4px 0",
+                                            }}
+                                        />
+
+
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+
+                                                setOpenFolderMenu(null);
+
+                                                setShowMainContent(false);
+
+                                                setShowDeleteConfirm(true);
+                                            }}
+                                            style={{
+                                                ...menuItemStyle,
+                                                color: "#ff6b6b",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "rgba(255,255,255,0.04)";
+
+                                                e.currentTarget.style.color =
+                                                    "#ff6b6b";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background =
+                                                    "transparent";
+
+                                                e.currentTarget.style.color =
+                                                    "#ff6b6b";
+                                            }}
+                                        >
+                                            Delete Folder
+                                        </button>
+                                    </div>
+                                </FloatingLayer>
+                            )}
                         </div>
                     </div>
 
                     {/* Folder Title */}
-                    {!expanded && (
+
+                    <div
+                        style={{
+                            textAlign: "center",
+                            marginBottom: "20px",
+                        }}
+                    >
                         <div
                             style={{
-                                textAlign: "center",
-                                marginBottom: "20px",
+                                fontSize: "2rem",
+
+                                fontWeight: "300",
+
+                                letterSpacing:
+                                    "-0.04em",
                             }}
                         >
-                            <div
-                                style={{
-                                    fontSize: "2rem",
+                            {folder.title}
+                        </div>
 
-                                    fontWeight: "300",
+                        <div
+                            style={{
+                                fontSize: "0.9rem",
 
-                                    letterSpacing:
-                                        "-0.04em",
-                                }}
-                            >
-                                <Folder
-                                    size={18}
-                                    strokeWidth={1.8}
-                                    style={{
-                                        marginRight: "8px",
-                                        verticalAlign: "middle",
-                                        color: "var(--text-secondary)",
-                                    }}
-                                />
+                                opacity: 0.55,
 
-                                {folder.title}
-                            </div>
+                                marginTop: "10px",
+                            }}
+                        >
+                            {folder.description || "No description"}
+                        </div>
 
-                            <div
-                                style={{
-                                    fontSize: "0.9rem",
-
-                                    opacity: 0.55,
-
-                                    marginTop: "4px",
-                                }}
-                            >
-                                {folder.description || "No description"}
-                            </div>
-
+                        {!expanded && (
                             <div
                                 style={{
                                     fontSize: "0.75rem",
@@ -306,10 +656,23 @@ function NoteFolderViewModal({
                                     marginTop: "8px",
                                 }}
                             >
-                                Showing 4 out of 6 notes
+                                {folderNotes.length === 0
+                                    ? "No notes"
+                                    : !expanded
+                                        ? <>
+                                            Showing{" "}
+                                            {Math.min(folderNotes.length, 4)}{" "}
+                                            out of{" "}
+                                            {folderNotes.length}{" "}
+                                            {folderNotes.length === 1
+                                                ? "note"
+                                                : "notes"}
+                                        </>
+                                        : null}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+
 
                     {/* DIVIDER */}
 
@@ -331,7 +694,7 @@ function NoteFolderViewModal({
                         }}
                     >
 
-                        {notes.length === 0 ? (
+                        {folderNotes.length === 0 ? (
                             <div
                                 style={{
                                     fontSize: "0.8rem",
@@ -364,7 +727,7 @@ function NoteFolderViewModal({
                                     gap: "14px",
                                 }}
                             >
-                                {notes.map((note) => {
+                                {visibleNotes.map((note) => {
                                     return (
                                         <div
                                             key={note._id}
@@ -432,6 +795,13 @@ function NoteFolderViewModal({
 
                                                         marginBottom: "18px",
 
+                                                        flex: 1,
+
+                                                        minWidth: 0,
+                                                        maxWidth: "140px", // truncate title
+
+                                                        marginRight: "10px",
+
                                                         whiteSpace: "nowrap",
 
                                                         overflow: "hidden",
@@ -449,11 +819,13 @@ function NoteFolderViewModal({
                                                     onClick={(e) => {
                                                         e.stopPropagation();
 
-                                                        setOpenNoteMenu(
-                                                            openNoteMenu === note._id
-                                                                ? null
-                                                                : note._id
-                                                        );
+                                                        if (openNoteMenu === note._id) {
+                                                            setOpenNoteMenu(null);
+                                                            setMenuAnchorEl(null);
+                                                        } else {
+                                                            setOpenNoteMenu(note._id);
+                                                            setMenuAnchorEl(e.currentTarget);
+                                                        }
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.transform =
@@ -471,72 +843,147 @@ function NoteFolderViewModal({
                                                     }}
                                                 >
                                                     <Ellipsis
-                                                        size={18}
-                                                        strokeWidth={1.6}
+                                                        size={17}
+                                                        strokeWidth={1}
                                                     />
+                                                    {/* Floating Layer */}
                                                     {openNoteMenu === note._id && (
-                                                        <div
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            style={{
-                                                                position: "absolute",
-
-                                                                top: "26px",
-                                                                right: 0,
-
-                                                                width: "165px",
-
-                                                                background:
-                                                                    "rgba(20,20,20,0.96)",
-
-                                                                backdropFilter:
-                                                                    "blur(20px)",
-
-                                                                border:
-                                                                    "1px solid rgba(255,255,255,0.08)",
-
-                                                                borderRadius: "16px",
-
-                                                                overflow: "hidden",
-
-                                                                zIndex: 1000,
+                                                        <FloatingLayer
+                                                            anchorRef={{
+                                                                current: menuAnchorEl,
                                                             }}
+                                                            open={true}
+                                                            placement="bottom"
+                                                            offset={8}
                                                         >
-
                                                             <div
+                                                                ref={menuRefCard}
+                                                                onClick={(e) =>
+                                                                    e.stopPropagation()
+                                                                }
                                                                 style={{
-                                                                    height: "1px",
-                                                                    background: "rgba(255,255,255,0.06)",
-                                                                }}
-                                                            />
+                                                                    minWidth: "180px",
 
-                                                            <button
-                                                                onClick={async () => {
-                                                                    await onRemoveNote(folder, note);
+                                                                    background:
+                                                                        "rgba(20, 20, 20, 0)",
 
-                                                                    setToast("Note removed");
+                                                                    backdropFilter:
+                                                                        "blur(8px)",
 
-                                                                    setTimeout(() => {
-                                                                        setToast("");
-                                                                    }, 3000);
+                                                                    border:
+                                                                        "1px solid rgba(255,255,255,0.10)",
 
-                                                                    setOpenNoteMenu(null);
-                                                                }}
-                                                                style={{
-                                                                    ...menuItemStyle,
-                                                                    color: "#ff6b6b",
-                                                                }}
-                                                                onMouseEnter={(e) => {
-                                                                    e.currentTarget.style.background =
-                                                                        "rgba(255,255,255,0.04)";
-                                                                }}
-                                                                onMouseLeave={(e) => {
-                                                                    e.currentTarget.style.background =
-                                                                        "transparent";
+                                                                    boxShadow:
+                                                                        "0 20px 50px rgba(0,0,0,0.35)",
+
+                                                                    borderRadius: "18px",
+
+                                                                    padding: "8px",
+
+                                                                    display: "flex",
+
+                                                                    overflow: "visible",
+
+                                                                    flexDirection: "column",
+
+                                                                    gap: "4px",
+
+                                                                    zIndex: 2001,
                                                                 }}
                                                             >
-                                                                Remove
-                                                            </button>
-                                                        </div>
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+
+                                                                        onToggleHide?.(note);
+
+                                                                        setOpenNoteMenu(null);
+                                                                    }}
+                                                                    style={menuItemStyle}
+                                                                    onMouseEnter={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "rgba(255,255,255,0.04)";
+
+                                                                        e.currentTarget.style.color =
+                                                                            "#F5F5F5";
+                                                                    }}
+                                                                    onMouseLeave={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "transparent";
+
+                                                                        e.currentTarget.style.color =
+                                                                            "var(--text-primary)";
+                                                                    }}
+                                                                >
+                                                                    {note.hidden ? "Unhide Note" : "Hide Note"}
+                                                                </button>
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+
+                                                                        onToggleArchive?.(note);
+
+                                                                        setOpenNoteMenu(null);
+                                                                    }}
+                                                                    style={menuItemStyle}
+                                                                    onMouseEnter={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "rgba(255,255,255,0.04)";
+
+                                                                        e.currentTarget.style.color =
+                                                                            "#F5F5F5";
+                                                                    }}
+                                                                    onMouseLeave={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "transparent";
+
+                                                                        e.currentTarget.style.color =
+                                                                            "var(--text-primary)";
+                                                                    }}
+                                                                >
+                                                                    {note.archived ? "Unarchive" : "Archive"}
+                                                                </button>
+
+                                                                <div
+                                                                    style={{
+                                                                        height: "1px",
+                                                                        background:
+                                                                            "rgba(255,255,255,0.05)",
+                                                                        margin: "4px 0",
+                                                                    }}
+                                                                />
+
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        await onRemoveNote(folder, note);
+
+                                                                        setToast("Note removed");
+
+                                                                        setTimeout(() => {
+                                                                            setToast("");
+                                                                        }, 3000);
+
+                                                                        setOpenNoteMenu(null);
+                                                                    }}
+                                                                    style={{
+                                                                        ...menuItemStyle,
+                                                                        color: "#ff6b6b",
+                                                                    }}
+                                                                    onMouseEnter={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "rgba(255,255,255,0.04)";
+                                                                    }}
+                                                                    onMouseLeave={(e) => {
+                                                                        e.currentTarget.style.background =
+                                                                            "transparent";
+                                                                    }}
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        </FloatingLayer>
                                                     )}
                                                 </div>
                                             </div>
@@ -553,49 +1000,55 @@ function NoteFolderViewModal({
                                                     display:
                                                         "-webkit-box",
 
-                                                    WebkitLineClamp: 3,
+                                                    WebkitLineClamp: 2,
 
                                                     WebkitBoxOrient:
                                                         "vertical",
 
                                                     overflow:
                                                         "hidden",
+
+                                                    minHeight: "38px",
                                                 }}
                                             >
                                                 {note.content || "Empty note."}
                                             </div>
 
+                                            <div
+                                                style={{
+                                                    flex: 1,
+                                                }}
+                                            />
+
 
                                             {/* ROW 3 NOTE CREATED DATE ? */}
+                                            {/* MUST SIT RIGHT ON TOP OF ICON ROW*/}
                                             <div
                                                 style={{
                                                     fontSize: "0.72rem",
 
                                                     opacity: 0.55,
 
-                                                    marginBottom: "6px",
+                                                    marginBottom: "4px",
+                                                    marginTop: "8px",
                                                 }}
                                             >
-                                                Created 12 July, 2026
+                                                Created {formatCreatedDate(note.createdAt)}
                                             </div>
 
                                             {/* ROW 4 HOVER ACTIONS */}
 
                                             <div
                                                 style={{
-                                                    marginTop: "auto",
-
                                                     display: "flex",
 
                                                     justifyContent: "space-between",
 
                                                     alignItems: "center",
-
-                                                    transition:
-                                                        "opacity 0.2s ease",
+                                                    marginBottom: "0px",
                                                 }}
                                             >
-                                                <button
+                                                <div
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onToggleFlag(note);
@@ -650,64 +1103,169 @@ function NoteFolderViewModal({
                                                                 : "none"
                                                         }
                                                     />
-                                                </button>
+                                                </div>
 
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onToggleLike(note);
-                                                    }}
+                                                <div
                                                     style={{
-                                                        border: "none",
-
-                                                        background:
-                                                            "transparent",
-
-                                                        color:
-                                                            note.liked
-                                                                ? "#ff6b6b"
-                                                                : "var(--text-secondary)",
-
-                                                        cursor: "pointer",
-
                                                         display: "flex",
 
-                                                        alignItems: "center",
+                                                        alignItems:
+                                                            "center",
 
-                                                        justifyContent: "center",
-
-                                                        padding: 0,
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.transform =
-                                                            "translateY(-1px) scale(1.08)";
-
-                                                        if (!note.liked) {
-                                                            e.currentTarget.style.color =
-                                                                "#ff6b6b";
-                                                        }
-                                                    }}
-
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.transform =
-                                                            "translateY(0) scale(1)";
-
-                                                        if (!note.liked) {
-                                                            e.currentTarget.style.color =
-                                                                "var(--text-secondary)";
-                                                        }
+                                                        gap: "12px",
                                                     }}
                                                 >
-                                                    <Heart
-                                                        size={16}
-                                                        strokeWidth={1.6}
-                                                        fill={
-                                                            note.liked
-                                                                ? "currentColor"
-                                                                : "none"
-                                                        }
-                                                    />
-                                                </button>
+                                                    {note.hidden && (
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+
+                                                                onToggleHide?.(note);
+                                                            }}
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+
+                                                                padding: 0,
+
+                                                                background: "transparent",
+
+                                                                border: "none",
+
+                                                                cursor: "pointer",
+
+                                                                color: "var(--text-secondary)",
+
+                                                                transition: "all 0.2s ease",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.transform =
+                                                                    "translateY(-1px) scale(1.08)";
+
+                                                                e.currentTarget.style.color =
+                                                                    "var(--text-primary)";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.transform =
+                                                                    "translateY(0) scale(1)";
+
+                                                                e.currentTarget.style.color =
+                                                                    "var(--text-secondary)";
+                                                            }}
+                                                        >
+                                                            <EyeOff
+                                                                size={16}
+                                                                strokeWidth={1}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    {note.archived && (
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+
+                                                                if (note.archived) {
+                                                                    onToggleArchive?.(note);
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+
+                                                                padding: 0,
+
+                                                                background: "transparent",
+
+                                                                border: "none",
+
+                                                                cursor: "pointer",
+
+                                                                color: "var(--text-secondary)",
+
+                                                                transition: "all 0.2s ease",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.transform =
+                                                                    "translateY(-1px) scale(1.08)";
+
+                                                                e.currentTarget.style.color = "var(--text-primary)";
+                                                            }}
+
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.transform =
+                                                                    "translateY(0) scale(1)";
+
+                                                                e.currentTarget.style.color =
+                                                                    "var(--text-secondary)";
+
+                                                            }}
+                                                        >
+                                                            <Archive
+                                                                size={16}
+                                                                strokeWidth={1}
+                                                            />
+                                                        </div>
+                                                    )}
+
+                                                    <div
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onToggleLike(note);
+                                                        }}
+                                                        style={{
+                                                            border: "none",
+
+                                                            background:
+                                                                "transparent",
+
+                                                            color:
+                                                                note.liked
+                                                                    ? "#ff6b6b"
+                                                                    : "var(--text-secondary)",
+
+                                                            cursor: "pointer",
+
+                                                            display: "flex",
+
+                                                            alignItems: "center",
+
+                                                            justifyContent: "center",
+
+                                                            padding: 0,
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform =
+                                                                "translateY(-1px) scale(1.08)";
+
+                                                            if (!note.liked) {
+                                                                e.currentTarget.style.color =
+                                                                    "#ff6b6b";
+                                                            }
+                                                        }}
+
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform =
+                                                                "translateY(0) scale(1)";
+
+                                                            if (!note.liked) {
+                                                                e.currentTarget.style.color =
+                                                                    "var(--text-secondary)";
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Heart
+                                                            size={16}
+                                                            strokeWidth={1.6}
+                                                            fill={
+                                                                note.liked
+                                                                    ? "currentColor"
+                                                                    : "none"
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -751,7 +1309,10 @@ function NoteFolderViewModal({
                                     "translateY(0)";
                             }}
                         >
-                            +2 others
+                            +{remainingCount}{" "}
+                            {remainingCount === 1
+                                ? "other"
+                                : "others"}
                         </div>
                     )}
 
@@ -804,9 +1365,13 @@ function NoteFolderViewModal({
                     >
                         {/* CLEAR FOLDER BUTTON ONLY ENDABLED IF NOTES.LENGTH > 0 */}
                         <button
-                            onClick={() =>
-                                setShowDeleteConfirm(true)
-                            }
+                            onClick={() => {
+                                if (folder.notes.length === 0) return;
+
+                                setShowMainContent(false);
+
+                                setShowClearConfirm(true);
+                            }}
                             style={{
                                 padding: "8px 14px",
 
@@ -824,7 +1389,15 @@ function NoteFolderViewModal({
 
                                 fontWeight: "300",
 
-                                cursor: "pointer",
+                                opacity:
+                                    folder.notes.length === 0
+                                        ? 0.35
+                                        : 1,
+
+                                cursor:
+                                    folder.notes.length === 0
+                                        ? "default"
+                                        : "pointer",
 
                                 transition: "all 0.2s ease",
                             }}
@@ -847,9 +1420,11 @@ function NoteFolderViewModal({
                         </button>
 
                         <button
-                            onClick={() =>
-                                setShowDeleteConfirm(true)
-                            }
+                            onClick={() => {
+                                setShowMainContent(false);
+
+                                setShowDeleteConfirm(true);
+                            }}
                             style={{
                                 padding: "8px 14px",
 
@@ -891,42 +1466,127 @@ function NoteFolderViewModal({
                     </div>
 
                 </div>
-            )}
-            {/* open modal from individual */}
-            {editingNote && (
-                <NoteModal
-                    mode="edit"
-                    note={editingNote}
-                    onClose={() => {
-                        setEditingNote(null);
-                        setShowMainContent(true);
-                    }}
-                    onSave={async (noteData) => {
-                        await onUpdateNote(
-                            editingNote._id,
-                            noteData
-                        );
-
-                        setToast("Note updated");
-
-                        setTimeout(() => {
-                            setToast("");
-                        }, 3000);
-
-                        // possible remove
-                        const updatedNote =
+            )
+            }
+            {/* open modal from modal: note modal from view folder modal */}
+            {
+                editingNote && (
+                    <NoteModal
+                        mode="edit"
+                        note={editingNote}
+                        onClose={() => {
+                            setEditingNote(null);
+                            setShowMainContent(true);
+                        }}
+                        onSave={async (noteData) => {
                             await onUpdateNote(
                                 editingNote._id,
                                 noteData
                             );
 
-                        setEditingNote(null);
+                            setToast("Note updated");
 
-                        setShowMainContent(true);
-                    }}
-                    onDelete={onDeleteNote}
-                />
-            )}
+                            setTimeout(() => {
+                                setToast("");
+                            }, 3000);
+
+                            // possible remove
+                            const updatedNote =
+                                await onUpdateNote(
+                                    editingNote._id,
+                                    noteData
+                                );
+
+                            setEditingNote(null);
+
+                            setShowMainContent(true);
+                        }}
+                        onDelete={onDeleteNote}
+                    />
+                )
+            }
+            {/* open edit folder NoteFolderCreateModal from NoteFolderViewModal */}
+            {
+                editingFolder && (
+                    <NoteFolderCreateModal
+                        mode="edit"
+                        folder={editingFolder}
+
+                        onClose={() => {
+                            setEditingFolder(null);
+                            setShowMainContent(true);
+                        }}
+
+                        onUpdate={async (folderId, folderData) => {
+                            await onUpdateFolder(folderId, folderData);
+
+                            setEditingFolder(null);
+
+                            setShowMainContent(true);
+                        }}
+
+                        onDelete={onDeleteFolder}
+                    />
+                )
+            }
+            {
+                creatingNote && (
+                    <NoteModal
+                        folder={folder}
+                        onClose={() => {
+                            setCreatingNote(false);
+                            setShowMainContent(true);
+                        }}
+                        onSave={async (noteData) => {
+                            await onCreateNote(folder, noteData);
+
+                            setCreatingNote(false);
+
+                            setShowMainContent(true);
+                        }}
+                    />
+                )
+            }
+            {
+                showDeleteConfirm && (
+                    <DeleteConfirmModal
+                        title="Delete Folder"
+                        message={`Delete "${folder.title}"?`}
+                        onCancel={() => {
+                            setShowDeleteConfirm(false);
+                            setShowMainContent(true);
+                        }}
+                        onConfirm={async () => {
+                            await onDeleteFolder(folder._id);
+
+                            setShowDeleteConfirm(false);
+
+                            onClose();
+                        }}
+                    />
+                )
+            }
+            {
+                showClearConfirm && (
+                    <DeleteConfirmModal
+                        title="Clear Folder"
+                        message="This will remove all notes."
+                        confirmText="Clear"
+                        cancelText="Cancel"
+                        onCancel={() => {
+                            setShowClearConfirm(false);
+                            setShowMainContent(true);
+                        }}
+                        onConfirm={async () => {
+                            await onClearFolder(folder);
+
+                            setShowClearConfirm(false);
+
+                            setShowMainContent(true);
+                        }}
+                    />
+                )
+            }
             <Toast
                 message={toast}
             />

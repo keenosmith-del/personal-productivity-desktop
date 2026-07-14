@@ -216,7 +216,10 @@ function NotificationCard({
                                 "var(--text-secondary)";
                         }}
                     >
-                        <Ellipsis size={18} />
+                        <Ellipsis
+                            size={18}
+                            strokeWidth={1}
+                        />
                     </button>
 
                     {openNotificationMenu ===
@@ -419,6 +422,7 @@ function NotificationCard({
                     >
                         <Star
                             size={18}
+                            strokeWidth={1}
                             fill={
                                 notification.starred
                                     ? "currentColor"

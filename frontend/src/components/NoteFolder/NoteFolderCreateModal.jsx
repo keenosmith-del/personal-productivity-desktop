@@ -37,6 +37,12 @@ function NoteFolderCreateModal({
     const [showDeleteConfirm, setShowDeleteConfirm] =
         useState(false);
 
+    const titleInputRef = useRef(null);
+
+    useEffect(() => {
+        titleInputRef.current?.focus();
+    }, []);
+
     useEffect(() => {
         if (folder) {
             setTitle(folder.title || "");
@@ -206,6 +212,7 @@ function NoteFolderCreateModal({
 
                         {/* TITLE */}
                         <input
+                            ref={titleInputRef}
                             value={title}
                             onChange={(e) =>
                                 setTitle(e.target.value)

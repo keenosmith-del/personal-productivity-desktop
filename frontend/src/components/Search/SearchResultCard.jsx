@@ -451,6 +451,7 @@ function SearchResultCard({
                 >
                     <Flag
                         size={18}
+                        strokeWidth={1}
                         fill={
                             item.flagged
                                 ? "currentColor"
@@ -479,6 +480,7 @@ function SearchResultCard({
                     >
                         <MessageCircle
                             size={18}
+                            strokeWidth={1}
                         />
 
                         <span
@@ -501,7 +503,8 @@ function SearchResultCard({
                         }}
                     >
                         <Heart
-                            size={18.5}
+                            size={18}
+                            strokeWidth={1}
                             fill={
                                 item.liked
                                     ? "currentColor"

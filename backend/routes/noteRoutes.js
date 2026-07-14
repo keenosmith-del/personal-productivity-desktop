@@ -1,9 +1,9 @@
 import express from "express";
-import Note from "../models/Note.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 import createNotification from "../utils/createNotification.js";
 
+import Note from "../models/Note.js";
 import Folder from "../models/Folder.js";
 
 const router = express.Router();
@@ -125,6 +125,194 @@ router.put(
             });
 
             res.json(updatedNote);
+        } catch (error) {
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.put(
+    "/:id/archive",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const note = await Note.findOne({
+                _id: req.params.id,
+                user: req.user.id,
+            });
+
+            if (!note) {
+                return res.status(404).json({
+                    message: "Note not found",
+                });
+            }
+
+            let archivedFolder =
+                await Folder.findOne({
+                    user: req.user.id,
+                    isSystem: true,
+                });
+
+            if (!archivedFolder) {
+                archivedFolder =
+                    await Folder.create({
+                        user: req.user.id,
+
+                        title: "Archived",
+
+                        description:
+                            "Your archived notes",
+
+                        isSystem: true,
+                    });
+            }
+
+            // Remove note from every folder
+            await Folder.updateMany(
+                {
+                    user: req.user.id,
+                    notes: note._id,
+                },
+                {
+                    $pull: {
+                        notes: note._id,
+                    },
+                }
+            );
+
+            // Add note to Archived folder
+            await Folder.findByIdAndUpdate(
+                archivedFolder._id,
+                {
+                    $addToSet: {
+                        notes: note._id,
+                    },
+                }
+            );
+
+            note.archived = true;
+
+            await note.save();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Note Archived",
+
+                description: `"${note.title}" was archived.`,
+
+                type: "note",
+
+                action: "archived",
+
+                relatedId: note._id,
+            });
+
+            await note.populate("folder");
+
+            res.json(note);
+
+        } catch (error) {
+            console.error(error);
+
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.put(
+    "/:id/unarchive",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const note = await Note.findOne({
+                _id: req.params.id,
+                user: req.user.id,
+            });
+
+            if (!note) {
+                return res.status(404).json({
+                    message: "Note not found",
+                });
+            }
+
+            const archivedFolder =
+                await Folder.findOne({
+                    user: req.user.id,
+                    isSystem: true,
+                });
+
+            if (archivedFolder) {
+                await Folder.findByIdAndUpdate(
+                    archivedFolder._id,
+                    {
+                        $pull: {
+                            notes: note._id,
+                        },
+                    }
+                );
+            }
+
+            note.archived = false;
+
+            await note.save();
+
+            await createNotification({
+                user: req.user.id,
+
+                title: "Note Unarchived",
+
+                description: `"${note.title}" was unarchived.`,
+
+                type: "note",
+
+                action: "unarchived",
+
+                relatedId: note._id,
+            });
+
+            await note.populate("folder");
+
+            res.json(note);
+
+        } catch (error) {
+            console.error(error);
+
+            res.status(500).json({
+                message: "Server error",
+            });
+        }
+    }
+);
+
+router.put(
+    "/:noteId/folder/:folderId",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const note = await Note.findOne({
+                _id: req.params.noteId,
+                user: req.user.id,
+            });
+
+            if (!note) {
+                return res.status(404).json({
+                    message: "Note not found",
+                });
+            }
+
+            note.folder = req.params.folderId;
+
+            await note.save();
+
+            await note.populate("folder");
+
+            res.json(note);
+
         } catch (error) {
             res.status(500).json({
                 message: "Server error",

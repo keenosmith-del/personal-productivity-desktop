@@ -52,6 +52,11 @@ const folderSchema = new mongoose.Schema(
 
             default: false,
         },
+        isSystem: {
+            type: Boolean,
+
+            default: false,
+        },
         notes: [
             {
                 type: mongoose.Schema.Types.ObjectId,

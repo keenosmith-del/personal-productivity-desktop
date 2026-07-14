@@ -1,5 +1,7 @@
 import MainLayout from "../layouts/MainLayout";
 
+// MAKING CHANGES
+
 import {
   Search,
   ArrowUpDown,
@@ -12,6 +14,9 @@ import {
   FolderPlus,
   NotebookPen,
   Infinity,
+  Archive,
+  Trash,
+  EyeOff,
 } from "lucide-react";
 
 import {
@@ -27,6 +32,8 @@ import NoteFolderCard from "../components/NoteFolder/NoteFolderCard";
 import NoteFolderCreateModal from "../components/NoteFolder/NoteFolderCreateModal";
 import NoteFolderViewModal from "../components/NoteFolder/NoteFolderViewModal";
 
+import FloatingLayer from "../components/FloatingLayer";
+
 import {
   getNotes,
   createNote,
@@ -34,6 +41,8 @@ import {
   clearAllNotes,
   clearPinnedNotes,
   deleteNote,
+  archiveNote,
+  unarchiveNote,
 } from "../services/noteService";
 
 import {
@@ -43,6 +52,7 @@ import {
   deleteFolder,
   removeNoteFromFolder,
   addNoteToFolder,
+  clearFolder,
 } from "../services/folderService";
 
 import Toast from "../components/Toast";
@@ -104,11 +114,8 @@ function Notes() {
   const [sortBy, setSortBy] =
     useState("newest");
 
-  const [showSortMenu, setShowSortMenu] =
-    useState(false);
-
-  const [showFilterMenu, setShowFilterMenu] =
-    useState(false);
+  const [selectedType, setSelectedType] =
+    useState("All");
 
   const [selectedCategory, setSelectedCategory] =
     useState("All");
@@ -127,6 +134,14 @@ function Notes() {
 
   const [showMoreMenu, setShowMoreMenu] =
     useState(false);
+
+  const [showSortMenu, setShowSortMenu] =
+    useState(false);
+
+  const [showFilterMenu, setShowFilterMenu] =
+    useState(false);
+
+  const [selectedNote, setSelectedNote] = useState(null);
 
   const [selectedFolder, setSelectedFolder] = useState(null);
 
@@ -198,13 +213,15 @@ function Notes() {
     );
   };
 
+  const [showHidden, setShowHidden] = useState(false);
 
   {/* BEGIN NOTES SORT VARIABLES */ }
   const allNotes = sortNotes(
     notes.filter(
       (note) =>
         matchesSearch(note) &&
-        matchesFilters(note)
+        matchesFilters(note) &&
+        (showHidden || !note.hidden)
     )
   );
 
@@ -484,6 +501,17 @@ function Notes() {
 
       await deleteFolder(folderId);
 
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.folder === folderId
+            ? {
+              ...note,
+              folder: null,
+            }
+            : note
+        )
+      );
+
       setFolders((prev) =>
         prev.filter(
           (folder) =>
@@ -512,6 +540,170 @@ function Notes() {
       setTimeout(() => {
         setToast("");
       }, 3000);
+    }
+  };
+
+  const handleClearFolder = async (folder) => {
+    try {
+      const updatedFolder =
+        await clearFolder(folder._id);
+
+      setFolders((prev) =>
+        prev.map((item) =>
+          item._id === updatedFolder._id
+            ? updatedFolder
+            : item
+        )
+      );
+
+      setViewingFolder(updatedFolder);
+
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.folder === folder._id
+            ? {
+              ...note,
+              folder: null,
+            }
+            : note
+        )
+      );
+
+      setToast("Folder cleared");
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+
+      console.log(error.response?.data);
+    }
+  };
+
+  const handleToggleHide = async (note) => {
+    try {
+      const updatedNote = await updateNote(
+        note._id,
+        {
+          hidden: !note.hidden,
+        }
+      );
+
+      setNotes((prev) =>
+        prev.map((item) =>
+          item._id === updatedNote._id
+            ? updatedNote
+            : item
+        )
+      );
+
+      setFolders((prev) =>
+        prev.map((folder) => ({
+          ...folder,
+          notes: folder.notes?.map((item) =>
+            item._id === updatedNote._id
+              ? updatedNote
+              : item
+          ),
+        }))
+      );
+
+      setViewingFolder((prev) =>
+        prev
+          ? {
+            ...prev,
+            notes: prev.notes?.map((item) =>
+              item._id === updatedNote._id
+                ? updatedNote
+                : item
+            ),
+          }
+          : prev
+      );
+
+      setToast(
+        updatedNote.hidden
+          ? "Note hidden"
+          : "Note visible"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToggleArchive = async (note) => {
+    try {
+      const updatedNote = note.archived
+        ? await unarchiveNote(note._id)
+        : await archiveNote(note._id);
+
+      await loadFolders();
+
+      setNotes((prev) =>
+        prev.map((item) =>
+          item._id === updatedNote._id
+            ? updatedNote
+            : item
+        )
+      );
+
+      setFolders((prev) =>
+        prev.map((folder) => ({
+          ...folder,
+          notes: folder.notes?.map((item) =>
+            item._id === updatedNote._id
+              ? updatedNote
+              : item
+          ),
+        }))
+      );
+
+      setViewingFolder((prev) => {
+        if (!prev) return prev;
+
+        // Note has left the folder currently being viewed.
+        if (
+          (prev.isSystem && !updatedNote.archived) ||
+          (!prev.isSystem && updatedNote.archived)
+        ) {
+          return {
+            ...prev,
+            notes: prev.notes.filter(
+              (item) => item._id !== updatedNote._id
+            ),
+          };
+        }
+
+        // Otherwise just update the note in place.
+        return {
+          ...prev,
+          notes: prev.notes.map((item) =>
+            item._id === updatedNote._id
+              ? updatedNote
+              : item
+          ),
+        };
+      });
+
+      setToast(
+        updatedNote.archived
+          ? "Note archived"
+          : "Note unarchived"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -599,41 +791,55 @@ function Notes() {
     }
   };
 
-  const handleRemoveNoteFromFolder =
-    async (folder, note) => {
-      try {
-        const updatedFolder =
-          await removeNoteFromFolder(
-            folder._id,
-            note._id
-          );
-
-        setFolders((prev) =>
-          prev.map((item) =>
-            item._id === updatedFolder._id
-              ? updatedFolder
-              : item
-          )
+  const handleRemoveNoteFromFolder = async (folder, note) => {
+    try {
+      const updatedFolder =
+        await removeNoteFromFolder(
+          folder._id,
+          note._id
         );
 
-        setViewingFolder((prev) =>
-          prev && prev._id === updatedFolder._id
-            ? updatedFolder
-            : prev
-        );
+      let updatedNote = note;
 
-        setToast(
-          "Note removed"
-        );
-
-        setTimeout(() => {
-          setToast("");
-        }, 3000);
-
-      } catch (error) {
-        console.error(error);
+      // If removing from the system Archived folder,
+      // automatically unarchive the note.
+      if (folder.isSystem) {
+        updatedNote = await unarchiveNote(note._id);
       }
-    };
+
+      setNotes((prev) =>
+        prev.map((item) =>
+          item._id === updatedNote._id
+            ? {
+              ...updatedNote,
+              folder: null,
+            }
+            : item
+        )
+      );
+
+      await loadFolders();
+
+      setViewingFolder((prev) =>
+        prev && prev._id === updatedFolder._id
+          ? updatedFolder
+          : prev
+      );
+
+      setToast(
+        folder.isSystem
+          ? "Note unarchived"
+          : "Note removed from folder"
+      );
+
+      setTimeout(() => {
+        setToast("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleAddExistingNoteToFolder = async (
     folder,
@@ -646,6 +852,17 @@ function Notes() {
           folder._id,
           note._id
         );
+
+      setNotes((prev) =>
+        prev.map((item) =>
+          item._id === note._id
+            ? {
+              ...item,
+              folder: folder._id,
+            }
+            : item
+        )
+      );
 
       setFolders((prev) =>
         prev.map((item) =>
@@ -666,7 +883,7 @@ function Notes() {
           : prev
       );
 
-      setToast("Note added");
+      setToast("Note added to folder");
 
       setTimeout(() => {
         setToast("");
@@ -923,6 +1140,34 @@ function Notes() {
         ? `1 ${itemLabel}`
         : `${itemCount} ${itemLabel}s`;
 
+  const menuItemStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+
+    background: "transparent",
+
+    border: "none",
+
+    color: "var(--text-primary)",
+
+    padding: "10px 14px",
+
+    borderRadius: "999px",
+
+    cursor: "pointer",
+
+    textAlign: "left",
+
+    fontSize: "0.7rem",
+
+    fontWeight: "300",
+
+    transition: "all 0.2s ease",
+
+    width: "100%",
+  };
+
   return (
     <MainLayout>
       <div
@@ -1069,21 +1314,8 @@ function Notes() {
                   />
                 </button>
 
-                {/* ALL */}
+                {/* ARROW */}
                 <div
-                  onMouseEnter={() =>
-                    setShowActions(true)
-                  }
-                  onMouseLeave={() => {
-                    if (
-                      !actionsPinned &&
-                      !showSortMenu &&
-                      !showFilterMenu &&
-                      !showMoreMenu
-                    ) {
-                      setShowActions(false);
-                    }
-                  }}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -1097,7 +1329,7 @@ function Notes() {
                   {/* EXPAND ARROW */}
                   <button
                     onClick={() => {
-                      if (showActions && actionsPinned) {
+                      if (showActions) {
                         setShowActions(false);
 
                         setActionsPinned(false);
@@ -1109,6 +1341,12 @@ function Notes() {
                         setShowSortMenu(false);
 
                         setShowFilterMenu(false);
+
+                        setShowMoreMenu(false);
+                      } else {
+                        setShowActions(true);
+
+                        setActionsPinned(true);
                       }
                     }}
                     style={{
@@ -1144,7 +1382,7 @@ function Notes() {
                         : "translateX(0)",
                     }}
                   >
-                    {actionsPinned ? (
+                    {showActions ? (
                       <ArrowRight
                         size={16}
                         strokeWidth={1.5}
@@ -1164,8 +1402,8 @@ function Notes() {
                         showActions
                           ? showSearchBar
                             ? "420px"
-                            : "280px"
-                          : "0px",
+                            : "275px"
+                          : "15px",
 
                       overflow: "visible",
 
@@ -1186,7 +1424,7 @@ function Notes() {
                             ? showSearchBar
                               ? "500px"
                               : "360px"
-                            : "0px",
+                            : "15px",
 
                         opacity: showActions
                           ? 1
@@ -1353,98 +1591,100 @@ function Notes() {
                               strokeWidth={1.6}
                             />
                           </button>
-
                           {showSortMenu && (
-                            <div
-                              style={{
-                                position: "fixed",
-
-                                top: "42px",
-                                right: 0,
-
-                                width: "170px",
-
-                                background:
-                                  "rgba(20,20,20,0.92)",
-
-                                backdropFilter:
-                                  "blur(24px)",
-
-                                border:
-                                  "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                  "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                padding: "8px",
-
-                                display: "flex",
-
-                                flexDirection: "column",
-
-                                gap: "4px",
-
-                                zIndex: 9999999,
-                              }}
+                            <FloatingLayer
+                              anchorRef={sortRef}
+                              open={true}
+                              placement="bottom"
+                              offset={8}
                             >
-                              {[
-                                "newest",
-                                "oldest",
-                                "priority",
-                                "alphabetical",
-                              ].map((option) => (
-                                <button
-                                  key={option}
-                                  onClick={() => {
-                                    setSortBy(option);
+                              <div
+                                style={{
+                                  width: "170px",
 
-                                    setShowSortMenu(false);
+                                  background:
+                                    "rgba(20,20,20,0)",
 
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
+                                  backdropFilter:
+                                    "blur(8px)",
 
-                                    border: "none",
+                                  border:
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                                    color:
-                                      sortBy === option
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
+                                  boxShadow:
+                                    "0 20px 50px rgba(0,0,0,0.35)",
 
-                                    padding: "10px 14px",
+                                  borderRadius: "18px",
 
-                                    borderRadius: "12px",
+                                  padding: "8px",
 
-                                    cursor: "pointer",
+                                  display: "flex",
 
-                                    textAlign: "left",
+                                  flexDirection: "column",
 
-                                    fontSize: "0.78rem",
+                                  gap: "4px",
 
-                                    fontWeight: "300",
+                                  zIndex: 2001,
+                                }}
+                              >
+                                {[
+                                  "newest",
+                                  "oldest",
+                                  "priority",
+                                  "alphabetical",
+                                ].map((option) => (
+                                  <button
+                                    key={option}
+                                    onClick={() => {
+                                      setSortBy(option);
 
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {option === "alphabetical"
-                                    ? "A → Z"
-                                    : option.charAt(0).toUpperCase() +
-                                    option.slice(1)}
-                                </button>
-                              ))}
-                            </div>
+                                      setShowSortMenu(false);
+
+                                      setShowFilterMenu(false);
+                                    }}
+                                    style={{
+                                      ...menuItemStyle,
+
+                                      color:
+                                        sortBy === option
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)",
+
+                                      opacity:
+                                        sortBy === option
+                                          ? 1
+                                          : 0.55,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                      e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        "transparent";
+
+                                      e.currentTarget.style.color =
+                                        sortBy === option
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)";
+
+                                      e.currentTarget.style.opacity =
+                                        sortBy === option
+                                          ? "1"
+                                          : "0.55";
+                                    }}
+                                  >
+                                    {option === "alphabetical"
+                                      ? "A → Z"
+                                      : option.charAt(0).toUpperCase() +
+                                      option.slice(1)}
+                                  </button>
+                                ))}
+                              </div>
+                            </FloatingLayer>
                           )}
                         </div>
 
@@ -1488,238 +1728,149 @@ function Notes() {
                               strokeWidth={1.6}
                             />
                           </button>
-
                           {showFilterMenu && (
-                            <div
-                              style={{
-                                position: "absolute",
-
-                                top: "42px",
-                                right: 0,
-
-                                width: "200px",
-
-                                background:
-                                  "rgba(20,20,20,0.92)",
-
-                                backdropFilter:
-                                  "blur(24px)",
-
-                                border:
-                                  "1px solid rgba(255,255,255,0.10)",
-
-                                boxShadow:
-                                  "0 20px 50px rgba(0,0,0,0.35)",
-
-                                borderRadius: "18px",
-
-                                padding: "8px",
-
-                                display: "flex",
-
-                                flexDirection: "column",
-
-                                gap: "4px",
-
-                                zIndex: 2001,
-                              }}
+                            <FloatingLayer
+                              anchorRef={sortRef}
+                              open={true}
+                              placement="bottom"
+                              offset={8}
                             >
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Category
-                              </p>
-
-                              {[
-                                "All",
-                                "Work",
-                                "Study",
-                                "Personal",
-                                "Health",
-                              ].map((category) => (
-                                <button
-                                  key={category}
-                                  onClick={() => {
-                                    setSelectedCategory(category);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedCategory === category
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {category}
-                                </button>
-                              ))}
-
                               <div
                                 style={{
-                                  height: "1px",
-                                  background: "rgba(255,255,255,0.06)",
-                                  margin: "8px 0",
-                                }}
-                              />
+                                  width: "170px",
 
-                              <p
-                                style={{
-                                  fontSize: "0.72rem",
-                                  opacity: 0.45,
-                                  padding: "8px 12px 4px",
-                                  margin: 0,
-                                }}
-                              >
-                                Priority
-                              </p>
-
-                              {[
-                                "All",
-                                "High",
-                                "Medium",
-                                "Low",
-                              ].map((priority) => (
-                                <button
-                                  key={priority}
-                                  onClick={() => {
-                                    setSelectedPriority(priority);
-
-                                    setShowFilterMenu(false);
-                                  }}
-                                  style={{
-                                    background: "transparent",
-
-                                    border: "none",
-
-                                    color:
-                                      selectedPriority === priority
-                                        ? "var(--text-primary)"
-                                        : "var(--text-secondary)",
-
-                                    padding: "10px 14px",
-
-                                    borderRadius: "12px",
-
-                                    cursor: "pointer",
-
-                                    textAlign: "left",
-
-                                    fontSize: "0.78rem",
-
-                                    fontWeight: "300",
-
-                                    transition:
-                                      "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.background =
-                                      "rgba(255,255,255,0.06)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.background =
-                                      "transparent";
-                                  }}
-                                >
-                                  {priority}
-                                </button>
-                              ))}
-
-                              <div
-                                style={{
-                                  height: "1px",
                                   background:
-                                    "rgba(255,255,255,0.06)",
+                                    "rgba(20,20,20,0)",
 
-                                  margin: "8px 0",
-                                }}
-                              />
+                                  backdropFilter:
+                                    "blur(8px)",
 
-                              <button
-                                onClick={() => {
-                                  setSelectedCategory("All");
-                                  setSelectedPriority("All");
-                                  setShowFilterMenu(false);
-                                }}
-                                style={{
-                                  background: "transparent",
+                                  border:
+                                    "1px solid rgba(255,255,255,0.10)",
 
-                                  border: "none",
+                                  boxShadow:
+                                    "0 20px 50px rgba(0,0,0,0.35)",
 
-                                  color:
-                                    "var(--text-secondary)",
+                                  borderRadius: "18px",
 
-                                  padding: "10px 14px",
+                                  padding: "8px",
 
-                                  borderRadius: "12px",
+                                  display: "flex",
 
-                                  cursor: "pointer",
+                                  flexDirection: "column",
 
-                                  textAlign: "left",
+                                  gap: "4px",
 
-                                  fontSize: "0.78rem",
-
-                                  fontWeight: "300",
-
-                                  transition:
-                                    "all 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.background =
-                                    "rgba(255,255,255,0.06)";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.background =
-                                    "transparent";
-
-                                  e.currentTarget.style.color =
-                                    "var(--text-secondary)";
+                                  zIndex: 2001,
                                 }}
                               >
-                                Clear Filters
-                              </button>
-                            </div>
+                                <p
+                                  style={{
+                                    ...menuItemStyle,
+                                    fontSize: "0.72rem",
+                                    opacity: 0.45,
+                                    margin: 0,
+                                  }}
+                                >
+                                  Type
+                                </p>
+
+                                {[
+                                  "All",
+                                  "Flagged",
+                                  "Liked",
+                                  "Pinned",
+                                  "Archived",
+                                  "Hidden",
+                                ].map((type) => (
+                                  <button
+                                    key={type}
+                                    onClick={() => {
+                                      setSelectedType(type);
+
+                                      setShowSortMenu(false);
+
+                                      setShowFilterMenu(false);
+                                    }}
+                                    style={{
+                                      ...menuItemStyle,
+
+                                      color:
+                                        selectedType === type
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)",
+
+                                      opacity:
+                                        selectedType === type
+                                          ? 1
+                                          : 0.55,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background =
+                                        "rgba(255,255,255,0.04)";
+
+                                      e.currentTarget.style.color =
+                                        "#F5F5F5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background =
+                                        "transparent";
+
+                                      e.currentTarget.style.color =
+                                        selectedType === type
+                                          ? "var(--text-primary)"
+                                          : "var(--text-secondary)";
+
+                                      e.currentTarget.style.opacity =
+                                        selectedType === type
+                                          ? "1"
+                                          : "0.55";
+                                    }}
+                                  >
+                                    {type}
+                                  </button>
+                                ))}
+
+                                <div
+                                  style={{
+                                    height: "1px",
+                                    background:
+                                      "rgba(255,255,255,0.06)",
+
+                                    margin: "8px 0",
+                                  }}
+                                />
+
+                                <button
+                                  onClick={() => {
+                                    setSelectedType("All");
+                                    setShowFilterMenu(false);
+                                  }}
+                                  style={menuItemStyle}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      "rgba(255,255,255,0.04)";
+
+                                    e.currentTarget.style.color =
+                                      "#f5f5f5";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      "transparent";
+
+                                    e.currentTarget.style.color =
+                                      "var(--text-secondary)";
+                                  }}
+                                >
+                                  Clear Filters
+                                </button>
+                              </div>
+                            </FloatingLayer>
                           )}
                         </div>
                       </div>
 
-                      {/* ALL / FOLDERS */}
-                      {/* TABS */}
+                      {/* NOTES TAB / FOLDERS TAB */}
                       <div
                         style={{
                           display: "flex",
@@ -1813,13 +1964,13 @@ function Notes() {
                           onClick={() => {
                             setShowMoreMenu(!showMoreMenu);
 
-                            setActionsPinned(true);
-
-                            setShowActions(true);
-
                             setShowSortMenu(false);
 
                             setShowFilterMenu(false);
+
+                            setActionsPinned(true);
+
+                            setShowActions(true);
                           }}
                           style={actionIconStyle}
                           onMouseEnter={(e) => {
@@ -1841,172 +1992,227 @@ function Notes() {
                             size={16}
                           />
                         </button>
-
                         {showMoreMenu && (
-                          <div
-                            style={{
-                              position: "fixed",
-
-                              top: "42px",
-                              right: 0,
-
-                              width: "180px",
-
-                              background: "rgba(20,20,20,0.92)",
-
-                              backdropFilter: "blur(24px)",
-                              WebkitBackdropFilter: "blur(24px)",
-
-                              border: "1px solid rgba(255,255,255,0.10)",
-
-                              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-
-                              borderRadius: "18px",
-
-                              overflow: "hidden",
-
-                              padding: "8px",
-
-                              display: "flex",
-                              flexDirection: "column",
-
-                              gap: "4px",
-
-                              zIndex: 2001,
-                            }}
+                          <FloatingLayer
+                            anchorRef={moreRef}
+                            open={true}
+                            placement="bottom"
+                            offset={8}
                           >
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowNoteModal(true);
-                              }}
+                            <div
                               style={{
-                                background: "transparent",
+                                width: "180px",
 
-                                border: "none",
+                                background:
+                                  "rgba(20,20,20,0)",
 
-                                color: "var(--text-secondary)",
+                                backdropFilter:
+                                  "blur(8px)",
 
-                                padding: "10px 14px",
+                                border:
+                                  "1px solid rgba(255,255,255,0.10)",
 
-                                borderRadius: "12px",
+                                boxShadow:
+                                  "0 20px 50px rgba(0,0,0,0.35)",
 
-                                cursor: "pointer",
+                                borderRadius: "18px",
 
-                                textAlign: "left",
+                                padding: "8px",
 
-                                fontSize: "0.78rem",
+                                display: "flex",
 
-                                fontWeight: "300",
+                                flexDirection: "column",
 
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
+                                gap: "4px",
 
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
+                                zIndex: 2001,
                               }}
                             >
-                              Create Note
-                            </button>
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowNoteModal(true);
+                                }}
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearArchived(true);
-                              }}
-                              style={{
-                                background: "transparent",
+                                  e.currentTarget.style.color =
+                                    "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                border: "none",
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                              >
+                                <NotebookPen
+                                  size={13}
+                                  strokeWidth={1}
+                                />
+                                New Note
+                              </button>
 
-                                color: "var(--text-secondary)",
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowNoteFolderCreateModal(true);
+                                }}
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                padding: "10px 14px",
+                                  e.currentTarget.style.color =
+                                    "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                borderRadius: "12px",
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                              >
+                                <FolderPlus
+                                  size={13}
+                                  strokeWidth={1}
+                                />
 
-                                cursor: "pointer",
+                                New Folder
+                              </button>
 
-                                textAlign: "left",
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.05)",
+                                  margin: "4px 0",
+                                }}
+                              />
 
-                                fontSize: "0.78rem",
+                              <button
+                                onClick={() => {
+                                  setShowMoreMenu(false);
+                                  setShowHidden((prev) => !prev);
+                                }}
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                fontWeight: "300",
+                                  e.currentTarget.style.color =
+                                    "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                              >
+                                <EyeOff
+                                  size={13}
+                                  strokeWidth={1}
+                                />
 
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
+                                {showHidden ? "Hide Hidden" : "Show Hidden"}
+                              </button>
 
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear Archived
-                            </button>
+                              <button
+                                style={menuItemStyle}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                            <button
-                              onClick={() => {
-                                setShowMoreMenu(false);
-                                setShowClearAll(true);
-                              }}
-                              style={{
-                                background: "transparent",
+                                  e.currentTarget.style.color =
+                                    "#F5F5F5";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                border: "none",
+                                  e.currentTarget.style.color =
+                                    "var(--text-primary)";
+                                }}
+                              >
+                                <Archive
+                                  size={13}
+                                  strokeWidth={1}
+                                />
+                                {/* needs to change {showArchived ? "Hide Archived" : "Show Archived"}*/}
+                                Show Archived
+                              </button>
 
-                                color: "var(--text-secondary)",
+                              <div
+                                style={{
+                                  height: "1px",
+                                  background:
+                                    "rgba(255,255,255,0.05)",
+                                  margin: "4px 0",
+                                }}
+                              />
 
-                                padding: "10px 14px",
+                              <button
+                                style={{
+                                  ...menuItemStyle,
+                                  color: "#ffb36b",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                borderRadius: "12px",
+                                  e.currentTarget.style.color =
+                                    "#ffb36b";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                cursor: "pointer",
+                                  e.currentTarget.style.color =
+                                    "#ffb36b";
+                                }}
+                              >
+                                <Archive
+                                  size={13}
+                                  strokeWidth={1}
+                                />
 
-                                textAlign: "left",
+                                Delete Archived
+                              </button>
 
-                                fontSize: "0.78rem",
+                              <button
+                                style={{
+                                  ...menuItemStyle,
+                                  color: "#ff6b6b",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                    "rgba(255,255,255,0.04)";
 
-                                fontWeight: "300",
+                                  e.currentTarget.style.color =
+                                    "#ff6b6b";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                    "transparent";
 
-                                transition: "all 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background =
-                                  "rgba(255,255,255,0.06)";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background =
-                                  "transparent";
-
-                                e.currentTarget.style.color =
-                                  "var(--text-secondary)";
-                              }}
-                            >
-                              Clear All
-                            </button>
-                          </div>
+                                  e.currentTarget.style.color =
+                                    "#ff6b6b";
+                                }}
+                              >
+                                <Trash
+                                  size={13}
+                                  strokeWidth={1}
+                                />
+                                Clear All
+                              </button>
+                            </div>
+                          </FloatingLayer>
                         )}
                       </div>
                     </div>
@@ -2146,17 +2352,34 @@ function Notes() {
                       note={note}
                       onClick={setEditingNote}
 
+                      folders={folders}
+                      onAddExistingNote={
+                        handleAddExistingNoteToFolder
+                      }
+
                       openNoteMenu={openNoteMenu}
                       setOpenNoteMenu={setOpenNoteMenu}
 
                       onView={(folder) => {
-                        console.log("onView called", folder.title);
+                        // console.log("onView called", folder.title);
                         setViewingFolder(folder);
                       }}
+
+                      onRemoveFromFolder={
+                        handleRemoveNoteFromFolder
+                      }
 
                       onEdit={setEditingNote}
 
                       onDelete={handleDeleteNote}
+
+                      onCreateFolder={(note) => {
+                        setSelectedNote(note);
+                        setShowNoteFolderCreateModal(true);
+                      }}
+
+                      onToggleHide={handleToggleHide}
+                      onToggleArchive={handleToggleArchive}
 
                       onToggleFlag={
                         handleToggleFlag
@@ -2304,6 +2527,9 @@ function Notes() {
                       onAddExistingNote={
                         handleAddExistingNoteToFolder
                       }
+
+                      // added
+                      showHidden={showHidden}
 
                       onToggleFolderPin={handleToggleFolderPin}
                       onToggleFolderLike={handleToggleFolderLike}
@@ -2459,7 +2685,55 @@ function Notes() {
         <NoteFolderCreateModal
           mode="create"
 
-          onCreate={handleCreateFolder}
+          onCreate={async (folderData) => {
+            try {
+              const newFolder =
+                await createFolder(folderData);
+
+              let updatedFolder = newFolder;
+
+              if (selectedNote) {
+                updatedFolder =
+                  await addNoteToFolder(
+                    newFolder._id,
+                    selectedNote._id
+                  );
+
+                setNotes((prev) =>
+                  prev.map((note) =>
+                    note._id === selectedNote._id
+                      ? {
+                        ...note,
+                        folder: newFolder._id,
+                      }
+                      : note
+                  )
+                );
+              }
+
+              setFolders((prev) => [
+                updatedFolder,
+                ...prev,
+              ]);
+
+              setToast(
+                selectedNote
+                  ? "Note added to new folder"
+                  : "Folder created"
+              );
+
+              setTimeout(() => {
+                setToast("");
+              }, 3000);
+
+              setSelectedNote(null);
+
+              setShowNoteFolderCreateModal(false);
+
+            } catch (error) {
+              console.error(error);
+            }
+          }}
 
           onClose={() =>
             setShowNoteFolderCreateModal(false)
@@ -2532,7 +2806,80 @@ function Notes() {
 
           onToggleFlag={handleToggleFlag}
 
+          onToggleHide={handleToggleHide}
+
+          onToggleArchive={handleToggleArchive}
+
           onDeleteNote={handleDeleteNote}
+
+          onEditFolder={setEditingFolder}
+
+          onUpdateFolder={async (folderId, folderData) => {
+            const updatedFolder =
+              await updateFolder(folderId, folderData);
+
+            setFolders((prev) =>
+              prev.map((folder) =>
+                folder._id === updatedFolder._id
+                  ? updatedFolder
+                  : folder
+              )
+            );
+
+            setViewingFolder(updatedFolder);
+
+            setToast("Folder updated");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+
+            return updatedFolder;
+          }}
+
+          onDeleteFolder={handleDeleteFolder}
+
+          showHidden={showHidden}
+
+          onClearFolder={handleClearFolder}
+
+          onCreateNote={async (folder, noteData) => {
+            const newNote =
+              await createNote(noteData);
+
+            const updatedFolder =
+              await addNoteToFolder(
+                folder._id,
+                newNote._id
+              );
+
+            setNotes((prev) => [
+              newNote,
+              ...prev,
+            ]);
+
+            setFolders((prev) =>
+              prev.map((item) =>
+                item._id === updatedFolder._id
+                  ? updatedFolder
+                  : item
+              )
+            );
+
+            setViewingFolder(updatedFolder);
+
+            setToast("Note created");
+
+            setTimeout(() => {
+              setToast("");
+            }, 3000);
+          }}
+
+          onAddExistingNote={
+            handleAddExistingNoteToFolder
+          }
+
+          notes={notes}
 
           onUpdateNote={async (
             noteId,

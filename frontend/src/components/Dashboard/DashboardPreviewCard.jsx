@@ -220,7 +220,7 @@ function DashboardPreviewCard({
                     letterSpacing:
                         "-0.02em",
 
-                    marginBottom: "8px",
+                    marginBottom: "20px",
 
                     display:
                         "-webkit-box",
@@ -263,8 +263,8 @@ function DashboardPreviewCard({
                     "No description provided."}
             </div>
 
-            {/* DIVIDER */}
-
+            {/*
+            // DIVIDER
             <div
                 style={{
                     height: "1px",
@@ -277,8 +277,7 @@ function DashboardPreviewCard({
                 }}
             />
 
-            {/* STACKED ASSOCIATIONS */}
-
+            // STACKED ASSOCIATIONS
             <div
                 style={{
                     display: "flex",
@@ -324,6 +323,8 @@ function DashboardPreviewCard({
                     )
                 )}
             </div>
+            */}
+
         </div>
     );
 }

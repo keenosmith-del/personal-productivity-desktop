@@ -204,11 +204,12 @@ function AlarmCard({
                             borderRadius:
                                 "999px",
 
-                            background:
-                                "rgba(255,255,255,0.06)",
+                            border: "1px solid rgba(255,255,255,0.06)",
 
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(87, 112, 122, 0.35)",
+
+                            color:
+                                "var(--text-secondary)",
 
                             display: "flex",
 
@@ -219,9 +220,6 @@ function AlarmCard({
                             fontSize: "0.68rem",
 
                             fontWeight: "300",
-
-                            color:
-                                "var(--text-secondary)",
                         }}
                     >
                         {dayLabels[day]}

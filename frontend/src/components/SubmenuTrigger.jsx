@@ -69,7 +69,8 @@ function SubmenuTrigger({
                         closeMenu();
                     }}
                     style={{
-                        minWidth: "180px",
+                        // change for width of dropdown
+                        width: "196px",
 
                         background:
                             "rgba(20, 20, 20, 0)",

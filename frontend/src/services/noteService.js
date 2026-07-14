@@ -90,6 +90,52 @@ export async function updateNote(
     return data;
 }
 
+export async function archiveNote(noteId) {
+    const response = await fetch(
+        `${API_URL}/${noteId}/archive`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Failed to archive note"
+        );
+    }
+
+    return data;
+}
+
+export async function unarchiveNote(noteId) {
+    const response = await fetch(
+        `${API_URL}/${noteId}/unarchive`,
+        {
+            method: "PUT",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Failed to unarchive note"
+        );
+    }
+
+    return data;
+}
+
 export async function deleteNote(
     noteId
 ) {

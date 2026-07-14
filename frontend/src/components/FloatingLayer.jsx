@@ -17,6 +17,8 @@ function FloatingLayer({
             transform: "",
         });
 
+    const MENU_WIDTH = 196;
+
     useEffect(() => {
         if (!open || !anchorRef?.current)
             return;
@@ -29,28 +31,73 @@ function FloatingLayer({
         let transform = "";
 
         switch (placement) {
-            case "right":
-                top = rect.top + rect.height / 2;
-                left = rect.right + offset;
-                transform = "translateY(-50%)";
-                break;
 
-            case "left":
+            case "right": {
+
                 top = rect.top + rect.height / 2;
-                left = rect.left - offset;
-                transform = "translate(-100%, -50%)";
+
+                const fitsRight =
+                    rect.right + offset + MENU_WIDTH <
+                    window.innerWidth;
+
+                if (fitsRight) {
+                    left = rect.right + offset;
+                    transform = "translateY(-50%)";
+                } else {
+                    left = rect.left - offset;
+                    transform = "translate(-100%, -50%)";
+                }
+
                 break;
+            }
+
+            case "left": {
+
+                top = rect.top + rect.height / 2;
+
+                const fitsLeft =
+                    rect.left - offset - MENU_WIDTH >
+                    0;
+
+                if (fitsLeft) {
+                    left = rect.left - offset;
+                    transform = "translate(-100%, -50%)";
+                } else {
+                    left = rect.right + offset;
+                    transform = "translateY(-50%)";
+                }
+
+                break;
+            }
 
             case "top":
+
                 top = rect.top - offset;
+
                 left = rect.left + rect.width / 2;
+
                 transform = "translate(-50%, -100%)";
+
                 break;
 
-            default:
+            default: {
+
                 top = rect.bottom + offset;
-                left = rect.left;
-                transform = "";
+
+                const fitsRight =
+                    rect.left + MENU_WIDTH <
+                    window.innerWidth;
+
+                if (fitsRight) {
+                    left = rect.left;
+                    transform = "";
+                } else {
+                    left = rect.right;
+                    transform = "translateX(-100%)";
+                }
+
+                break;
+            }
         }
 
         setPosition({

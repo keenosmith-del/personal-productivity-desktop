@@ -1,6 +1,8 @@
 function DeleteConfirmModal({
     title = "Delete item?",
     message = "This action cannot be undone.",
+    confirmText = "Delete",
+    cancelText = "Cancel",
     onCancel,
     onConfirm,
 }) {
@@ -135,7 +137,7 @@ function DeleteConfirmModal({
                                 "1px solid rgba(255,255,255,0.10)";
                         }}
                     >
-                        Cancel
+                        {cancelText}
                     </button>
 
                     <button
@@ -176,7 +178,7 @@ function DeleteConfirmModal({
                                 "translateY(0)";
                         }}
                     >
-                        Delete
+                        {confirmText}
                     </button>
                 </div>
             </div>

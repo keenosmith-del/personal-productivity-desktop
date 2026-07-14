@@ -177,13 +177,12 @@ function NoteFolderPreviewCard({
                             display:
                                 "-webkit-box",
 
-                            WebkitLineClamp: 2,
+                            WebkitLineClamp: 1,
 
                             WebkitBoxOrient:
                                 "vertical",
 
-                            overflow:
-                                "hidden",
+                            overflow: "hidden",
                         }}
                     >
                         {note.title}
@@ -202,7 +201,7 @@ function NoteFolderPreviewCard({
                             display:
                                 "-webkit-box",
 
-                            WebkitLineClamp: 5,
+                            WebkitLineClamp: 3,
 
                             WebkitBoxOrient:
                                 "vertical",

@@ -50,7 +50,7 @@ function ReminderCard({
 
         textAlign: "left",
 
-        fontSize: "0.78rem",
+        fontSize: "0.7rem",
 
         fontWeight: "300",
 
@@ -276,7 +276,10 @@ function ReminderCard({
                                 "var(--text-secondary)";
                         }}
                     >
-                        <Ellipsis size={18} />
+                        <Ellipsis
+                            size={18}
+                            strokeWidth={1}
+                        />
                     </button>
                     {openReminderMenu === reminder._id && (
                         <FloatingLayer
@@ -768,6 +771,7 @@ function ReminderCard({
                 >
                     <Flag
                         size={18}
+                        strokeWidth={1}
                         fill={
                             reminder.flagged
                                 ? "currentColor"
@@ -821,6 +825,7 @@ function ReminderCard({
                     >
                         <MessageCircle
                             size={18}
+                            strokeWidth={1}
                             opacity={0.95}
                         />
 
@@ -873,7 +878,8 @@ function ReminderCard({
                         }}
                     >
                         <Heart
-                            size={18.5}
+                            size={18}
+                            strokeWidth={1}
                             fill={
                                 reminder.liked
                                     ? "currentColor"
