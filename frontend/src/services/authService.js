@@ -1,5 +1,7 @@
+/* const API_URL = "http://localhost:5050/api/auth"; */
+
 const API_URL =
-    "http://localhost:5050/api/auth";
+    `${import.meta.env.VITE_API_URL || "http://localhost:5050"}/api/auth`;
 
 
 export async function registerUser(

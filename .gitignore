@@ -8,6 +8,11 @@ __pycache__/
 
 # Environment Variables
 .env
+.env.*
+!.env.example
+
+# User Uploads
+backend/uploads/
 
 # Node
 node_modules/

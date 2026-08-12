@@ -20,7 +20,10 @@ import { getReminders } from "../../services/reminderService";
 import { getNotes } from "../../services/noteService";
 import { getAlarms } from "../../services/alarmService";
 
+/* const API_BASE_URL = "http://localhost:5050"; */
+
 const API_BASE_URL =
+    import.meta.env.VITE_API_URL ||
     "http://localhost:5050";
 
 function EditUserModal({

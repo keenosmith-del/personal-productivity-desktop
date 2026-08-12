@@ -1,5 +1,7 @@
+/* const API_URL = "http://localhost:5050/api/folders"; */
+
 const API_URL =
-    "http://localhost:5050/api/folders";
+    `${import.meta.env.VITE_API_URL || "http://localhost:5050"}/api/folders`;
 
 const getToken = () =>
     localStorage.getItem("token");

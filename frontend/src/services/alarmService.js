@@ -1,5 +1,7 @@
+/* const API_URL = "http://localhost:5050/api/alarms"; */
+
 const API_URL =
-    "http://localhost:5050/api/alarms";
+    `${import.meta.env.VITE_API_URL || "http://localhost:5050"}/api/alarms`;
 
 
 const getToken = () =>

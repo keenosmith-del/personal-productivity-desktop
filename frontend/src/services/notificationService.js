@@ -1,5 +1,7 @@
+/* const API_URL = "http://localhost:5050/api/notifications"; */
+
 const API_URL =
-    "http://localhost:5050/api/notifications";
+    `${import.meta.env.VITE_API_URL || "http://localhost:5050"}/api/notifications`;
 
 const getToken = () =>
     localStorage.getItem("token");
